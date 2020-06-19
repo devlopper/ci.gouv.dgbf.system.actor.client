@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.cyk.pom.jee.client</groupId>
+		<artifactId>pom-jee-client</artifactId>
+		<version>pom.jee.client.0.1.0</version>
+	</parent>
+
+	<groupId>ci.gouv.dgbf.system.actor.client</groupId>
+	<artifactId>actor-client-_pom</artifactId>
+	<version>0.1.0</version>
+	<packaging>pom</packaging>
+
+	<name>actor system client</name>
+	<url>http://www.cykcorp.org</url>
+	
+	<properties>
+		
+	</properties>
+	
+	<modules>
+		<!-- Controller Layer -->
+		<module>../actor-client-controller-entities</module>
+		<module>../actor-client-controller-api</module>
+		<module>../actor-client-controller-impl</module>
+		
+		<!-- Deployment -->
+		<module>../actor-client-deployment</module>
+				
+	</modules>
+
+	<repositories>
+	    <repository>
+	        <id>cyk</id>
+	        <url>https://rawgit.com/devlopper/artifact.maven/master</url>
+	    </repository>
+	</repositories>
+	
+</project>

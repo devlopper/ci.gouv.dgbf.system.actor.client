@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>ci.gouv.dgbf.system.actor.client</groupId>
+		<artifactId>actor-client-_pom</artifactId>
+		<version>0.1.0</version>
+	</parent>
+
+	<name>Deployment</name>
+	
+	<groupId>ci.gouv.dgbf.system.actor.client.deployment</groupId>
+	<artifactId>actor-client-deployment</artifactId>
+	<packaging>war</packaging>
+	
+	<properties>
+		<cyk.variable.system.identifier>actor</cyk.variable.system.identifier>
+		<cyk.variable.system.name>actor</cyk.variable.system.name>
+		<cyk.variable.system.logging.throwable.print.stack.trace>true</cyk.variable.system.logging.throwable.print.stack.trace>
+		<!-- Theme -->
+		<cyk.variable.user.interface.theme.menu.identifier>XX.MENU.IDENTIFIER.XX</cyk.variable.user.interface.theme.menu.identifier>
+
+		<!-- Development -->
+
+		<!-- Test -->
+		
+		<!-- Production -->
+		<server.application.jboss.wildfly.prod.hostname>xx.xx.xx.xx</server.application.jboss.wildfly.prod.hostname>
+		<server.application.jboss.wildfly.prod.username>WILDFLY.PROD.USER</server.application.jboss.wildfly.prod.username>
+	</properties>
+	
+	<dependencies>
+		<dependency>
+			<groupId>ci.gouv.dgbf.system.actor.client.controller.impl</groupId>
+			<artifactId>actor-client-controller-impl</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.cyk.jee.utility.client.deployment</groupId>
+			<artifactId>jee-utility-client-deployment</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+	</dependencies>	
+	
+	<profiles>
+		<profile>
+			<id>thorntail</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>io.thorntail</groupId>
+						<artifactId>thorntail-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<goals>
+									<goal>package</goal>
+								</goals>
+								<configuration>
+									<hollow>true</hollow>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		
+		<profile>
+			<id>docker</id>
+			<properties>
+				<jboss-web.context-root></jboss-web.context-root>
+			</properties>
+		</profile>
+		
+		<profile>
+			<id>docker.dev</id>
+			<properties>
+				<deployment.client.proxy.host>192.168.99.100</deployment.client.proxy.host>
+				<deployment.client.proxy.port>8081</deployment.client.proxy.port>
+			</properties>
+		</profile>
+		
+		<profile>
+			<id>docker.prod</id>
+			<properties>
+				
+			</properties>
+		</profile>
+	</profiles>	
+</project>

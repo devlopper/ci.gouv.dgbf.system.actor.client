@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+	<name>Controller Implementation based on Primefaces</name>
+	
+	<parent>
+		<groupId>ci.gouv.dgbf.system.actor.client</groupId>
+		<artifactId>actor-client-_pom</artifactId>
+		<version>0.1.0</version>
+	</parent>
+
+	<groupId>ci.gouv.dgbf.system.actor.client.controller.impl</groupId>
+	<artifactId>actor-client-controller-impl</artifactId>
+	<packaging>jar</packaging>
+
+	<dependencies>
+		<dependency>
+			<groupId>ci.gouv.dgbf.system.actor.client.controller.api</groupId>
+			<artifactId>actor-client-controller-api</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.cyk.jee.utility.client.controller.web.jsf.primefaces</groupId>
+			<artifactId>jee-utility-client-controller-web-jsf-primefaces</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+	</dependencies>		
+
+</project>
