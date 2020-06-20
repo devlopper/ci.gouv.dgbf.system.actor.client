@@ -8,13 +8,17 @@
 	<navigation-rule>
 		<from-view-id>*</from-view-id>
 		
-		<!-- xxx -->
-		<!--navigation-case>
-			<from-outcome>xxxView</from-outcome>
-			<to-view-id></to-view-id>
+		<navigation-case>
+			<from-outcome>actorListView</from-outcome>
+			<to-view-id>/private/actor/list.jsf</to-view-id>
 			<redirect />
-		</navigation-case-->
+		</navigation-case>
 		
+		<navigation-case>
+			<from-outcome>actorCreateView</from-outcome>
+			<to-view-id>/private/actor/create.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
 	</navigation-rule>
 
 </faces-config>
