@@ -26,6 +26,17 @@
 			<artifactId>jee-utility-client-controller-web-jsf-primefaces</artifactId>
 			<version>0.1.0</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.cyk.jee.user.interface.theme.web.jsf.primefaces.atlantis.dgbf</groupId>
+			<artifactId>jee-user-interface-theme-web-jsf-primefaces-atlantis-dgbf</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.cyk.jee.utility.client.deployment</groupId>
+			<artifactId>jee-utility-client-deployment</artifactId>
+			<version>0.1.0</version>
+		</dependency>
 	</dependencies>		
-
 </project>
