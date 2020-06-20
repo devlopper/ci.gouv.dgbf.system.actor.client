@@ -1,10 +1,10 @@
 package ci.gouv.dgbf.system.actor.client.controller.entities;
-import ci.gouv.dgbf.system.actor.server.representation.entities.AccountDto;
+import ci.gouv.dgbf.system.actor.server.representation.entities.ActorDto;
 import org.cyk.utility.__kernel__.controller.AbstractMapperSourceDestinationImpl;
 import org.mapstruct.Mapper;
 
 @Mapper
-public abstract class AccountMapper extends AbstractMapperSourceDestinationImpl<Account, AccountDto> {
+public abstract class ActorMapper extends AbstractMapperSourceDestinationImpl<Actor, ActorDto> {
 	private static final long serialVersionUID = 1L;
     	
 }
