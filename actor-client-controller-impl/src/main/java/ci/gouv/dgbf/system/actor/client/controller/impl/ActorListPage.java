@@ -2,14 +2,12 @@ package ci.gouv.dgbf.system.actor.client.controller.impl;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
@@ -47,8 +45,10 @@ public class ActorListPage extends AbstractEntityListPageContainerManagedImpl<Ac
 		}
 		
 		DataTable dataTable = DataTable.build(DataTable.FIELD_LAZY,Boolean.TRUE,DataTable.FIELD_ELEMENT_CLASS,Actor.class
-				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,columnsFieldsNames,DataTable.FIELD_LISTENER,listener
-				,DataTable.ConfiguratorImpl.FIELD_RECORD_ACTIONS,List.of(Action.CREATE));
+				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,columnsFieldsNames,DataTable.FIELD_LISTENER,listener);
+		
+		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();
+		dataTable.addRecordMenuItemByArgumentsOpenViewInDialogRead();
 		
 		LazyDataModel<Actor> lazyDataModel = (LazyDataModel<Actor>) dataTable.getValue();
 		lazyDataModel.setReaderUsable(Boolean.TRUE);
@@ -82,12 +82,6 @@ public class ActorListPage extends AbstractEntityListPageContainerManagedImpl<Ac
 	
 	@Getter @Setter @Accessors(chain=true)
 	public static class LazyDataModelListenerImpl extends LazyDataModel.Listener.AbstractImpl<Actor> implements Serializable {
-		@Override
-		public List<Actor> read(LazyDataModel<Actor> lazyDataModel) {
-			// TODO Auto-generated method stub
-			List<Actor> actors = super.read(lazyDataModel);
-			System.out.println("ActorListPage.LazyDataModelListenerImpl.read() : "+actors);
-			return actors;
-		}
+		
 	}
 }

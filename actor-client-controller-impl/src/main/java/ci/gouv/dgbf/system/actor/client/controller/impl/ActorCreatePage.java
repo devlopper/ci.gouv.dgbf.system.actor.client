@@ -10,6 +10,7 @@ import javax.inject.Named;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.EntityReader;
 import org.cyk.utility.__kernel__.enumeration.Action;
+import org.cyk.utility.client.controller.web.jsf.JsfController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityEditPageContainerManagedImpl;
@@ -53,8 +54,19 @@ public class ActorCreatePage extends AbstractEntityEditPageContainerManagedImpl<
 					});
 				return arguments;
 			}
-			
+		});
+		
+		arguments.put(Form.FIELD_LISTENER, new Form.Listener.AbstractImpl() {
+			@Override
+			public void redirect(Form form, Object request) {
+				JsfController.getInstance().redirect("actorListView");
+			}
 		});
 		return arguments;
+	}
+	
+	@Override
+	protected String __getWindowTitleValue__() {
+		return "Création d'un compte utilisateur";
 	}
 }

@@ -3,6 +3,7 @@ package ci.gouv.dgbf.system.actor.client.controller.entities;
 import java.io.Serializable;
 import java.util.Collection;
 
+import org.cyk.utility.__kernel__.constant.ConstantEmpty;
 import org.cyk.utility.__kernel__.object.__static__.controller.AbstractDataIdentifiableSystemStringIdentifiableBusinessStringImpl;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Choices;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Choices.Count;
@@ -11,6 +12,7 @@ import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputC
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceMany;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceManyCheck;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputPass;
+import org.cyk.utility.__kernel__.string.StringHelper;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,6 +37,26 @@ public class Actor extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 	private Collection<Function> functions;
 	private Collection<Privilege> privileges;
 	private Collection<Scope> scopes;
+	
+	public String getNames() {
+		if(names == null) {
+			if(StringHelper.isNotBlank(firstName))
+				names = firstName;
+			if(StringHelper.isNotBlank(lastNames))
+				if(StringHelper.isBlank(names))
+					names = lastNames;
+				else
+					names += " "+lastNames;
+			if(names == null)
+				names = ConstantEmpty.STRING;
+		}
+		return names;
+	}
+	
+	@Override
+	public String toString() {
+		return code+" - "+getNames();
+	}
 	
 	public static final String FIELD_FIRST_NAME = "firstName";
 	public static final String FIELD_LAST_NAMES = "lastNames";

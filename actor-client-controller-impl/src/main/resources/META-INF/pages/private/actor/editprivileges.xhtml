@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"      
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:cyk="http://primefaces.jsf.web.utility.cyk.org">
+	
+    <cyk:page value="#{actorEditPrivilegesPage}">
+    	<ui:define name="centerCenter">
+    		<ui:decorate template="#{primefacesHelper.getModelTemplate(actorEditPrivilegesPage.layout)}">
+    			<ui:param name="layout" value="#{actorEditPrivilegesPage.layout}"/> 
+    			<ui:define name="cell3">
+    				<p:pickList value="#{actorEditPrivilegesPage.privilegesDualListModel}" var="privilege"
+                		itemValue="#{privilege}" itemLabel="#{privilege.name} - (#{privilege.type.name})" showSourceControls="true" showTargetControls="true" showCheckbox="true"
+                		showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains" converter="#{objectConverter}" responsive="true">
+    					
+    					<f:facet name="sourceCaption">Disponible</f:facet>
+      					<f:facet name="targetCaption">Assignés</f:facet>
+    					
+    				</p:pickList>
+    			</ui:define>
+    		</ui:decorate>
+    		<!--
+    		<ui:decorate template="#{primefacesHelper.getModelTemplate(actorEditPrivilegesPage.actorSearchDialog)}">
+	    		<ui:param name="dialog" value="#{actorEditPrivilegesPage.actorSearchDialog}"/>
+	    		<ui:define name="dialogBody">
+	    			<ui:decorate template="#{primefacesHelper.getModelTemplate(actorEditPrivilegesPage.actorAutoComplete)}">
+	    				<ui:param name="autoComplete" value="#{actorEditPrivilegesPage.actorAutoComplete}"/>
+	    			</ui:decorate>
+	    		</ui:define>
+	    	</ui:decorate>	
+	    	-->
+    	</ui:define>
+    </cyk:page>
+</html>

@@ -12,5 +12,8 @@ import lombok.experimental.Accessors;
 @Getter @Setter @NoArgsConstructor @Accessors(chain=true)
 public class ProfilePrivilege extends AbstractDataIdentifiableSystemStringImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
+
+	private Profile profile;
+	private Privilege privilege;
 	
 }

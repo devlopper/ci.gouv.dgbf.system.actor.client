@@ -5,6 +5,7 @@ import java.io.Serializable;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.cyk.utility.__kernel__.AbstractApplicationScopeLifeCycleListener;
+import org.cyk.utility.__kernel__.controller.EntitySaver;
 import org.cyk.utility.client.controller.component.menu.MenuBuilderMapInstantiator;
 
 @ApplicationScoped
@@ -14,7 +15,7 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 	@Override
 	public void __initialize__(Object object) {
 		__inject__(ci.gouv.dgbf.system.actor.client.controller.api.ApplicationScopeLifeCycleListener.class).initialize(null);
-		__setQualifierClassTo__(ci.gouv.dgbf.system.actor.server.annotation.System.class, MenuBuilderMapInstantiator.class);
+		__setQualifierClassTo__(ci.gouv.dgbf.system.actor.server.annotation.System.class, MenuBuilderMapInstantiator.class,EntitySaver.class);
 	}
 	
 	@Override
