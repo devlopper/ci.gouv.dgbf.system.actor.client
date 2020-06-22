@@ -28,6 +28,7 @@ public class MenuBuilderMapInstantiatorImpl extends org.cyk.utility.client.contr
 				//.addEntitySelect(UserAccount.class, Constant.SYSTEM_ACTION_IDENTIFIER_ASSIGN_FUNCTION_SCOPES)
 				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Comptes utilisateurs").setCommandableNavigationIdentifier("actorListView"))
 				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Assignations").setCommandableNavigationIdentifier("actorEditPrivilegesView"))
+				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Affectations").setCommandableNavigationIdentifier("actorEditScopesView"))
 				//.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Affectations").setCommandableNavigationIdentifier("userAccountAssignScopesListUserAccountView"))
 				/*		
 				//.addEntitiesList(UserAccountInterim.class,UserAccountInterimModel.class)

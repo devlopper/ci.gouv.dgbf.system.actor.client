@@ -27,6 +27,18 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>actorEditScopesView</from-outcome>
+			<to-view-id>/private/actor/editscopes.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>actorScopeCreateView</from-outcome>
+			<to-view-id>/private/actorscope/create.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>profileEditPrivilegesView</from-outcome>
 			<to-view-id>/private/profile/editprivileges.jsf</to-view-id>
 			<redirect />
