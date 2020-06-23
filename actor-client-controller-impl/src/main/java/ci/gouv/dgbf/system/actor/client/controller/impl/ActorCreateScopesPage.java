@@ -23,7 +23,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Named @ViewScoped @Getter @Setter
-public class ActorCreateScopesPage extends AbstractActorJoinScopesOrPrivielesPage<Scope> implements Serializable {
+public class ActorCreateScopesPage extends AbstractActorCreateScopesOrPrivielesPage<Scope> implements Serializable {
 
 	@Override
 	protected DataTable instantiateDataTable() {

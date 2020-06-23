@@ -3,6 +3,8 @@ package ci.gouv.dgbf.system.actor.client.controller.entities;
 import java.io.Serializable;
 import java.util.Collection;
 
+import javax.validation.constraints.NotNull;
+
 import org.cyk.utility.__kernel__.constant.ConstantEmpty;
 import org.cyk.utility.__kernel__.object.__static__.controller.AbstractDataIdentifiableSystemStringIdentifiableBusinessStringImpl;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Choices;
@@ -23,15 +25,13 @@ import lombok.experimental.Accessors;
 public class Actor extends AbstractDataIdentifiableSystemStringIdentifiableBusinessStringImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	private String firstName;
-	private String lastNames;
+	@NotNull private String firstName;
+	@NotNull private String lastNames;
 	private String names;
-	private String electronicMailAddress;	
+	@NotNull private String electronicMailAddress;	
 	private String username;
-	@Input @InputPass
-	private String password;
-	@Input @InputPass
-	private String passwordConfirmation;
+	@Input @InputPass @NotNull private String password;
+	@Input @InputPass @NotNull private String passwordConfirmation;
 	
 	@Input @InputChoice(choices = @Choices(count = Count.ALL)) @InputChoiceMany @InputChoiceManyCheck
 	private Collection<Function> functions;

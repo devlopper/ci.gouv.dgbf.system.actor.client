@@ -13,4 +13,9 @@ import lombok.experimental.Accessors;
 public class ScopeType extends AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	@Override
+	public String toString() {
+		return name;
+	}
+	
 }

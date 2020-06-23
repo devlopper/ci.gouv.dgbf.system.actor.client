@@ -1,1 +1,1 @@
-docker build --tag "actor-client:latest" ../../
+docker build --tag "mic-acteur:latest" ../../

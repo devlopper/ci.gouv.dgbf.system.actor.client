@@ -6,10 +6,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.cyk.utility.__kernel__.constant.ConstantEmpty;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.JsfController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
@@ -55,7 +57,7 @@ public abstract class AbstractActorListPrivilegesOrScopesPage<T> extends Abstrac
 		actorAutoComplete = AutoComplete.build(AutoComplete.FIELD_ENTITY_CLASS,Actor.class,AutoComplete.FIELD_LISTENER,new AutoComplete.Listener.AbstractImpl<Actor>() {
 			@Override
 			public Filter.Dto instantiateFilter(AutoComplete autoComplete) {
-				return new Filter.Dto().addField(ActorQuerier.PARAMETER_NAME_STRING, autoComplete.get__queryString__());
+				return new Filter.Dto().addField(ActorQuerier.PARAMETER_NAME_STRING, "%"+ValueHelper.defaultToIfBlank(autoComplete.get__queryString__(),ConstantEmpty.STRING)+"%");
 			}
 		},AutoComplete.FIELD_PLACEHOLDER,"rechercher par le nom d'utilisateur");
 		

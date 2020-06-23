@@ -24,7 +24,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Named @ViewScoped @Getter @Setter
-public class ActorCreatePrivilegesPage extends AbstractActorJoinScopesOrPrivielesPage<Privilege> implements Serializable {
+public class ActorCreatePrivilegesPage extends AbstractActorCreateScopesOrPrivielesPage<Privilege> implements Serializable {
 
 	private Profile profile;
 	

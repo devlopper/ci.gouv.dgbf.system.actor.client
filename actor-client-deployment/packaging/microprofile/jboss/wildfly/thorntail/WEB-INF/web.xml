@@ -6,25 +6,11 @@
 	
 	<display-name>${cyk.variable.system.name}</display-name>
 	
-	<welcome-file-list>
-		<welcome-file>/private/activitycostunitfunding/editadjustments.jsf</welcome-file>
-	</welcome-file-list>
-	
 	<!-- System -->
 	
 	<context-param>
 		<param-name>cyk.variable.system.identifier</param-name>
 		<param-value>${cyk.variable.system.identifier}</param-value>
-	</context-param>
-	
-	<context-param>
-		<param-name>cyk.variable.system.timestamp</param-name>
-		<param-value>${cyk.variable.system.timestamp}</param-value>
-	</context-param>
-	
-	<context-param>
-		<param-name>cyk.variable.system.timestamp.as.string</param-name>
-		<param-value>${cyk.variable.system.timestamp.as.string}</param-value>
 	</context-param>
 	
 	<context-param>
@@ -55,18 +41,6 @@
 	<context-param>
 		<param-name>cyk.variable.system.logging.throwable.print.stack.trace</param-name>
 		<param-value>${cyk.variable.system.logging.throwable.print.stack.trace}</param-value>
-	</context-param>
-	
-	<!-- User Interface -->
-	
-	<context-param>
-		<param-name>cyk.variable.user.interface.theme.menu.identifier</param-name>
-		<param-value>${cyk.variable.user.interface.theme.menu.identifier}</param-value>
-	</context-param>
-	
-	<context-param>
-		<param-name>cyk.variable.user.interface.theme.menu.is.dynamic</param-name>
-		<param-value>${cyk.variable.user.interface.theme.menu.is.dynamic}</param-value>
 	</context-param>
 	
 	<!-- Static resources -->

@@ -12,5 +12,8 @@ import lombok.experimental.Accessors;
 @Getter @Setter @NoArgsConstructor @Accessors(chain=true)
 public class Scope extends AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
+	private ScopeType type;
+
+	public static final String FIELD_TYPE = "type";
 }

@@ -19,7 +19,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public abstract class AbstractActorJoinScopesOrPrivielesPage<T> extends AbstractPageContainerManagedImpl implements Serializable {
+public abstract class AbstractActorCreateScopesOrPrivielesPage<T> extends AbstractPageContainerManagedImpl implements Serializable {
 
 	protected Layout layout;
 	protected Actor actor;

@@ -43,6 +43,13 @@
 			<to-view-id>/private/actor/createprivileges.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>scopeListView</from-outcome>
+			<to-view-id>/private/scope/list.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
 		<!--
 		<navigation-case>
 			<from-outcome>profileEditPrivilegesView</from-outcome>
