@@ -62,19 +62,19 @@ public class ProfileEditPrivilegesPage extends AbstractPageContainerManagedImpl 
 			if(actor != null) {
 				profile = CollectionHelper.getFirst(EntityReader.getInstance().readMany(Profile.class, new Arguments<Profile>()
 						.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setQueryExecutorArguments(
-								new QueryExecutorArguments.Dto().setQueryIdentifier(ProfileQuerier.QUERY_NAME_READ_BY_ACTORS_CODES_ORDER_BY_CODE_ASCENDING)
+								new QueryExecutorArguments.Dto().setQueryIdentifier(ProfileQuerier.QUERY_NAME_READ_BY_ACTORS_CODES)
 								.addFilterField(ActorQuerier.PARAMETER_NAME_IDENTIFIER, List.of(actor.getCode()))))));
 			}
 			if(profile != null) {
 				profilePrivileges = EntityReader.getInstance().readMany(ProfilePrivilege.class, new Arguments<ProfilePrivilege>()
 						.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setQueryExecutorArguments(
-								new QueryExecutorArguments.Dto().setQueryIdentifier(ProfilePrivilegeQuerier.QUERY_NAME_READ_BY_PROFILES_CODES_ORDER_BY_PRIVILEGE_CODE_ASCENDING)
+								new QueryExecutorArguments.Dto().setQueryIdentifier(ProfilePrivilegeQuerier.QUERY_NAME_READ_BY_PROFILES_CODES)
 								.addFilterField(ProfilePrivilegeQuerier.PARAMETER_NAME_PROFILES_CODES, List.of(profile.getCode())))));
 				if(CollectionHelper.isNotEmpty(profilePrivileges))
 					selectedPrivileges = profilePrivileges.stream().map(ProfilePrivilege::getPrivilege).collect(Collectors.toList());
 				availablePrivileges = EntityReader.getInstance().readMany(Privilege.class, new Arguments<Privilege>()
 						.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setQueryExecutorArguments(
-								new QueryExecutorArguments.Dto().setQueryIdentifier(PrivilegeQuerier.QUERY_NAME_READ_BY_PROFILES_CODES_NOT_ASSOCIATED_ORDER_BY_CODE_ASCENDING)
+								new QueryExecutorArguments.Dto().setQueryIdentifier(PrivilegeQuerier.QUERY_NAME_READ_BY_PROFILES_CODES_NOT_ASSOCIATED)
 								.addFilterField(PrivilegeQuerier.PARAMETER_NAME_PROFILES_CODES, List.of(profile.getCode())))));
 			}		
 		}

@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Named @ViewScoped @Getter @Setter
-public class ActorEditPrivilegesPage extends AbstractProfileEditPrivilegesPage implements Serializable {
+public class ActorEditPrivilegesPageOLD extends AbstractProfileEditPrivilegesPage implements Serializable {
 
 	@Override
 	protected String __getWindowTitleValue__() {

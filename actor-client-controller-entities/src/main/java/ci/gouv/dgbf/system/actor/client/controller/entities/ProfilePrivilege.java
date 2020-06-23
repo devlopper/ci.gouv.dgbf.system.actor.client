@@ -15,5 +15,9 @@ public class ProfilePrivilege extends AbstractDataIdentifiableSystemStringImpl i
 
 	private Profile profile;
 	private Privilege privilege;
-	
+	private Boolean visible;
+
+	public static final String FIELD_PROFILE = "profile";
+	public static final String FIELD_PRIVILEGE = "privilege";
+	public static final String FIELD_VISIBLE = "visible";
 }

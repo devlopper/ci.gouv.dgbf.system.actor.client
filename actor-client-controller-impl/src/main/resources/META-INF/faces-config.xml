@@ -21,28 +21,41 @@
 		</navigation-case>
 		
 		<navigation-case>
-			<from-outcome>actorEditPrivilegesView</from-outcome>
-			<to-view-id>/private/actor/editprivileges.jsf</to-view-id>
+			<from-outcome>actorListPrivilegesView</from-outcome>
+			<to-view-id>/private/actor/listprivileges.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		
 		<navigation-case>
-			<from-outcome>actorEditScopesView</from-outcome>
-			<to-view-id>/private/actor/editscopes.jsf</to-view-id>
+			<from-outcome>actorListScopesView</from-outcome>
+			<to-view-id>/private/actor/listscopes.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		
 		<navigation-case>
-			<from-outcome>actorScopeCreateView</from-outcome>
-			<to-view-id>/private/actorscope/create.jsf</to-view-id>
+			<from-outcome>actorCreateScopesView</from-outcome>
+			<to-view-id>/private/actor/createscopes.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		
+		<navigation-case>
+			<from-outcome>actorCreatePrivilegesView</from-outcome>
+			<to-view-id>/private/actor/createprivileges.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		<!--
 		<navigation-case>
 			<from-outcome>profileEditPrivilegesView</from-outcome>
 			<to-view-id>/private/profile/editprivileges.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>profilePrivilegeCreateView</from-outcome>
+			<to-view-id>/private/profileprivilege/create.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		-->
 	</navigation-rule>
 
 </faces-config>
