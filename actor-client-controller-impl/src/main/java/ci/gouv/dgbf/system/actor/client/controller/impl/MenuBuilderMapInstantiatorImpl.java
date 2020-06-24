@@ -17,12 +17,14 @@ public class MenuBuilderMapInstantiatorImpl extends org.cyk.utility.client.contr
 	@Override
 	protected void __instantiateSessionMenuBuilderItems__(Object key, MenuBuilder sessionMenuBuilder, Object request,Principal principal) {
 		sessionMenuBuilder.addItems(
-				/*__inject__(MenuItemBuilder.class).setCommandableName("Gestion des privilèges").setCommandableIcon(Icon.SUITCASE)
-					.listOrTree(Privilege.class,PrivilegeType.class)
-				,__inject__(MenuItemBuilder.class).setCommandableName("Gestion des profiles").setCommandableIcon(Icon.FILE)
+				__inject__(MenuItemBuilder.class).setCommandableName("Gestion des privilèges").setCommandableIcon(Icon.SUITCASE)
+				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Privilèges").setCommandableNavigationIdentifier("privilegeListView"))
+				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Type de privilèges").setCommandableNavigationIdentifier("privilegeTypeListView"))
+				,/*__inject__(MenuItemBuilder.class).setCommandableName("Gestion des profiles").setCommandableIcon(Icon.FILE)
 					.listOrTree(Profile.class,ProfileType.class,Function.class,FunctionType.class)
 				*/__inject__(MenuItemBuilder.class).setCommandableName("Gestion des visibilités").setCommandableIcon(Icon.EYE)
 				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Domaines").setCommandableNavigationIdentifier("scopeListView"))
+				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Type de domaines").setCommandableNavigationIdentifier("scopeTypeListView"))
 				,__inject__(MenuItemBuilder.class).setCommandableName("Gestion des utilisateurs").setCommandableIcon(Icon.USERS)/*.addChild(
 						__inject__(MenuItemBuilder.class).setCommandableName("Création").setCommandableIcon(Icon.PLUS)
 						.setCommandableNavigationIdentifier("userAccountCreateListUserView")

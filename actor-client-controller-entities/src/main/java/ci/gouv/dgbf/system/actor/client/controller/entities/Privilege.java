@@ -14,5 +14,6 @@ public class Privilege extends AbstractDataIdentifiableSystemStringIdentifiableB
 	private static final long serialVersionUID = 1L;
 
 	private PrivilegeType type;
+	private String parentIdentifier;
 	
 }

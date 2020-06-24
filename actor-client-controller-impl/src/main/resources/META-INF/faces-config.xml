@@ -50,6 +50,24 @@
 			<redirect />
 		</navigation-case>
 		
+		<navigation-case>
+			<from-outcome>scopeTypeListView</from-outcome>
+			<to-view-id>/private/scopetype/list.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>privilegeListView</from-outcome>
+			<to-view-id>/private/privilege/list.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>privilegeTypeListView</from-outcome>
+			<to-view-id>/private/privilegetype/list.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
 		<!--
 		<navigation-case>
 			<from-outcome>profileEditPrivilegesView</from-outcome>

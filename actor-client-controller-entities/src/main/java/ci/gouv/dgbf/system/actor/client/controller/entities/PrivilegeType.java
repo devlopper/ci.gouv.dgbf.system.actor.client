@@ -12,5 +12,7 @@ import lombok.experimental.Accessors;
 @Getter @Setter @NoArgsConstructor @Accessors(chain=true)
 public class PrivilegeType extends AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
+
+	private Byte orderNumber;
 	
 }
