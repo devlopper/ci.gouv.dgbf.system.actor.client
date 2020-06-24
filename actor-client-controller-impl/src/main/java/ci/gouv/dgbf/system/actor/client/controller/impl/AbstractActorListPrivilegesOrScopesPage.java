@@ -3,6 +3,7 @@ package ci.gouv.dgbf.system.actor.client.controller.impl;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,6 +50,18 @@ public abstract class AbstractActorListPrivilegesOrScopesPage<T> extends Abstrac
 				protected String getOutcome(AbstractAction action) {
 					return getCreateOutcome();
 				}
+				
+				@Override
+				protected Map<String, List<String>> getViewParameters(AbstractAction action) {
+					Map<String, List<String>> parameters = super.getViewParameters(action);
+					Map<String, List<String>> __parameters__ = getCreateParameters();
+					if(MapHelper.isNotEmpty(__parameters__)) {
+						if(parameters == null)
+							parameters = new HashMap<>();
+						parameters.putAll(__parameters__);
+					}					
+					return parameters;
+				}
 			});
 			dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
 		}
@@ -84,11 +97,18 @@ public abstract class AbstractActorListPrivilegesOrScopesPage<T> extends Abstrac
 			actorAutoComplete.setValue(actor);
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
 		}
-		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
+		layout = buildLayout(cellsMaps);
+	}
+	
+	protected Layout buildLayout(Collection<Map<?,?>> cellsMaps) {
+		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
 	}
 	
 	protected abstract String getListOutcome();
 	protected abstract String getCreateOutcome();
+	protected Map<String, List<String>> getCreateParameters() {
+		return null;
+	}
 	
 	protected abstract DataTable instantiateDataTable();
 }

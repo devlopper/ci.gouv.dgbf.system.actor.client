@@ -15,5 +15,10 @@ public class Scope extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 
 	private ScopeType type;
 
+	@Override
+	public String toString() {
+		return code+" "+name;
+	}
+	
 	public static final String FIELD_TYPE = "type";
 }

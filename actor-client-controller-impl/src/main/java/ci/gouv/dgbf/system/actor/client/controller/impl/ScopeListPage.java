@@ -35,7 +35,6 @@ import lombok.experimental.Accessors;
 @Named @ViewScoped @Getter @Setter
 public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Scope> implements Serializable {
 
-	private Collection<ScopeType> scopeTypes;
 	private ScopeType scopeType;
 	private MenuModel tabMenu;
 	private Integer tabMenuActiveIndex;
@@ -43,7 +42,7 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 	@Override
 	protected void __listenPostConstruct__() {
 		scopeType = WebController.getInstance().getRequestParameterEntityAsParent(ScopeType.class);
-		scopeTypes = EntityReader.getInstance().readMany(ScopeType.class, new Arguments<ScopeType>()
+		Collection<ScopeType> scopeTypes = EntityReader.getInstance().readMany(ScopeType.class, new Arguments<ScopeType>()
 				.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
 						.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(ScopeTypeQuerier.QUERY_IDENTIFIER_READ_ORDER_BY_CODE_ASCENDING))));
 		if(scopeType == null)
@@ -124,12 +123,17 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 	
 	@Getter @Setter @Accessors(chain=true)
 	public static class LazyDataModelListenerImpl extends LazyDataModel.Listener.AbstractImpl<Scope> implements Serializable {
-		private ScopeType scopeType;
+		protected ScopeType scopeType;
 		@Override
 		public Filter.Dto instantiateFilter(LazyDataModel<Scope> lazyDataModel) {
-			if(scopeType == null)
-				return super.instantiateFilter(lazyDataModel);
-			return new Filter.Dto().addField(ScopeQuerier.PARAMETER_NAME_TYPES_CODES, List.of(scopeType.getCode()));
+			Filter.Dto filter = super.instantiateFilter(lazyDataModel);
+			if(scopeType != null) {
+				if(filter == null)
+					filter = new Filter.Dto();
+				filter.addField(ScopeQuerier.PARAMETER_NAME_TYPES_CODES, List.of(scopeType.getCode()));
+			}
+			return filter;
 		}
 	}
+	
 }

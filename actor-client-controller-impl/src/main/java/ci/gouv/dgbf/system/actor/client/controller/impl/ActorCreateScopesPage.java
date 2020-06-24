@@ -10,6 +10,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
@@ -18,6 +19,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Laz
 import ci.gouv.dgbf.system.actor.client.controller.api.ActorScopeController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ActorScope;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Scope;
+import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,8 +27,11 @@ import lombok.Setter;
 @Named @ViewScoped @Getter @Setter
 public class ActorCreateScopesPage extends AbstractActorCreateScopesOrPrivielesPage<Scope> implements Serializable {
 
+	private ScopeType scopeType;
+	
 	@Override
 	protected DataTable instantiateDataTable() {
+		scopeType = WebController.getInstance().getRequestParameterEntityAsParent(ScopeType.class);
 		DataTable dataTable = DataTable.build(DataTable.FIELD_LAZY,Boolean.TRUE,DataTable.FIELD_ELEMENT_CLASS,Scope.class,DataTable.FIELD_SELECTION_MODE,"multiple"
 				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,List.of(Scope.FIELD_CODE,Scope.FIELD_NAME),DataTable.FIELD_LISTENER,new DataTable.Listener.AbstractImpl() {
 			@Override
@@ -51,7 +56,7 @@ public class ActorCreateScopesPage extends AbstractActorCreateScopesOrPrivielesP
 			@Override
 			public Filter.Dto instantiateFilter(LazyDataModel<Scope> lazyDataModel) {
 				return new Filter.Dto().addField(ScopeQuerier.PARAMETER_NAME_ACTORS_CODES, List.of(actor.getCode()))
-						.addField(ScopeQuerier.PARAMETER_NAME_TYPES_CODES, List.of("SECTION"));
+						.addField(ScopeQuerier.PARAMETER_NAME_TYPES_CODES, List.of(scopeType == null ? "SECTION" : scopeType.getCode()));
 			}
 		});
 		return dataTable;
@@ -65,6 +70,6 @@ public class ActorCreateScopesPage extends AbstractActorCreateScopesOrPrivielesP
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Ajout de domaines au compte utilisateur de "+actor.getCode()+" - "+actor.getNames();
+		return "Ajout de domaines de type "+scopeType.getName()+" au compte utilisateur de "+actor.getCode()+" - "+actor.getNames();
 	}	
 }

@@ -2,19 +2,23 @@ package ci.gouv.dgbf.system.actor.client.controller.impl;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 
+import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ActorScope;
+import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorScopeQuerier;
 import lombok.Getter;
 import lombok.Setter;
@@ -86,6 +90,22 @@ public class ActorScopeListPage extends AbstractEntityListPageContainerManagedIm
 	
 	@Getter @Setter @Accessors(chain=true)
 	public static class LazyDataModelListenerImpl extends LazyDataModel.Listener.AbstractImpl<ActorScope> implements Serializable {
-			
+		protected Actor actor;
+		protected ScopeType scopeType;
+		@Override
+		public Filter.Dto instantiateFilter(LazyDataModel<ActorScope> lazyDataModel) {
+			Filter.Dto filter = super.instantiateFilter(lazyDataModel);
+			if(actor != null) {
+				if(filter == null)
+					filter = new Filter.Dto();
+				filter.addField(ActorScopeQuerier.PARAMETER_NAME_ACTORS_CODES, List.of(actor.getCode()));
+			}
+			if(scopeType != null) {
+				if(filter == null)
+					filter = new Filter.Dto();
+				filter.addField(ActorScopeQuerier.PARAMETER_NAME_SCOPE_TYPES_CODES, List.of(scopeType.getCode()));
+			}
+			return filter;
+		}
 	}
 }
