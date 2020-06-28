@@ -1,6 +1,7 @@
 package ci.gouv.dgbf.system.actor.client.controller.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -42,33 +43,66 @@ public class PrivilegeListPage extends AbstractPageContainerManagedImpl implemen
 					.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
 							.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(PrivilegeQuerier.QUERY_IDENTIFIER_READ_ORDER_BY_CODE_ASCENDING))));			
 			//build tree
-			if(CollectionHelper.isNotEmpty(privileges)) {
-				root = new DefaultTreeNode();
-				//find roots
-				Collection<Privilege> roots = privileges.stream().filter(privilege -> StringHelper.isBlank(privilege.getParentIdentifier())).collect(Collectors.toList());
-				if(CollectionHelper.isNotEmpty(roots)) {
-					roots.forEach(privilege -> {
-						TreeNode node = new DefaultTreeNode(privilege, root);
-						instantiateChildren(node, privileges);
-					});
-				}
-			}
+			if(CollectionHelper.isNotEmpty(privileges))
+				root = instantiateTreeNode(privileges,null);
 		}		
-	}
-	
-	private void instantiateChildren(TreeNode root,Collection<Privilege> privileges) {
-		Collection<Privilege> children = privileges.stream().filter(privilege -> ((Privilege)root.getData()).getIdentifier().equals(privilege.getParentIdentifier()))
-				.collect(Collectors.toList());
-		if(CollectionHelper.isNotEmpty(children)) {
-			children.forEach(child -> {
-				TreeNode node = new DefaultTreeNode(child, root);
-				instantiateChildren(node, privileges);
-			});
-		}
 	}
 	
 	@Override
 	protected String __getWindowTitleValue__() {
 		return "Liste des privilèges";
 	}
+	
+	/**/
+	
+	public static TreeNode instantiateTreeNode(Collection<Privilege> privileges,Collection<Privilege> selected) {
+		if(CollectionHelper.isEmpty(privileges))
+			return null;
+		TreeNode root = new DefaultTreeNode();		
+		//find roots
+		Collection<Privilege> roots = privileges.stream().filter(privilege -> StringHelper.isBlank(privilege.getParentIdentifier())).collect(Collectors.toList());
+		if(CollectionHelper.isNotEmpty(roots)) {
+			roots.forEach(privilege -> {
+				if(Boolean.TRUE.equals(privilege.isSelectable(selected))) {
+					TreeNode node = new DefaultTreeNode(privilege, root);
+					instantiateChildren(node, privileges,selected);
+				}
+			});
+		}
+		return root;
+	}
+	
+	private static void instantiateChildren(TreeNode root,Collection<Privilege> privileges,Collection<Privilege> selected) {
+		Collection<Privilege> children = privileges.stream().filter(privilege -> ((Privilege)root.getData()).getIdentifier().equals(privilege.getParentIdentifier()))
+				.collect(Collectors.toList());
+		if(CollectionHelper.isNotEmpty(children)) {
+			children.forEach(child -> {
+				if(Boolean.TRUE.equals(child.isSelectable(selected))) {
+					TreeNode node = new DefaultTreeNode(child, root);
+					instantiateChildren(node, privileges,selected);	
+				}			
+			});
+		}
+	}
+	/*
+	public static void addChildNode(TreeNode root,Privilege privilege) {
+		TreeNode parent= getNodeByDataSystemIdentifier(root,privilege.getParentIdentifier());
+		if(parent == null)
+			parent = root;
+		new DefaultTreeNode(privilege, parent);
+	}
+	
+	public static TreeNode getNodeByDataSystemIdentifier(TreeNode root,String identifier) {
+		if(StringHelper.isBlank(identifier) || root == null || CollectionHelper.isEmpty(root.getChildren()))
+			return null;
+		for(TreeNode parent : root.getChildren()) {
+			if(((Privilege)parent.getData()).getIdentifier().equals(identifier))
+				return parent;
+			TreeNode node = getNodeByDataSystemIdentifier(parent,identifier);
+			if(node != null)
+				return node;
+		}
+		return null;
+	}
+	*/
 }

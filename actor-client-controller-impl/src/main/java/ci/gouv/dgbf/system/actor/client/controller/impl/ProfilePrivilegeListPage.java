@@ -78,7 +78,7 @@ public class ProfilePrivilegeListPage extends AbstractEntityListPageContainerMan
 				map.put(Column.FIELD_HEADER_TEXT, "Privilège");
 			}else if(ProfilePrivilege.FIELD_VISIBLE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Visible ?");
-				map.put(Column.FIELD_WIDTH, "150");
+				map.put(Column.FIELD_WIDTH, "80");
 			}
 			return map;
 		}

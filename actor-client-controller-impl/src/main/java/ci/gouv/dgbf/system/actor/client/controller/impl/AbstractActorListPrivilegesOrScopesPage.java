@@ -95,13 +95,17 @@ public abstract class AbstractActorListPrivilegesOrScopesPage<T> extends Abstrac
 			
 		}else {
 			actorAutoComplete.setValue(actor);
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
+			addDataComponent(cellsMaps);
 		}
 		layout = buildLayout(cellsMaps);
 	}
 	
 	protected Layout buildLayout(Collection<Map<?,?>> cellsMaps) {
 		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
+	}
+	
+	protected void addDataComponent(Collection<Map<?,?>> cellsMaps) {
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
 	}
 	
 	protected abstract String getListOutcome();
