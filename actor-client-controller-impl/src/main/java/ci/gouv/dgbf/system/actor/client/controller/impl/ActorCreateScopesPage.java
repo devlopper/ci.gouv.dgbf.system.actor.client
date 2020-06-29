@@ -25,13 +25,18 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Named @ViewScoped @Getter @Setter
-public class ActorCreateScopesPage extends AbstractActorCreateScopesOrPrivielesPage<Scope> implements Serializable {
+public class ActorCreateScopesPage extends AbstractActorCreateScopesOrPrivilegesPage<Scope> implements Serializable {
 
 	private ScopeType scopeType;
 	
 	@Override
-	protected DataTable instantiateDataTable() {
+	protected void __listenPostConstruct__() {
 		scopeType = WebController.getInstance().getRequestParameterEntityAsParent(ScopeType.class);
+		super.__listenPostConstruct__();
+	}
+	
+	@Override
+	protected DataTable instantiateDataTable() {
 		DataTable dataTable = DataTable.build(DataTable.FIELD_LAZY,Boolean.TRUE,DataTable.FIELD_ELEMENT_CLASS,Scope.class,DataTable.FIELD_SELECTION_MODE,"multiple"
 				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,List.of(Scope.FIELD_CODE,Scope.FIELD_NAME),DataTable.FIELD_LISTENER,new DataTable.Listener.AbstractImpl() {
 			@Override
@@ -70,6 +75,6 @@ public class ActorCreateScopesPage extends AbstractActorCreateScopesOrPrivielesP
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Ajout de domaines de type "+scopeType.getName()+" au compte utilisateur de "+actor.getCode()+" - "+actor.getNames();
+		return "Ajout de domaines de type <<"+scopeType.getName()+">> au compte utilisateur de "+actor.getCode()+" - "+actor.getNames();
 	}	
 }

@@ -27,8 +27,20 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>actorEditPrivilegesView</from-outcome>
+			<to-view-id>/private/actor/editprivileges.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>actorListScopesView</from-outcome>
 			<to-view-id>/private/actor/listscopes.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>actorEditScopesView</from-outcome>
+			<to-view-id>/private/actor/editscopes.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		

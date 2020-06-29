@@ -3,16 +3,20 @@ package ci.gouv.dgbf.system.actor.client.controller.impl;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
+import org.primefaces.model.DefaultTreeNode;
+import org.primefaces.model.TreeNode;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.ProfilePrivilege;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfilePrivilegeQuerier;
@@ -35,6 +39,34 @@ public class ProfilePrivilegeListPage extends AbstractEntityListPageContainerMan
 	@Override
 	protected String __getWindowTitleValue__() {
 		return "Liste des affectations";
+	}
+	
+	/**/
+	
+	public static TreeNode instantiateTreeNode(Collection<ProfilePrivilege> profilePrivileges) {
+		if(CollectionHelper.isEmpty(profilePrivileges))
+			return null;
+		TreeNode root = new DefaultTreeNode();		
+		//find roots
+		Collection<ProfilePrivilege> roots = profilePrivileges.stream().filter(profilePrivilege -> StringHelper.isBlank(profilePrivilege.getPrivilege().getParentIdentifier())).collect(Collectors.toList());
+		if(CollectionHelper.isNotEmpty(roots)) {
+			roots.forEach(profilePrivilege -> {
+				TreeNode node = new DefaultTreeNode(profilePrivilege, root);
+				instantiateChildren(node, profilePrivileges);
+			});
+		}
+		return root;
+	}
+	
+	private static void instantiateChildren(TreeNode root,Collection<ProfilePrivilege> profilePrivileges) {
+		Collection<ProfilePrivilege> children = profilePrivileges.stream().filter(profilePrivilege -> ((ProfilePrivilege)root.getData()).getPrivilege().getIdentifier().equals(profilePrivilege.getPrivilege().getParentIdentifier()))
+				.collect(Collectors.toList());
+		if(CollectionHelper.isNotEmpty(children)) {
+			children.forEach(child -> {
+				TreeNode node = new DefaultTreeNode(child, root);
+				instantiateChildren(node, profilePrivileges);
+			});
+		}
 	}
 	
 	/**/

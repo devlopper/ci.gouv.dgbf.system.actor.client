@@ -31,7 +31,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public abstract class AbstractActorListPrivilegesOrScopesPage<T> extends AbstractPageContainerManagedImpl implements Serializable {
+public abstract class AbstractActorEditPrivilegesOrScopesPage<T> extends AbstractPageContainerManagedImpl implements Serializable {
 
 	protected AutoComplete actorAutoComplete;
 	protected Actor actor;
@@ -58,7 +58,7 @@ public abstract class AbstractActorListPrivilegesOrScopesPage<T> extends Abstrac
 			protected void run(AbstractAction action) {
 				Actor actor = (Actor) FieldHelper.read(action.get__argument__(), "source.value");
 				if(actor != null)
-					JsfController.getInstance().redirect(getListOutcome(),Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(actor.getIdentifier())));
+					JsfController.getInstance().redirect(getEditOutcome(),Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(actor.getIdentifier())));
 			}			
 		});
 		actorAutoComplete.getAjaxes().get("itemSelect").setDisabled(Boolean.FALSE);
@@ -73,9 +73,8 @@ public abstract class AbstractActorListPrivilegesOrScopesPage<T> extends Abstrac
 			
 		}else {
 			actorAutoComplete.setValue(actor);
-			addOutputs(cellsMaps);
-			if(Boolean.TRUE.equals(isShowEditCommandButton()))
-				cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,CommandButton.build(getEditCommandButtonArguments()),Cell.FIELD_WIDTH,12));	
+			addInputs(cellsMaps);
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,CommandButton.build(getSaveCommandButtonArguments()),Cell.FIELD_WIDTH,12));
 		}
 		layout = buildLayout(cellsMaps);
 	}
@@ -84,18 +83,20 @@ public abstract class AbstractActorListPrivilegesOrScopesPage<T> extends Abstrac
 		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
 	}
 	
-	protected abstract String getListOutcome();
 	protected abstract String getEditOutcome();
-	protected abstract void addOutputs(Collection<Map<?,?>> cellsMaps);
-	protected Map<Object,Object> getEditCommandButtonArguments() {
+	protected abstract void addInputs(Collection<Map<?,?>> cellsMaps);
+	protected Map<Object,Object> getSaveCommandButtonArguments() {
 		Map<Object,Object> arguments = new HashMap<>();
-		arguments.put(CommandButton.FIELD_VALUE,"Modifier");
-		arguments.put(CommandButton.FIELD_ICON,"fa fa-edit");
-		arguments.put(CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.NAVIGATE_TO_VIEW);
-		arguments.put(CommandButton.FIELD___OUTCOME__,getEditOutcome());
+		arguments.put(CommandButton.FIELD_VALUE,"Enregistrer");
+		arguments.put(CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION);
+		arguments.put(CommandButton.FIELD_LISTENER,new CommandButton.Listener.AbstractImpl() {
+			@Override
+			protected Object __runExecuteFunction__(AbstractAction action) {
+				save();
+				return null;
+			}
+		});
 		return arguments;
 	}
-	protected Boolean isShowEditCommandButton() {
-		return Boolean.TRUE;
-	}
+	protected abstract void save();
 }

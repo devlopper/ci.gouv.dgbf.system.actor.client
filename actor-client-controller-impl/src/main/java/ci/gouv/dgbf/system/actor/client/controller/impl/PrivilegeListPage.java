@@ -1,7 +1,6 @@
 package ci.gouv.dgbf.system.actor.client.controller.impl;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -84,25 +83,4 @@ public class PrivilegeListPage extends AbstractPageContainerManagedImpl implemen
 			});
 		}
 	}
-	/*
-	public static void addChildNode(TreeNode root,Privilege privilege) {
-		TreeNode parent= getNodeByDataSystemIdentifier(root,privilege.getParentIdentifier());
-		if(parent == null)
-			parent = root;
-		new DefaultTreeNode(privilege, parent);
-	}
-	
-	public static TreeNode getNodeByDataSystemIdentifier(TreeNode root,String identifier) {
-		if(StringHelper.isBlank(identifier) || root == null || CollectionHelper.isEmpty(root.getChildren()))
-			return null;
-		for(TreeNode parent : root.getChildren()) {
-			if(((Privilege)parent.getData()).getIdentifier().equals(identifier))
-				return parent;
-			TreeNode node = getNodeByDataSystemIdentifier(parent,identifier);
-			if(node != null)
-				return node;
-		}
-		return null;
-	}
-	*/
 }

@@ -12,13 +12,13 @@ import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
-import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.JsfController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.ajax.Ajax;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AutoComplete;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
@@ -31,17 +31,39 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public abstract class AbstractActorListPrivilegesOrScopesPage<T> extends AbstractPageContainerManagedImpl implements Serializable {
+public abstract class AbstractActorListPrivilegesOrScopesPageOLD<T> extends AbstractPageContainerManagedImpl implements Serializable {
 
-	protected AutoComplete actorAutoComplete;
-	protected Actor actor;
 	protected Layout layout;
+	protected Actor actor;
+	protected DataTable dataTable;
+	protected AutoComplete actorAutoComplete;
 	
 	@Override
 	protected void __listenPostConstruct__() {
 		actor = WebController.getInstance().getRequestParameterEntity(Actor.class);
 		if(actor != null) {			
-			
+			dataTable = instantiateDataTable();
+			dataTable.set__parentElement__(actor);
+			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate(CommandButton.FIELD_VALUE, "Ajouter",CommandButton.FIELD_PROCESS, "@this",CommandButton.FIELD_LISTENER
+			,new CommandButton.Listener.AbstractImpl() {
+				@Override
+				protected String getOutcome(AbstractAction action) {
+					return getCreateOutcome();
+				}
+				
+				@Override
+				protected Map<String, List<String>> getViewParameters(AbstractAction action) {
+					Map<String, List<String>> parameters = super.getViewParameters(action);
+					Map<String, List<String>> __parameters__ = getCreateParameters();
+					if(MapHelper.isNotEmpty(__parameters__)) {
+						if(parameters == null)
+							parameters = new HashMap<>();
+						parameters.putAll(__parameters__);
+					}					
+					return parameters;
+				}
+			});
+			dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
 		}
 		super.__listenPostConstruct__();		
 		
@@ -73,9 +95,7 @@ public abstract class AbstractActorListPrivilegesOrScopesPage<T> extends Abstrac
 			
 		}else {
 			actorAutoComplete.setValue(actor);
-			addOutputs(cellsMaps);
-			if(Boolean.TRUE.equals(isShowEditCommandButton()))
-				cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,CommandButton.build(getEditCommandButtonArguments()),Cell.FIELD_WIDTH,12));	
+			addDataComponent(cellsMaps);
 		}
 		layout = buildLayout(cellsMaps);
 	}
@@ -84,18 +104,15 @@ public abstract class AbstractActorListPrivilegesOrScopesPage<T> extends Abstrac
 		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
 	}
 	
+	protected void addDataComponent(Collection<Map<?,?>> cellsMaps) {
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
+	}
+	
 	protected abstract String getListOutcome();
-	protected abstract String getEditOutcome();
-	protected abstract void addOutputs(Collection<Map<?,?>> cellsMaps);
-	protected Map<Object,Object> getEditCommandButtonArguments() {
-		Map<Object,Object> arguments = new HashMap<>();
-		arguments.put(CommandButton.FIELD_VALUE,"Modifier");
-		arguments.put(CommandButton.FIELD_ICON,"fa fa-edit");
-		arguments.put(CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.NAVIGATE_TO_VIEW);
-		arguments.put(CommandButton.FIELD___OUTCOME__,getEditOutcome());
-		return arguments;
+	protected abstract String getCreateOutcome();
+	protected Map<String, List<String>> getCreateParameters() {
+		return null;
 	}
-	protected Boolean isShowEditCommandButton() {
-		return Boolean.TRUE;
-	}
+	
+	protected abstract DataTable instantiateDataTable();
 }

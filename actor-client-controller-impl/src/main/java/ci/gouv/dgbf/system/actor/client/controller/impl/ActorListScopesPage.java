@@ -2,6 +2,7 @@ package ci.gouv.dgbf.system.actor.client.controller.impl;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,8 +16,10 @@ import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.client.controller.web.WebController;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import org.primefaces.model.menu.DefaultMenuItem;
@@ -36,16 +39,41 @@ public class ActorListScopesPage extends AbstractActorListPrivilegesOrScopesPage
 	private ScopeType scopeType;
 	private MenuModel tabMenu;
 	private Integer tabMenuActiveIndex;
+	private DataTable dataTable;
 	
 	@Override
-	protected void __listenPostConstruct__() {		
+	protected void addOutputs(Collection<Map<?, ?>> cellsMaps) {
 		scopeType = WebController.getInstance().getRequestParameterEntityAsParent(ScopeType.class);
 		Collection<ScopeType> scopeTypes = EntityReader.getInstance().readMany(ScopeType.class, new Arguments<ScopeType>()
 				.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
 						.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(ScopeTypeQuerier.QUERY_IDENTIFIER_READ_ORDER_BY_CODE_ASCENDING))));
 		if(scopeType == null)
 			scopeType = CollectionHelper.getFirst(scopeTypes);
-		super.__listenPostConstruct__();		
+		
+		dataTable = ActorScopeListPage.instantiateDataTable(List.of(ActorScope.FIELD_SCOPE),new DataTableListenerImpl(),new LazyDataModelListenerImpl()
+				.setActor(actor).setScopeType(scopeType));		
+		dataTable.set__parentElement__(actor);
+		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate(CommandButton.FIELD_VALUE,"Ajouter",CommandButton.FIELD_LISTENER
+				,new AbstractAction.Listener.AbstractImpl() {
+			@Override
+			protected String getOutcome(AbstractAction action) {
+				return "actorCreateScopesView";
+			}
+			@Override
+			protected Map<String, List<String>> getViewParameters(AbstractAction action) {
+				Map<String, List<String>> parameters = super.getViewParameters(action);
+				if(scopeType != null) {
+					if(parameters == null)
+						parameters = new HashMap<>();
+					parameters.put(ParameterName.stringify(ScopeType.class), List.of(scopeType.getIdentifier()));
+				}				
+				return parameters;
+			}
+		});
+		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
+		
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
+		
 		if(CollectionHelper.isNotEmpty(scopeTypes)) {		
 			tabMenu = new DefaultMenuModel();
 			tabMenuActiveIndex = ((List<ScopeType>)scopeTypes).indexOf(scopeType);	
@@ -70,9 +98,8 @@ public class ActorListScopesPage extends AbstractActorListPrivilegesOrScopesPage
 	}
 	
 	@Override
-	protected DataTable instantiateDataTable() {
-		return ActorScopeListPage.instantiateDataTable(List.of(ActorScope.FIELD_SCOPE,ActorScope.FIELD_VISIBLE),new DataTableListenerImpl(),new LazyDataModelListenerImpl()
-				.setActor(actor).setScopeType(scopeType));
+	protected Boolean isShowEditCommandButton() {
+		return Boolean.FALSE;
 	}
 	
 	@Override
@@ -86,13 +113,8 @@ public class ActorListScopesPage extends AbstractActorListPrivilegesOrScopesPage
 	}
 	
 	@Override
-	protected String getCreateOutcome() {
-		return "actorCreateScopesView";
-	}
-	
-	@Override
-	protected Map<String, List<String>> getCreateParameters() {
-		return scopeType == null ? null : Map.of(ParameterName.stringify(ScopeType.class),List.of(scopeType.getCode()));
+	protected String getEditOutcome() {
+		return "actorEditScopesView";
 	}
 	
 	/**/

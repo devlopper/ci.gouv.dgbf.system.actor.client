@@ -9,19 +9,21 @@ import java.util.stream.Collectors;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
+import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntityReader;
+import org.cyk.utility.__kernel__.controller.EntitySaver;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Tree;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
-import org.primefaces.model.DefaultTreeNode;
-import org.primefaces.model.TreeNode;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Privilege;
 import ci.gouv.dgbf.system.actor.client.controller.entities.PrivilegeType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Profile;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ProfilePrivilege;
+import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfilePrivilegeQuerier;
@@ -29,33 +31,27 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Named @ViewScoped @Getter @Setter
-public class ActorListPrivilegesPage extends AbstractActorListPrivilegesOrScopesPage<ProfilePrivilege> implements Serializable {
+public class ActorEditPrivilegesPage extends AbstractActorEditPrivilegesOrScopesPage<ProfilePrivilege> implements Serializable {
 
-	private Profile profile;
-	/*private Collection<ProfilePrivilege> profilePrivileges;
-	
-	private Collection<PrivilegeType> privilegeTypes;
-	private Collection<Privilege> availablePrivileges,selectedPrivileges;
-	*/
+	private Profile profile;	
 	private Tree availableTree,selectedTree;
 		
 	@Override
-	protected void addOutputs(Collection<Map<?, ?>> cellsMaps) {
+	protected void addInputs(Collection<Map<?, ?>> cellsMaps) {
 		profile = Helper.getProfileFromRequestParameterEntityAsParent(actor);
 		if(profile == null)
 			return;
 		
 		Collection<ProfilePrivilege> profilePrivileges = EntityReader.getInstance().readMany(ProfilePrivilege.class, ProfilePrivilegeQuerier.QUERY_IDENTIFIER_READ_BY_PROFILES_CODES
 				,ProfilePrivilegeQuerier.PARAMETER_NAME_PROFILES_CODES, List.of(profile.getCode()));
-		final Collection<Privilege> selectedPrivileges = CollectionHelper.isEmpty(profilePrivileges) ? null : profilePrivileges.stream().map(x -> x.getPrivilege()).collect(Collectors.toSet());
-		if(CollectionHelper.isNotEmpty(selectedPrivileges)) {
+		Collection<Privilege> selectedPrivileges = CollectionHelper.isEmpty(profilePrivileges) ? null : profilePrivileges.stream().map(x -> x.getPrivilege()).collect(Collectors.toSet());	
+		
+		if(CollectionHelper.isNotEmpty(selectedPrivileges)) {							
 			Collection<Privilege> parents = EntityReader.getInstance().readMany(Privilege.class, PrivilegeQuerier.QUERY_IDENTIFIER_READ_PARENTS_BY_CHILDREN_CODES
-				,PrivilegeQuerier.PARAMETER_NAME_CHILDREN_CODES, profilePrivileges.stream().map(x -> x.getPrivilege().getCode()).collect(Collectors.toList()));
-			if(CollectionHelper.isNotEmpty(parents)) {						
-				profilePrivileges.addAll(parents.stream()
-						.filter(parent -> !selectedPrivileges.contains(parent))
-						.map(x -> new ProfilePrivilege().setProfile(profile).setPrivilege(x)).collect(Collectors.toList()));
+				,PrivilegeQuerier.PARAMETER_NAME_CHILDREN_CODES, selectedPrivileges.stream().map(x -> x.getCode()).collect(Collectors.toList()));
+			if(CollectionHelper.isNotEmpty(parents)) {
 				selectedPrivileges.addAll(parents);
+				profilePrivileges.addAll(parents.stream().map(x -> new ProfilePrivilege().setPrivilege(x)).collect(Collectors.toList()));
 			}
 		}		
 		
@@ -66,7 +62,8 @@ public class ActorListPrivilegesPage extends AbstractActorListPrivilegesOrScopes
 			Privilege.processCollectChildren(availablePrivileges);
 			
 			availableTree = Tree.build(Tree.FIELD_VALUE,PrivilegeListPage.instantiateTreeNode(availablePrivileges,selectedPrivileges)
-					,Tree.ConfiguratorImpl.FIELD_TITLE_VALUE,"Disponible"
+					,Tree.ConfiguratorImpl.FIELD_TITLE_VALUE,"Disponible",Tree.FIELD_SELECTION_MODE,"checkbox"
+					,Tree.FIELD_PROPAGATE_SELECTION_UP,Boolean.TRUE,Tree.FIELD_PROPAGATE_SELECTION_DOWN,Boolean.TRUE
 					,Tree.FIELD_LISTENER,new Tree.Listener.AbstractImpl<Privilege>() {
 									
 				@Override
@@ -75,8 +72,10 @@ public class ActorListPrivilegesPage extends AbstractActorListPrivilegesOrScopes
 				}
 			});
 			
-			selectedTree = Tree.build(Tree.FIELD_VALUE,instantiateTreeNode(profilePrivileges),Tree.ConfiguratorImpl.FIELD_TITLE_VALUE,"Accordés"
+			selectedTree = Tree.build(Tree.FIELD_VALUE,ProfilePrivilegeListPage.instantiateTreeNode(profilePrivileges),Tree.ConfiguratorImpl.FIELD_TITLE_VALUE,"Accordés"
+					,Tree.FIELD_SELECTION_MODE,"checkbox",Tree.FIELD_PROPAGATE_SELECTION_UP,Boolean.TRUE,Tree.FIELD_PROPAGATE_SELECTION_DOWN,Boolean.TRUE
 					,Tree.FIELD_LISTENER,new Tree.Listener.AbstractImpl<ProfilePrivilege>() {
+				
 				@Override
 				public Boolean isParent(ProfilePrivilege data1, ProfilePrivilege data2) {
 					return data1 != null && data2 != null && data1.getPrivilege() != null && data2.getPrivilege() != null 
@@ -100,12 +99,7 @@ public class ActorListPrivilegesPage extends AbstractActorListPrivilegesOrScopes
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Liste des privilèges";
-	}
-	
-	@Override
-	protected String getListOutcome() {
-		return "actorListPrivilegesView";
+		return "Assignation des privilèges";
 	}
 	
 	@Override
@@ -113,31 +107,15 @@ public class ActorListPrivilegesPage extends AbstractActorListPrivilegesOrScopes
 		return "actorEditPrivilegesView";
 	}
 	
-	/**/
-	
-	public static TreeNode instantiateTreeNode(Collection<ProfilePrivilege> profilePrivileges) {
-		if(CollectionHelper.isEmpty(profilePrivileges))
-			return null;
-		TreeNode root = new DefaultTreeNode();		
-		//find roots
-		Collection<ProfilePrivilege> roots = profilePrivileges.stream().filter(profilePrivilege -> StringHelper.isBlank(profilePrivilege.getPrivilege().getParentIdentifier())).collect(Collectors.toList());
-		if(CollectionHelper.isNotEmpty(roots)) {
-			roots.forEach(profilePrivilege -> {
-				TreeNode node = new DefaultTreeNode(profilePrivilege, root);
-				instantiateChildren(node, profilePrivileges);
-			});
-		}
-		return root;
-	}
-	
-	private static void instantiateChildren(TreeNode root,Collection<ProfilePrivilege> profilePrivileges) {
-		Collection<ProfilePrivilege> children = profilePrivileges.stream().filter(profilePrivilege -> ((ProfilePrivilege)root.getData()).getPrivilege().getIdentifier().equals(profilePrivilege.getPrivilege().getParentIdentifier()))
-				.collect(Collectors.toList());
-		if(CollectionHelper.isNotEmpty(children)) {
-			children.forEach(child -> {
-				TreeNode node = new DefaultTreeNode(child, root);
-				instantiateChildren(node, profilePrivileges);
-			});
-		}
+	@Override
+	protected void save() {
+		Arguments<ProfilePrivilege> arguments = new Arguments<ProfilePrivilege>();
+		arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(ProfilePrivilegeBusiness.SAVE));
+		if(ArrayHelper.isNotEmpty(availableTree.getSelection()))
+			arguments.setCreatables(availableTree.getSelectionDatas(Privilege.class).stream().map(x -> new ProfilePrivilege().setProfile(profile).setPrivilege(x)).collect(Collectors.toList()));
+		if(ArrayHelper.isNotEmpty(selectedTree.getSelection()))
+			arguments.setDeletables(selectedTree.getSelectionDatas(ProfilePrivilege.class).stream()
+					.filter(x -> x.getProfile() != null && StringHelper.isNotBlank(x.getIdentifier())).collect(Collectors.toList()));
+		EntitySaver.getInstance().save(ProfilePrivilege.class, arguments);
 	}
 }
