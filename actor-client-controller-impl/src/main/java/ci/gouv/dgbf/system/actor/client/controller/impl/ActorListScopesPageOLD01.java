@@ -15,7 +15,6 @@ import org.cyk.utility.__kernel__.controller.EntityReader;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
@@ -27,19 +26,15 @@ import org.primefaces.model.menu.DefaultMenuItem;
 import org.primefaces.model.menu.DefaultMenuModel;
 import org.primefaces.model.menu.MenuModel;
 
-import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ActorScope;
-import ci.gouv.dgbf.system.actor.client.controller.entities.Scope;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
-import ci.gouv.dgbf.system.actor.client.controller.impl.ScopeListPage.LazyDataModelListenerImpl;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
 @Named @ViewScoped @Getter @Setter
-public class ActorListScopesPage extends AbstractActorListPrivilegesOrScopesPage<Scope> implements Serializable {
+public class ActorListScopesPageOLD01 extends AbstractActorListPrivilegesOrScopesPage<ActorScope> implements Serializable {
 
 	private ScopeType scopeType;
 	private MenuModel tabMenu;
@@ -55,7 +50,7 @@ public class ActorListScopesPage extends AbstractActorListPrivilegesOrScopesPage
 		if(scopeType == null)
 			scopeType = CollectionHelper.getFirst(scopeTypes);
 		
-		dataTable = ScopeListPage.instantiateDataTable(List.of(Scope.FIELD_CODE,Scope.FIELD_NAME),new DataTableListenerImpl(),new LazyDataModelListenerImpl()
+		dataTable = ActorScopeListPage.instantiateDataTable(List.of(ActorScope.FIELD_SCOPE),new DataTableListenerImpl(),new LazyDataModelListenerImpl()
 				.setActor(actor).setScopeType(scopeType));
 		dataTable.set__parentElement__(actor);
 		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate(CommandButton.FIELD_VALUE,"Ajouter",CommandButton.FIELD_LISTENER
@@ -75,7 +70,7 @@ public class ActorListScopesPage extends AbstractActorListPrivilegesOrScopesPage
 				return parameters;
 			}
 		});
-		//dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
+		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
 		
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
 		
@@ -124,36 +119,18 @@ public class ActorListScopesPage extends AbstractActorListPrivilegesOrScopesPage
 	
 	/**/
 	
-	public class DataTableListenerImpl extends ScopeListPage.DataTableListenerImpl implements Serializable{
+	public class DataTableListenerImpl extends ActorScopeListPage.DataTableListenerImpl implements Serializable{
 		
 	}
 	
-	@Getter @Setter @Accessors(chain=true)
-	public static class LazyDataModelListenerImpl extends ScopeListPage.LazyDataModelListenerImpl implements Serializable {		
-		private Actor actor;
-		
+	public static class LazyDataModelListenerImpl extends ActorScopeListPage.LazyDataModelListenerImpl implements Serializable {		
 		@Override
-		public Filter.Dto instantiateFilter(LazyDataModel<Scope> lazyDataModel) {
-			Filter.Dto filter = super.instantiateFilter(lazyDataModel);
-			if(actor != null) {
-				if(filter == null)
-					filter = new Filter.Dto();
-				if(scopeType.getCode().equals(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_SECTION)) {
-					filter = new Filter.Dto();
-					filter.addField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actor.getCode());
-				}else
-					filter.addField(ScopeQuerier.PARAMETER_NAME_ACTORS_CODES, List.of(actor.getCode()));
-			}
-			return filter;
-		}
-		
-		@Override
-		public Arguments<Scope> instantiateArguments(LazyDataModel<Scope> lazyDataModel) {
-			Arguments<Scope> arguments = super.instantiateArguments(lazyDataModel);
+		public Arguments<ActorScope> instantiateArguments(LazyDataModel<ActorScope> lazyDataModel) {
+			Arguments<ActorScope> arguments = super.instantiateArguments(lazyDataModel);
 			if(scopeType.getCode().equals(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_SECTION))
-				arguments.getRepresentationArguments().getQueryExecutorArguments().setQueryIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_VISIBLE_SESSIONS_BY_ACTOR_CODE);
+				arguments.getRepresentationArguments().getQueryExecutorArguments().setQueryIdentifier(ActorScopeQuerier.QUERY_IDENTIFIER_READ_BY_ACTORS_CODES_BY_SCOPE_TYPES_CODES);
 			else
-				arguments.getRepresentationArguments().getQueryExecutorArguments().setQueryIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_BY_ACTORS_CODES_BY_TYPES_CODES);
+				arguments.getRepresentationArguments().getQueryExecutorArguments().setQueryIdentifier(ActorScopeQuerier.QUERY_IDENTIFIER_READ_BY_ACTORS_CODES_BY_SCOPE_TYPES_CODES);
 			return arguments;
 		}
 	}
