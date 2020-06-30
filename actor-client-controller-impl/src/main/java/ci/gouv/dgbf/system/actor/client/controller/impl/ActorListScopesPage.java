@@ -5,17 +5,21 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
+import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntityReader;
+import org.cyk.utility.__kernel__.controller.EntitySaver;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
@@ -27,13 +31,19 @@ import org.primefaces.model.menu.DefaultMenuItem;
 import org.primefaces.model.menu.DefaultMenuModel;
 import org.primefaces.model.menu.MenuModel;
 
+import ci.gouv.dgbf.system.actor.client.controller.api.ActorScopeController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ActorScope;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Privilege;
+import ci.gouv.dgbf.system.actor.client.controller.entities.ProfilePrivilege;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Scope;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
 import ci.gouv.dgbf.system.actor.client.controller.impl.ScopeListPage.LazyDataModelListenerImpl;
+import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
+import ci.gouv.dgbf.system.actor.server.representation.api.ActorScopeRepresentation;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -75,7 +85,22 @@ public class ActorListScopesPage extends AbstractActorListPrivilegesOrScopesPage
 				return parameters;
 			}
 		});
-		//dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
+		
+		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Supprimer", "fa fa-remove", new AbstractAction.Listener.AbstractImpl() {
+			@Override
+			protected Object __runExecuteFunction__(AbstractAction action) {
+				super.__runExecuteFunction__(action);
+				Scope scope = (Scope) action.get__argument__();
+				__inject__(ActorScopeController.class).deleteByActorByScopes(actor, List.of(scope));
+				/*
+				Arguments<Scope> arguments = new Arguments<Scope>();
+				arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(ActorScopeBusiness.DELETE_BY_ACTOR_BY_SCOPES));
+				arguments.setDeletables(List.of(scope));
+				EntitySaver.getInstance().save(Scope.class, arguments);
+				*/
+				return null;
+			}
+		});
 		
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
 		

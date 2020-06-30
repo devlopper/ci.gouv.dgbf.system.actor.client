@@ -10,9 +10,13 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntitySaver;
 
+import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
+import ci.gouv.dgbf.system.actor.server.representation.api.ActorScopeRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfilePrivilegeRepresentation;
+import ci.gouv.dgbf.system.actor.server.representation.entities.ActorDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ProfilePrivilegeDto;
+import ci.gouv.dgbf.system.actor.server.representation.entities.ScopeDto;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
 public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Serializable {
@@ -22,6 +26,8 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 		if(arguments.getRepresentationArguments() != null) {
 			if(ProfilePrivilegeBusiness.SAVE.equals(arguments.getRepresentationArguments().getActionIdentifier()) && arguments.getRepresentation() == null)
 				arguments.setRepresentation(ProfilePrivilegeRepresentation.getProxy());
+			else if(ActorScopeBusiness.DELETE_BY_ACTOR_BY_SCOPES.equals(arguments.getRepresentationArguments().getActionIdentifier()) && arguments.getRepresentation() == null)
+				arguments.setRepresentation(ActorScopeRepresentation.getProxy());
 		}
 		super.prepare(controllerEntityClass, arguments);
 	}
@@ -40,6 +46,16 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				for(Object index : deletables)
 					dtos.add(((ProfilePrivilegeDto) index).set__deletable__(Boolean.TRUE));
 			return ((ProfilePrivilegeRepresentation)representation).save(dtos);
+		}if(arguments != null && ActorScopeBusiness.DELETE_BY_ACTOR_BY_SCOPES.equals(arguments.getActionIdentifier())) {
+			ActorDto actor = null;
+			Collection<ScopeDto> scopes = new ArrayList<>();
+			if(CollectionHelper.isNotEmpty(deletables))
+				for(Object index : deletables) {
+					ScopeDto scope = ((ScopeDto) index).set__deletable__(Boolean.TRUE);
+					actor = scope.getActor();
+					scopes.add(scope.setActor(actor));
+				}
+			return ((ActorScopeRepresentation)representation).deleteByScopes(scopes);
 		}
 		return super.save(representation, creatables, updatables, deletables, arguments);
 	}

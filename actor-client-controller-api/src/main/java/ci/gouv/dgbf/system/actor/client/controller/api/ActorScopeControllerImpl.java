@@ -4,8 +4,9 @@ import java.io.Serializable;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import ci.gouv.dgbf.system.actor.client.controller.entities.ActorScope;
 import org.cyk.utility.client.controller.AbstractControllerEntityImpl;
+
+import ci.gouv.dgbf.system.actor.client.controller.entities.ActorScope;
 
 @ApplicationScoped
 public class ActorScopeControllerImpl extends AbstractControllerEntityImpl<ActorScope> implements ActorScopeController,Serializable {
