@@ -99,6 +99,18 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>profileListPrivilegesView</from-outcome>
+			<to-view-id>/private/profile/listprivileges.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>profileEditPrivilegesView</from-outcome>
+			<to-view-id>/private/profile/editprivileges.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>profileTypeListView</from-outcome>
 			<to-view-id>/private/profiletype/list.jsf</to-view-id>
 			<redirect />

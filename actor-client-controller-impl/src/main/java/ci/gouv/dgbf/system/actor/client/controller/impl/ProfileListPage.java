@@ -87,7 +87,8 @@ public class ProfileListPage extends AbstractEntityListPageContainerManagedImpl<
 				}
 			});
 			dataTable.addRecordMenuItemByArgumentsOpenViewInDialogUpdate();
-			dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();	
+			dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
+			dataTable.addRecordMenuItemByArgumentsNavigateToView(null,"profileListPrivilegesView", CommandButton.FIELD_VALUE,"Privilèges");
 		}
 			
 		@SuppressWarnings("unchecked")
