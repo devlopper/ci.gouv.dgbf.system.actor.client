@@ -40,7 +40,7 @@ public class ScopeTypeListPage extends AbstractEntityListPageContainerManagedImp
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Liste des types de privilèges";
+		return "Liste des types de domaines";
 	}
 	
 	@SuppressWarnings("unchecked")

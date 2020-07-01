@@ -22,7 +22,7 @@
 		<cyk.variable.user.interface.theme.primefaces>atlantis-blue</cyk.variable.user.interface.theme.primefaces>
 		<cyk.variable.user.interface.theme.class.name>org.cyk.user.interface_.theme.web.jsf.primefaces.atlantis.dgbf.DesktopDefault</cyk.variable.user.interface.theme.class.name>
 		<cyk.variable.user.interface.theme.jsf.contract>org.cyk.jee.user.interface.theme.web.jsf.primefaces.atlantis.dgbf.desktop.default</cyk.variable.user.interface.theme.jsf.contract>
-		<cyk.variable.user.interface.theme.menu.identifier>SECU</cyk.variable.user.interface.theme.menu.identifier>
+		<cyk.variable.user.interface.theme.menu.identifier>SIIBC-ACTEUR</cyk.variable.user.interface.theme.menu.identifier>
 
 		<!-- Development -->
 
