@@ -7,9 +7,6 @@ import org.cyk.utility.__kernel__.icon.Icon;
 import org.cyk.utility.client.controller.component.menu.MenuBuilder;
 import org.cyk.utility.client.controller.component.menu.MenuItemBuilder;
 
-import ci.gouv.dgbf.system.actor.client.controller.entities.Scope;
-import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
-
 @ci.gouv.dgbf.system.actor.server.annotation.System
 public class MenuBuilderMapInstantiatorImpl extends org.cyk.utility.client.controller.component.menu.AbstractMenuBuilderMapInstantiatorImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -20,6 +17,11 @@ public class MenuBuilderMapInstantiatorImpl extends org.cyk.utility.client.contr
 				__inject__(MenuItemBuilder.class).setCommandableName("Gestion des privilèges").setCommandableIcon(Icon.SUITCASE)
 				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Privilèges").setCommandableNavigationIdentifier("privilegeListView"))
 				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Type de privilèges").setCommandableNavigationIdentifier("privilegeTypeListView"))
+				,__inject__(MenuItemBuilder.class).setCommandableName("Gestion des profiles").setCommandableIcon(Icon.FILE)
+				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Profiles").setCommandableNavigationIdentifier("profileListView"))
+				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Type de profile").setCommandableNavigationIdentifier("profileTypeListView"))
+				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Fonctions").setCommandableNavigationIdentifier("functionListView"))
+				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Type de fonctions").setCommandableNavigationIdentifier("functionTypeListView"))
 				,/*__inject__(MenuItemBuilder.class).setCommandableName("Gestion des profiles").setCommandableIcon(Icon.FILE)
 					.listOrTree(Profile.class,ProfileType.class,Function.class,FunctionType.class)
 				*/__inject__(MenuItemBuilder.class).setCommandableName("Gestion des visibilités").setCommandableIcon(Icon.EYE)

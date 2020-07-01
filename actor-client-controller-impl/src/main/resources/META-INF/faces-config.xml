@@ -80,19 +80,29 @@
 			<redirect />
 		</navigation-case>
 		
-		<!--
 		<navigation-case>
-			<from-outcome>profileEditPrivilegesView</from-outcome>
-			<to-view-id>/private/profile/editprivileges.jsf</to-view-id>
+			<from-outcome>profileListView</from-outcome>
+			<to-view-id>/private/profile/list.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		
 		<navigation-case>
-			<from-outcome>profilePrivilegeCreateView</from-outcome>
-			<to-view-id>/private/profileprivilege/create.jsf</to-view-id>
+			<from-outcome>profileTypeListView</from-outcome>
+			<to-view-id>/private/profiletype/list.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
-		-->
+		
+		<navigation-case>
+			<from-outcome>functionListView</from-outcome>
+			<to-view-id>/private/function/list.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>functionTypeListView</from-outcome>
+			<to-view-id>/private/functiontype/list.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
 	</navigation-rule>
 
 </faces-config>

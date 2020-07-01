@@ -13,4 +13,6 @@ import lombok.experimental.Accessors;
 public class Function extends AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	private FunctionType type;
+	
 }
