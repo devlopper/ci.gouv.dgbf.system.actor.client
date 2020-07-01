@@ -67,8 +67,10 @@ public abstract class AbstractActorEditPrivilegesOrScopesPage<T> extends Abstrac
 		actorAutoComplete.setCountQueryIdentifier(ActorQuerier.QUERY_NAME_COUNT_BY_STRING);
 		
 		Collection<Map<?,?>> cellsMaps = new ArrayList<Map<?,?>>(); 
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Compte utilisateur"),Cell.FIELD_WIDTH,2));
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,actorAutoComplete,Cell.FIELD_WIDTH,10));	
+		if(!Boolean.TRUE.equals(isRenderTypeDialog)) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Compte utilisateur"),Cell.FIELD_WIDTH,2));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,actorAutoComplete,Cell.FIELD_WIDTH,10));	
+		}		
 		if(actor == null) {
 			
 		}else {
@@ -84,18 +86,24 @@ public abstract class AbstractActorEditPrivilegesOrScopesPage<T> extends Abstrac
 	}
 	
 	protected abstract String getEditOutcome();
+	protected abstract String getListOutcome();
 	protected abstract void addInputs(Collection<Map<?,?>> cellsMaps);
 	protected Map<Object,Object> getSaveCommandButtonArguments() {
 		Map<Object,Object> arguments = new HashMap<>();
 		arguments.put(CommandButton.FIELD_VALUE,"Enregistrer");
+		arguments.put(CommandButton.FIELD_ICON,"fa fa-floppy-o");
 		arguments.put(CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION);
 		arguments.put(CommandButton.FIELD_LISTENER,new CommandButton.Listener.AbstractImpl() {
 			@Override
 			protected Object __runExecuteFunction__(AbstractAction action) {
 				save();
+				if(!Boolean.TRUE.equals(action.get__isWindowContainerRenderedAsDialog__())) {
+					JsfController.getInstance().redirect(getListOutcome(),Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(actor.getIdentifier())));
+				}				
 				return null;
 			}
 		});
+		arguments.put(CommandButton.FIELD_STYLE_CLASS,"cyk-float-right");
 		return arguments;
 	}
 	protected abstract void save();

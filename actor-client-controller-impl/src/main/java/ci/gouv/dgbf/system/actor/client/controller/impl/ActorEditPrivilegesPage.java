@@ -47,12 +47,20 @@ public class ActorEditPrivilegesPage extends AbstractActorEditPrivilegesOrScopes
 		Collection<Privilege> selectedPrivileges = CollectionHelper.isEmpty(profilePrivileges) ? null : profilePrivileges.stream().map(x -> x.getPrivilege()).collect(Collectors.toSet());	
 		
 		if(CollectionHelper.isNotEmpty(selectedPrivileges)) {							
-			Collection<Privilege> parents = EntityReader.getInstance().readMany(Privilege.class, PrivilegeQuerier.QUERY_IDENTIFIER_READ_PARENTS_BY_CHILDREN_CODES
-				,PrivilegeQuerier.PARAMETER_NAME_CHILDREN_CODES, selectedPrivileges.stream().map(x -> x.getCode()).collect(Collectors.toList()));
+			Collection<Privilege> parents = EntityReader.getInstance().readMany(Privilege.class, PrivilegeQuerier.QUERY_IDENTIFIER_READ_PARENTS_BY_CHILDREN_IDENTIFIERS
+				,PrivilegeQuerier.PARAMETER_NAME_CHILDREN_IDENTIFIERS, selectedPrivileges.stream().map(x -> x.getIdentifier()).collect(Collectors.toList()));
+			if(CollectionHelper.isNotEmpty(parents)) {						
+				profilePrivileges.addAll(parents.stream()
+						.filter(parent -> !selectedPrivileges.contains(parent))
+						.map(x -> new ProfilePrivilege().setProfile(profile).setPrivilege(x)).collect(Collectors.toList()));
+				selectedPrivileges.addAll(parents);
+			}
+			/*
 			if(CollectionHelper.isNotEmpty(parents)) {
 				selectedPrivileges.addAll(parents);
 				profilePrivileges.addAll(parents.stream().map(x -> new ProfilePrivilege().setPrivilege(x)).collect(Collectors.toList()));
 			}
+			*/			
 		}		
 		
 		Collection<PrivilegeType> privilegeTypes = EntityReader.getInstance().readMany(PrivilegeType.class, PrivilegeTypeQuerier.QUERY_IDENTIFIER_READ_ORDER_BY_ORDER_NUMBER_ASCENDING);
@@ -105,6 +113,11 @@ public class ActorEditPrivilegesPage extends AbstractActorEditPrivilegesOrScopes
 	@Override
 	protected String getEditOutcome() {
 		return "actorEditPrivilegesView";
+	}
+	
+	@Override
+	protected String getListOutcome() {
+		return "actorListPrivilegesView";
 	}
 	
 	@Override

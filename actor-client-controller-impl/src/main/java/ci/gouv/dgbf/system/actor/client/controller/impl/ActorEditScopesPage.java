@@ -36,6 +36,11 @@ public class ActorEditScopesPage extends AbstractActorEditPrivilegesOrScopesPage
 	}
 	
 	@Override
+	protected String getListOutcome() {
+		return "actorListPrivilegesView";
+	}
+	
+	@Override
 	protected void save() {
 		
 	}

@@ -163,7 +163,8 @@ public class ActorListScopesPage extends AbstractActorListPrivilegesOrScopesPage
 			if(actor != null) {
 				if(filter == null)
 					filter = new Filter.Dto();
-				if(scopeType.getCode().equals(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_SECTION)) {
+				if(scopeType.getCode().equals(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_SECTION) || 
+						scopeType.getCode().equals(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_UA)) {
 					filter = new Filter.Dto();
 					filter.addField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actor.getCode());
 				}else
@@ -176,7 +177,9 @@ public class ActorListScopesPage extends AbstractActorListPrivilegesOrScopesPage
 		public Arguments<Scope> instantiateArguments(LazyDataModel<Scope> lazyDataModel) {
 			Arguments<Scope> arguments = super.instantiateArguments(lazyDataModel);
 			if(scopeType.getCode().equals(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_SECTION))
-				arguments.getRepresentationArguments().getQueryExecutorArguments().setQueryIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_VISIBLE_SESSIONS_BY_ACTOR_CODE);
+				arguments.getRepresentationArguments().getQueryExecutorArguments().setQueryIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE);
+			else if(scopeType.getCode().equals(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_UA))
+				arguments.getRepresentationArguments().getQueryExecutorArguments().setQueryIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE);
 			else
 				arguments.getRepresentationArguments().getQueryExecutorArguments().setQueryIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_BY_ACTORS_CODES_BY_TYPES_CODES);
 			return arguments;

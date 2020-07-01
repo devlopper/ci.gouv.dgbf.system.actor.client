@@ -48,7 +48,7 @@ public class ActorListPage extends AbstractEntityListPageContainerManagedImpl<Ac
 				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,columnsFieldsNames,DataTable.FIELD_LISTENER,listener);
 		
 		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();
-		dataTable.addRecordMenuItemByArgumentsOpenViewInDialogRead();
+		//dataTable.addRecordMenuItemByArgumentsOpenViewInDialogRead();
 		
 		LazyDataModel<Actor> lazyDataModel = (LazyDataModel<Actor>) dataTable.getValue();
 		lazyDataModel.setReaderUsable(Boolean.TRUE);

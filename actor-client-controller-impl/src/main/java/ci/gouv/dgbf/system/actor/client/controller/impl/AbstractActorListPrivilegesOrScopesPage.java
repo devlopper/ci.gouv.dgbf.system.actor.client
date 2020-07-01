@@ -93,6 +93,10 @@ public abstract class AbstractActorListPrivilegesOrScopesPage<T> extends Abstrac
 		arguments.put(CommandButton.FIELD_ICON,"fa fa-edit");
 		arguments.put(CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.NAVIGATE_TO_VIEW);
 		arguments.put(CommandButton.FIELD___OUTCOME__,getEditOutcome());
+		arguments.put(CommandButton.FIELD___ARGUMENT__,actor);
+		arguments.put(CommandButton.FIELD___PARAMETERS__,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(actor.getIdentifier())));
+		//arguments.put(CommandButton.FIELD_STYLE,"float:right");
+		arguments.put(CommandButton.FIELD_STYLE_CLASS,"cyk-float-right");
 		return arguments;
 	}
 	protected Boolean isShowEditCommandButton() {

@@ -2,6 +2,7 @@ package ci.gouv.dgbf.system.actor.client.controller.impl;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -11,9 +12,12 @@ import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.EntityReader;
+import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Tree;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
@@ -47,10 +51,11 @@ public class ActorListPrivilegesPage extends AbstractActorListPrivilegesOrScopes
 		
 		Collection<ProfilePrivilege> profilePrivileges = EntityReader.getInstance().readMany(ProfilePrivilege.class, ProfilePrivilegeQuerier.QUERY_IDENTIFIER_READ_BY_PROFILES_CODES
 				,ProfilePrivilegeQuerier.PARAMETER_NAME_PROFILES_CODES, List.of(profile.getCode()));
+		
 		final Collection<Privilege> selectedPrivileges = CollectionHelper.isEmpty(profilePrivileges) ? null : profilePrivileges.stream().map(x -> x.getPrivilege()).collect(Collectors.toSet());
 		if(CollectionHelper.isNotEmpty(selectedPrivileges)) {
-			Collection<Privilege> parents = EntityReader.getInstance().readMany(Privilege.class, PrivilegeQuerier.QUERY_IDENTIFIER_READ_PARENTS_BY_CHILDREN_CODES
-				,PrivilegeQuerier.PARAMETER_NAME_CHILDREN_CODES, profilePrivileges.stream().map(x -> x.getPrivilege().getCode()).collect(Collectors.toList()));
+			Collection<Privilege> parents = EntityReader.getInstance().readMany(Privilege.class, PrivilegeQuerier.QUERY_IDENTIFIER_READ_PARENTS_BY_CHILDREN_IDENTIFIERS
+				,PrivilegeQuerier.PARAMETER_NAME_CHILDREN_IDENTIFIERS, profilePrivileges.stream().map(x -> x.getPrivilege().getIdentifier()).collect(Collectors.toList()));
 			if(CollectionHelper.isNotEmpty(parents)) {						
 				profilePrivileges.addAll(parents.stream()
 						.filter(parent -> !selectedPrivileges.contains(parent))
@@ -111,6 +116,27 @@ public class ActorListPrivilegesPage extends AbstractActorListPrivilegesOrScopes
 	@Override
 	protected String getEditOutcome() {
 		return "actorEditPrivilegesView";
+	}
+	
+	@Override
+	protected Map<Object, Object> getEditCommandButtonArguments() {
+		Map<Object, Object> arguments = super.getEditCommandButtonArguments();
+		arguments.put(CommandButton.FIELD_LISTENER, new AbstractAction.Listener.AbstractImpl() {
+			@Override
+			protected Map<String, List<String>> getViewParameters(AbstractAction action) {
+				Map<String, List<String>> map = new HashMap<String, List<String>>();
+				map.put(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(actor.getIdentifier()));
+				return map;
+			}
+			
+			@Override
+			protected void runNavigateToView(AbstractAction action) {
+				action.set__argument__(actor);
+				super.runNavigateToView(action);
+			}
+		});
+		//arguments.put(CommandButton.FIELD_UPDATE, value);
+		return arguments;
 	}
 	
 	/**/
