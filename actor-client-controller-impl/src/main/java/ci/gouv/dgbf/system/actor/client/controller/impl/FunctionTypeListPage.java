@@ -46,7 +46,8 @@ public class FunctionTypeListPage extends AbstractEntityListPageContainerManaged
 		}
 		
 		DataTable dataTable = DataTable.build(DataTable.FIELD_LAZY,Boolean.TRUE,DataTable.FIELD_ELEMENT_CLASS,FunctionType.class
-				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,columnsFieldsNames,DataTable.FIELD_LISTENER,listener);
+				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,columnsFieldsNames,DataTable.FIELD_LISTENER,listener
+				,DataTable.FIELD_STYLE_CLASS,"cyk-ui-datatable-footer-visibility-hidden");
 		
 		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();
 		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
@@ -75,7 +76,7 @@ public class FunctionTypeListPage extends AbstractEntityListPageContainerManaged
 			map.put(Column.ConfiguratorImpl.FIELD_EDITABLE, Boolean.FALSE);
 			if(FunctionType.FIELD_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Code");
-				map.put(Column.FIELD_WIDTH, "100");
+				map.put(Column.FIELD_WIDTH, "200");
 			}else if(FunctionType.FIELD_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Libellé");
 			}

@@ -69,6 +69,12 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>scopeTypeEditView</from-outcome>
+			<to-view-id>/private/scopetype/edit.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>privilegeListView</from-outcome>
 			<to-view-id>/private/privilege/list.jsf</to-view-id>
 			<redirect />
@@ -87,6 +93,12 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>profileEditView</from-outcome>
+			<to-view-id>/private/profile/edit.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>profileTypeListView</from-outcome>
 			<to-view-id>/private/profiletype/list.jsf</to-view-id>
 			<redirect />
@@ -99,8 +111,20 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>functionEditView</from-outcome>
+			<to-view-id>/private/function/edit.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>functionTypeListView</from-outcome>
 			<to-view-id>/private/functiontype/list.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>functionTypeEditView</from-outcome>
+			<to-view-id>/private/functiontype/edit.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 	</navigation-rule>

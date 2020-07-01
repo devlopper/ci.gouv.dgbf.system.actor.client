@@ -47,7 +47,9 @@ public class PrivilegeTypeListPage extends AbstractEntityListPageContainerManage
 		}
 		
 		DataTable dataTable = DataTable.build(DataTable.FIELD_LAZY,Boolean.TRUE,DataTable.FIELD_ELEMENT_CLASS,PrivilegeType.class
-				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,columnsFieldsNames,DataTable.FIELD_LISTENER,listener);
+				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,columnsFieldsNames,DataTable.FIELD_LISTENER,listener
+				,DataTable.FIELD_STYLE_CLASS,"cyk-ui-datatable-header-visibility-hidden cyk-ui-datatable-footer-visibility-hidden"
+				);
 		
 		//dataTable.addRecordMenuItemByArgumentsOpenViewInDialogRead();
 		

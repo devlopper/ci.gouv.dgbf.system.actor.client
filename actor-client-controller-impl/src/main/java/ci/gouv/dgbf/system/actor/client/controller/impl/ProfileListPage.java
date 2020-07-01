@@ -2,6 +2,7 @@ package ci.gouv.dgbf.system.actor.client.controller.impl;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,10 +16,12 @@ import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.client.controller.web.WebController;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 import org.primefaces.model.menu.DefaultMenuItem;
 import org.primefaces.model.menu.DefaultMenuModel;
@@ -65,7 +68,24 @@ public class ProfileListPage extends AbstractEntityListPageContainerManagedImpl<
 	protected DataTable __buildDataTable__() {
 		DataTable dataTable = instantiateDataTable(null,null,new LazyDataModelListenerImpl().setProfileType(profileType));
 		if(profileType == null || profileType.getCode().equals(ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType.CODE_SYSTEME)) {
-			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();
+			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate(CommandButton.FIELD_LISTENER
+					,new CommandButton.Listener.AbstractImpl() {
+				@Override
+				protected Map<String, List<String>> getViewParameters(AbstractAction action) {
+					Map<String, List<String>> parameters = super.getViewParameters(action);
+					if(profileType != null) {
+						if(parameters == null)
+							parameters = new HashMap<>();
+						parameters.put(ParameterName.stringify(ProfileType.class), List.of(((ProfileType)profileType).getIdentifier()));
+					}					
+					return parameters;
+				}
+				
+				@Override
+				protected String getOutcome(AbstractAction action) {
+					return "profileEditView";
+				}
+			});
 			dataTable.addRecordMenuItemByArgumentsOpenViewInDialogUpdate();
 			dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();	
 		}

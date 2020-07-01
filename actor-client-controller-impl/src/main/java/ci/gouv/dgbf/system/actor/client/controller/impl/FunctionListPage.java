@@ -2,6 +2,7 @@ package ci.gouv.dgbf.system.actor.client.controller.impl;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,10 +16,12 @@ import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.client.controller.web.WebController;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 import org.primefaces.model.menu.DefaultMenuItem;
 import org.primefaces.model.menu.DefaultMenuModel;
@@ -63,7 +66,8 @@ public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl
 	
 	@Override
 	protected DataTable __buildDataTable__() {
-		DataTable dataTable = instantiateDataTable(null,null,new LazyDataModelListenerImpl().setFunctionType(functionType));
+		DataTable dataTable = instantiateDataTable(null,null,new LazyDataModelListenerImpl().setFunctionType(functionType),functionType);
+		dataTable.set__parentElement__(functionType);
 		@SuppressWarnings("unchecked")
 		LazyDataModel<Function> lazyDataModel = (LazyDataModel<Function>) dataTable.getValue();
 		lazyDataModel.setReadQueryIdentifier(FunctionQuerier.QUERY_IDENTIFIER_READ_BY_TYPES_CODES);
@@ -78,7 +82,7 @@ public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl
 	/**/
 	
 	@SuppressWarnings("unchecked")
-	public static DataTable instantiateDataTable(Collection<String> columnsFieldsNames,DataTableListenerImpl listener,LazyDataModelListenerImpl lazyDataModelListener) {
+	public static DataTable instantiateDataTable(Collection<String> columnsFieldsNames,DataTableListenerImpl listener,LazyDataModelListenerImpl lazyDataModelListener,FunctionType functionType) {
 		if(listener == null)
 			listener = new DataTableListenerImpl();
 		if(columnsFieldsNames == null) {
@@ -86,9 +90,27 @@ public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl
 		}
 		
 		DataTable dataTable = DataTable.build(DataTable.FIELD_LAZY,Boolean.TRUE,DataTable.FIELD_ELEMENT_CLASS,Function.class
-				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,columnsFieldsNames,DataTable.FIELD_LISTENER,listener);
+				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,columnsFieldsNames,DataTable.FIELD_LISTENER,listener
+				,DataTable.FIELD_STYLE_CLASS,"cyk-ui-datatable-footer-visibility-hidden");
 		
-		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();		
+		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate(CommandButton.FIELD_LISTENER
+				,new CommandButton.Listener.AbstractImpl() {
+			@Override
+			protected Map<String, List<String>> getViewParameters(AbstractAction action) {
+				Map<String, List<String>> parameters = super.getViewParameters(action);
+				if(functionType != null) {
+					if(parameters == null)
+						parameters = new HashMap<>();
+					parameters.put(ParameterName.stringify(FunctionType.class), List.of(((FunctionType)functionType).getIdentifier()));
+				}					
+				return parameters;
+			}
+			
+			@Override
+			protected String getOutcome(AbstractAction action) {
+				return "functionEditView";
+			}
+		});		
 		dataTable.addRecordMenuItemByArgumentsOpenViewInDialogUpdate();
 		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
 		
@@ -103,7 +125,7 @@ public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl
 	}
 	
 	public static DataTable instantiateDataTable() {
-		return instantiateDataTable(null, null, null);
+		return instantiateDataTable(null, null, null,null);
 	}
 	
 	@Getter @Setter @Accessors(chain=true)
