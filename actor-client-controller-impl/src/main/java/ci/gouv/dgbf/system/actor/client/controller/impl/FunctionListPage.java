@@ -110,8 +110,11 @@ public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl
 			protected String getOutcome(AbstractAction action) {
 				return "functionEditView";
 			}
-		});		
+		});
+		
 		dataTable.addRecordMenuItemByArgumentsOpenViewInDialogUpdate();
+		dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("functionEditProfilesView", CommandButton.FIELD_VALUE,"Profiles"
+				,CommandButton.FIELD_ICON,"fa fa-user");
 		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
 		
 		LazyDataModel<Function> lazyDataModel = (LazyDataModel<Function>) dataTable.getValue();

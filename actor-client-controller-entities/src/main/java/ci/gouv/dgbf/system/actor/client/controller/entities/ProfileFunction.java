@@ -13,4 +13,7 @@ import lombok.experimental.Accessors;
 public class ProfileFunction extends AbstractDataIdentifiableSystemStringImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	private Profile profile;
+	private Function function;
+	
 }

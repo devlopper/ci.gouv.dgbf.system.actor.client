@@ -11,10 +11,13 @@ import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntitySaver;
 
 import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.ProfileFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorScopeRepresentation;
+import ci.gouv.dgbf.system.actor.server.representation.api.ProfileFunctionRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfilePrivilegeRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorDto;
+import ci.gouv.dgbf.system.actor.server.representation.entities.ProfileFunctionDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ProfilePrivilegeDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ScopeDto;
 
@@ -26,6 +29,8 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 		if(arguments.getRepresentationArguments() != null) {
 			if(ProfilePrivilegeBusiness.SAVE.equals(arguments.getRepresentationArguments().getActionIdentifier()) && arguments.getRepresentation() == null)
 				arguments.setRepresentation(ProfilePrivilegeRepresentation.getProxy());
+			else if(ProfileFunctionBusiness.SAVE.equals(arguments.getRepresentationArguments().getActionIdentifier()) && arguments.getRepresentation() == null)
+				arguments.setRepresentation(ProfileFunctionRepresentation.getProxy());
 			else if(ActorScopeBusiness.DELETE_BY_ACTOR_BY_SCOPES.equals(arguments.getRepresentationArguments().getActionIdentifier()) && arguments.getRepresentation() == null)
 				arguments.setRepresentation(ActorScopeRepresentation.getProxy());
 		}
@@ -46,7 +51,23 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				for(Object index : deletables)
 					dtos.add(((ProfilePrivilegeDto) index).set__deletable__(Boolean.TRUE));
 			return ((ProfilePrivilegeRepresentation)representation).save(dtos);
-		}if(arguments != null && ActorScopeBusiness.DELETE_BY_ACTOR_BY_SCOPES.equals(arguments.getActionIdentifier())) {
+		}
+		
+		if(arguments != null && ProfileFunctionBusiness.SAVE.equals(arguments.getActionIdentifier())) {
+			Collection<ProfileFunctionDto> dtos = new ArrayList<>();
+			if(CollectionHelper.isNotEmpty(creatables))
+				for(Object index : creatables)
+					dtos.add((ProfileFunctionDto) index);
+			if(CollectionHelper.isNotEmpty(updatables))
+				for(Object index : updatables)
+					dtos.add((ProfileFunctionDto) index);
+			if(CollectionHelper.isNotEmpty(deletables))
+				for(Object index : deletables)
+					dtos.add(((ProfileFunctionDto) index).set__deletable__(Boolean.TRUE));
+			return ((ProfileFunctionRepresentation)representation).save(dtos);
+		}
+		
+		if(arguments != null && ActorScopeBusiness.DELETE_BY_ACTOR_BY_SCOPES.equals(arguments.getActionIdentifier())) {
 			ActorDto actor = null;
 			Collection<ScopeDto> scopes = new ArrayList<>();
 			if(CollectionHelper.isNotEmpty(deletables))
