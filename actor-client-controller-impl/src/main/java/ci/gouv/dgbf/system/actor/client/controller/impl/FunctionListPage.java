@@ -10,11 +10,13 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.constant.ConstantEmpty;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntityReader;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
@@ -70,7 +72,7 @@ public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl
 		dataTable.set__parentElement__(functionType);
 		@SuppressWarnings("unchecked")
 		LazyDataModel<Function> lazyDataModel = (LazyDataModel<Function>) dataTable.getValue();
-		lazyDataModel.setReadQueryIdentifier(FunctionQuerier.QUERY_IDENTIFIER_READ_BY_TYPES_CODES);
+		lazyDataModel.setReadQueryIdentifier(FunctionQuerier.QUERY_IDENTIFIER_READ_WITH_PROFILES_BY_TYPES_CODES);
 		return dataTable;
 	}
 	
@@ -86,7 +88,7 @@ public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl
 		if(listener == null)
 			listener = new DataTableListenerImpl();
 		if(columnsFieldsNames == null) {
-			columnsFieldsNames = CollectionHelper.listOf(Function.FIELD_CODE,Function.FIELD_NAME);
+			columnsFieldsNames = CollectionHelper.listOf(Function.FIELD_CODE,Function.FIELD_NAME,Function.FIELD_PROFILES_AS_STRINGS);
 		}
 		
 		DataTable dataTable = DataTable.build(DataTable.FIELD_LAZY,Boolean.TRUE,DataTable.FIELD_ELEMENT_CLASS,Function.class
@@ -121,7 +123,7 @@ public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl
 		lazyDataModel.setReaderUsable(Boolean.TRUE);
 		if(lazyDataModelListener == null) {
 			lazyDataModelListener = new LazyDataModelListenerImpl();
-			lazyDataModel.setReadQueryIdentifier(FunctionQuerier.QUERY_IDENTIFIER_READ_BY_TYPES_CODES);
+			lazyDataModel.setReadQueryIdentifier(FunctionQuerier.QUERY_IDENTIFIER_READ_WITH_PROFILES_BY_TYPES_CODES);
 		}
 		lazyDataModel.setListener(lazyDataModelListener);
 		return dataTable;
@@ -143,8 +145,18 @@ public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl
 				map.put(Column.FIELD_WIDTH, "200");
 			}else if(Function.FIELD_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Libellé");
+			}else if(Function.FIELD_PROFILES_AS_STRINGS.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Profiles");
 			}
 			return map;
+		}
+		
+		public Object getCellValueByRecordByColumn(Object record, Integer recordIndex, Column column, Integer columnIndex) {
+			if(column != null && Function.FIELD_PROFILES_AS_STRINGS.equals(column.getFieldName())) {
+				Function function = (Function) record;
+				return CollectionHelper.isEmpty(function.getProfilesAsStrings()) ? ConstantEmpty.STRING : StringHelper.concatenate(function.getProfilesAsStrings(), ",");
+			}
+			return super.getCellValueByRecordByColumn(record, recordIndex, column, columnIndex);
 		}
 	}
 	

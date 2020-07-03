@@ -1,6 +1,7 @@
 package ci.gouv.dgbf.system.actor.client.controller.entities;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 import org.cyk.utility.__kernel__.object.__static__.controller.AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl;
 
@@ -14,5 +15,8 @@ public class Function extends AbstractDataIdentifiableSystemStringIdentifiableBu
 	private static final long serialVersionUID = 1L;
 	
 	private FunctionType type;
+	private Collection<String> profilesAsStrings;
 	
+	public static final String FIELD_TYPE = "type";
+	public static final String FIELD_PROFILES_AS_STRINGS = "profilesAsStrings";
 }
