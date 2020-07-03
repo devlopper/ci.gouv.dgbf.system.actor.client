@@ -104,7 +104,7 @@ public class ActorEditPrivilegesPage extends AbstractActorEditPrivilegesOrScopes
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,availableTree,Cell.FIELD_WIDTH,6));
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,selectedTree,Cell.FIELD_WIDTH,6));	
 	}
-	
+		
 	@Override
 	protected String __getWindowTitleValue__() {
 		return "Assignation des privilèges";

@@ -14,6 +14,7 @@ import org.cyk.utility.__kernel__.constant.ConstantEmpty;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntityReader;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
+import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.string.StringHelper;
@@ -68,33 +69,9 @@ public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl
 	
 	@Override
 	protected DataTable __buildDataTable__() {
-		DataTable dataTable = instantiateDataTable(null,null,new LazyDataModelListenerImpl().setFunctionType(functionType),functionType);
-		dataTable.set__parentElement__(functionType);
-		@SuppressWarnings("unchecked")
-		LazyDataModel<Function> lazyDataModel = (LazyDataModel<Function>) dataTable.getValue();
-		lazyDataModel.setReadQueryIdentifier(FunctionQuerier.QUERY_IDENTIFIER_READ_WITH_PROFILES_BY_TYPES_CODES);
-		return dataTable;
-	}
-	
-	@Override
-	protected String __getWindowTitleValue__() {
-		return "Liste des fonctions";
-	}
-	
-	/**/
-	
-	@SuppressWarnings("unchecked")
-	public static DataTable instantiateDataTable(Collection<String> columnsFieldsNames,DataTableListenerImpl listener,LazyDataModelListenerImpl lazyDataModelListener,FunctionType functionType) {
-		if(listener == null)
-			listener = new DataTableListenerImpl();
-		if(columnsFieldsNames == null) {
-			columnsFieldsNames = CollectionHelper.listOf(Function.FIELD_CODE,Function.FIELD_NAME,Function.FIELD_PROFILES_AS_STRINGS);
-		}
-		
-		DataTable dataTable = DataTable.build(DataTable.FIELD_LAZY,Boolean.TRUE,DataTable.FIELD_ELEMENT_CLASS,Function.class
-				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,columnsFieldsNames,DataTable.FIELD_LISTENER,listener
-				,DataTable.FIELD_STYLE_CLASS,"cyk-ui-datatable-footer-visibility-hidden");
-		
+		DataTable dataTable = buildDataTable(MapHelper.instantiate(DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER
+				,new LazyDataModelListenerImpl().setFunctionType(functionType)));
+		dataTable.set__parentElement__(functionType);		
 		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate(CommandButton.FIELD_LISTENER
 				,new CommandButton.Listener.AbstractImpl() {
 			@Override
@@ -112,25 +89,36 @@ public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl
 			protected String getOutcome(AbstractAction action) {
 				return "functionEditView";
 			}
-		});
-		
+		});		
 		dataTable.addRecordMenuItemByArgumentsOpenViewInDialogUpdate();
 		dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("functionEditProfilesView", CommandButton.FIELD_VALUE,"Profiles"
 				,CommandButton.FIELD_ICON,"fa fa-user");
-		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
-		
-		LazyDataModel<Function> lazyDataModel = (LazyDataModel<Function>) dataTable.getValue();
-		lazyDataModel.setReaderUsable(Boolean.TRUE);
-		if(lazyDataModelListener == null) {
-			lazyDataModelListener = new LazyDataModelListenerImpl();
-			lazyDataModel.setReadQueryIdentifier(FunctionQuerier.QUERY_IDENTIFIER_READ_WITH_PROFILES_BY_TYPES_CODES);
-		}
-		lazyDataModel.setListener(lazyDataModelListener);
+		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();		
 		return dataTable;
 	}
 	
-	public static DataTable instantiateDataTable() {
-		return instantiateDataTable(null, null, null,null);
+	@Override
+	protected String __getWindowTitleValue__() {
+		return "Liste des fonctions";
+	}
+	
+	/**/
+	
+	public static DataTable buildDataTable(Map<Object,Object> arguments) {
+		if(arguments == null)
+			arguments = new HashMap<>();
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, Function.class);
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, CollectionHelper.listOf(Function.FIELD_CODE,Function.FIELD_NAME,Function.FIELD_PROFILES_AS_STRINGS));
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl());
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl());
+		DataTable dataTable = DataTable.build(arguments);
+		return dataTable;
+	}
+	
+	public static DataTable buildDataTable() {
+		return buildDataTable(null);
 	}
 	
 	@Getter @Setter @Accessors(chain=true)
@@ -163,6 +151,17 @@ public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl
 	@Getter @Setter @Accessors(chain=true)
 	public static class LazyDataModelListenerImpl extends LazyDataModel.Listener.AbstractImpl<Function> implements Serializable {		
 		private FunctionType functionType;
+		
+		@Override
+		public Boolean getReaderUsable(LazyDataModel<Function> lazyDataModel) {
+			return Boolean.TRUE;
+		}
+		
+		@Override
+		public String getReadQueryIdentifier(LazyDataModel<Function> lazyDataModel) {
+			return functionType == null ? FunctionQuerier.QUERY_IDENTIFIER_READ_ORDER_BY_CODE_ASCENDING : FunctionQuerier.QUERY_IDENTIFIER_READ_WITH_PROFILES_BY_TYPES_CODES;
+		}
+		
 		@Override
 		public Filter.Dto instantiateFilter(LazyDataModel<Function> lazyDataModel) {
 			Filter.Dto filter = super.instantiateFilter(lazyDataModel);

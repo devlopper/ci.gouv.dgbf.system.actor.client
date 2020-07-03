@@ -15,6 +15,7 @@ import org.cyk.utility.__kernel__.controller.EntityReader;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Tree;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
@@ -36,13 +37,9 @@ import lombok.Setter;
 public class ActorListPrivilegesPage extends AbstractActorListPrivilegesOrScopesPage<ProfilePrivilege> implements Serializable {
 
 	private Profile profile;
-	/*private Collection<ProfilePrivilege> profilePrivileges;
-	
-	private Collection<PrivilegeType> privilegeTypes;
-	private Collection<Privilege> availablePrivileges,selectedPrivileges;
-	*/
 	private Tree availableTree,selectedTree;
-		
+	private CommandButton createPrivilegesByFunctionsCommandButton,createPrivilegesByProfilesCommandButton;
+	
 	@Override
 	protected void addOutputs(Collection<Map<?, ?>> cellsMaps) {
 		profile = Helper.getProfileFromRequestParameterEntityAsParent(actor);
@@ -101,6 +98,27 @@ public class ActorListPrivilegesPage extends AbstractActorListPrivilegesOrScopes
 		}		
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,availableTree,Cell.FIELD_WIDTH,6));
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,selectedTree,Cell.FIELD_WIDTH,6));	
+	}
+	
+	@Override
+	protected void addEditCommandButtonArgumentsCell(Collection<Map<?, ?>> cellsMaps) {
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_IDENTIFIER,"buttons",Cell.FIELD_WIDTH,12));
+		createPrivilegesByFunctionsCommandButton = CommandButton.build(CommandButton.FIELD_VALUE,"Ajouter les privilèges par fonction"
+			,CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.OPEN_VIEW_IN_DIALOG
+			,CommandButton.FIELD_ICON,"fa fa-user",CommandButton.FIELD_STYLE_CLASS,"cyk-float-right"
+			,CommandButton.FIELD___OUTCOME__,"actorCreatePrivilegesByFunctionsView"
+			,CommandButton.FIELD___PARAMETERS__,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(actor.getIdentifier()))
+			,CommandButton.FIELD_LISTENER,new CommandButton.Listener.AbstractImpl() {
+			
+		});
+		createPrivilegesByProfilesCommandButton = CommandButton.build(CommandButton.FIELD_VALUE,"Ajouter les privilèges par profile"
+			,CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.OPEN_VIEW_IN_DIALOG
+			,CommandButton.FIELD_ICON,"fa fa-lock",CommandButton.FIELD_STYLE_CLASS,"cyk-float-right"
+			,CommandButton.FIELD___OUTCOME__,"actorCreatePrivilegesByProfilesView"
+			,CommandButton.FIELD___PARAMETERS__,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(actor.getIdentifier()))
+			,CommandButton.FIELD_LISTENER,new CommandButton.Listener.AbstractImpl() {
+						
+		});
 	}
 	
 	@Override

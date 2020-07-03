@@ -15,6 +15,7 @@ public class Function extends AbstractDataIdentifiableSystemStringIdentifiableBu
 	private static final long serialVersionUID = 1L;
 	
 	private FunctionType type;
+	private String profileIdentifier;
 	private Collection<String> profilesAsStrings;
 	
 	public static final String FIELD_TYPE = "type";

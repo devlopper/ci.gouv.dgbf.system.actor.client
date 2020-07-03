@@ -34,6 +34,7 @@ import lombok.Setter;
 public abstract class AbstractActorListPrivilegesOrScopesPage<T> extends AbstractPageContainerManagedImpl implements Serializable {
 
 	protected AutoComplete actorAutoComplete;
+	protected CommandButton editCommandButton;
 	protected Actor actor;
 	protected Layout layout;
 	
@@ -74,14 +75,20 @@ public abstract class AbstractActorListPrivilegesOrScopesPage<T> extends Abstrac
 		}else {
 			actorAutoComplete.setValue(actor);
 			addOutputs(cellsMaps);
-			if(Boolean.TRUE.equals(isShowEditCommandButton()))
-				cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,CommandButton.build(getEditCommandButtonArguments()),Cell.FIELD_WIDTH,12));	
+			if(Boolean.TRUE.equals(isShowEditCommandButton())) {
+				editCommandButton = CommandButton.build(getEditCommandButtonArguments());
+				addEditCommandButtonArgumentsCell(cellsMaps);
+			}
 		}
 		layout = buildLayout(cellsMaps);
 	}
 	
 	protected Layout buildLayout(Collection<Map<?,?>> cellsMaps) {
 		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
+	}
+	
+	protected void addEditCommandButtonArgumentsCell(Collection<Map<?,?>> cellsMaps) {
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,editCommandButton,Cell.FIELD_WIDTH,12));
 	}
 	
 	protected abstract String getListOutcome();

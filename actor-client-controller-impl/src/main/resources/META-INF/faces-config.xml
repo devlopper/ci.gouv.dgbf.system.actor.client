@@ -33,6 +33,18 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>actorCreatePrivilegesByFunctionsView</from-outcome>
+			<to-view-id>/private/actor/createprivilegesbyfunctions.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>actorCreatePrivilegesByProfilesView</from-outcome>
+			<to-view-id>/private/actor/createprivilegesbyprofiles.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>actorListScopesView</from-outcome>
 			<to-view-id>/private/actor/listscopes.jsf</to-view-id>
 			<redirect />
