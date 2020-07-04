@@ -19,6 +19,7 @@ import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Tree;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 
+import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Privilege;
 import ci.gouv.dgbf.system.actor.client.controller.entities.PrivilegeType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Profile;
@@ -68,7 +69,7 @@ public class ActorEditPrivilegesPage extends AbstractActorEditPrivilegesOrScopes
 			//read all
 			Collection<Privilege> availablePrivileges = EntityReader.getInstance().readMany(Privilege.class, PrivilegeQuerier.QUERY_IDENTIFIER_READ_ORDER_BY_CODE_ASCENDING);
 			Privilege.processCollectChildren(availablePrivileges);
-			
+			/*
 			availableTree = Tree.build(Tree.FIELD_VALUE,PrivilegeListPage.instantiateTreeNode(availablePrivileges,selectedPrivileges)
 					,Tree.ConfiguratorImpl.FIELD_TITLE_VALUE,"Disponible",Tree.FIELD_SELECTION_MODE,"checkbox"
 					,Tree.FIELD_PROPAGATE_SELECTION_UP,Boolean.TRUE,Tree.FIELD_PROPAGATE_SELECTION_DOWN,Boolean.TRUE
@@ -79,7 +80,9 @@ public class ActorEditPrivilegesPage extends AbstractActorEditPrivilegesOrScopes
 					return data1 != null && data2 != null && StringHelper.isNotBlank(data1.getIdentifier()) && data1.getIdentifier().equals(data2.getParentIdentifier());
 				}
 			});
-			
+			*/
+			availableTree = ProfileEditPrivilegesPage.buildAvailableTree(Tree.FIELD_VALUE,PrivilegeListPage.instantiateTreeNode(availablePrivileges,selectedPrivileges));
+			/*
 			selectedTree = Tree.build(Tree.FIELD_VALUE,ProfilePrivilegeListPage.instantiateTreeNode(profilePrivileges),Tree.ConfiguratorImpl.FIELD_TITLE_VALUE,"Accordés"
 					,Tree.FIELD_SELECTION_MODE,"checkbox",Tree.FIELD_PROPAGATE_SELECTION_UP,Boolean.TRUE,Tree.FIELD_PROPAGATE_SELECTION_DOWN,Boolean.TRUE
 					,Tree.FIELD_LISTENER,new Tree.Listener.AbstractImpl<ProfilePrivilege>() {
@@ -100,6 +103,8 @@ public class ActorEditPrivilegesPage extends AbstractActorEditPrivilegesOrScopes
 						}
 					}
 				));
+			*/
+			selectedTree = ProfileEditPrivilegesPage.buildSelectedTree(Tree.FIELD_VALUE,ProfilePrivilegeListPage.instantiateTreeNode(profilePrivileges));
 		}		
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,availableTree,Cell.FIELD_WIDTH,6));
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,selectedTree,Cell.FIELD_WIDTH,6));	
@@ -107,7 +112,7 @@ public class ActorEditPrivilegesPage extends AbstractActorEditPrivilegesOrScopes
 		
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Assignation des privilèges";
+		return formatWindowTitle(actor);
 	}
 	
 	@Override
@@ -131,4 +136,24 @@ public class ActorEditPrivilegesPage extends AbstractActorEditPrivilegesOrScopes
 					.filter(x -> x.getProfile() != null && StringHelper.isNotBlank(x.getIdentifier())).collect(Collectors.toList()));
 		EntitySaver.getInstance().save(ProfilePrivilege.class, arguments);
 	}
+	
+	/**/
+	
+	public static String formatWindowTitle(Actor actor,String by) {
+		if(actor == null)
+			return WINDOW_TITLE_FORMAT_ASSIGN_PRIVILEGES;
+		if(StringHelper.isBlank(by))
+			return String.format(WINDOW_TITLE_FORMAT_ASSIGN_PRIVILEGES_ACCOUNT,actor.getCode(),actor.getNames());
+		return String.format(WINDOW_TITLE_FORMAT_ASSIGN_PRIVILEGES_BY_ACCOUNT, by,actor.getCode(),actor.getNames());
+	}
+	
+	public static String formatWindowTitle(Actor actor) {
+		return formatWindowTitle(actor, null);
+	}
+	
+	private static final String WINDOW_TITLE_FORMAT_ASSIGN_PRIVILEGES = "Assignation de privilèges";
+	private static final String WINDOW_TITLE_FORMAT_ASSIGN_PRIVILEGES_BY = WINDOW_TITLE_FORMAT_ASSIGN_PRIVILEGES+" par %s";
+	private static final String WINDOW_TITLE_FORMAT_ACCOUNT = " | Compte utilisateur %s : %s";
+	private static final String WINDOW_TITLE_FORMAT_ASSIGN_PRIVILEGES_ACCOUNT = WINDOW_TITLE_FORMAT_ASSIGN_PRIVILEGES+WINDOW_TITLE_FORMAT_ACCOUNT;
+	private static final String WINDOW_TITLE_FORMAT_ASSIGN_PRIVILEGES_BY_ACCOUNT = WINDOW_TITLE_FORMAT_ASSIGN_PRIVILEGES_BY+WINDOW_TITLE_FORMAT_ACCOUNT;
 }

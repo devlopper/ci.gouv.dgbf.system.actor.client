@@ -3,6 +3,7 @@ package ci.gouv.dgbf.system.actor.client.controller.impl;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.faces.view.ViewScoped;
@@ -13,6 +14,7 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntityReader;
 import org.cyk.utility.__kernel__.controller.EntitySaver;
+import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
@@ -45,7 +47,7 @@ public class ProfileEditPrivilegesPage extends AbstractPageContainerManagedImpl 
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Mise à jour des privilèges du profile "+profile.getName();
+		return "Privilèges du profile "+profile.getName();
 	}
 	
 	@Override
@@ -73,9 +75,9 @@ public class ProfileEditPrivilegesPage extends AbstractPageContainerManagedImpl 
 			//read all
 			Collection<Privilege> availablePrivileges = EntityReader.getInstance().readMany(Privilege.class, PrivilegeQuerier.QUERY_IDENTIFIER_READ_ORDER_BY_CODE_ASCENDING);
 			Privilege.processCollectChildren(availablePrivileges);
-			
+			/*
 			availableTree = Tree.build(Tree.FIELD_VALUE,PrivilegeListPage.instantiateTreeNode(availablePrivileges,selectedPrivileges)
-					,Tree.ConfiguratorImpl.FIELD_TITLE_VALUE,"Disponible",Tree.FIELD_SELECTION_MODE,"checkbox"
+					,Tree.ConfiguratorImpl.FIELD_TITLE_VALUE,"Disponible (Sélectionnez les éléments à assigner)",Tree.FIELD_SELECTION_MODE,"checkbox"
 					,Tree.FIELD_PROPAGATE_SELECTION_UP,Boolean.TRUE,Tree.FIELD_PROPAGATE_SELECTION_DOWN,Boolean.TRUE
 					,Tree.FIELD_LISTENER,new Tree.Listener.AbstractImpl<Privilege>() {
 									
@@ -84,8 +86,11 @@ public class ProfileEditPrivilegesPage extends AbstractPageContainerManagedImpl 
 					return data1 != null && data2 != null && StringHelper.isNotBlank(data1.getIdentifier()) && data1.getIdentifier().equals(data2.getParentIdentifier());
 				}
 			});
-			
-			selectedTree = Tree.build(Tree.FIELD_VALUE,ProfilePrivilegeListPage.instantiateTreeNode(profilePrivileges),Tree.ConfiguratorImpl.FIELD_TITLE_VALUE,"Accordés"
+			*/
+			availableTree = buildAvailableTree(Tree.FIELD_VALUE,PrivilegeListPage.instantiateTreeNode(availablePrivileges,selectedPrivileges));
+			/*
+			selectedTree = Tree.build(Tree.FIELD_VALUE,ProfilePrivilegeListPage.instantiateTreeNode(profilePrivileges),Tree.ConfiguratorImpl.FIELD_TITLE_VALUE
+					,"Accordés (Sélectionnez les éléments à retirer)"
 					,Tree.FIELD_SELECTION_MODE,"checkbox",Tree.FIELD_PROPAGATE_SELECTION_UP,Boolean.TRUE,Tree.FIELD_PROPAGATE_SELECTION_DOWN,Boolean.TRUE
 					,Tree.FIELD_LISTENER,new Tree.Listener.AbstractImpl<ProfilePrivilege>() {
 				
@@ -105,6 +110,8 @@ public class ProfileEditPrivilegesPage extends AbstractPageContainerManagedImpl 
 						}
 					}
 				));
+			*/
+			selectedTree = buildSelectedTree(Tree.FIELD_VALUE,ProfilePrivilegeListPage.instantiateTreeNode(profilePrivileges));
 		}		
 		
 		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,CollectionHelper.listOf(
@@ -123,10 +130,58 @@ public class ProfileEditPrivilegesPage extends AbstractPageContainerManagedImpl 
 									arguments.setDeletables(selectedTree.getSelectionDatas(ProfilePrivilege.class).stream()
 											.filter(x -> x.getProfile() != null && StringHelper.isNotBlank(x.getIdentifier())).collect(Collectors.toList()));
 								EntitySaver.getInstance().save(ProfilePrivilege.class, arguments);	
-								JsfController.getInstance().redirect("profileListView");
+								JsfController.getInstance().redirect("profileEditPrivilegesView",Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(profile.getIdentifier())));
 								return null;
 							}
 						},CommandButton.FIELD_STYLE_CLASS,"cyk-float-right"),Cell.FIELD_WIDTH,12)
 				));
+	}
+	
+	public static Tree buildAvailableTree(Map<Object,Object> arguments) {
+		MapHelper.writeByKeyDoNotOverride(arguments,Tree.ConfiguratorImpl.FIELD_TITLE_VALUE,"Disponible (Sélectionnez les éléments à assigner)");
+		MapHelper.writeByKeyDoNotOverride(arguments,Tree.FIELD_SELECTION_MODE,"checkbox");
+		MapHelper.writeByKeyDoNotOverride(arguments,Tree.FIELD_PROPAGATE_SELECTION_UP,Boolean.TRUE);
+		MapHelper.writeByKeyDoNotOverride(arguments, Tree.FIELD_PROPAGATE_SELECTION_DOWN,Boolean.TRUE);
+		MapHelper.writeByKeyDoNotOverride(arguments, Tree.FIELD_LISTENER,new Tree.Listener.AbstractImpl<Privilege>() {		
+			@Override
+			public Boolean isParent(Privilege data1, Privilege data2) {
+				return data1 != null && data2 != null && StringHelper.isNotBlank(data1.getIdentifier()) && data1.getIdentifier().equals(data2.getParentIdentifier());
+			}
+		});
+		return Tree.build(arguments);
+	}
+	
+	public static Tree buildAvailableTree(Object...objects) {
+		return buildAvailableTree(MapHelper.instantiate(objects));
+	}
+	
+	public static Tree buildSelectedTree(Map<Object,Object> arguments) {
+		MapHelper.writeByKeyDoNotOverride(arguments,Tree.ConfiguratorImpl.FIELD_TITLE_VALUE,"Accordés (Sélectionnez les éléments à retirer)");
+		MapHelper.writeByKeyDoNotOverride(arguments,Tree.FIELD_SELECTION_MODE,"checkbox");
+		MapHelper.writeByKeyDoNotOverride(arguments,Tree.FIELD_PROPAGATE_SELECTION_UP,Boolean.TRUE);
+		MapHelper.writeByKeyDoNotOverride(arguments, Tree.FIELD_PROPAGATE_SELECTION_DOWN,Boolean.TRUE);
+		MapHelper.writeByKeyDoNotOverride(arguments, Tree.FIELD_LISTENER,new Tree.Listener.AbstractImpl<ProfilePrivilege>() {			
+			@Override
+			public Boolean isParent(ProfilePrivilege data1, ProfilePrivilege data2) {
+				return data1 != null && data2 != null && data1.getPrivilege() != null && data2.getPrivilege() != null 
+						&& StringHelper.isNotBlank(data1.getPrivilege().getIdentifier()) 
+						&& data1.getPrivilege().getIdentifier().equals(data2.getPrivilege().getParentIdentifier());
+			}
+		});
+		MapHelper.writeByKeyDoNotOverride(arguments,Tree.FIELD_TREE_NODE, org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.TreeNode.build(
+				org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.TreeNode.FIELD_LISTENER
+				,new org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.TreeNode.Listener.AbstractImpl() {
+					public String stringify(Object nodeData, org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.TreeNode treeNode) {
+						if(nodeData == null)
+							return null;
+						return((ProfilePrivilege)nodeData).getPrivilege().getName(); 
+					}
+				}
+			));
+		return Tree.build(arguments);
+	}
+	
+	public static Tree buildSelectedTree(Object...objects) {
+		return buildSelectedTree(MapHelper.instantiate(objects));
 	}
 }

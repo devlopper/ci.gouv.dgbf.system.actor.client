@@ -1,6 +1,7 @@
 package ci.gouv.dgbf.system.actor.client.controller.entities;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 import org.cyk.utility.__kernel__.object.__static__.controller.AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl;
 
@@ -14,5 +15,8 @@ public class Profile extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	private static final long serialVersionUID = 1L;
 	
 	private ProfileType type;
+	private String profileIdentifier;
+	private Collection<String> privilegesAsStrings;
 	
+	public static final String FIELD_PRIVILEGES_AS_STRINGS = "privilegesAsStrings";
 }

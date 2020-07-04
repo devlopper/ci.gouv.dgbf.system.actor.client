@@ -2,7 +2,6 @@ package ci.gouv.dgbf.system.actor.client.controller.impl;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -16,7 +15,6 @@ import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Tree;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
@@ -104,7 +102,7 @@ public class ActorListPrivilegesPage extends AbstractActorListPrivilegesOrScopes
 	protected void addEditCommandButtonArgumentsCell(Collection<Map<?, ?>> cellsMaps) {
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_IDENTIFIER,"buttons",Cell.FIELD_WIDTH,12));
 		createPrivilegesByFunctionsCommandButton = CommandButton.build(CommandButton.FIELD_VALUE,"Ajouter les privilèges par fonction"
-			,CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.OPEN_VIEW_IN_DIALOG
+			,CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.NAVIGATE_TO_VIEW
 			,CommandButton.FIELD_ICON,"fa fa-user",CommandButton.FIELD_STYLE_CLASS,"cyk-float-right"
 			,CommandButton.FIELD___OUTCOME__,"actorCreatePrivilegesByFunctionsView"
 			,CommandButton.FIELD___PARAMETERS__,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(actor.getIdentifier()))
@@ -112,7 +110,7 @@ public class ActorListPrivilegesPage extends AbstractActorListPrivilegesOrScopes
 			
 		});
 		createPrivilegesByProfilesCommandButton = CommandButton.build(CommandButton.FIELD_VALUE,"Ajouter les privilèges par profile"
-			,CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.OPEN_VIEW_IN_DIALOG
+			,CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.NAVIGATE_TO_VIEW
 			,CommandButton.FIELD_ICON,"fa fa-lock",CommandButton.FIELD_STYLE_CLASS,"cyk-float-right"
 			,CommandButton.FIELD___OUTCOME__,"actorCreatePrivilegesByProfilesView"
 			,CommandButton.FIELD___PARAMETERS__,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(actor.getIdentifier()))
@@ -135,28 +133,7 @@ public class ActorListPrivilegesPage extends AbstractActorListPrivilegesOrScopes
 	protected String getEditOutcome() {
 		return "actorEditPrivilegesView";
 	}
-	
-	@Override
-	protected Map<Object, Object> getEditCommandButtonArguments() {
-		Map<Object, Object> arguments = super.getEditCommandButtonArguments();
-		arguments.put(CommandButton.FIELD_LISTENER, new AbstractAction.Listener.AbstractImpl() {
-			@Override
-			protected Map<String, List<String>> getViewParameters(AbstractAction action) {
-				Map<String, List<String>> map = new HashMap<String, List<String>>();
-				map.put(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(actor.getIdentifier()));
-				return map;
-			}
-			
-			@Override
-			protected void runNavigateToView(AbstractAction action) {
-				action.set__argument__(actor);
-				super.runNavigateToView(action);
-			}
-		});
-		//arguments.put(CommandButton.FIELD_UPDATE, value);
-		return arguments;
-	}
-	
+
 	/**/
 	
 	public static TreeNode instantiateTreeNode(Collection<ProfilePrivilege> profilePrivileges) {

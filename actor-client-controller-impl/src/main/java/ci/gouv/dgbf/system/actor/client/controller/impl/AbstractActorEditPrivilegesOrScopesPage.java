@@ -13,6 +13,7 @@ import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
+import org.cyk.utility.__kernel__.value.ValueConverter;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.JsfController;
@@ -37,45 +38,52 @@ public abstract class AbstractActorEditPrivilegesOrScopesPage<T> extends Abstrac
 	protected CommandButton saveCommandButton;
 	protected Actor actor;
 	protected Layout layout;
+	protected Boolean isFromActorList;
 	
 	@Override
 	protected void __listenPostConstruct__() {
+		isFromActorList = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter("fal"));
 		actor = WebController.getInstance().getRequestParameterEntity(Actor.class);
 		if(actor != null) {			
 			
 		}
 		super.__listenPostConstruct__();		
-		
-		actorAutoComplete = AutoComplete.build(AutoComplete.FIELD_ENTITY_CLASS,Actor.class,AutoComplete.FIELD_LISTENER,new AutoComplete.Listener.AbstractImpl<Actor>() {
-			@Override
-			public Filter.Dto instantiateFilter(AutoComplete autoComplete) {
-				return new Filter.Dto().addField(ActorQuerier.PARAMETER_NAME_STRING, "%"+ValueHelper.defaultToIfBlank(autoComplete.get__queryString__(),ConstantEmpty.STRING)+"%");
-			}
-		},AutoComplete.FIELD_PLACEHOLDER,"rechercher par le nom d'utilisateur");
-		
-		actorAutoComplete.enableAjaxItemSelect();
-		actorAutoComplete.getAjaxes().get("itemSelect").setListener(new Ajax.Listener.AbstractImpl() {
-			@Override
-			protected void run(AbstractAction action) {
-				Actor actor = (Actor) FieldHelper.read(action.get__argument__(), "source.value");
-				if(actor != null)
-					JsfController.getInstance().redirect(getEditOutcome(),Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(actor.getIdentifier())));
-			}			
-		});
-		actorAutoComplete.getAjaxes().get("itemSelect").setDisabled(Boolean.FALSE);
-		actorAutoComplete.setReaderUsable(Boolean.TRUE);
-		actorAutoComplete.setReadQueryIdentifier(ActorQuerier.QUERY_IDENTIFIER_READ_BY_STRING);
-		actorAutoComplete.setCountQueryIdentifier(ActorQuerier.QUERY_NAME_COUNT_BY_STRING);
+		if(actor == null || Boolean.TRUE.equals(isShowActorAutoCompleteInput())) {
+			actorAutoComplete = AutoComplete.build(AutoComplete.FIELD_ENTITY_CLASS,Actor.class,AutoComplete.FIELD_LISTENER,new AutoComplete.Listener.AbstractImpl<Actor>() {
+				@Override
+				public Filter.Dto instantiateFilter(AutoComplete autoComplete) {
+					return new Filter.Dto().addField(ActorQuerier.PARAMETER_NAME_STRING, "%"+ValueHelper.defaultToIfBlank(autoComplete.get__queryString__(),ConstantEmpty.STRING)+"%");
+				}
+			},AutoComplete.FIELD_PLACEHOLDER,"rechercher par le nom d'utilisateur");
+			
+			actorAutoComplete.enableAjaxItemSelect();
+			actorAutoComplete.getAjaxes().get("itemSelect").setListener(new Ajax.Listener.AbstractImpl() {
+				@Override
+				protected void run(AbstractAction action) {
+					Actor actor = (Actor) FieldHelper.read(action.get__argument__(), "source.value");
+					if(actor != null)
+						JsfController.getInstance().redirect(getEditOutcome(),Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(actor.getIdentifier())));
+				}			
+			});
+			actorAutoComplete.getAjaxes().get("itemSelect").setDisabled(Boolean.FALSE);
+			actorAutoComplete.setReaderUsable(Boolean.TRUE);
+			actorAutoComplete.setReadQueryIdentifier(ActorQuerier.QUERY_IDENTIFIER_READ_BY_STRING);
+			actorAutoComplete.setCountQueryIdentifier(ActorQuerier.QUERY_NAME_COUNT_BY_STRING);
+		}
 		
 		Collection<Map<?,?>> cellsMaps = new ArrayList<Map<?,?>>(); 
 		if(!Boolean.TRUE.equals(isRenderTypeDialog)) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Compte utilisateur"),Cell.FIELD_WIDTH,2));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,actorAutoComplete,Cell.FIELD_WIDTH,10));	
+			if(actorAutoComplete != null) {
+				cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Compte utilisateur"),Cell.FIELD_WIDTH,2));
+				cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,actorAutoComplete,Cell.FIELD_WIDTH,10));		
+			}			
 		}		
 		if(actor == null) {
 			
 		}else {
-			actorAutoComplete.setValue(actor);
+			if(actorAutoComplete != null) {
+				actorAutoComplete.setValue(actor);	
+			}			
 			addInputs(cellsMaps);
 			saveCommandButton = CommandButton.build(getSaveCommandButtonArguments());
 			addSaveCommandButtonArgumentsCell(cellsMaps);
@@ -89,6 +97,10 @@ public abstract class AbstractActorEditPrivilegesOrScopesPage<T> extends Abstrac
 	
 	protected void addSaveCommandButtonArgumentsCell(Collection<Map<?,?>> cellsMaps) {
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,saveCommandButton,Cell.FIELD_WIDTH,12));
+	}
+	
+	protected Boolean isShowActorAutoCompleteInput() {
+		return isFromActorList == null || !isFromActorList;
 	}
 	
 	protected abstract String getEditOutcome();

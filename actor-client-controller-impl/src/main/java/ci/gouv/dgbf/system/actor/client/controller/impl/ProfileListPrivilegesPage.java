@@ -3,6 +3,7 @@ package ci.gouv.dgbf.system.actor.client.controller.impl;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.faces.view.ViewScoped;
@@ -10,12 +11,12 @@ import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.EntityReader;
+import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Tree;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
@@ -102,14 +103,7 @@ public class ProfileListPrivilegesPage extends AbstractPageContainerManagedImpl 
 				,MapHelper.instantiate(Cell.FIELD_CONTROL,CommandButton.build(CommandButton.FIELD_VALUE,"Modifier",CommandButton.FIELD_ICON,"fa fa-edit"
 						,CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.NAVIGATE_TO_VIEW
 						,CommandButton.FIELD___OUTCOME__,"profileEditPrivilegesView",CommandButton.FIELD_STYLE_CLASS,"cyk-float-right"
-						,CommandButton.FIELD_LISTENER, new AbstractAction.Listener.AbstractImpl() {
-							
-							@Override
-							protected void runNavigateToView(AbstractAction action) {
-								action.set__argument__(profile);
-								super.runNavigateToView(action);
-							}
-						}),Cell.FIELD_WIDTH,12)
+						,CommandButton.FIELD___PARAMETERS__, Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(profile.getIdentifier()))),Cell.FIELD_WIDTH,12)
 				));
 	}
 	

@@ -1,11 +1,15 @@
 package ci.gouv.dgbf.system.actor.client.controller.impl;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.client.controller.web.WebController;
+import org.cyk.utility.client.controller.web.jsf.JsfController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
@@ -40,6 +44,9 @@ public abstract class AbstractActorCreatePrivilegesByPage extends AbstractPageCo
 					@Override
 					protected Object __runExecuteFunction__(AbstractAction action) {
 						create();
+						if(!Boolean.TRUE.equals(action.get__isWindowContainerRenderedAsDialog__())) {
+							JsfController.getInstance().redirect("actorListPrivilegesView",Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(actor.getIdentifier())));
+						}
 						return null;
 					}
 				});
@@ -54,10 +61,10 @@ public abstract class AbstractActorCreatePrivilegesByPage extends AbstractPageCo
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return getWindowTitleValuePrefix()+" - Compte utilisateur : "+actor.getCode()+" - "+actor.getNames();
+		return ActorEditPrivilegesPage.formatWindowTitle(actor, getByName());
 	}
 	
-	protected abstract String getWindowTitleValuePrefix();
+	protected abstract String getByName();
 	
 	protected void create() {
 		if(CollectionHelper.isEmpty(dataTable.getSelection()))

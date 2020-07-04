@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
+import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.constant.ConstantEmpty;
 import org.cyk.utility.__kernel__.controller.Arguments;
@@ -117,8 +118,8 @@ public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl
 		return dataTable;
 	}
 	
-	public static DataTable buildDataTable() {
-		return buildDataTable(null);
+	public static DataTable buildDataTable(Object...objects) {
+		return buildDataTable(ArrayHelper.isEmpty(objects) ? null : MapHelper.instantiate(objects));
 	}
 	
 	@Getter @Setter @Accessors(chain=true)
@@ -159,7 +160,7 @@ public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl
 		
 		@Override
 		public String getReadQueryIdentifier(LazyDataModel<Function> lazyDataModel) {
-			return functionType == null ? FunctionQuerier.QUERY_IDENTIFIER_READ_ORDER_BY_CODE_ASCENDING : FunctionQuerier.QUERY_IDENTIFIER_READ_WITH_PROFILES_BY_TYPES_CODES;
+			return functionType == null ? FunctionQuerier.QUERY_IDENTIFIER_READ_WITH_PROFILES : FunctionQuerier.QUERY_IDENTIFIER_READ_WITH_PROFILES_BY_TYPES_CODES;
 		}
 		
 		@Override

@@ -9,12 +9,16 @@ import java.util.Map;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
+import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.constant.ConstantEmpty;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntityReader;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
+import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
@@ -66,7 +70,7 @@ public class ProfileListPage extends AbstractEntityListPageContainerManagedImpl<
 	
 	@Override
 	protected DataTable __buildDataTable__() {
-		DataTable dataTable = instantiateDataTable(null,null,new LazyDataModelListenerImpl().setProfileType(profileType));
+		DataTable dataTable = buildDataTable(DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl().setProfileType(profileType));
 		if(profileType == null || profileType.getCode().equals(ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType.CODE_SYSTEME)) {
 			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate(CommandButton.FIELD_LISTENER
 					,new CommandButton.Listener.AbstractImpl() {
@@ -88,12 +92,9 @@ public class ProfileListPage extends AbstractEntityListPageContainerManagedImpl<
 			});
 			dataTable.addRecordMenuItemByArgumentsOpenViewInDialogUpdate();
 			dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
-			dataTable.addRecordMenuItemByArgumentsNavigateToView(null,"profileListPrivilegesView", CommandButton.FIELD_VALUE,"Privilèges");
+			dataTable.addRecordMenuItemByArgumentsNavigateToView(null,"profileEditPrivilegesView", CommandButton.FIELD_VALUE,"Privilèges"
+					, CommandButton.FIELD_ICON,"fa fa-lock");
 		}
-			
-		@SuppressWarnings("unchecked")
-		LazyDataModel<Profile> lazyDataModel = (LazyDataModel<Profile>) dataTable.getValue();
-		lazyDataModel.setReadQueryIdentifier(ProfileQuerier.QUERY_IDENTIFIER_READ_BY_TYPES_CODES);
 		return dataTable;
 	}
 	
@@ -104,29 +105,21 @@ public class ProfileListPage extends AbstractEntityListPageContainerManagedImpl<
 	
 	/**/
 	
-	@SuppressWarnings("unchecked")
-	public static DataTable instantiateDataTable(Collection<String> columnsFieldsNames,DataTableListenerImpl listener,LazyDataModelListenerImpl lazyDataModelListener) {
-		if(listener == null)
-			listener = new DataTableListenerImpl();
-		if(columnsFieldsNames == null) {
-			columnsFieldsNames = CollectionHelper.listOf(Profile.FIELD_CODE,Profile.FIELD_NAME);
-		}
-		
-		DataTable dataTable = DataTable.build(DataTable.FIELD_LAZY,Boolean.TRUE,DataTable.FIELD_ELEMENT_CLASS,Profile.class
-				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,columnsFieldsNames,DataTable.FIELD_LISTENER,listener);
-		
-		LazyDataModel<Profile> lazyDataModel = (LazyDataModel<Profile>) dataTable.getValue();
-		lazyDataModel.setReaderUsable(Boolean.TRUE);
-		if(lazyDataModelListener == null) {
-			lazyDataModelListener = new LazyDataModelListenerImpl();
-			lazyDataModel.setReadQueryIdentifier(ProfileQuerier.QUERY_IDENTIFIER_READ_BY_TYPES_CODES);
-		}
-		lazyDataModel.setListener(lazyDataModelListener);
+	public static DataTable buildDataTable(Map<Object,Object> arguments) {
+		if(arguments == null)
+			arguments = new HashMap<>();
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, Profile.class);
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, CollectionHelper.listOf(Profile.FIELD_CODE,Profile.FIELD_NAME));
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl());
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl());
+		DataTable dataTable = DataTable.build(arguments);
 		return dataTable;
 	}
 	
-	public static DataTable instantiateDataTable() {
-		return instantiateDataTable(null, null, null);
+	public static DataTable buildDataTable(Object...objects) {
+		return buildDataTable(ArrayHelper.isEmpty(objects) ? null : MapHelper.instantiate(objects));
 	}
 	
 	@Getter @Setter @Accessors(chain=true)
@@ -141,14 +134,35 @@ public class ProfileListPage extends AbstractEntityListPageContainerManagedImpl<
 				map.put(Column.FIELD_WIDTH, "200");
 			}else if(Profile.FIELD_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Libellé");
+			}else if(Profile.FIELD_PRIVILEGES_AS_STRINGS.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Privilèges");
 			}
 			return map;
+		}
+		
+		public Object getCellValueByRecordByColumn(Object record, Integer recordIndex, Column column, Integer columnIndex) {
+			if(column != null && Profile.FIELD_PRIVILEGES_AS_STRINGS.equals(column.getFieldName())) {
+				Profile profile = (Profile) record;
+				return CollectionHelper.isEmpty(profile.getPrivilegesAsStrings()) ? ConstantEmpty.STRING : StringHelper.concatenate(profile.getPrivilegesAsStrings(), "<br/>");
+			}
+			return super.getCellValueByRecordByColumn(record, recordIndex, column, columnIndex);
 		}
 	}
 	
 	@Getter @Setter @Accessors(chain=true)
 	public static class LazyDataModelListenerImpl extends LazyDataModel.Listener.AbstractImpl<Profile> implements Serializable {		
 		private ProfileType profileType;
+		
+		@Override
+		public Boolean getReaderUsable(LazyDataModel<Profile> lazyDataModel) {
+			return Boolean.TRUE;
+		}
+		
+		@Override
+		public String getReadQueryIdentifier(LazyDataModel<Profile> lazyDataModel) {
+			return profileType == null ? ProfileQuerier.QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_SYSTEME : ProfileQuerier.QUERY_IDENTIFIER_READ_BY_TYPES_CODES;
+		}
+		
 		@Override
 		public Filter.Dto instantiateFilter(LazyDataModel<Profile> lazyDataModel) {
 			Filter.Dto filter = super.instantiateFilter(lazyDataModel);
