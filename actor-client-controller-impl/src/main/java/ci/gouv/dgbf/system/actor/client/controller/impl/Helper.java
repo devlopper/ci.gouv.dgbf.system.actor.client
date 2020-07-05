@@ -6,6 +6,7 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.web.WebController;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
@@ -26,4 +27,41 @@ public interface Helper {
 						.addFilterField(ProfileQuerier.PARAMETER_NAME_ACTORS_CODES, List.of(actor.getCode()))))));
 		return profile;
 	}
+	
+	public static String formatActorListPrivilegesWindowTitle(Actor actor,Boolean isStatic) {
+		if(actor == null || isStatic == null || !isStatic)
+			return ACTOR_WINDOW_TITLE_FORMAT_LIST_PRIVILEGES;
+		return String.format(ACTOR_WINDOW_TITLE_FORMAT_LIST_PRIVILEGES_ACCOUNT,actor.getCode(),actor.getNames());
+	}
+	
+	public static String formatActorListScopesWindowTitle(Actor actor,Boolean isStatic) {
+		if(actor == null || isStatic == null || !isStatic)
+			return ACTOR_WINDOW_TITLE_FORMAT_LIST_SCOPES;
+		return String.format(ACTOR_WINDOW_TITLE_FORMAT_LIST_SCOPES_ACCOUNT,actor.getCode(),actor.getNames());
+	}
+	
+	public static String formatActorEditPrivilegesWindowTitle(Actor actor,String by) {
+		if(actor == null)
+			return ACTOR_WINDOW_TITLE_FORMAT_ASSIGN_PRIVILEGES;
+		if(StringHelper.isBlank(by))
+			return String.format(ACTOR_WINDOW_TITLE_FORMAT_ASSIGN_PRIVILEGES_ACCOUNT,actor.getCode(),actor.getNames());
+		return String.format(ACTOR_WINDOW_TITLE_FORMAT_ASSIGN_PRIVILEGES_BY_ACCOUNT, by,actor.getCode(),actor.getNames());
+	}
+	
+	public static String formatActorEditPrivilegesWindowTitle(Actor actor) {
+		return formatActorEditPrivilegesWindowTitle(actor, null);
+	}
+	
+	String ACTOR_WINDOW_TITLE_FORMAT_LIST_PRIVILEGES = "Privilèges";
+	String ACTOR_WINDOW_TITLE_FORMAT_LIST_SCOPES = "Domaines";
+	String ACTOR_WINDOW_TITLE_FORMAT_ASSIGN_PRIVILEGES = "Assignation de privilèges";
+	String ACTOR_WINDOW_TITLE_FORMAT_ASSIGN_PRIVILEGES_BY = ACTOR_WINDOW_TITLE_FORMAT_ASSIGN_PRIVILEGES+" par %s";
+	
+	String ACTOR_WINDOW_TITLE_FORMAT_ACCOUNT = " | Compte utilisateur %s : %s";
+	
+	String ACTOR_WINDOW_TITLE_FORMAT_LIST_PRIVILEGES_ACCOUNT = ACTOR_WINDOW_TITLE_FORMAT_LIST_PRIVILEGES+ACTOR_WINDOW_TITLE_FORMAT_ACCOUNT;
+	String ACTOR_WINDOW_TITLE_FORMAT_LIST_SCOPES_ACCOUNT = ACTOR_WINDOW_TITLE_FORMAT_LIST_SCOPES+ACTOR_WINDOW_TITLE_FORMAT_ACCOUNT;
+	
+	String ACTOR_WINDOW_TITLE_FORMAT_ASSIGN_PRIVILEGES_ACCOUNT = ACTOR_WINDOW_TITLE_FORMAT_ASSIGN_PRIVILEGES+ACTOR_WINDOW_TITLE_FORMAT_ACCOUNT;
+	String ACTOR_WINDOW_TITLE_FORMAT_ASSIGN_PRIVILEGES_BY_ACCOUNT = ACTOR_WINDOW_TITLE_FORMAT_ASSIGN_PRIVILEGES_BY+ACTOR_WINDOW_TITLE_FORMAT_ACCOUNT;
 }

@@ -46,8 +46,7 @@ public class ActorCreatePage extends AbstractEntityEditPageContainerManagedImpl<
 		arguments.put(Form.ConfiguratorImpl.FIELD_LISTENER, new Form.ConfiguratorImpl.Listener.AbstractImpl() {
 			@Override
 			public Collection<String> getFieldsNames(Form form) {
-				return CollectionHelper.listOf(Actor.FIELD_FIRST_NAME,Actor.FIELD_LAST_NAMES,Actor.FIELD_ELECTRONIC_MAIL_ADDRESS/*,Actor.FIELD_FUNCTIONS*/
-						,Actor.FIELD_PASSWORD,Actor.FIELD_PASSWORD_CONFIRMATION);
+				return CollectionHelper.listOf(Actor.FIELD_FIRST_NAME,Actor.FIELD_LAST_NAMES,Actor.FIELD_ELECTRONIC_MAIL_ADDRESS);
 			}
 			
 			@Override

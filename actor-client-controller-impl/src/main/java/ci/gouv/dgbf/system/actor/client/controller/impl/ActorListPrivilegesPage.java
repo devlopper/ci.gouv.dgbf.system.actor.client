@@ -121,7 +121,7 @@ public class ActorListPrivilegesPage extends AbstractActorListPrivilegesOrScopes
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Liste des privilèges";
+		return Helper.formatActorListPrivilegesWindowTitle(actor,isStatic);
 	}
 	
 	@Override

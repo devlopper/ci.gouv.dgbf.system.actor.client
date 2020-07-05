@@ -112,7 +112,7 @@ public class ActorListScopesPage extends AbstractActorListPrivilegesOrScopesPage
 	@Override
 	protected Layout buildLayout(Collection<Map<?, ?>> cellsMaps) {
 		if(actor != null)
-			((List)cellsMaps).add(2,MapHelper.instantiate(Cell.FIELD_IDENTIFIER,"tab_menu",Cell.FIELD_WIDTH,12));
+			((List)cellsMaps).add(isStatic ? 0 : 2,MapHelper.instantiate(Cell.FIELD_IDENTIFIER,"tab_menu",Cell.FIELD_WIDTH,12));
 		return super.buildLayout(cellsMaps);
 	}
 	
@@ -123,7 +123,7 @@ public class ActorListScopesPage extends AbstractActorListPrivilegesOrScopesPage
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Affectation des domaines";
+		return Helper.formatActorListScopesWindowTitle(actor, isStatic);
 	}
 	
 	@Override

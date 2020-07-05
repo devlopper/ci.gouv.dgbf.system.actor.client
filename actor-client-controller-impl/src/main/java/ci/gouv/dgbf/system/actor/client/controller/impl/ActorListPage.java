@@ -8,10 +8,12 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
@@ -48,7 +50,10 @@ public class ActorListPage extends AbstractEntityListPageContainerManagedImpl<Ac
 				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,columnsFieldsNames,DataTable.FIELD_LISTENER,listener);
 		
 		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();
-		//dataTable.addRecordMenuItemByArgumentsOpenViewInDialogRead();
+		dataTable.addRecordMenuItemByArgumentsNavigateToView(null,"actorListPrivilegesStaticView", MenuItem.FIELD_VALUE,"Privilèges", MenuItem.FIELD_ICON,"fa fa-lock"
+				,MenuItem.FIELD_PARAMETERS,Map.of(ParameterName.IS_STATIC.getValue(),"true"));
+		dataTable.addRecordMenuItemByArgumentsNavigateToView(null,"actorListScopesStaticView", MenuItem.FIELD_VALUE,"Domaines", MenuItem.FIELD_ICON,"fa fa-eye"
+				,MenuItem.FIELD_PARAMETERS,Map.of(ParameterName.IS_STATIC.getValue(),"true"));
 		
 		LazyDataModel<Actor> lazyDataModel = (LazyDataModel<Actor>) dataTable.getValue();
 		lazyDataModel.setReaderUsable(Boolean.TRUE);

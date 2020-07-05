@@ -37,43 +37,51 @@ public abstract class AbstractActorListPrivilegesOrScopesPage<T> extends Abstrac
 	protected CommandButton editCommandButton;
 	protected Actor actor;
 	protected Layout layout;
+	protected Boolean isStatic;
 	
 	@Override
 	protected void __listenPostConstruct__() {
 		actor = WebController.getInstance().getRequestParameterEntity(Actor.class);
+		isStatic = Boolean.TRUE.equals(WebController.getInstance().getRequestParameterAsBoolean(ParameterName.IS_STATIC));
 		if(actor != null) {			
 			
 		}
 		super.__listenPostConstruct__();		
-		
-		actorAutoComplete = AutoComplete.build(AutoComplete.FIELD_ENTITY_CLASS,Actor.class,AutoComplete.FIELD_LISTENER,new AutoComplete.Listener.AbstractImpl<Actor>() {
-			@Override
-			public Filter.Dto instantiateFilter(AutoComplete autoComplete) {
-				return new Filter.Dto().addField(ActorQuerier.PARAMETER_NAME_STRING, "%"+ValueHelper.defaultToIfBlank(autoComplete.get__queryString__(),ConstantEmpty.STRING)+"%");
-			}
-		},AutoComplete.FIELD_PLACEHOLDER,"rechercher par le nom d'utilisateur");
-		
-		actorAutoComplete.enableAjaxItemSelect();
-		actorAutoComplete.getAjaxes().get("itemSelect").setListener(new Ajax.Listener.AbstractImpl() {
-			@Override
-			protected void run(AbstractAction action) {
-				Actor actor = (Actor) FieldHelper.read(action.get__argument__(), "source.value");
-				if(actor != null)
-					JsfController.getInstance().redirect(getListOutcome(),Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(actor.getIdentifier())));
-			}			
-		});
-		actorAutoComplete.getAjaxes().get("itemSelect").setDisabled(Boolean.FALSE);
-		actorAutoComplete.setReaderUsable(Boolean.TRUE);
-		actorAutoComplete.setReadQueryIdentifier(ActorQuerier.QUERY_IDENTIFIER_READ_BY_STRING);
-		actorAutoComplete.setCountQueryIdentifier(ActorQuerier.QUERY_NAME_COUNT_BY_STRING);
-		
 		Collection<Map<?,?>> cellsMaps = new ArrayList<Map<?,?>>(); 
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Compte utilisateur"),Cell.FIELD_WIDTH,2));
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,actorAutoComplete,Cell.FIELD_WIDTH,10));	
+		
+		if(Boolean.TRUE.equals(isStatic)) {
+			
+		}else {
+			actorAutoComplete = AutoComplete.build(AutoComplete.FIELD_ENTITY_CLASS,Actor.class,AutoComplete.FIELD_LISTENER,new AutoComplete.Listener.AbstractImpl<Actor>() {
+				@Override
+				public Filter.Dto instantiateFilter(AutoComplete autoComplete) {
+					return new Filter.Dto().addField(ActorQuerier.PARAMETER_NAME_STRING, "%"+ValueHelper.defaultToIfBlank(autoComplete.get__queryString__(),ConstantEmpty.STRING)+"%");
+				}
+			},AutoComplete.FIELD_PLACEHOLDER,"rechercher par le nom d'utilisateur");
+			
+			actorAutoComplete.enableAjaxItemSelect();
+			actorAutoComplete.getAjaxes().get("itemSelect").setListener(new Ajax.Listener.AbstractImpl() {
+				@Override
+				protected void run(AbstractAction action) {
+					Actor actor = (Actor) FieldHelper.read(action.get__argument__(), "source.value");
+					if(actor != null)
+						JsfController.getInstance().redirect(getListOutcome(),Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(actor.getIdentifier())));
+				}			
+			});
+			actorAutoComplete.getAjaxes().get("itemSelect").setDisabled(Boolean.FALSE);
+			actorAutoComplete.setReaderUsable(Boolean.TRUE);
+			actorAutoComplete.setReadQueryIdentifier(ActorQuerier.QUERY_IDENTIFIER_READ_BY_STRING);
+			actorAutoComplete.setCountQueryIdentifier(ActorQuerier.QUERY_NAME_COUNT_BY_STRING);	
+			
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Compte utilisateur"),Cell.FIELD_WIDTH,2));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,actorAutoComplete,Cell.FIELD_WIDTH,10));	
+		}
+		
 		if(actor == null) {
 			
 		}else {
-			actorAutoComplete.setValue(actor);
+			if(actorAutoComplete != null)
+				actorAutoComplete.setValue(actor);
 			addOutputs(cellsMaps);
 			if(Boolean.TRUE.equals(isShowEditCommandButton())) {
 				editCommandButton = CommandButton.build(getEditCommandButtonArguments());
