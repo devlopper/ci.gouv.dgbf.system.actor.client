@@ -1,1 +1,1 @@
-docker rm $(docker stop $(docker ps -a -q --filter ancestor=actor-client))
+docker rm $(docker stop $(docker ps -a -q --filter ancestor=mic-acteur))

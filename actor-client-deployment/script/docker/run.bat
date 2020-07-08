@@ -1,1 +1,1 @@
-docker run -p 8080:8080 actor-client:latest
+docker run -p 8080:8082 mic-acteur:latest
