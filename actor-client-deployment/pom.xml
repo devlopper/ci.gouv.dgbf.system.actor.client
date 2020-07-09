@@ -68,7 +68,7 @@
 									<goal>package</goal>
 								</goals>
 								<configuration>
-									<hollow>false</hollow>
+									<hollow>true</hollow>
 								</configuration>
 							</execution>
 						</executions>

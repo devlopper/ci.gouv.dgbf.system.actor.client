@@ -54,8 +54,13 @@ public class ActorListScopesPage extends AbstractActorListPrivilegesOrScopesPage
 		if(scopeType == null)
 			scopeType = CollectionHelper.getFirst(scopeTypes);
 		
-		dataTable = ScopeListPage.instantiateDataTable(List.of(Scope.FIELD_CODE,Scope.FIELD_NAME),new DataTableListenerImpl(),new LazyDataModelListenerImpl()
-				.setActor(actor).setScopeType(scopeType));
+		Collection<String> columnsNames = CollectionHelper.listOf(Scope.FIELD_CODE,Scope.FIELD_NAME);
+		if(ScopeType.isCodeEqualsUA(scopeType))
+			columnsNames.add(Scope.FIELD_SECTION_AS_STRING);
+		
+		dataTable = ScopeListPage.buildDataTable(DataTable.FIELD_LISTENER,new DataTableListenerImpl()
+				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl().setActor(actor).setScopeType(scopeType)
+				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,columnsNames);
 		dataTable.set__parentElement__(actor);
 		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate(CommandButton.FIELD_VALUE,"Ajouter",CommandButton.FIELD_LISTENER
 				,new AbstractAction.Listener.AbstractImpl() {
@@ -147,31 +152,27 @@ public class ActorListScopesPage extends AbstractActorListPrivilegesOrScopesPage
 		private Actor actor;
 		
 		@Override
+		public String getReadQueryIdentifier(LazyDataModel<Scope> lazyDataModel) {
+			if(ScopeType.isCodeEqualsSECTION(scopeType))
+				return ScopeQuerier.QUERY_IDENTIFIER_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE;
+			else if(ScopeType.isCodeEqualsUA(scopeType))
+				return ScopeQuerier.QUERY_IDENTIFIER_READ_VISIBLE_ADMINISTRATIVE_UNITS_WITH_SECTION_BY_ACTOR_CODE;		
+			return ScopeQuerier.QUERY_IDENTIFIER_READ_BY_ACTORS_CODES_BY_TYPES_CODES;
+		}
+		
+		@Override
 		public Filter.Dto instantiateFilter(LazyDataModel<Scope> lazyDataModel) {
 			Filter.Dto filter = super.instantiateFilter(lazyDataModel);
 			if(actor != null) {
 				if(filter == null)
 					filter = new Filter.Dto();
-				if(scopeType.getCode().equals(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_SECTION) || 
-						scopeType.getCode().equals(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_UA)) {
+				if(ScopeType.isCodeEqualsSECTION(scopeType) || ScopeType.isCodeEqualsUA(scopeType)) {
 					filter = new Filter.Dto();
 					filter.addField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actor.getCode());
 				}else
 					filter.addField(ScopeQuerier.PARAMETER_NAME_ACTORS_CODES, List.of(actor.getCode()));
 			}
 			return filter;
-		}
-		
-		@Override
-		public Arguments<Scope> instantiateArguments(LazyDataModel<Scope> lazyDataModel) {
-			Arguments<Scope> arguments = super.instantiateArguments(lazyDataModel);
-			if(scopeType.getCode().equals(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_SECTION))
-				arguments.getRepresentationArguments().getQueryExecutorArguments().setQueryIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE);
-			else if(scopeType.getCode().equals(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_UA))
-				arguments.getRepresentationArguments().getQueryExecutorArguments().setQueryIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE);
-			else
-				arguments.getRepresentationArguments().getQueryExecutorArguments().setQueryIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_BY_ACTORS_CODES_BY_TYPES_CODES);
-			return arguments;
 		}
 	}
 }

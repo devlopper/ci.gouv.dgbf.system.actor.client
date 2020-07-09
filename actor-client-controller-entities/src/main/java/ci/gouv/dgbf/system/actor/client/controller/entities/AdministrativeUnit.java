@@ -13,4 +13,7 @@ import lombok.experimental.Accessors;
 public class AdministrativeUnit extends AbstractDataIdentifiableSystemStringImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	private Section section;
+	
+	public static final String FIELD_SECTION = "section";
 }

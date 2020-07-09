@@ -13,7 +13,9 @@ import lombok.experimental.Accessors;
 public class Scope extends AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private ScopeType type;
+	private ScopeType type;	
+	private Scope section;
+	private String sectionAsString;
 
 	@Override
 	public String toString() {
@@ -21,4 +23,6 @@ public class Scope extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 	}
 	
 	public static final String FIELD_TYPE = "type";
+	public static final String FIELD_SECTION = "section";
+	public static final String FIELD_SECTION_AS_STRING = "sectionAsString";
 }
