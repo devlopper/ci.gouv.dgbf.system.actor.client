@@ -3,8 +3,8 @@
   xsi:schemaLocation="http://ocpsoft.org/schema/rewrite-config-prettyfaces
                       http://ocpsoft.org/xml/ns/prettyfaces/rewrite-config-prettyfaces.xsd">
 
-	<url-mapping id="mes_domaines">
-		<pattern value="/mes_domaines" />
+	<url-mapping id="mes_visibilites">
+		<pattern value="/mes_visibilites" />
 		<view-id value="/private/actor/loggedin/listscopes.jsf" />
 	</url-mapping>
 
