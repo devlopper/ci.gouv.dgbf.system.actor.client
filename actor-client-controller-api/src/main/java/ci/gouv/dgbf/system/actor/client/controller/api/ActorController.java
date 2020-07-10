@@ -3,6 +3,8 @@ package ci.gouv.dgbf.system.actor.client.controller.api;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.__kernel__.session.SessionHelper;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.ControllerEntity;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
@@ -17,4 +19,10 @@ public interface ActorController extends ControllerEntity<Actor> {
 						)));
 	}
 	
+	default Actor getLoggedIn() {
+		String username = SessionHelper.getUserName();
+		if(StringHelper.isBlank(username))
+			return null;
+		return readByBusinessIdentifier(username);
+	}
 }

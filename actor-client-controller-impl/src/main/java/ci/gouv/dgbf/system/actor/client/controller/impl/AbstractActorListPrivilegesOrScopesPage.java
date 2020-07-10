@@ -39,10 +39,18 @@ public abstract class AbstractActorListPrivilegesOrScopesPage<T> extends Abstrac
 	protected Layout layout;
 	protected Boolean isStatic;
 	
+	protected Actor __getActor__() {
+		return WebController.getInstance().getRequestParameterEntity(Actor.class);
+	}
+	
+	protected Boolean __getIsStatic__() {
+		return Boolean.TRUE.equals(WebController.getInstance().getRequestParameterAsBoolean(ParameterName.IS_STATIC));
+	}
+	
 	@Override
 	protected void __listenPostConstruct__() {
-		actor = WebController.getInstance().getRequestParameterEntity(Actor.class);
-		isStatic = Boolean.TRUE.equals(WebController.getInstance().getRequestParameterAsBoolean(ParameterName.IS_STATIC));
+		actor = __getActor__();
+		isStatic = __getIsStatic__();
 		if(actor != null) {			
 			
 		}

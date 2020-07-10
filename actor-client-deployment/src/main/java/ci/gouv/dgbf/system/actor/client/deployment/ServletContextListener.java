@@ -27,6 +27,5 @@ public class ServletContextListener extends AbstractServletContextListener imple
 		DesktopDefault.MENU_IDENTIFIER = "COLB";
 		DesktopDefault.IS_SHOW_USER_MENU = Boolean.TRUE;
 		*/
-	}
-	
+	}	
 }

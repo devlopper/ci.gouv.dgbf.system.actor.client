@@ -6,16 +6,16 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.client.controller.web.WebController;
-import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Profile;
 import lombok.Getter;
 import lombok.Setter;
 
 @Named @ViewScoped @Getter @Setter
-public class ActorReadPage extends AbstractPageContainerManagedImpl implements Serializable {
+public class ActorReadPage extends AbstractActorReadPage implements Serializable {
 
-	private Actor actor;
+	private Profile profile;
 	
 	@Override
 	protected void __listenPostConstruct__() {

@@ -63,6 +63,12 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>actorLoggedInListScopesView</from-outcome>
+			<to-view-id>/private/actor/loggedin/listscopes.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>actorEditScopesView</from-outcome>
 			<to-view-id>/private/actor/editscopes.jsf</to-view-id>
 			<redirect />

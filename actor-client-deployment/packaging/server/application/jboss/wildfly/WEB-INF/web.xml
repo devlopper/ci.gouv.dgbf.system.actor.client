@@ -47,6 +47,10 @@
 		<param-value>${cyk.variable.system.logging.throwable.print.stack.trace}</param-value>
 	</context-param>
 	
+	<context-param>
+		<param-name>cyk.variable.system.security.authentication.enable</param-name>
+		<param-value>${cyk.variable.system.security.authentication.enable}</param-value>
+	</context-param>
 	<!-- Static resources -->
 	
 	<!-- Favicon -->
