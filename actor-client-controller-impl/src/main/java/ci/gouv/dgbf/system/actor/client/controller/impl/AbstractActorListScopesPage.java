@@ -175,5 +175,10 @@ public abstract class AbstractActorListScopesPage extends AbstractActorListPrivi
 			}
 			return filter;
 		}
+		
+		@Override
+		protected Boolean isFieldFilterable(String fieldName) {
+			return Boolean.FALSE;
+		}
 	}
 }

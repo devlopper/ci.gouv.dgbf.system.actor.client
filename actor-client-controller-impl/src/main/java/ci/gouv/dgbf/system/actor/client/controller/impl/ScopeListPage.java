@@ -149,24 +149,32 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 		@Override
 		public String getReadQueryIdentifier(LazyDataModel<Scope> lazyDataModel) {
 			if(ScopeType.isCodeEqualsUA(scopeType))
-				return ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_UA;
-			//return ScopeQuerier.QUERY_IDENTIFIER_READ_BY_TYPES_CODES;
+				return ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_UA_AND_FILTER;
 			return ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER;
 		}
 		
 		@Override
 		public Filter.Dto instantiateFilter(LazyDataModel<Scope> lazyDataModel) {
 			Filter.Dto filter = super.instantiateFilter(lazyDataModel);
-			if(scopeType != null && !ScopeType.isCodeEqualsUA(scopeType)) {
-				if(filter == null)
-					filter = new Filter.Dto();
-				//filter.addField(ScopeQuerier.PARAMETER_NAME_TYPES_CODES, List.of(scopeType.getCode()));
-				filter.addField(ScopeQuerier.PARAMETER_NAME_TYPE_CODE, scopeType.getCode());
-				filter.addField(ScopeQuerier.PARAMETER_NAME_CODE, MapHelper.readByKey(lazyDataModel.get__filters__(), ScopeQuerier.PARAMETER_NAME_CODE));
-				filter.addField(ScopeQuerier.PARAMETER_NAME_NAME, MapHelper.readByKey(lazyDataModel.get__filters__(), ScopeQuerier.PARAMETER_NAME_NAME));
+			if(filter == null)
+				filter = new Filter.Dto();
+			if(ScopeType.isCodeEqualsUA(scopeType)) {		
+				
+			}else {
+				if(Boolean.TRUE.equals(isFieldFilterable(ScopeQuerier.PARAMETER_NAME_TYPE_CODE)))
+					filter.addField(ScopeQuerier.PARAMETER_NAME_TYPE_CODE, scopeType.getCode());
+				else
+					filter.addField(ScopeQuerier.PARAMETER_NAME_TYPES_CODES, List.of(scopeType.getCode()));
 			}
+			if(Boolean.TRUE.equals(isFieldFilterable(ScopeQuerier.PARAMETER_NAME_CODE)))
+				filter.addField(ScopeQuerier.PARAMETER_NAME_CODE, MapHelper.readByKey(lazyDataModel.get__filters__(), ScopeQuerier.PARAMETER_NAME_CODE));
+			if(Boolean.TRUE.equals(isFieldFilterable(ScopeQuerier.PARAMETER_NAME_NAME)))
+				filter.addField(ScopeQuerier.PARAMETER_NAME_NAME, MapHelper.readByKey(lazyDataModel.get__filters__(), ScopeQuerier.PARAMETER_NAME_NAME));
 			return filter;
 		}
+		
+		protected Boolean isFieldFilterable(String fieldName) {
+			return Boolean.TRUE;
+		}
 	}
-	
 }
