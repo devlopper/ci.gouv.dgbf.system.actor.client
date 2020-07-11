@@ -111,17 +111,27 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 		public Map<Object, Object> getColumnArguments(AbstractDataTable dataTable, String fieldName) {
 			Map<Object, Object> map = super.getColumnArguments(dataTable, fieldName);
 			if(ScopeType.isCodeEqualsSECTION(scopeType))
-				dataTable.getOrderNumberColumn().setWidth("40");
+				dataTable.getOrderNumberColumn().setWidth("20");
 			map.put(Column.ConfiguratorImpl.FIELD_EDITABLE, Boolean.FALSE);
 			if(Scope.FIELD_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Code");
-				map.put(Column.FIELD_WIDTH, ScopeType.isCodeEqualsSECTION(scopeType) ? "50" : "100");
+				map.put(Column.FIELD_WIDTH, ScopeType.isCodeEqualsSECTION(scopeType) ? "70" : "100");
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, ScopeQuerier.PARAMETER_NAME_CODE);
 			}else if(Scope.FIELD_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Libellé");
+				map.put(Column.FIELD_FILTER_BY, ScopeQuerier.PARAMETER_NAME_NAME);
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
 			}else if(Scope.FIELD_TYPE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Type");
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, ScopeQuerier.PARAMETER_NAME_TYPE);
 			}else if(Scope.FIELD_SECTION_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Section");
+			}else if(Scope.FIELD_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, scopeType == null ? "Domaine" : scopeType.getName());
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, ScopeQuerier.PARAMETER_NAME_THIS);
 			}
 			return map;
 		}
@@ -140,7 +150,8 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 		public String getReadQueryIdentifier(LazyDataModel<Scope> lazyDataModel) {
 			if(ScopeType.isCodeEqualsUA(scopeType))
 				return ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_UA;
-			return ScopeQuerier.QUERY_IDENTIFIER_READ_BY_TYPES_CODES;
+			//return ScopeQuerier.QUERY_IDENTIFIER_READ_BY_TYPES_CODES;
+			return ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER;
 		}
 		
 		@Override
@@ -149,7 +160,10 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 			if(scopeType != null && !ScopeType.isCodeEqualsUA(scopeType)) {
 				if(filter == null)
 					filter = new Filter.Dto();
-				filter.addField(ScopeQuerier.PARAMETER_NAME_TYPES_CODES, List.of(scopeType.getCode()));
+				//filter.addField(ScopeQuerier.PARAMETER_NAME_TYPES_CODES, List.of(scopeType.getCode()));
+				filter.addField(ScopeQuerier.PARAMETER_NAME_TYPE_CODE, scopeType.getCode());
+				filter.addField(ScopeQuerier.PARAMETER_NAME_CODE, MapHelper.readByKey(lazyDataModel.get__filters__(), ScopeQuerier.PARAMETER_NAME_CODE));
+				filter.addField(ScopeQuerier.PARAMETER_NAME_NAME, MapHelper.readByKey(lazyDataModel.get__filters__(), ScopeQuerier.PARAMETER_NAME_NAME));
 			}
 			return filter;
 		}
