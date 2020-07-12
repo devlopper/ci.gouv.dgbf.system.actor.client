@@ -66,12 +66,7 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 	
 	@Override
 	protected DataTable __buildDataTable__() {
-		Collection<String> columnsNames = CollectionHelper.listOf(Scope.FIELD_CODE,Scope.FIELD_NAME);
-		if(ScopeType.isCodeEqualsUA(scopeType))
-			columnsNames.add(Scope.FIELD_SECTION_AS_STRING);
-		DataTable dataTable = buildDataTable(DataTable.FIELD_LISTENER,new DataTableListenerImpl().setScopeType(scopeType)
-				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl().setScopeType(scopeType)
-				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,columnsNames);
+		DataTable dataTable = buildDataTable(ScopeType.class,scopeType);
 		return dataTable;
 	}
 	
@@ -83,12 +78,16 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 	public static DataTable buildDataTable(Map<Object,Object> arguments) {
 		if(arguments == null)
 			arguments = new HashMap<>();
+		ScopeType scopeType = (ScopeType) MapHelper.readByKey(arguments, ScopeType.class);
+		Collection<String> columnsNames = CollectionHelper.listOf(Scope.FIELD_CODE,Scope.FIELD_NAME);
+		if(ScopeType.isCodeEqualsUA(scopeType))
+			columnsNames.add(Scope.FIELD_SECTION_AS_STRING);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, Scope.class);
-		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, CollectionHelper.listOf(Scope.FIELD_CODE,Scope.FIELD_NAME));
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, columnsNames);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
-		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl());
-		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl());
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl().setScopeType(scopeType));
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl().setScopeType(scopeType));
 		DataTable dataTable = DataTable.build(arguments);
 		return dataTable;
 	}
@@ -97,21 +96,19 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 		return buildDataTable(ArrayHelper.isEmpty(objects) ? null : MapHelper.instantiate(objects));
 	}
 	
-	public static DataTable buildDataTableWithScopeType(ScopeType scopeType,Object...objects) {
-		Collection<String> columnsNames = CollectionHelper.listOf(Scope.FIELD_CODE,Scope.FIELD_NAME);
-		if(ScopeType.isCodeEqualsUA(scopeType))
-			columnsNames.add(Scope.FIELD_SECTION_AS_STRING);
-		return buildDataTable(DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,columnsNames);
-	}
-	
 	@Getter @Setter @Accessors(chain=true)
 	public static class DataTableListenerImpl extends DataTable.Listener.AbstractImpl implements Serializable {
 		private ScopeType scopeType;
 		@Override
 		public Map<Object, Object> getColumnArguments(AbstractDataTable dataTable, String fieldName) {
 			Map<Object, Object> map = super.getColumnArguments(dataTable, fieldName);
-			if(ScopeType.isCodeEqualsSECTION(scopeType))
-				dataTable.getOrderNumberColumn().setWidth("20");
+			if(MapHelper.readByKey(map, DataTable.FIELD_SELECTION_MODE) == null) {
+				/*
+				if(ScopeType.isCodeEqualsSECTION(scopeType))
+					dataTable.getOrderNumberColumn().setWidth("20");
+				dataTable.getOrderNumberColumn().setWidth("100");
+				*/
+			}			
 			map.put(Column.ConfiguratorImpl.FIELD_EDITABLE, Boolean.FALSE);
 			if(Scope.FIELD_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Code");
@@ -161,20 +158,9 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 			if(ScopeType.isCodeEqualsUA(scopeType)) {		
 				
 			}else {
-				if(Boolean.TRUE.equals(isFieldFilterable(ScopeQuerier.PARAMETER_NAME_TYPE_CODE)))
-					filter.addField(ScopeQuerier.PARAMETER_NAME_TYPE_CODE, scopeType.getCode());
-				else
-					filter.addField(ScopeQuerier.PARAMETER_NAME_TYPES_CODES, List.of(scopeType.getCode()));
+				filter.addField(ScopeQuerier.PARAMETER_NAME_TYPE_CODE, scopeType.getCode());				
 			}
-			if(Boolean.TRUE.equals(isFieldFilterable(ScopeQuerier.PARAMETER_NAME_CODE)))
-				filter.addField(ScopeQuerier.PARAMETER_NAME_CODE, MapHelper.readByKey(lazyDataModel.get__filters__(), ScopeQuerier.PARAMETER_NAME_CODE));
-			if(Boolean.TRUE.equals(isFieldFilterable(ScopeQuerier.PARAMETER_NAME_NAME)))
-				filter.addField(ScopeQuerier.PARAMETER_NAME_NAME, MapHelper.readByKey(lazyDataModel.get__filters__(), ScopeQuerier.PARAMETER_NAME_NAME));
 			return filter;
-		}
-		
-		protected Boolean isFieldFilterable(String fieldName) {
-			return Boolean.TRUE;
 		}
 	}
 }

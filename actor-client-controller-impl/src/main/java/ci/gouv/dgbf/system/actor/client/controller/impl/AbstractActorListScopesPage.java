@@ -155,10 +155,10 @@ public abstract class AbstractActorListScopesPage extends AbstractActorListPrivi
 		@Override
 		public String getReadQueryIdentifier(LazyDataModel<Scope> lazyDataModel) {
 			if(ScopeType.isCodeEqualsSECTION(scopeType))
-				return ScopeQuerier.QUERY_IDENTIFIER_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE;
+				return ScopeQuerier.QUERY_IDENTIFIER_READ_VISIBLE_SECTIONS_WHERE_FILTER;
 			else if(ScopeType.isCodeEqualsUA(scopeType))
 				return ScopeQuerier.QUERY_IDENTIFIER_READ_VISIBLE_ADMINISTRATIVE_UNITS_WITH_SECTION_BY_ACTOR_CODE;		
-			return ScopeQuerier.QUERY_IDENTIFIER_READ_BY_ACTORS_CODES_BY_TYPES_CODES;
+			return ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER;
 		}
 		
 		@Override
@@ -168,17 +168,14 @@ public abstract class AbstractActorListScopesPage extends AbstractActorListPrivi
 				if(filter == null)
 					filter = new Filter.Dto();
 				if(ScopeType.isCodeEqualsSECTION(scopeType) || ScopeType.isCodeEqualsUA(scopeType)) {
-					filter = new Filter.Dto();
-					filter.addField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actor.getCode());
-				}else
-					filter.addField(ScopeQuerier.PARAMETER_NAME_ACTORS_CODES, List.of(actor.getCode()));
+					if(filter != null)
+						filter.removeFields(ScopeQuerier.PARAMETER_NAME_TYPE_CODE);
+				}else {
+					
+				}
+				filter.addField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actor.getCode());
 			}
 			return filter;
-		}
-		
-		@Override
-		protected Boolean isFieldFilterable(String fieldName) {
-			return Boolean.FALSE;
 		}
 	}
 }
