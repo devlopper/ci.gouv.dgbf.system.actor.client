@@ -23,6 +23,7 @@ public interface ActorController extends ControllerEntity<Actor> {
 		String username = SessionHelper.getUserName();
 		if(StringHelper.isBlank(username))
 			return null;
-		return readByBusinessIdentifier(username);
+		return EntityReader.getInstance().readOne(Actor.class, ActorQuerier.QUERY_IDENTIFIER_READ_BY_CODE, ActorQuerier.PARAMETER_NAME_CODE,username);
+		//readByBusinessIdentifier(username);
 	}
 }

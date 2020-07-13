@@ -10,17 +10,22 @@
 	
     <cyk:page value="#{actorLoggedInListScopesPage}">
     	<ui:define name="centerCenter">
-    		<ui:fragment rendered="#{actorLoggedInListScopesPage.actor == null}">
+    		<ui:fragment rendered="#{empty request.remoteUser}">
     			<h1><h:outputText value="Utilisateur non connecté"/></h1>
-    		</ui:fragment>   
-    		<ui:fragment rendered="#{actorLoggedInListScopesPage.actor != null}">
-    			<ui:decorate template="#{primefacesHelper.getModelTemplate(actorLoggedInListScopesPage.layout)}">
-	    			<ui:param name="layout" value="#{actorLoggedInListScopesPage.layout}"/> 
-	    			<ui:define name="cell0">
-	    				<p:tabMenu model="#{actorLoggedInListScopesPage.tabMenu}" activeIndex="#{actorLoggedInListScopesPage.tabMenuActiveIndex}"/>
-	    			</ui:define>
-	    		</ui:decorate>
-    		</ui:fragment>   			    		
+    		</ui:fragment>
+    		<ui:fragment rendered="#{not empty request.remoteUser}">
+    			<ui:fragment rendered="#{actorLoggedInListScopesPage.actor == null}">
+    				<h1><h:outputText value="Utilisateur non référencé"/></h1>
+    			</ui:fragment>
+    			<ui:fragment rendered="#{actorLoggedInListScopesPage.actor != null}">
+	    			<ui:decorate template="#{primefacesHelper.getModelTemplate(actorLoggedInListScopesPage.layout)}">
+		    			<ui:param name="layout" value="#{actorLoggedInListScopesPage.layout}"/> 
+		    			<ui:define name="cell0">
+		    				<p:tabMenu model="#{actorLoggedInListScopesPage.tabMenu}" activeIndex="#{actorLoggedInListScopesPage.tabMenuActiveIndex}"/>
+		    			</ui:define>
+		    		</ui:decorate>
+	    		</ui:fragment>   	
+    		</ui:fragment>	    				    		
     	</ui:define>
     </cyk:page>
 </html>
