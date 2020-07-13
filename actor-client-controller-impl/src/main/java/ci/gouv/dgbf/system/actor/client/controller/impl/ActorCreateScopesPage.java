@@ -63,7 +63,7 @@ public class ActorCreateScopesPage extends AbstractActorCreateScopesOrPrivileges
 		
 		@Override
 		public Filter.Dto instantiateFilter(LazyDataModel<Scope> lazyDataModel) {
-			Filter.Dto filter = new Filter.Dto();
+			Filter.Dto filter = super.instantiateFilter(lazyDataModel);			
 			filter.addField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actor.getCode());
 			if(ScopeType.isCodeEqualsSECTION(scopeType))
 				;
