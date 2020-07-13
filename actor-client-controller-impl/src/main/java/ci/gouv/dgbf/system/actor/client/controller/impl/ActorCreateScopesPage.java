@@ -54,6 +54,10 @@ public class ActorCreateScopesPage extends AbstractActorCreateScopesOrPrivileges
 		private Actor actor;
 		@Override
 		public String getReadQueryIdentifier(LazyDataModel<Scope> lazyDataModel) {
+			if(ScopeType.isCodeEqualsSECTION(scopeType))
+				return ScopeQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_SECTIONS_WHERE_FILTER;
+			if(ScopeType.isCodeEqualsUA(scopeType))
+				return ScopeQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_ADMINISTRATIVE_UNITS_WITH_SECTIONS_WHERE_FILTER;
 			return ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_NOT_ASSOCIATED;
 		}
 		
@@ -61,7 +65,12 @@ public class ActorCreateScopesPage extends AbstractActorCreateScopesOrPrivileges
 		public Filter.Dto instantiateFilter(LazyDataModel<Scope> lazyDataModel) {
 			Filter.Dto filter = new Filter.Dto();
 			filter.addField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actor.getCode());
-			filter.addField(ScopeQuerier.PARAMETER_NAME_TYPE_CODE, scopeType.getCode());
+			if(ScopeType.isCodeEqualsSECTION(scopeType))
+				;
+			else if(ScopeType.isCodeEqualsUA(scopeType))
+				;
+			else
+				filter.addField(ScopeQuerier.PARAMETER_NAME_TYPE_CODE, scopeType.getCode());
 			return filter;
 		}
 	}
