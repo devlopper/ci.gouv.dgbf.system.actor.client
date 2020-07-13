@@ -112,6 +112,8 @@ public abstract class AbstractActorListScopesPage extends AbstractActorListPrivi
 	
 	protected void addTabActorParameter(DefaultMenuItem item) {
 		item.setParam(ParameterName.ENTITY_IDENTIFIER.getValue(), actor.getIdentifier());
+		if(Boolean.TRUE.equals(isStatic))
+			item.setParam(ParameterName.IS_STATIC.getValue(), Boolean.TRUE);
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -134,12 +136,20 @@ public abstract class AbstractActorListScopesPage extends AbstractActorListPrivi
 	
 	@Override
 	protected String getListOutcome() {
-		return "actorListScopesView";
+		return Boolean.TRUE.equals(isStatic) ? "actorListScopesStaticView" : "actorListScopesView";
+	}
+	
+	@Override
+	protected Map<String, List<String>> getListOutcomeParameters(Actor actor) {
+		Map<String, List<String>> map = super.getListOutcomeParameters(actor);
+		if(scopeType != null)
+			map.put(ParameterName.stringify(ScopeType.class), List.of(scopeType.getCode()));
+		return map;
 	}
 	
 	@Override
 	protected String getEditOutcome() {
-		return "actorEditScopesView";
+		return Boolean.TRUE.equals(isStatic) ? "actorEditScopesStaticView" : "actorEditScopesView";
 	}
 	
 	/**/

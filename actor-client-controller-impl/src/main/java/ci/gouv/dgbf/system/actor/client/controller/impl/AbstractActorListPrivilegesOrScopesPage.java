@@ -73,8 +73,8 @@ public abstract class AbstractActorListPrivilegesOrScopesPage<T> extends Abstrac
 				protected void run(AbstractAction action) {
 					Actor actor = (Actor) FieldHelper.read(action.get__argument__(), "source.value");
 					if(actor != null)
-						JsfController.getInstance().redirect(getListOutcome(),Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(actor.getIdentifier())));
-				}			
+						JsfController.getInstance().redirect(getListOutcome(),getListOutcomeParameters(actor));
+				}
 			});
 			actorAutoComplete.getAjaxes().get("itemSelect").setDisabled(Boolean.FALSE);
 			actorAutoComplete.setReaderUsable(Boolean.TRUE);
@@ -97,6 +97,12 @@ public abstract class AbstractActorListPrivilegesOrScopesPage<T> extends Abstrac
 			}
 		}
 		layout = buildLayout(cellsMaps);
+	}
+	
+	protected Map<String,List<String>> getListOutcomeParameters(Actor actor) {
+		Map<String,List<String>> map = new HashMap<>();
+		map.put(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(actor.getIdentifier()));
+		return map;
 	}
 	
 	protected Layout buildLayout(Collection<Map<?,?>> cellsMaps) {
