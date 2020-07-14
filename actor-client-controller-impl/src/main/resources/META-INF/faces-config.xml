@@ -9,6 +9,20 @@
 		<from-view-id>*</from-view-id>
 		
 		<navigation-case>
+			<from-outcome>accountRequestCreateView</from-outcome>
+			<to-view-id>/public/accountrequest/create.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>accountRequestNotifyAfterCreateView</from-outcome>
+			<to-view-id>/public/accountrequest/notifyaftercreate.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<!--  -->
+		
+		<navigation-case>
 			<from-outcome>actorListView</from-outcome>
 			<to-view-id>/private/actor/list.jsf</to-view-id>
 			<redirect />

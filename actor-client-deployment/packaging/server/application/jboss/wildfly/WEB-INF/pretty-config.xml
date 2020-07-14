@@ -8,4 +8,14 @@
 		<view-id value="/private/actor/loggedin/listscopes.jsf" />
 	</url-mapping>
 
+	<url-mapping id="demande_compte">
+		<pattern value="/demande_compte" />
+		<view-id value="/public/accountrequest/create.jsf" />
+	</url-mapping>
+	
+	<url-mapping id="notification_demande_compte">
+		<pattern value="/notification_demande_compte" />
+		<view-id value="/public/accountrequest/notifyaftercreate.jsf" />
+	</url-mapping>
+
 </pretty-config>
