@@ -25,6 +25,7 @@ import lombok.experimental.Accessors;
 public class Actor extends AbstractDataIdentifiableSystemStringIdentifiableBusinessStringImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	private Identity identity;
 	@NotNull private String firstName;
 	@NotNull private String lastNames;
 	private String names;
@@ -47,6 +48,8 @@ public class Actor extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 					names = lastNames;
 				else
 					names += " "+lastNames;
+			if(names == null)
+				names = identity == null ? null : identity.getNames();
 			if(names == null)
 				names = ConstantEmpty.STRING;
 		}
