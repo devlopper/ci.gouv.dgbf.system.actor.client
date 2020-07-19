@@ -11,8 +11,11 @@ import org.cyk.utility.client.controller.component.menu.MenuItemBuilder;
 public class MenuBuilderMapInstantiatorImpl extends org.cyk.utility.client.controller.component.menu.AbstractMenuBuilderMapInstantiatorImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	public static final String IDENTIFICATION = "identification";
+	public static final String NONE = "none";
+	
 	@Override
-	protected void __instantiateSessionMenuBuilderItems__(Object key, MenuBuilder sessionMenuBuilder, Object request,Principal principal) {
+	protected void __instantiateSessionMenuBuilderItems__(Object key, MenuBuilder sessionMenuBuilder, Object request,Principal principal) {		
 		sessionMenuBuilder.addItems(
 				__inject__(MenuItemBuilder.class).setCommandableName("Gestion des privilèges").setCommandableIcon(Icon.SUITCASE)
 				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Privilèges").setCommandableNavigationIdentifier("privilegeListView"))
@@ -33,7 +36,7 @@ public class MenuBuilderMapInstantiatorImpl extends org.cyk.utility.client.contr
 				)*/
 				//.addEntitySelect(UserAccount.class, Constant.SYSTEM_ACTION_IDENTIFIER_ASSIGN_PRIVILEGES)
 				//.addEntitySelect(UserAccount.class, Constant.SYSTEM_ACTION_IDENTIFIER_ASSIGN_FUNCTION_SCOPES)
-				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Comptes utilisateurs").setCommandableNavigationIdentifier("actorListView"))
+				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Comptes utilisateurs").setCommandableNavigationIdentifier("accountListView" /*"actorListView"*/))
 				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Assignations").setCommandableNavigationIdentifier("actorListPrivilegesView"))
 				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Affectations").setCommandableNavigationIdentifier("actorListScopesView"))
 				//.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Affectations").setCommandableNavigationIdentifier("userAccountAssignScopesListUserAccountView"))
@@ -44,6 +47,6 @@ public class MenuBuilderMapInstantiatorImpl extends org.cyk.utility.client.contr
 						.setCommandableNavigationValue("http://10.3.4.20:30300/sib/portail/")
 						)
 				*/
-				);	
+				);			
 	}
 }

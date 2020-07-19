@@ -20,6 +20,12 @@
 			<redirect />
 		</navigation-case>
 		
+		<navigation-case>
+			<from-outcome>accountListView</from-outcome>
+			<to-view-id>/private/account/list.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
 		<!--  -->
 		
 		<navigation-case>

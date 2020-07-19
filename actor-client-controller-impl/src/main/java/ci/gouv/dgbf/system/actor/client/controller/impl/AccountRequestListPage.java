@@ -9,24 +9,27 @@ import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
+import org.cyk.utility.__kernel__.controller.Arguments;
+import org.cyk.utility.__kernel__.controller.EntitySaver;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 
-import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
+import ci.gouv.dgbf.system.actor.client.controller.entities.AccountRequest;
+import ci.gouv.dgbf.system.actor.server.business.api.AccountRequestBusiness;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentityQuerier;
+import ci.gouv.dgbf.system.actor.server.representation.api.AccountRequestRepresentation;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Named @ViewScoped @Getter @Setter
-public class ActorListPage extends AbstractEntityListPageContainerManagedImpl<Actor> implements Serializable {
+public class AccountRequestListPage extends AbstractEntityListPageContainerManagedImpl<AccountRequest> implements Serializable {
 
 	@Override
 	protected DataTable __buildDataTable__() {
@@ -36,7 +39,7 @@ public class ActorListPage extends AbstractEntityListPageContainerManagedImpl<Ac
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Liste des comptes utilisateurs";
+		return "Liste des demandes de comptes";
 	}
 	
 	/**/
@@ -45,19 +48,36 @@ public class ActorListPage extends AbstractEntityListPageContainerManagedImpl<Ac
 		if(arguments == null)
 			arguments = new HashMap<>();
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
-		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, Actor.class);
-		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, CollectionHelper.listOf(Actor.FIELD_CODE,Actor.FIELD_FIRST_NAME
-				,Actor.FIELD_LAST_NAMES,Actor.FIELD_ELECTRONIC_MAIL_ADDRESS));
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, AccountRequest.class);
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, CollectionHelper.listOf(AccountRequest.FIELD_FIRST_NAME
+				,AccountRequest.FIELD_LAST_NAMES,AccountRequest.FIELD_ELECTRONIC_MAIL_ADDRESS,AccountRequest.FIELD_CREATION_DATE_AS_STRING));
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl());
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl());
 		DataTable dataTable = DataTable.build(arguments);
-		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();
-		dataTable.addRecordMenuItemByArgumentsNavigateToView(null,"actorListPrivilegesStaticView", MenuItem.FIELD_VALUE,"Privilèges", MenuItem.FIELD_ICON,"fa fa-lock"
-				,MenuItem.FIELD_PARAMETERS,Map.of(ParameterName.IS_STATIC.getValue(),"true"));
-		dataTable.addRecordMenuItemByArgumentsNavigateToView(null,"actorListScopesStaticView", MenuItem.FIELD_VALUE,"Domaines", MenuItem.FIELD_ICON,"fa fa-eye"
-				,MenuItem.FIELD_PARAMETERS,Map.of(ParameterName.IS_STATIC.getValue(),"true"));
 		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
+		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Accepter", "fa fa-check", new AbstractAction.Listener.AbstractImpl() {
+			@Override
+			protected Object __runExecuteFunction__(AbstractAction action) {
+				AccountRequest accountRequest = (AccountRequest) action.get__argument__();
+				EntitySaver.getInstance().save(AccountRequest.class, new Arguments<AccountRequest>()
+						.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(AccountRequestBusiness.ACCEPT))
+						.setRepresentation(AccountRequestRepresentation.getProxy())
+						.addCreatablesOrUpdatables(accountRequest));
+				return null;
+			}
+		});
+		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Rejecter", "fa fa-trash", new AbstractAction.Listener.AbstractImpl() {
+			@Override
+			protected Object __runExecuteFunction__(AbstractAction action) {
+				AccountRequest accountRequest = (AccountRequest) action.get__argument__();
+				EntitySaver.getInstance().save(AccountRequest.class, new Arguments<AccountRequest>()
+						.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(AccountRequestBusiness.REJECT))
+						.setRepresentation(AccountRequestRepresentation.getProxy())
+						.addCreatablesOrUpdatables(accountRequest));
+				return null;
+			}
+		});
 		return dataTable;
 	}
 	
@@ -72,44 +92,42 @@ public class ActorListPage extends AbstractEntityListPageContainerManagedImpl<Ac
 		public Map<Object, Object> getColumnArguments(AbstractDataTable dataTable, String fieldName) {
 			Map<Object, Object> map = super.getColumnArguments(dataTable, fieldName);
 			map.put(Column.ConfiguratorImpl.FIELD_EDITABLE, Boolean.FALSE);
-			if(Actor.FIELD_NAMES.equals(fieldName)) {
+			if(AccountRequest.FIELD_NAMES.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Nom et prénom(s)");
 				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
 				map.put(Column.FIELD_FILTER_BY, IdentityQuerier.PARAMETER_NAME_NAMES);
-			}else if(Actor.FIELD_FIRST_NAME.equals(fieldName)) {
+			}else if(AccountRequest.FIELD_FIRST_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Nom");
 				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
 				map.put(Column.FIELD_FILTER_BY, IdentityQuerier.PARAMETER_NAME_FIRST_NAME);
 				map.put(Column.FIELD_WIDTH, "200");
-			}else if(Actor.FIELD_LAST_NAMES.equals(fieldName)) {
+			}else if(AccountRequest.FIELD_LAST_NAMES.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Prenom(s)");
 				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
 				map.put(Column.FIELD_FILTER_BY, IdentityQuerier.PARAMETER_NAME_LAST_NAMES);
-			}else if(Actor.FIELD_ELECTRONIC_MAIL_ADDRESS.equals(fieldName)) {
+			}else if(AccountRequest.FIELD_ELECTRONIC_MAIL_ADDRESS.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Email");
 				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
 				map.put(Column.FIELD_FILTER_BY, IdentityQuerier.PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS);
 				map.put(Column.FIELD_WIDTH, "250");
-			}else if(Actor.FIELD_CODE.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Nom d'utilisateur");
-				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
-				map.put(Column.FIELD_FILTER_BY, IdentityQuerier.PARAMETER_NAME_CODE);
-				map.put(Column.FIELD_WIDTH, "250");
+			}else if(AccountRequest.FIELD_CREATION_DATE_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Date");
+				map.put(Column.FIELD_WIDTH, "150");
 			}
 			return map;
 		}
 	}
 	
 	@Getter @Setter @Accessors(chain=true)
-	public static class LazyDataModelListenerImpl extends LazyDataModel.Listener.AbstractImpl<Actor> implements Serializable {
+	public static class LazyDataModelListenerImpl extends LazyDataModel.Listener.AbstractImpl<AccountRequest> implements Serializable {
 		@Override
-		public Boolean getReaderUsable(LazyDataModel<Actor> lazyDataModel) {
+		public Boolean getReaderUsable(LazyDataModel<AccountRequest> lazyDataModel) {
 			return Boolean.TRUE;
 		}
 		
 		@Override
-		public String getReadQueryIdentifier(LazyDataModel<Actor> lazyDataModel) {
-			return ActorQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER;
+		public String getReadQueryIdentifier(LazyDataModel<AccountRequest> lazyDataModel) {
+			return AccountRequestQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER;
 		}
 	}
 }

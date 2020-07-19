@@ -18,4 +18,19 @@
 		<view-id value="/public/accountrequest/notifyaftercreate.jsf" />
 	</url-mapping>
 	
+	<url-mapping id="liste_demandes">
+		<pattern value="/liste_demandes" />
+		<view-id value="/private/accountrequest/list.jsf" />
+	</url-mapping>
+	
+	<url-mapping id="liste_demandes_rejetees">
+		<pattern value="/liste_demandes_rejetees" />
+		<view-id value="/private/rejectedaccountrequest/list.jsf" />
+	</url-mapping>
+	
+	<url-mapping id="liste_comptes">
+		<pattern value="/liste_comptes" />
+		<view-id value="/private/account/list.jsf" />
+	</url-mapping>
+	
 </pretty-config>

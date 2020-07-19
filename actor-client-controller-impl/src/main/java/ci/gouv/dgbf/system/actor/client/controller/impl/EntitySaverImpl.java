@@ -10,12 +10,15 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntitySaver;
 
+import ci.gouv.dgbf.system.actor.server.business.api.AccountRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
+import ci.gouv.dgbf.system.actor.server.representation.api.AccountRequestRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorScopeRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfileFunctionRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfilePrivilegeRepresentation;
+import ci.gouv.dgbf.system.actor.server.representation.entities.AccountRequestDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.FunctionDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ProfileDto;
@@ -91,6 +94,26 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 					scopes.add(scope.setActor(actor));
 				}
 			return ((ActorScopeRepresentation)representation).deleteByScopes(scopes);
+		}
+		
+		if(arguments != null && AccountRequestBusiness.ACCEPT.equals(arguments.getActionIdentifier())) {
+			Collection<AccountRequestDto> accountRequests = new ArrayList<>();
+			if(CollectionHelper.isNotEmpty(updatables))
+				for(Object index : updatables) {
+					AccountRequestDto accountRequest = (AccountRequestDto) index;
+					accountRequests.add(accountRequest);
+				}
+			return ((AccountRequestRepresentation)representation).accept(accountRequests);
+		}
+		
+		if(arguments != null && AccountRequestBusiness.REJECT.equals(arguments.getActionIdentifier())) {
+			Collection<AccountRequestDto> accountRequests = new ArrayList<>();
+			if(CollectionHelper.isNotEmpty(updatables))
+				for(Object index : updatables) {
+					AccountRequestDto accountRequest = (AccountRequestDto) index;
+					accountRequests.add(accountRequest);
+				}
+			return ((AccountRequestRepresentation)representation).reject(accountRequests);
 		}
 		return super.save(representation, creatables, updatables, deletables, arguments);
 	}

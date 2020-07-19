@@ -26,6 +26,7 @@ public class Actor extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 	private static final long serialVersionUID = 1L;
 	
 	private Identity identity;
+	private String creationDateAsString;
 	@NotNull private String firstName;
 	@NotNull private String lastNames;
 	private String names;
