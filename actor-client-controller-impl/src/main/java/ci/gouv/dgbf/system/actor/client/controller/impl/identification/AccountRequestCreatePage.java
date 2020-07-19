@@ -2,7 +2,6 @@ package ci.gouv.dgbf.system.actor.client.controller.impl.identification;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import javax.faces.component.UIComponent;
@@ -13,7 +12,6 @@ import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.enumeration.Action;
-import org.cyk.utility.client.controller.component.window.WindowBuilder;
 import org.cyk.utility.client.controller.web.jsf.JsfController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
@@ -29,7 +27,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Named @ViewScoped @Getter @Setter
-public class AccountRequestCreatePage extends AbstractEntityEditPageContainerManagedImpl<AccountRequest> implements IdentificationPage,Serializable {
+public class AccountRequestCreatePage extends AbstractEntityEditPageContainerManagedImpl<AccountRequest> implements IdentificationTheme,Serializable {
 
 	@Override
 	protected void __listenPostConstruct__() {
@@ -86,12 +84,5 @@ public class AccountRequestCreatePage extends AbstractEntityEditPageContainerMan
 	@Override
 	protected String __getWindowTitleValue__() {
 		return "Demande de compte";
-	}
-	
-	@Override
-	protected WindowBuilder __getWindowBuilder__(List<String> subDurations) {
-		WindowBuilder windowBuilder = super.__getWindowBuilder__(subDurations);
-		windowBuilder.getApplicationName(Boolean.TRUE).setValue("Identification");
-		return windowBuilder;
 	}
 }
