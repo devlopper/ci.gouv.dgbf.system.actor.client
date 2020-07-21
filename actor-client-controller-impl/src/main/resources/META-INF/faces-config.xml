@@ -9,6 +9,12 @@
 		<from-view-id>*</from-view-id>
 		
 		<navigation-case>
+			<from-outcome>identificationIndexView</from-outcome>
+			<to-view-id>/public/identification/index.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>accountRequestCreateView</from-outcome>
 			<to-view-id>/public/accountrequest/create.jsf</to-view-id>
 			<redirect />
@@ -193,6 +199,14 @@
 		<navigation-case>
 			<from-outcome>functionTypeEditView</from-outcome>
 			<to-view-id>/private/functiontype/edit.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<!--  -->
+		
+		<navigation-case>
+			<from-outcome>myAccountIndexView</from-outcome>
+			<to-view-id>/private/myaccount/index.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 	</navigation-rule>

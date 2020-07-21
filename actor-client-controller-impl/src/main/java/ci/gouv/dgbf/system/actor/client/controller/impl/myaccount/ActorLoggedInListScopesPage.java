@@ -1,4 +1,4 @@
-package ci.gouv.dgbf.system.actor.client.controller.impl;
+package ci.gouv.dgbf.system.actor.client.controller.impl.myaccount;
 
 import java.io.Serializable;
 
@@ -9,11 +9,12 @@ import org.primefaces.model.menu.DefaultMenuItem;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.ActorController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
+import ci.gouv.dgbf.system.actor.client.controller.impl.AbstractActorListScopesPage;
 import lombok.Getter;
 import lombok.Setter;
 
 @Named @ViewScoped @Getter @Setter
-public class ActorLoggedInListScopesPage extends AbstractActorListScopesPage implements Serializable {
+public class ActorLoggedInListScopesPage extends AbstractActorListScopesPage implements MyAccountTheme,Serializable {
 
 	@Override
 	protected Actor __getActor__() {

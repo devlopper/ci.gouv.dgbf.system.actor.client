@@ -13,6 +13,7 @@ import org.primefaces.model.menu.MenuModel;
 public interface IdentificationTheme {
 
 	String APPLICATION_NAME = "Identification";
+	String APPLICATION_OUTCOME = "identificationIndexView";
 	
 	String MENU_ITEM_IDENTIFICATION = "Identification";
 	
@@ -25,7 +26,9 @@ public interface IdentificationTheme {
 					if(MENU_ITEM_IDENTIFICATION.equals(name)) {
 						arguments.put(Tab.FIELD_ICON, "fa fa-user");
 						MenuModel model = new DefaultMenuModel();
-						model.addElement(new DefaultMenuItem("Demander un compte"));
+						DefaultMenuItem item = new DefaultMenuItem("Demander un compte");
+						item.setOutcome("accountRequestCreateView");
+						model.addElement(item);
 						//model.addElement(new DefaultMenuItem("Consulter saisie"));
 						//model.addElement(new DefaultMenuItem("Renvoyer jeton d'accès"));
 						arguments.put(Tab.FIELD_MENU, Menu.build(Menu.FIELD_MODEL,model));
