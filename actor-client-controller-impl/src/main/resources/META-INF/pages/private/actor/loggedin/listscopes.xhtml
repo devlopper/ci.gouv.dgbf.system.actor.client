@@ -15,7 +15,7 @@
     		</ui:fragment>
     		<ui:fragment rendered="#{not empty request.remoteUser}">
     			<ui:fragment rendered="#{actorLoggedInListScopesPage.actor == null}">
-    				<h1><h:outputText value="Utilisateur non référencé"/></h1>
+    				<h1><h:outputText value="Utilisateur #{actorLoggedInListScopesPage.session.user.names} non référencé"/></h1>
     			</ui:fragment>
     			<ui:fragment rendered="#{actorLoggedInListScopesPage.actor != null}">
 	    			<ui:decorate template="#{primefacesHelper.getModelTemplate(actorLoggedInListScopesPage.layout)}">

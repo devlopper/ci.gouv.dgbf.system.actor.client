@@ -7,5 +7,6 @@
   "credentials": {
     "secret": "${env.keycloak.secret}"
   },
-  "confidential-port": 0
+  "confidential-port": 0,
+  "policy-enforcer": {}
 }

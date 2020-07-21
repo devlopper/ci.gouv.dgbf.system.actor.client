@@ -32,5 +32,11 @@
 			<artifactId>jee-user-interface-theme-web-jsf-primefaces-atlantis-dgbf</artifactId>
 			<version>0.1.0</version>
 		</dependency>
+		<!--
+		<dependency>
+			<groupId>org.keycloak</groupId>
+			<artifactId>keycloak-servlet-filter-adapter</artifactId>
+		</dependency>
+		-->
 	</dependencies>		
 </project>

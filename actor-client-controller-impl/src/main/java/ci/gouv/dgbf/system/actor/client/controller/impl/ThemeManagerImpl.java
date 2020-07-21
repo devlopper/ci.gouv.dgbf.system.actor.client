@@ -26,7 +26,7 @@ public class ThemeManagerImpl extends ThemeManager.AbstractImpl implements Seria
 	@Override
 	public String getApplicationName(AbstractPageContainerManagedImpl page) {
 		if(page instanceof IdentificationTheme)
-			return IdentificationTheme.TITLE;
+			return IdentificationTheme.APPLICATION_NAME;
 		return super.getApplicationName(page);
 	}
 }

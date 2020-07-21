@@ -12,7 +12,7 @@ import org.primefaces.model.menu.MenuModel;
 
 public interface IdentificationTheme {
 
-	String TITLE = "Identification";
+	String APPLICATION_NAME = "Identification";
 	
 	String MENU_ITEM_IDENTIFICATION = "Identification";
 	
