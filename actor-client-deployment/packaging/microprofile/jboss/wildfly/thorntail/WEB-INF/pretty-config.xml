@@ -44,5 +44,10 @@
 		<pattern value="/mes_visibilites" />
 		<view-id value="/private/actor/loggedin/listscopes.jsf" />
 	</url-mapping>
-
+	
+	<url-mapping id="modifier_mot_passe">
+		<pattern value="/modifier_mot_passe" />
+		<view-id value="/private/myaccount/editpass.jsf" />
+	</url-mapping>
+	
 </pretty-config>

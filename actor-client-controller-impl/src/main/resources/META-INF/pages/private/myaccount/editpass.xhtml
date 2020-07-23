@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"      
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:cyk="http://primefaces.jsf.web.utility.cyk.org">
+	
+    <cyk:page value="#{myAccountEditPassPage}">
+    	<ui:define name="centerCenter">
+    		<ui:fragment rendered="#{not empty request.remoteUser}">
+    			<pre>
+	    			Un mail vous sera envoyé afin de mettre à jour votre mot de passe.
+	    		</pre>
+	    		<ui:decorate template="#{primefacesHelper.getModelTemplate(myAccountEditPassPage.sendCommandButton)}">
+    				<ui:param name="commandButton" value="#{myAccountEditPassPage.sendCommandButton}"/> 		
+    			</ui:decorate>
+	    	</ui:fragment>
+    	</ui:define>
+    </cyk:page>
+</html>
