@@ -50,4 +50,14 @@
 		<view-id value="/private/myaccount/editpass.jsf" />
 	</url-mapping>
 	
+	<url-mapping id="mes_preferences">
+		<pattern value="/mes_preferences" />
+		<view-id value="/private/myaccount/preferences.jsf" />
+	</url-mapping>
+	
+	<url-mapping id="mon_profile">
+		<pattern value="/mon_profile" />
+		<view-id value="/private/myaccount/profile.jsf" />
+	</url-mapping>
+	
 </pretty-config>

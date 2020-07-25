@@ -22,6 +22,20 @@ public class Identity extends AbstractDataIdentifiableSystemStringImpl implement
 	private String names;
 	@NotNull private String electronicMailAddress;	
 	
+	private String registrationNumber;
+	private String postalBox;
+	private String mobilePhoneNumber;
+	private String officePhoneNumber;
+	private String officePhoneExtension;
+	private AdministrativeUnit administrativeUnit;
+	private String administrativeFunction;
+	private Civility civility;
+	private IdentityGroup group;
+	private String actOfAppointmentReference;
+	private String actOfAppointmentSignatory;
+	private String actOfAppointmentSignatureDateAsString;
+	private Long actOfAppointmentSignatureTimestamp;
+	
 	public String getNames() {
 		if(names == null) {
 			if(StringHelper.isNotBlank(firstName))

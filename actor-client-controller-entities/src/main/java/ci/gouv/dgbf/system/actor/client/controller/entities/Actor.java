@@ -34,6 +34,8 @@ public class Actor extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 	private String username;
 	@Input @InputPass @NotNull private String password;
 	@Input @InputPass @NotNull private String passwordConfirmation;
+	private Byte notation;
+	private String color; 
 	
 	@Input @InputChoice(choices = @Choices(count = Count.ALL)) @InputChoiceMany @InputChoiceManyCheck
 	private Collection<Function> functions;
