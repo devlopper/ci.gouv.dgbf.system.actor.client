@@ -47,7 +47,12 @@ public class AccountRequest extends AbstractDataIdentifiableSystemStringImpl imp
 	@Input @InputDate private Date actOfAppointmentSignatureDate;
 	private String actOfAppointmentSignatureDateAsString;
 	private Long actOfAppointmentSignatureTimestamp;
-	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceMany @InputChoiceManyAutoComplete private Collection<BudgetaryFunction> budgetaryFunctions;
+	
+	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceMany @InputChoiceManyAutoComplete 
+	private Collection<Function> functions;
+	
+	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceMany @InputChoiceManyAutoComplete 
+	private Collection<BudgetaryFunction> budgetaryFunctions;
 	
 	public static final String FIELD_FIRST_NAME = "firstName";
 	public static final String FIELD_LAST_NAMES = "lastNames";
@@ -70,5 +75,6 @@ public class AccountRequest extends AbstractDataIdentifiableSystemStringImpl imp
 	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE = "actOfAppointmentSignatureDate";
 	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE_AS_STRING = "actOfAppointmentSignatureDateAsString";
 	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_TIMESTAMP = "actOfAppointmentSignatureTimestamp";
+	public static final String FIELD_FUNCTIONS = "functions";
 	public static final String FIELD_BUDGETARY_FUNCTIONS = "budgetaryFunctions";
 }

@@ -17,6 +17,8 @@ import org.cyk.utility.__kernel__.controller.EntityReader;
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierGetter;
+import org.cyk.utility.__kernel__.persistence.query.QueryName;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.client.controller.web.jsf.JsfController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
@@ -34,10 +36,12 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetaryFunction;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Civility;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentityGroup;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetaryFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.CivilityQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentityGroupQuerier;
 import lombok.Getter;
 import lombok.Setter;
@@ -141,6 +145,7 @@ public class AccountRequestCreatePage extends AbstractEntityEditPageContainerMan
 					,AccountRequest.FIELD_ACT_OF_APPOINTMENT_REFERENCE,AccountRequest.FIELD_ACT_OF_APPOINTMENT_SIGNATORY
 					,AccountRequest.FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE
 					,AccountRequest.FIELD_BUDGETARY_FUNCTIONS
+					,AccountRequest.FIELD_FUNCTIONS
 					);
 		}
 		
@@ -179,7 +184,7 @@ public class AccountRequestCreatePage extends AbstractEntityEditPageContainerMan
 			}else if(AccountRequest.FIELD_ADMINISTRATIVE_UNIT.equals(fieldName)) {
 				map.put(AutoComplete.FIELD_ENTITY_CLASS, AdministrativeUnit.class);
 				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
-				map.put(AutoComplete.FIELD_READ_QUERY_IDENTIFIER, AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE);
+				/*map.put(AutoComplete.FIELD_READ_QUERY_IDENTIFIER, AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE);
 				map.put(AutoComplete.FIELD_LISTENER, new AutoComplete.Listener.AbstractImpl<AdministrativeUnit>() {
 					@Override
 					public Filter.Dto instantiateFilter(AutoComplete autoComplete) {
@@ -188,12 +193,13 @@ public class AccountRequestCreatePage extends AbstractEntityEditPageContainerMan
 						filter.addField(AdministrativeUnitQuerier.PARAMETER_NAME_NAME, autoComplete.get__queryString__());
 						return filter;
 					}
-				});
+				});*/
 			}else if(AccountRequest.FIELD_BUDGETARY_FUNCTIONS.equals(fieldName)) {
+				map.put(AutoComplete.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Fonction(s) budgétaire(s)");
 				map.put(AutoComplete.FIELD_ENTITY_CLASS, BudgetaryFunction.class);
 				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
 				map.put(AutoComplete.FIELD_MULTIPLE, Boolean.TRUE);
-				map.put(AutoComplete.FIELD_READ_QUERY_IDENTIFIER, BudgetaryFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE);
+				/*map.put(AutoComplete.FIELD_READ_QUERY_IDENTIFIER, QueryIdentifierGetter.getInstance().get(BudgetaryFunction.class, QueryName.READ_WHERE_CODE_OR_NAME_LIKE));
 				map.put(AutoComplete.FIELD_LISTENER, new AutoComplete.Listener.AbstractImpl<BudgetaryFunction>() {
 					@Override
 					public Filter.Dto instantiateFilter(AutoComplete autoComplete) {
@@ -202,7 +208,22 @@ public class AccountRequestCreatePage extends AbstractEntityEditPageContainerMan
 						filter.addField(BudgetaryFunctionQuerier.PARAMETER_NAME_NAME, autoComplete.get__queryString__());
 						return filter;
 					}
-				});
+				});*/
+			}else if(AccountRequest.FIELD_FUNCTIONS.equals(fieldName)) {
+				map.put(AutoComplete.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Fonction(s) applicative(s) demandée(s)");
+				map.put(AutoComplete.FIELD_ENTITY_CLASS, Function.class);
+				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
+				map.put(AutoComplete.FIELD_MULTIPLE, Boolean.TRUE);
+				/*map.put(AutoComplete.FIELD_READ_QUERY_IDENTIFIER, QueryIdentifierGetter.getInstance().get(Function.class, QueryName.READ_WHERE_CODE_OR_NAME_LIKE));
+				map.put(AutoComplete.FIELD_LISTENER, new AutoComplete.Listener.AbstractImpl<Function>() {
+					@Override
+					public Filter.Dto instantiateFilter(AutoComplete autoComplete) {
+						Filter.Dto filter = new Filter.Dto();
+						filter.addField(FunctionQuerier.PARAMETER_NAME_CODE, autoComplete.get__queryString__());
+						filter.addField(FunctionQuerier.PARAMETER_NAME_NAME, autoComplete.get__queryString__());
+						return filter;
+					}
+				});*/
 			}
 			return map;
 		}
