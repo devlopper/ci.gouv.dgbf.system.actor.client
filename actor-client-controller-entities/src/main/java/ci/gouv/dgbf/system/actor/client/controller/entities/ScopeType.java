@@ -21,6 +21,10 @@ public class ScopeType extends AbstractDataIdentifiableSystemStringIdentifiableB
 		return ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_SECTION.equals(code);
 	}
 	
+	public Boolean isCodeEqualsUSB() {
+		return ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_USB.equals(code);
+	}
+	
 	@Override
 	public String toString() {
 		return name;
@@ -34,5 +38,9 @@ public class ScopeType extends AbstractDataIdentifiableSystemStringIdentifiableB
 	
 	public static Boolean isCodeEqualsSECTION(ScopeType scopeType) {
 		return scopeType != null && scopeType.isCodeEqualsSECTION();
+	}
+	
+	public static Boolean isCodeEqualsUSB(ScopeType scopeType) {
+		return scopeType != null && scopeType.isCodeEqualsUSB();
 	}
 }

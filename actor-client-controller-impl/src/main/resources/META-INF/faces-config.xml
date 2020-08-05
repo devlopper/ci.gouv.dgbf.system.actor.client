@@ -15,8 +15,8 @@
 		</navigation-case>
 		
 		<navigation-case>
-			<from-outcome>accountRequestCreateView</from-outcome>
-			<to-view-id>/public/accountrequest/create.jsf</to-view-id>
+			<from-outcome>accountRequestEditView</from-outcome>
+			<to-view-id>/public/accountrequest/edit.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		
@@ -29,6 +29,24 @@
 		<navigation-case>
 			<from-outcome>accountListView</from-outcome>
 			<to-view-id>/private/account/list.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>accountRequestOpenView</from-outcome>
+			<to-view-id>/public/accountrequest/open.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>accountRequestReadByAccessTokenView</from-outcome>
+			<to-view-id>/public/accountrequest/read.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>accountRequestResendAccessTokenView</from-outcome>
+			<to-view-id>/public/accountrequest/resendaccesstoken.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		

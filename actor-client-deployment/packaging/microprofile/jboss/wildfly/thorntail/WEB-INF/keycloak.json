@@ -1,5 +1,5 @@
 {
-  "realm": "${env.keycloak.realm}",
+  "realm": "${env.KEYCLOAK_REALM}",
   "auth-server-url": "${env.keycloak.auth-server-url}",
   "ssl-required": "external",
   "resource": "${env.keycloak.resource}",

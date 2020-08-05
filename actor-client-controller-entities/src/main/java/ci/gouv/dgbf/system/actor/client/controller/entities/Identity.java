@@ -23,7 +23,7 @@ public class Identity extends AbstractDataIdentifiableSystemStringImpl implement
 	@NotNull private String electronicMailAddress;	
 	
 	private String registrationNumber;
-	private String postalBox;
+	private String postalBoxAddress;
 	private String mobilePhoneNumber;
 	private String officePhoneNumber;
 	private String officePhoneExtension;

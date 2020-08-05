@@ -10,7 +10,7 @@
 
 	<url-mapping id="demande_compte">
 		<pattern value="/demande_compte" />
-		<view-id value="/public/accountrequest/create.jsf" />
+		<view-id value="/public/accountrequest/edit.jsf" />
 	</url-mapping>
 	
 	<url-mapping id="notification_demande_compte">

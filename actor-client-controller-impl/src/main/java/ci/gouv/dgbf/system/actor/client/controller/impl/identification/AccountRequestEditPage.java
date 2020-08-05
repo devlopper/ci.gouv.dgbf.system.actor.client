@@ -3,6 +3,7 @@ package ci.gouv.dgbf.system.actor.client.controller.impl.identification;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.faces.component.UIComponent;
@@ -14,14 +15,16 @@ import javax.inject.Named;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntityReader;
+import org.cyk.utility.__kernel__.controller.EntitySaver;
 import org.cyk.utility.__kernel__.enumeration.Action;
+import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierGetter;
-import org.cyk.utility.__kernel__.persistence.query.QueryName;
-import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.JsfController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
@@ -38,77 +41,48 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetaryFunction;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Civility;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentityGroup;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetaryFunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.business.api.AccountRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.CivilityQuerier;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentityGroupQuerier;
 import lombok.Getter;
 import lombok.Setter;
 
 @Named @ViewScoped @Getter @Setter
-public class AccountRequestCreatePage extends AbstractEntityEditPageContainerManagedImpl<AccountRequest> implements IdentificationTheme,Serializable {
+public class AccountRequestEditPage extends AbstractEntityEditPageContainerManagedImpl<AccountRequest> implements IdentificationTheme,Serializable {
 
+	private AccountRequest accountRequest;
+	
 	@Override
 	protected void __listenPostConstruct__() {
-		action = Action.CREATE;
+		action = WebController.getInstance().getRequestParameterAction();
+		if(action == null)
+			action = Action.CREATE;
+		if(Action.CREATE.equals(action)) {
+			accountRequest = new AccountRequest();
+		}else {
+			String accountRequestIdentifier = WebController.getInstance().getRequestParameter(ParameterName.ENTITY_IDENTIFIER.getValue());
+			if(StringHelper.isBlank(accountRequestIdentifier)) {
+				action = Action.CREATE;
+				accountRequest = new AccountRequest();
+			}else {
+				accountRequest = __inject__(AccountRequestController.class).readProjection02WithBudgetaryFunctionsAndFunctionsByIdentifier(accountRequestIdentifier);
+			}
+		}
 		super.__listenPostConstruct__();
 	}
 	
 	@Override
-	protected Form __buildForm__() {
-		return buildForm();
+	protected Form __buildForm__() {		
+		return buildForm(Form.FIELD_ACTION, action,Form.FIELD_ENTITY,accountRequest);
 	}
-	
-	@Override
-	protected Map<Object, Object> __getFormArguments__() {
-		Map<Object, Object> arguments = super.__getFormArguments__();
-		arguments.put(Form.FIELD_ACTION, Action.CREATE);
-		arguments.put(Form.FIELD_ENTITY, new AccountRequest());
-		arguments.put(Form.ConfiguratorImpl.FIELD_LISTENER, new Form.ConfiguratorImpl.Listener.AbstractImpl() {
-			@Override
-			public Collection<String> getFieldsNames(Form form) {
-				return CollectionHelper.listOf(AccountRequest.FIELD_FIRST_NAME,AccountRequest.FIELD_LAST_NAMES,AccountRequest.FIELD_ELECTRONIC_MAIL_ADDRESS);
-			}
-			
-			@Override
-			public Map<Object, Object> getInputArguments(Form form, String fieldName) {
-				Map<Object, Object> map = super.getInputArguments(form, fieldName);
-				if(AccountRequest.FIELD_ELECTRONIC_MAIL_ADDRESS.equals(fieldName)) {
-					map.put(InputText.FIELD_LISTENER, new InputText.Listener.AbstractImpl() {
-						@Override
-						public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
-							super.validate(context, component, value);
-							Actor actor =__inject__(ActorController.class).readByElectronicMailAddress((String) value);
-							throwValidatorExceptionIf(actor != null, "cette addresse est déja liée à un compte");
-							AccountRequest accountRequest =__inject__(AccountRequestController.class).readByElectronicMailAddress((String) value);
-							throwValidatorExceptionIf(accountRequest != null, "cette addresse est déja liée à une demande en cours");
-						}
-					});
-				}
-				return map;
-			}
-			
-			@Override
-			public Map<Object, Object> getCommandButtonArguments(Form form, Collection<AbstractInput<?>> inputs) {
-				Map<Object, Object> map = super.getCommandButtonArguments(form, inputs);
-				map.put(CommandButton.FIELD_VALUE, "Enregistrer");
-				return map;
-			}
-		});
-		
-		arguments.put(Form.FIELD_LISTENER, new Form.Listener.AbstractImpl() {
-			@Override
-			public void redirect(Form form, Object request) {
-				JsfController.getInstance().redirect("accountRequestNotifyAfterCreateView");
-			}
-		});
-		return arguments;
-	}
-	
+
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Demande de compte";
+		if(Action.CREATE.equals(action))
+			return "Demande de compte";
+		if(Action.UPDATE.equals(action))
+			return "Modification de la demande de compte de "+accountRequest.getElectronicMailAddress()+" | "+accountRequest.getNames();
+		return super.__getWindowTitleValue__();
 	}
 	
 	public static Form buildForm(Map<Object,Object> map) {
@@ -129,6 +103,17 @@ public class AccountRequestCreatePage extends AbstractEntityEditPageContainerMan
 	/**/
 
 	public static class FormListenerImpl extends Form.Listener.AbstractImpl implements Serializable {
+		public void act(Form form) {
+			AccountRequest accountRequest = (AccountRequest) form.getEntity();
+			if(accountRequest.getActOfAppointmentSignatureDate() != null) {
+				accountRequest.setActOfAppointmentSignatureDateAsTimestamp(accountRequest.getActOfAppointmentSignatureDate().getTime());
+				accountRequest.setActOfAppointmentSignatureDate(null);
+			}
+			//EntitySaver.getInstance().save(AccountRequest.class, new Arguments<AccountRequest>().setUpdatables(List.of(accountRequest))
+			//		.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(AccountRequestBusiness.SAVE_INITIALS_FROM_COMPUTATION)));
+			super.act(form);
+		}
+		
 		@Override
 		public void redirect(Form form, Object request) {
 			JsfController.getInstance().redirect("accountRequestNotifyAfterCreateView");
@@ -139,13 +124,13 @@ public class AccountRequestCreatePage extends AbstractEntityEditPageContainerMan
 		@Override
 		public Collection<String> getFieldsNames(Form form) {
 			return CollectionHelper.listOf(AccountRequest.FIELD_CIVILITY,AccountRequest.FIELD_FIRST_NAME,AccountRequest.FIELD_LAST_NAMES,AccountRequest.FIELD_GROUP
-					,AccountRequest.FIELD_REGISTRATION_NUMBER,AccountRequest.FIELD_ELECTRONIC_MAIL_ADDRESS,AccountRequest.FIELD_POSTAL_BOX
+					,AccountRequest.FIELD_REGISTRATION_NUMBER,AccountRequest.FIELD_ELECTRONIC_MAIL_ADDRESS,AccountRequest.FIELD_POSTAL_BOX_ADDRESS
 					,AccountRequest.FIELD_MOBILE_PHONE_NUMBER,AccountRequest.FIELD_OFFICE_PHONE_NUMBER,AccountRequest.FIELD_OFFICE_PHONE_EXTENSION
 					,AccountRequest.FIELD_ADMINISTRATIVE_UNIT,AccountRequest.FIELD_ADMINISTRATIVE_FUNCTION
 					,AccountRequest.FIELD_ACT_OF_APPOINTMENT_REFERENCE,AccountRequest.FIELD_ACT_OF_APPOINTMENT_SIGNATORY
 					,AccountRequest.FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE
-					,AccountRequest.FIELD_BUDGETARY_FUNCTIONS
-					,AccountRequest.FIELD_FUNCTIONS
+					//,AccountRequest.FIELD_BUDGETARY_FUNCTIONS
+					//,AccountRequest.FIELD_FUNCTIONS
 					);
 		}
 		
@@ -160,7 +145,7 @@ public class AccountRequestCreatePage extends AbstractEntityEditPageContainerMan
 						Actor actor =__inject__(ActorController.class).readByElectronicMailAddress((String) value);
 						throwValidatorExceptionIf(actor != null, "cette addresse est déja liée à un compte");
 						AccountRequest accountRequest =__inject__(AccountRequestController.class).readByElectronicMailAddress((String) value);
-						throwValidatorExceptionIf(accountRequest != null, "cette addresse est déja liée à une demande en cours");
+						throwValidatorExceptionIf(accountRequest != null, "cette addresse est déja liée à une demande en cours de traitement");
 					}
 				});
 			}else if(AccountRequest.FIELD_CIVILITY.equals(fieldName)) {
@@ -184,46 +169,16 @@ public class AccountRequestCreatePage extends AbstractEntityEditPageContainerMan
 			}else if(AccountRequest.FIELD_ADMINISTRATIVE_UNIT.equals(fieldName)) {
 				map.put(AutoComplete.FIELD_ENTITY_CLASS, AdministrativeUnit.class);
 				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
-				/*map.put(AutoComplete.FIELD_READ_QUERY_IDENTIFIER, AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE);
-				map.put(AutoComplete.FIELD_LISTENER, new AutoComplete.Listener.AbstractImpl<AdministrativeUnit>() {
-					@Override
-					public Filter.Dto instantiateFilter(AutoComplete autoComplete) {
-						Filter.Dto filter = new Filter.Dto();
-						filter.addField(AdministrativeUnitQuerier.PARAMETER_NAME_CODE, autoComplete.get__queryString__());
-						filter.addField(AdministrativeUnitQuerier.PARAMETER_NAME_NAME, autoComplete.get__queryString__());
-						return filter;
-					}
-				});*/
 			}else if(AccountRequest.FIELD_BUDGETARY_FUNCTIONS.equals(fieldName)) {
 				map.put(AutoComplete.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Fonction(s) budgétaire(s)");
 				map.put(AutoComplete.FIELD_ENTITY_CLASS, BudgetaryFunction.class);
 				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
 				map.put(AutoComplete.FIELD_MULTIPLE, Boolean.TRUE);
-				/*map.put(AutoComplete.FIELD_READ_QUERY_IDENTIFIER, QueryIdentifierGetter.getInstance().get(BudgetaryFunction.class, QueryName.READ_WHERE_CODE_OR_NAME_LIKE));
-				map.put(AutoComplete.FIELD_LISTENER, new AutoComplete.Listener.AbstractImpl<BudgetaryFunction>() {
-					@Override
-					public Filter.Dto instantiateFilter(AutoComplete autoComplete) {
-						Filter.Dto filter = new Filter.Dto();
-						filter.addField(BudgetaryFunctionQuerier.PARAMETER_NAME_CODE, autoComplete.get__queryString__());
-						filter.addField(BudgetaryFunctionQuerier.PARAMETER_NAME_NAME, autoComplete.get__queryString__());
-						return filter;
-					}
-				});*/
 			}else if(AccountRequest.FIELD_FUNCTIONS.equals(fieldName)) {
-				map.put(AutoComplete.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Fonction(s) applicative(s) demandée(s)");
+				map.put(AutoComplete.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Fonction(s) applicative(s)");
 				map.put(AutoComplete.FIELD_ENTITY_CLASS, Function.class);
 				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
 				map.put(AutoComplete.FIELD_MULTIPLE, Boolean.TRUE);
-				/*map.put(AutoComplete.FIELD_READ_QUERY_IDENTIFIER, QueryIdentifierGetter.getInstance().get(Function.class, QueryName.READ_WHERE_CODE_OR_NAME_LIKE));
-				map.put(AutoComplete.FIELD_LISTENER, new AutoComplete.Listener.AbstractImpl<Function>() {
-					@Override
-					public Filter.Dto instantiateFilter(AutoComplete autoComplete) {
-						Filter.Dto filter = new Filter.Dto();
-						filter.addField(FunctionQuerier.PARAMETER_NAME_CODE, autoComplete.get__queryString__());
-						filter.addField(FunctionQuerier.PARAMETER_NAME_NAME, autoComplete.get__queryString__());
-						return filter;
-					}
-				});*/
 			}
 			return map;
 		}
