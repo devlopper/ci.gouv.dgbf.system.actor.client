@@ -17,6 +17,9 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ActorScope;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Scope;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeAdministrativeUnitQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeBudgetSpecializationUnitQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeSectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import lombok.Getter;
 import lombok.Setter;
@@ -55,9 +58,11 @@ public class ActorCreateScopesPage extends AbstractActorCreateScopesOrPrivileges
 		@Override
 		public String getReadQueryIdentifier(LazyDataModel<Scope> lazyDataModel) {
 			if(ScopeType.isCodeEqualsSECTION(scopeType))
-				return ScopeQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_SECTIONS_WHERE_FILTER;
+				return ScopeOfTypeSectionQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_SECTIONS_WHERE_FILTER;
 			if(ScopeType.isCodeEqualsUA(scopeType))
-				return ScopeQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_ADMINISTRATIVE_UNITS_WITH_SECTIONS_WHERE_FILTER;
+				return ScopeOfTypeAdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_ADMINISTRATIVE_UNITS_WITH_SECTIONS_WHERE_FILTER;
+			if(ScopeType.isCodeEqualsUSB(scopeType))
+				return ScopeOfTypeBudgetSpecializationUnitQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_WITH_SECTIONS_WHERE_FILTER;
 			return ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_NOT_ASSOCIATED;
 		}
 		
@@ -68,6 +73,8 @@ public class ActorCreateScopesPage extends AbstractActorCreateScopesOrPrivileges
 			if(ScopeType.isCodeEqualsSECTION(scopeType))
 				;
 			else if(ScopeType.isCodeEqualsUA(scopeType))
+				;
+			else if(ScopeType.isCodeEqualsUSB(scopeType))
 				;
 			else
 				filter.addField(ScopeQuerier.PARAMETER_NAME_TYPE_CODE, scopeType.getCode());

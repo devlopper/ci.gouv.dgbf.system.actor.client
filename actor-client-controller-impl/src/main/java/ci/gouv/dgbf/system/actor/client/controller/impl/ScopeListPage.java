@@ -80,7 +80,7 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 			arguments = new HashMap<>();
 		ScopeType scopeType = (ScopeType) MapHelper.readByKey(arguments, ScopeType.class);
 		Collection<String> columnsNames = CollectionHelper.listOf(Scope.FIELD_CODE,Scope.FIELD_NAME);
-		if(ScopeType.isCodeEqualsUA(scopeType))
+		if(ScopeType.isCodeEqualsUA(scopeType) || ScopeType.isCodeEqualsUSB(scopeType))
 			columnsNames.add(Scope.FIELD_SECTION_AS_STRING);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, Scope.class);

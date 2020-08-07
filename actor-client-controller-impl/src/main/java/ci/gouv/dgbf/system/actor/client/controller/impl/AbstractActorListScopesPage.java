@@ -28,6 +28,9 @@ import ci.gouv.dgbf.system.actor.client.controller.api.ActorScopeController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Scope;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeAdministrativeUnitQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeBudgetSpecializationUnitQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeSectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
 import lombok.Getter;
@@ -52,7 +55,7 @@ public abstract class AbstractActorListScopesPage extends AbstractActorListPrivi
 			scopeType = CollectionHelper.getFirst(scopeTypes);
 		
 		Collection<String> columnsNames = CollectionHelper.listOf(Scope.FIELD_CODE,Scope.FIELD_NAME);
-		if(ScopeType.isCodeEqualsUA(scopeType))
+		if(ScopeType.isCodeEqualsUA(scopeType) || ScopeType.isCodeEqualsUSB(scopeType))
 			columnsNames.add(Scope.FIELD_SECTION_AS_STRING);
 		
 		dataTable = ScopeListPage.buildDataTable(DataTable.FIELD_LISTENER,new DataTableListenerImpl()
@@ -165,10 +168,11 @@ public abstract class AbstractActorListScopesPage extends AbstractActorListPrivi
 		@Override
 		public String getReadQueryIdentifier(LazyDataModel<Scope> lazyDataModel) {
 			if(ScopeType.isCodeEqualsSECTION(scopeType))
-				return ScopeQuerier.QUERY_IDENTIFIER_READ_VISIBLE_SECTIONS_WHERE_FILTER;
+				return ScopeOfTypeSectionQuerier.QUERY_IDENTIFIER_READ_VISIBLE_SECTIONS_WHERE_FILTER;
 			else if(ScopeType.isCodeEqualsUA(scopeType))
-				return ScopeQuerier.QUERY_IDENTIFIER_READ_VISIBLE_ADMINISTRATIVE_UNITS_WITH_SECTIONS_WHERE_FILTER;
-				//return ScopeQuerier.QUERY_IDENTIFIER_READ_VISIBLE_ADMINISTRATIVE_UNITS_WITH_SECTION_BY_ACTOR_CODE;		
+				return ScopeOfTypeAdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_VISIBLE_ADMINISTRATIVE_UNITS_WITH_SECTIONS_WHERE_FILTER;
+			else if(ScopeType.isCodeEqualsUSB(scopeType))
+				return ScopeOfTypeBudgetSpecializationUnitQuerier.QUERY_IDENTIFIER_READ_VISIBLE_WITH_SECTIONS_WHERE_FILTER;		
 			return ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER;
 		}
 		
@@ -178,7 +182,7 @@ public abstract class AbstractActorListScopesPage extends AbstractActorListPrivi
 			if(actor != null) {
 				if(filter == null)
 					filter = new Filter.Dto();
-				if(ScopeType.isCodeEqualsSECTION(scopeType) || ScopeType.isCodeEqualsUA(scopeType)) {
+				if(ScopeType.isCodeEqualsSECTION(scopeType) || ScopeType.isCodeEqualsUA(scopeType) || ScopeType.isCodeEqualsUSB(scopeType)) {
 					if(filter != null)
 						filter.removeFields(ScopeQuerier.PARAMETER_NAME_TYPE_CODE);
 				}else {
