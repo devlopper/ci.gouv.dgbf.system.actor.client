@@ -20,6 +20,7 @@ import ci.gouv.dgbf.system.actor.server.representation.api.ProfileFunctionRepres
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfilePrivilegeRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.entities.AccountRequestDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorDto;
+import ci.gouv.dgbf.system.actor.server.representation.entities.ActorScopeDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.FunctionDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ProfileDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ProfileFunctionDto;
@@ -40,6 +41,8 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				arguments.setRepresentation(ProfilePrivilegeRepresentation.getProxy());
 			else if(ProfileFunctionBusiness.SAVE.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ProfileFunctionRepresentation.getProxy());
+			else if(ActorScopeBusiness.CREATE_BY_ACTOR_BY_SCOPES.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ActorScopeRepresentation.getProxy());
 			else if(ActorScopeBusiness.DELETE_BY_ACTOR_BY_SCOPES.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ActorScopeRepresentation.getProxy());
 		}
@@ -82,6 +85,18 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				for(Object index : deletables)
 					dtos.add(((ProfileFunctionDto) index).set__deletable__(Boolean.TRUE));
 			return ((ProfileFunctionRepresentation)representation).save(dtos);
+		}
+		
+		if(arguments != null && ActorScopeBusiness.CREATE_BY_ACTOR_BY_SCOPES.equals(arguments.getActionIdentifier())) {
+			ActorDto actor = null;
+			Collection<ScopeDto> scopes = new ArrayList<>();
+			if(CollectionHelper.isNotEmpty(creatables))
+				for(Object index : creatables) {
+					ActorScopeDto actorScope = ((ActorScopeDto) index);
+					actor = actorScope.getActor();
+					scopes.add(actorScope.getScope().setActor(actor));
+				}
+			return ((ActorScopeRepresentation)representation).createByScopes(scopes);
 		}
 		
 		if(arguments != null && ActorScopeBusiness.DELETE_BY_ACTOR_BY_SCOPES.equals(arguments.getActionIdentifier())) {

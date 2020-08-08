@@ -7,20 +7,23 @@ import java.util.stream.Collectors;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
+import org.cyk.utility.__kernel__.controller.Arguments;
+import org.cyk.utility.__kernel__.controller.EntitySaver;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
 
-import ci.gouv.dgbf.system.actor.client.controller.api.ActorScopeController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ActorScope;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Scope;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
+import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeAdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeBudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeSectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
+import ci.gouv.dgbf.system.actor.server.representation.api.ActorScopeRepresentation;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -44,7 +47,10 @@ public class ActorCreateScopesPage extends AbstractActorCreateScopesOrPrivileges
 	
 	@Override
 	protected void create(Collection<Scope> scopes) {
-		__inject__(ActorScopeController.class).createMany(scopes.stream().map(scope -> new ActorScope().setActor(actor).setScope(scope)).collect(Collectors.toList()));
+		EntitySaver.getInstance().save(ActorScope.class, new Arguments<ActorScope>()
+				.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(ActorScopeBusiness.CREATE_BY_ACTOR_BY_SCOPES))
+				.setRepresentation(ActorScopeRepresentation.getProxy())
+				.addCreatablesOrUpdatables(scopes.stream().map(scope -> new ActorScope().setActor(actor).setScope(scope)).collect(Collectors.toList())));
 	}
 	
 	@Override
@@ -60,7 +66,7 @@ public class ActorCreateScopesPage extends AbstractActorCreateScopesOrPrivileges
 			if(ScopeType.isCodeEqualsSECTION(scopeType))
 				return ScopeOfTypeSectionQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_WHERE_FILTER;
 			if(ScopeType.isCodeEqualsUA(scopeType))
-				return ScopeOfTypeAdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_ADMINISTRATIVE_UNITS_WITH_SECTIONS_WHERE_FILTER;
+				return ScopeOfTypeAdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_WITH_SECTIONS_WHERE_FILTER;
 			if(ScopeType.isCodeEqualsUSB(scopeType))
 				return ScopeOfTypeBudgetSpecializationUnitQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_WITH_SECTIONS_WHERE_FILTER;
 			return ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_NOT_ASSOCIATED;
