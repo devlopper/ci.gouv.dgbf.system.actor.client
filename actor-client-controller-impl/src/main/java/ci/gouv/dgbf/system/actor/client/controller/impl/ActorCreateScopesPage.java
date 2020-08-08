@@ -58,7 +58,7 @@ public class ActorCreateScopesPage extends AbstractActorCreateScopesOrPrivileges
 		@Override
 		public String getReadQueryIdentifier(LazyDataModel<Scope> lazyDataModel) {
 			if(ScopeType.isCodeEqualsSECTION(scopeType))
-				return ScopeOfTypeSectionQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_SECTIONS_WHERE_FILTER;
+				return ScopeOfTypeSectionQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_WHERE_FILTER;
 			if(ScopeType.isCodeEqualsUA(scopeType))
 				return ScopeOfTypeAdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_ADMINISTRATIVE_UNITS_WITH_SECTIONS_WHERE_FILTER;
 			if(ScopeType.isCodeEqualsUSB(scopeType))

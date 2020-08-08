@@ -168,7 +168,7 @@ public abstract class AbstractActorListScopesPage extends AbstractActorListPrivi
 		@Override
 		public String getReadQueryIdentifier(LazyDataModel<Scope> lazyDataModel) {
 			if(ScopeType.isCodeEqualsSECTION(scopeType))
-				return ScopeOfTypeSectionQuerier.QUERY_IDENTIFIER_READ_VISIBLE_SECTIONS_WHERE_FILTER;
+				return ScopeOfTypeSectionQuerier.QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER;
 			else if(ScopeType.isCodeEqualsUA(scopeType))
 				return ScopeOfTypeAdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_VISIBLE_ADMINISTRATIVE_UNITS_WITH_SECTIONS_WHERE_FILTER;
 			else if(ScopeType.isCodeEqualsUSB(scopeType))
