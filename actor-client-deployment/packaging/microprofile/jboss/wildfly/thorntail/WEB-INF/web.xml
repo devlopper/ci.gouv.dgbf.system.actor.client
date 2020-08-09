@@ -23,6 +23,11 @@
 	</context-param>
 	
 	<context-param>
+		<param-name>cyk.variable.system.web.home.url</param-name>
+		<param-value>http://siibtest.dgbf.ci/</param-value>
+	</context-param>
+	
+	<context-param>
 		<param-name>cyk.variable.system.proxy.uniform.resource.identifier</param-name>
 		<param-value>${cyk.variable.system.proxy.uniform.resource.identifier}</param-value>
 	</context-param>
