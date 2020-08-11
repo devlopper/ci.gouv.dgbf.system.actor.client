@@ -104,7 +104,7 @@
 			<url-pattern>${web-app.security-constraint.web-resource-collection.all.url-pattern}</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
-			<role-name>*</role-name>
+			<role-name>ADMINISTRATEUR</role-name>
 		</auth-constraint>
 	</security-constraint>
 	
@@ -118,5 +118,10 @@
 	
 	<login-config>
 		<auth-method>${web-app.login-config.auth-method}</auth-method>
-	</login-config>		
+	</login-config>
+	
+	<error-page>
+		<error-code>403</error-code>
+		<location>/403.jsf</location>
+	</error-page>
 </web-app>

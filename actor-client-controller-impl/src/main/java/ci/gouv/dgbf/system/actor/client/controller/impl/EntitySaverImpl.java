@@ -45,6 +45,10 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				arguments.setRepresentation(ActorScopeRepresentation.getProxy());
 			else if(ActorScopeBusiness.DELETE_BY_ACTOR_BY_SCOPES.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ActorScopeRepresentation.getProxy());
+			else if(AccountRequestBusiness.RECORD.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(AccountRequestRepresentation.getProxy());
+			else if(AccountRequestBusiness.SUBMIT.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(AccountRequestRepresentation.getProxy());
 		}
 		super.prepare(controllerEntityClass, arguments);
 	}
@@ -109,6 +113,21 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 					scopes.add(scope.setActor(actor));
 				}
 			return ((ActorScopeRepresentation)representation).deleteByScopes(scopes);
+		}
+		
+		if(arguments != null && AccountRequestBusiness.RECORD.equals(arguments.getActionIdentifier())) {
+			Collection<AccountRequestDto> accountRequests = new ArrayList<>();
+			if(CollectionHelper.isNotEmpty(creatables))
+				for(Object index : creatables) {
+					AccountRequestDto accountRequest = (AccountRequestDto) index;
+					accountRequests.add(accountRequest);
+				}
+			if(CollectionHelper.isNotEmpty(updatables))
+				for(Object index : updatables) {
+					AccountRequestDto accountRequest = (AccountRequestDto) index;
+					accountRequests.add(accountRequest);
+				}
+			return ((AccountRequestRepresentation)representation).reject(accountRequests);
 		}
 		
 		if(arguments != null && AccountRequestBusiness.ACCEPT.equals(arguments.getActionIdentifier())) {
