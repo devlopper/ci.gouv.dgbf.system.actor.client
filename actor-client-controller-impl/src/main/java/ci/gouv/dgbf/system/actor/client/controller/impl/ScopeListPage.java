@@ -147,6 +147,8 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 		public String getReadQueryIdentifier(LazyDataModel<Scope> lazyDataModel) {
 			if(ScopeType.isCodeEqualsUA(scopeType))
 				return ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_UA_AND_FILTER;
+			if(ScopeType.isCodeEqualsUSB(scopeType))
+				return ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_USB_AND_FILTER;
 			return ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER;
 		}
 		
@@ -155,7 +157,7 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 			Filter.Dto filter = super.instantiateFilter(lazyDataModel);
 			if(filter == null)
 				filter = new Filter.Dto();
-			if(ScopeType.isCodeEqualsUA(scopeType)) {		
+			if(ScopeType.isCodeEqualsUA(scopeType) || ScopeType.isCodeEqualsUSB(scopeType)) {		
 				
 			}else {
 				filter.addField(ScopeQuerier.PARAMETER_NAME_TYPE_CODE, scopeType.getCode());				

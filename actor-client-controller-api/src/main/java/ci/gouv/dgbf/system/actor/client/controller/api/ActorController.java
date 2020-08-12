@@ -12,6 +12,13 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 
 public interface ActorController extends ControllerEntity<Actor> {
 
+	default Actor readByCode(String code) {
+		return EntityReader.getInstance().readOne(Actor.class,new Arguments<Actor>().setRepresentationArguments(new org.cyk.utility.__kernel__.representation
+				.Arguments().setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(ActorQuerier.QUERY_IDENTIFIER_READ_BY_CODE)
+						.addFilterField(ActorQuerier.PARAMETER_NAME_CODE,code)
+						)));
+	}
+	
 	default Actor readByElectronicMailAddress(String electronicMailAddress) {
 		return EntityReader.getInstance().readOne(Actor.class,new Arguments<Actor>().setRepresentationArguments(new org.cyk.utility.__kernel__.representation
 				.Arguments().setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(ActorQuerier.QUERY_IDENTIFIER_READ_BY_ELECTRONIC_MAIL_ADDRESS)

@@ -46,7 +46,7 @@ public class ActorCreatePage extends AbstractEntityEditPageContainerManagedImpl<
 		arguments.put(Form.ConfiguratorImpl.FIELD_LISTENER, new Form.ConfiguratorImpl.Listener.AbstractImpl() {
 			@Override
 			public Collection<String> getFieldsNames(Form form) {
-				return CollectionHelper.listOf(Actor.FIELD_FIRST_NAME,Actor.FIELD_LAST_NAMES,Actor.FIELD_ELECTRONIC_MAIL_ADDRESS);
+				return CollectionHelper.listOf(Actor.FIELD_FIRST_NAME,Actor.FIELD_LAST_NAMES,Actor.FIELD_ELECTRONIC_MAIL_ADDRESS,Actor.FIELD_CODE);
 			}
 			
 			@Override
@@ -76,6 +76,19 @@ public class ActorCreatePage extends AbstractEntityEditPageContainerManagedImpl<
 				}else if(Actor.FIELD_PASSWORD_CONFIRMATION.equals(fieldName)) {
 					map.put(Password.FIELD_IDENTIFIER, passwordConfirmationIdentifier);
 					map.put(Password.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Confirmation du mot de passe");
+				}else if(Actor.FIELD_CODE.equals(fieldName)) {
+					map.put(InputText.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Nom d'utilisateur");
+					map.put(InputText.FIELD_LISTENER, new InputText.Listener.AbstractImpl() {
+						@Override
+						public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
+							super.validate(context, component, value);
+							Actor actor =__inject__(ActorController.class).readByCode((String) value);
+							if(actor != null)
+								throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,"ce nom d'utilisateur existe déja","ce nom d'utilisateur existe déja"));
+						}
+					});
+					map.put(InputText.FIELD_REQUIRED, Boolean.FALSE);
+					map.put(InputText.ConfiguratorImpl.FIELD_MESSAGABLE, Boolean.TRUE);
 				}
 				return map;
 			}
