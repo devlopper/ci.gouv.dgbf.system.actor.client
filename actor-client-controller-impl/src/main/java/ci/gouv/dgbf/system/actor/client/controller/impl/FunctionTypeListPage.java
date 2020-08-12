@@ -34,7 +34,7 @@ public class FunctionTypeListPage extends AbstractEntityListPageContainerManaged
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Liste des types de fonctions";
+		return "Liste des types de catégories de fonctions";
 	}
 	
 	@SuppressWarnings("unchecked")

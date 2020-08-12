@@ -50,7 +50,7 @@ public abstract class AbstractActorListScopesPage extends AbstractActorListPrivi
 		scopeType = WebController.getInstance().getRequestParameterEntityAsParent(ScopeType.class);
 		Collection<ScopeType> scopeTypes = EntityReader.getInstance().readMany(ScopeType.class, new Arguments<ScopeType>()
 				.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
-						.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(ScopeTypeQuerier.QUERY_IDENTIFIER_READ_ORDER_BY_CODE_ASCENDING))));
+						.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(ScopeTypeQuerier.QUERY_IDENTIFIER_READ_ORDER_BY_ORDER_NUMBER_ASCENDING))));
 		if(scopeType == null)
 			scopeType = CollectionHelper.getFirst(scopeTypes);
 		

@@ -53,9 +53,9 @@ public class ActorListPage extends AbstractEntityListPageContainerManagedImpl<Ac
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl());
 		DataTable dataTable = DataTable.build(arguments);
 		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();
-		dataTable.addRecordMenuItemByArgumentsNavigateToView(null,"actorListPrivilegesStaticView", MenuItem.FIELD_VALUE,"Privilèges", MenuItem.FIELD_ICON,"fa fa-lock"
+		dataTable.addRecordMenuItemByArgumentsNavigateToView(null,"actorListPrivilegesStaticView", MenuItem.FIELD_VALUE,"Assignation", MenuItem.FIELD_ICON,"fa fa-lock"
 				,MenuItem.FIELD_PARAMETERS,Map.of(ParameterName.IS_STATIC.getValue(),"true"));
-		dataTable.addRecordMenuItemByArgumentsNavigateToView(null,"actorListScopesStaticView", MenuItem.FIELD_VALUE,"Domaines", MenuItem.FIELD_ICON,"fa fa-eye"
+		dataTable.addRecordMenuItemByArgumentsNavigateToView(null,"actorListScopesStaticView", MenuItem.FIELD_VALUE,"Affectation", MenuItem.FIELD_ICON,"fa fa-eye"
 				,MenuItem.FIELD_PARAMETERS,Map.of(ParameterName.IS_STATIC.getValue(),"true"));
 		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
 		return dataTable;

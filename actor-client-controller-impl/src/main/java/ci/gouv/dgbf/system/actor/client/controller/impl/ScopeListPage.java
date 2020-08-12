@@ -47,7 +47,7 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 		scopeType = WebController.getInstance().getRequestParameterEntityAsParent(ScopeType.class);
 		Collection<ScopeType> scopeTypes = EntityReader.getInstance().readMany(ScopeType.class, new Arguments<ScopeType>()
 				.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
-						.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(ScopeTypeQuerier.QUERY_IDENTIFIER_READ_ORDER_BY_CODE_ASCENDING))));
+						.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(ScopeTypeQuerier.QUERY_IDENTIFIER_READ_ORDER_BY_ORDER_NUMBER_ASCENDING))));
 		if(scopeType == null)
 			scopeType = CollectionHelper.getFirst(scopeTypes);
 		super.__listenPostConstruct__();
@@ -72,7 +72,7 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Liste des domaines";
+		return "Liste des visibilités";
 	}
 	
 	public static DataTable buildDataTable(Map<Object,Object> arguments) {

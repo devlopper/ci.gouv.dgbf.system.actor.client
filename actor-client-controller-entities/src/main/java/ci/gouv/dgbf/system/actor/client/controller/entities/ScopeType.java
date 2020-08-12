@@ -3,6 +3,7 @@ package ci.gouv.dgbf.system.actor.client.controller.entities;
 import java.io.Serializable;
 
 import org.cyk.utility.__kernel__.object.__static__.controller.AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl;
+import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Input;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,9 @@ import lombok.experimental.Accessors;
 @Getter @Setter @NoArgsConstructor @Accessors(chain=true)
 public class ScopeType extends AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
+	
+	@Input
+	private Byte orderNumber;
 	
 	public Boolean isCodeEqualsUA() {
 		return ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_UA.equals(code);
@@ -43,4 +47,6 @@ public class ScopeType extends AbstractDataIdentifiableSystemStringIdentifiableB
 	public static Boolean isCodeEqualsUSB(ScopeType scopeType) {
 		return scopeType != null && scopeType.isCodeEqualsUSB();
 	}
+	
+	public static final String FIELD_ORDER_NUMBER = "orderNumber";
 }

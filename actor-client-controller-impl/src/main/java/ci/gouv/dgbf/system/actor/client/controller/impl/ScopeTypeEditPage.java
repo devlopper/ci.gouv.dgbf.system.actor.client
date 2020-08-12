@@ -25,7 +25,7 @@ public class ScopeTypeEditPage extends AbstractEntityEditPageContainerManagedImp
 		arguments.put(Form.ConfiguratorImpl.FIELD_LISTENER, new Form.ConfiguratorImpl.Listener.AbstractImpl() {
 			@Override
 			public Collection<String> getFieldsNames(Form form) {
-				return CollectionHelper.listOf(ScopeType.FIELD_CODE,ScopeType.FIELD_NAME);
+				return CollectionHelper.listOf(ScopeType.FIELD_CODE,ScopeType.FIELD_NAME,ScopeType.FIELD_ORDER_NUMBER);
 			}
 			
 			@Override
@@ -35,6 +35,8 @@ public class ScopeTypeEditPage extends AbstractEntityEditPageContainerManagedImp
 					map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Code");
 				}else if(ScopeType.FIELD_NAME.equals(fieldName)) {
 					map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Libellé");
+				}else if(ScopeType.FIELD_ORDER_NUMBER.equals(fieldName)) {
+					map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Numéro d'ordre");
 				}
 				return map;
 			}

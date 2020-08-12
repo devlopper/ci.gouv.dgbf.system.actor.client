@@ -119,9 +119,10 @@
 	<login-config>
 		<auth-method>${web-app.login-config.auth-method}</auth-method>
 	</login-config>
-	
+	<!--
 	<error-page>
 		<error-code>403</error-code>
 		<location>/403.jsf</location>
 	</error-page>
+	-->
 </web-app>

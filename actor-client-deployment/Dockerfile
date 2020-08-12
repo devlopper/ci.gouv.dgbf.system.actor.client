@@ -6,9 +6,9 @@ EXPOSE 8080
 # Default Environment variables
 ENV SIIBC_NAME SIGOBE
 ENV cyk.variable.system.web.home.url http://siibtest.dgbf.ci
-ENV keycloak.auth-server-url=https://security.dgbf.ci:8443/auth
-ENV KEYCLOAK_REALM=SIIBTEST
-ENV keycloak.resource=mic-acteur
+ENV keycloak.auth-server-url https://security.dgbf.ci:8443/auth
+ENV KEYCLOAK_REALM SIIBTEST
+ENV keycloak.resource mic-acteur
 ENV keycloak.secret=a387de28-0324-447a-a7db-99ee3203e81c
 ENTRYPOINT ["java", "-jar","-Djava.net.preferIPv4Stack=true","-Djava.net.preferIPv4Addresses=true", "-XX:MaxRAM=2G","/opt/hollow.jar","/opt/runnable.war"]
 #ENTRYPOINT ["java", "-jar","-Djava.net.preferIPv4Stack=true","-Djava.net.preferIPv4Addresses=true", "-XX:MaxRAM=2G","/opt/runnable.war"]

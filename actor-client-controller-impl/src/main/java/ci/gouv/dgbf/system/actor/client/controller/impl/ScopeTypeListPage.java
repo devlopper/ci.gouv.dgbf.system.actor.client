@@ -34,13 +34,13 @@ public class ScopeTypeListPage extends AbstractEntityListPageContainerManagedImp
 		
 		@SuppressWarnings("unchecked")
 		LazyDataModel<Scope> lazyDataModel = (LazyDataModel<Scope>) dataTable.getValue();
-		lazyDataModel.setReadQueryIdentifier(ScopeTypeQuerier.QUERY_IDENTIFIER_READ_ORDER_BY_CODE_ASCENDING);
+		lazyDataModel.setReadQueryIdentifier(ScopeTypeQuerier.QUERY_IDENTIFIER_READ_ORDER_BY_ORDER_NUMBER_ASCENDING);
 		return dataTable;
 	}
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Liste des types de domaines";
+		return "Liste des domaines de visibilités";
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -48,7 +48,7 @@ public class ScopeTypeListPage extends AbstractEntityListPageContainerManagedImp
 		if(listener == null)
 			listener = new DataTableListenerImpl();
 		if(columnsFieldsNames == null) {
-			columnsFieldsNames = CollectionHelper.listOf(ScopeType.FIELD_CODE,ScopeType.FIELD_NAME);
+			columnsFieldsNames = CollectionHelper.listOf(ScopeType.FIELD_CODE,ScopeType.FIELD_NAME,ScopeType.FIELD_ORDER_NUMBER);
 		}
 		
 		DataTable dataTable = DataTable.build(DataTable.FIELD_LAZY,Boolean.TRUE,DataTable.FIELD_ELEMENT_CLASS,ScopeType.class
@@ -60,7 +60,7 @@ public class ScopeTypeListPage extends AbstractEntityListPageContainerManagedImp
 		lazyDataModel.setReaderUsable(Boolean.TRUE);
 		if(lazyDataModelListener == null) {
 			lazyDataModelListener = new LazyDataModelListenerImpl();
-			lazyDataModel.setReadQueryIdentifier(ScopeTypeQuerier.QUERY_IDENTIFIER_READ_ORDER_BY_CODE_ASCENDING);
+			lazyDataModel.setReadQueryIdentifier(ScopeTypeQuerier.QUERY_IDENTIFIER_READ_ORDER_BY_ORDER_NUMBER_ASCENDING);
 		}
 		lazyDataModel.setListener(lazyDataModelListener);
 		return dataTable;
@@ -82,6 +82,9 @@ public class ScopeTypeListPage extends AbstractEntityListPageContainerManagedImp
 				map.put(Column.FIELD_WIDTH, "100");
 			}else if(ScopeType.FIELD_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Libellé");
+			}else if(ScopeType.FIELD_ORDER_NUMBER.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Numéro d'ordre");
+				map.put(Column.FIELD_WIDTH, "150");
 			}
 			return map;
 		}

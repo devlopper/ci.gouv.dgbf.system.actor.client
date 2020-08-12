@@ -52,8 +52,8 @@ public interface Helper {
 		return formatActorEditPrivilegesWindowTitle(actor, null);
 	}
 	
-	String ACTOR_WINDOW_TITLE_FORMAT_LIST_PRIVILEGES = "Privilèges";
-	String ACTOR_WINDOW_TITLE_FORMAT_LIST_SCOPES = "Domaines";
+	String ACTOR_WINDOW_TITLE_FORMAT_LIST_PRIVILEGES = "Assignation";
+	String ACTOR_WINDOW_TITLE_FORMAT_LIST_SCOPES = "Affectation";
 	String ACTOR_WINDOW_TITLE_FORMAT_ASSIGN_PRIVILEGES = "Assignation de privilèges";
 	String ACTOR_WINDOW_TITLE_FORMAT_ASSIGN_PRIVILEGES_BY = ACTOR_WINDOW_TITLE_FORMAT_ASSIGN_PRIVILEGES+" par %s";
 	
