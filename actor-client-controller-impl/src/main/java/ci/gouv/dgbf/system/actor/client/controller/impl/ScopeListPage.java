@@ -29,6 +29,7 @@ import org.primefaces.model.menu.MenuModel;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Scope;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityEconomicNatureQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
@@ -158,6 +159,8 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 				return ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_USB_AND_FILTER;
 			if(ScopeType.isCodeEqualsACTIVITE(scopeType))
 				return ScopeOfTypeActivityQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER;
+			if(ScopeType.isCodeEqualsIMPUTATION(scopeType))
+				return ScopeOfTypeActivityEconomicNatureQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER;
 			return ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER;
 		}
 		
@@ -166,7 +169,8 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 			Filter.Dto filter = super.instantiateFilter(lazyDataModel);
 			if(filter == null)
 				filter = new Filter.Dto();
-			if(ScopeType.isCodeEqualsUA(scopeType) || ScopeType.isCodeEqualsUSB(scopeType) || ScopeType.isCodeEqualsACTIVITE(scopeType)) {		
+			if(ScopeType.isCodeEqualsUA(scopeType) || ScopeType.isCodeEqualsUSB(scopeType) || ScopeType.isCodeEqualsACTIVITE(scopeType)
+					|| ScopeType.isCodeEqualsIMPUTATION(scopeType)) {		
 				
 			}else {
 				filter.addField(ScopeQuerier.PARAMETER_NAME_TYPE_CODE, scopeType.getCode());				

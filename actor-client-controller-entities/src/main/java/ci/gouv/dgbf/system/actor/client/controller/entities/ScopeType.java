@@ -33,6 +33,10 @@ public class ScopeType extends AbstractDataIdentifiableSystemStringIdentifiableB
 		return ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_USB.equals(code);
 	}
 	
+	public Boolean isCodeEqualsIMPUTATION() {
+		return ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_IMPUTATION.equals(code);
+	}
+	
 	@Override
 	public String toString() {
 		return name;
@@ -54,6 +58,10 @@ public class ScopeType extends AbstractDataIdentifiableSystemStringIdentifiableB
 	
 	public static Boolean isCodeEqualsACTIVITE(ScopeType scopeType) {
 		return scopeType != null && scopeType.isCodeEqualsACTIVITE();
+	}
+	
+	public static Boolean isCodeEqualsIMPUTATION(ScopeType scopeType) {
+		return scopeType != null && scopeType.isCodeEqualsIMPUTATION();
 	}
 	
 	public static final String FIELD_ORDER_NUMBER = "orderNumber";
