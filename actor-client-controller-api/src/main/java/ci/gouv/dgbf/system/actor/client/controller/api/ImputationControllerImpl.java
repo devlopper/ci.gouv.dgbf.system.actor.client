@@ -4,11 +4,11 @@ import java.io.Serializable;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import ci.gouv.dgbf.system.actor.client.controller.entities.ActivityEconomicNature;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Imputation;
 import org.cyk.utility.client.controller.AbstractControllerEntityImpl;
 
 @ApplicationScoped
-public class ActivityEconomicNatureControllerImpl extends AbstractControllerEntityImpl<ActivityEconomicNature> implements ActivityEconomicNatureController,Serializable {
+public class ImputationControllerImpl extends AbstractControllerEntityImpl<Imputation> implements ImputationController,Serializable {
 	private static final long serialVersionUID = 1L;
 	
 }

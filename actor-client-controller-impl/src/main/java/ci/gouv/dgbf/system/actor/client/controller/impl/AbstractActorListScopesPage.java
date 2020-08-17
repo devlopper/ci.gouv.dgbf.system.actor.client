@@ -28,7 +28,7 @@ import ci.gouv.dgbf.system.actor.client.controller.api.ActorScopeController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Scope;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityEconomicNatureQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeAdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeBudgetSpecializationUnitQuerier;
@@ -178,7 +178,7 @@ public abstract class AbstractActorListScopesPage extends AbstractActorListPrivi
 			else if(ScopeType.isCodeEqualsACTIVITE(scopeType))
 				return ScopeOfTypeActivityQuerier.QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER;
 			else if(ScopeType.isCodeEqualsIMPUTATION(scopeType))
-				return ScopeOfTypeActivityEconomicNatureQuerier.QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER;
+				return ScopeOfTypeImputationQuerier.QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER;
 			return ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER;
 		}
 		

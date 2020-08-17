@@ -19,7 +19,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.ActorScope;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Scope;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityEconomicNatureQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeAdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeBudgetSpecializationUnitQuerier;
@@ -74,7 +74,7 @@ public class ActorCreateScopesPage extends AbstractActorCreateScopesOrPrivileges
 			if(ScopeType.isCodeEqualsACTIVITE(scopeType))
 				return ScopeOfTypeActivityQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_WHERE_FILTER;
 			if(ScopeType.isCodeEqualsIMPUTATION(scopeType))
-				return ScopeOfTypeActivityEconomicNatureQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_WHERE_FILTER;
+				return ScopeOfTypeImputationQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_WHERE_FILTER;
 			return ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_NOT_ASSOCIATED;
 		}
 		
