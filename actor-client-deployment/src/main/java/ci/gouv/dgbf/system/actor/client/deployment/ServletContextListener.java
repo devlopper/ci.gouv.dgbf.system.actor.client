@@ -18,14 +18,6 @@ public class ServletContextListener extends AbstractServletContextListener imple
 	public void __initialize__(ServletContext context) {
 		super.__initialize__(context);
 		__inject__(ApplicationScopeLifeCycleListener.class).initialize(null);
-		DesktopDefault.initialize();
-		/*
-		MenuGeneratorPortailApiService.HOST = "10.3.4.17";
-		MenuGeneratorPortailApiService.PORT = 32300;
-		DesktopDefault.IS_SHOW_USER_MENU = Boolean.FALSE;
-		DesktopDefault.DYNAMIC_MENU = Boolean.TRUE;
-		DesktopDefault.MENU_IDENTIFIER = "COLB";
-		DesktopDefault.IS_SHOW_USER_MENU = Boolean.TRUE;
-		*/
+		DesktopDefault.initialize(ci.gouv.dgbf.system.actor.server.annotation.System.class,null);
 	}	
 }

@@ -12,18 +12,26 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntityReader;
 import org.cyk.utility.__kernel__.enumeration.Action;
+import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.client.controller.web.jsf.JsfController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AutoComplete;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.InputText;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.Password;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityEditPageContainerManagedImpl;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.ActorController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
+import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Civility;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
+import ci.gouv.dgbf.system.actor.client.controller.entities.IdentityGroup;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.CivilityQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentityGroupQuerier;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -46,7 +54,10 @@ public class ActorCreatePage extends AbstractEntityEditPageContainerManagedImpl<
 		arguments.put(Form.ConfiguratorImpl.FIELD_LISTENER, new Form.ConfiguratorImpl.Listener.AbstractImpl() {
 			@Override
 			public Collection<String> getFieldsNames(Form form) {
-				return CollectionHelper.listOf(Actor.FIELD_FIRST_NAME,Actor.FIELD_LAST_NAMES,Actor.FIELD_ELECTRONIC_MAIL_ADDRESS,Actor.FIELD_CODE);
+				return CollectionHelper.listOf(Actor.FIELD_CIVILITY,Actor.FIELD_FIRST_NAME,Actor.FIELD_LAST_NAMES,Actor.FIELD_GROUP,Actor.FIELD_REGISTRATION_NUMBER
+						,Actor.FIELD_ELECTRONIC_MAIL_ADDRESS,Actor.FIELD_MOBILE_PHONE_NUMBER,Actor.FIELD_OFFICE_PHONE_NUMBER,Actor.FIELD_OFFICE_PHONE_EXTENSION
+						,Actor.FIELD_ADMINISTRATIVE_UNIT,Actor.FIELD_ADMINISTRATIVE_FUNCTION
+						,Actor.FIELD_CODE);
 			}
 			
 			@Override
@@ -89,6 +100,29 @@ public class ActorCreatePage extends AbstractEntityEditPageContainerManagedImpl<
 					});
 					map.put(InputText.FIELD_REQUIRED, Boolean.FALSE);
 					map.put(InputText.ConfiguratorImpl.FIELD_MESSAGABLE, Boolean.TRUE);
+				}else if(Actor.FIELD_CIVILITY.equals(fieldName)) {
+					map.put(AbstractInputChoice.FIELD_LISTENER, new AbstractInputChoice.Listener.AbstractImpl<Civility>() {
+						@Override
+						public Collection<Civility> computeChoices(AbstractInputChoice<Civility> input) {
+							return EntityReader.getInstance().readMany(Civility.class, new Arguments<Civility>()
+								.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+									.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(CivilityQuerier.QUERY_IDENTIFIER_READ))));
+						}
+					});
+				}else if(Actor.FIELD_GROUP.equals(fieldName)) {
+					map.put(AbstractInputChoice.FIELD_LISTENER, new AbstractInputChoice.Listener.AbstractImpl<IdentityGroup>() {
+						@Override
+						public Collection<IdentityGroup> computeChoices(AbstractInputChoice<IdentityGroup> input) {
+							return EntityReader.getInstance().readMany(IdentityGroup.class, new Arguments<IdentityGroup>()
+								.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+									.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(IdentityGroupQuerier.QUERY_IDENTIFIER_READ))));
+						}
+					});
+				}else if(Actor.FIELD_MOBILE_PHONE_NUMBER.equals(fieldName)) {
+					map.put(InputText.FIELD_REQUIRED, Boolean.TRUE);
+				}else if(Actor.FIELD_ADMINISTRATIVE_UNIT.equals(fieldName)) {
+					map.put(AutoComplete.FIELD_ENTITY_CLASS, AdministrativeUnit.class);
+					map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
 				}
 				return map;
 			}

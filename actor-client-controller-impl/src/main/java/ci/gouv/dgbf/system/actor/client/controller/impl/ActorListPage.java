@@ -57,6 +57,7 @@ public class ActorListPage extends AbstractEntityListPageContainerManagedImpl<Ac
 				,MenuItem.FIELD_PARAMETERS,Map.of(ParameterName.IS_STATIC.getValue(),"true"));
 		dataTable.addRecordMenuItemByArgumentsNavigateToView(null,"actorListScopesStaticView", MenuItem.FIELD_VALUE,"Affectation", MenuItem.FIELD_ICON,"fa fa-eye"
 				,MenuItem.FIELD_PARAMETERS,Map.of(ParameterName.IS_STATIC.getValue(),"true"));
+		dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("actorEditFunctionsView", MenuItem.FIELD_VALUE,"Fonctions", MenuItem.FIELD_ICON,"fa fa-flash");
 		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
 		return dataTable;
 	}

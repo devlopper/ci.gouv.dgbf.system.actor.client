@@ -101,7 +101,7 @@ public class ActorListPrivilegesPage extends AbstractActorListPrivilegesOrScopes
 	@Override
 	protected void addEditCommandButtonArgumentsCell(Collection<Map<?, ?>> cellsMaps) {
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_IDENTIFIER,"buttons",Cell.FIELD_WIDTH,12));
-		createPrivilegesByFunctionsCommandButton = CommandButton.build(CommandButton.FIELD_VALUE,"Ajouter les privilèges par fonction"
+		createPrivilegesByFunctionsCommandButton = CommandButton.build(CommandButton.FIELD_VALUE,"Assigner les privilèges par fonction"
 			,CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.NAVIGATE_TO_VIEW
 			,CommandButton.FIELD_ICON,"fa fa-user",CommandButton.FIELD_STYLE_CLASS,"cyk-float-right"
 			,CommandButton.FIELD___OUTCOME__,"actorCreatePrivilegesByFunctionsView"
@@ -109,7 +109,7 @@ public class ActorListPrivilegesPage extends AbstractActorListPrivilegesOrScopes
 			,CommandButton.FIELD_LISTENER,new CommandButton.Listener.AbstractImpl() {
 			
 		});
-		createPrivilegesByProfilesCommandButton = CommandButton.build(CommandButton.FIELD_VALUE,"Ajouter les privilèges par profile"
+		createPrivilegesByProfilesCommandButton = CommandButton.build(CommandButton.FIELD_VALUE,"Assigner les privilèges par profile"
 			,CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.NAVIGATE_TO_VIEW
 			,CommandButton.FIELD_ICON,"fa fa-lock",CommandButton.FIELD_STYLE_CLASS,"cyk-float-right"
 			,CommandButton.FIELD___OUTCOME__,"actorCreatePrivilegesByProfilesView"

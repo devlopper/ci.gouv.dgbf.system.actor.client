@@ -29,7 +29,7 @@ public interface IdentificationTheme {
 						DefaultMenuItem item = new DefaultMenuItem("Demander compte");
 						item.setOutcome("accountRequestEditView");
 						model.addElement(item);
-						
+						/*
 						item = new DefaultMenuItem("Ouvrir demande");
 						item.setOutcome("accountRequestOpenView");
 						model.addElement(item);
@@ -37,7 +37,7 @@ public interface IdentificationTheme {
 						item = new DefaultMenuItem("Renvoyer jeton d'accès");
 						item.setOutcome("accountRequestResendAccessTokenView");
 						model.addElement(item);
-						
+						*/
 						//model.addElement(new DefaultMenuItem("Consulter saisie"));
 						//model.addElement(new DefaultMenuItem("Renvoyer jeton d'accès"));
 						arguments.put(Tab.FIELD_MENU, Menu.build(Menu.FIELD_MODEL,model));

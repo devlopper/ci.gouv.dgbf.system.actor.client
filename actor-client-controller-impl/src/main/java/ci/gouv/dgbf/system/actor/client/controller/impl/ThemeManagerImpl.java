@@ -2,7 +2,6 @@ package ci.gouv.dgbf.system.actor.client.controller.impl;
 
 import java.io.Serializable;
 
-import org.cyk.user.interface_.theme.web.jsf.primefaces.atlantis.ThemeManager;
 import org.cyk.user.interface_.theme.web.jsf.primefaces.atlantis.model.TabMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 
@@ -10,7 +9,7 @@ import ci.gouv.dgbf.system.actor.client.controller.impl.identification.Identific
 import ci.gouv.dgbf.system.actor.client.controller.impl.myaccount.MyAccountTheme;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
-public class ThemeManagerImpl extends ThemeManager.AbstractImpl implements Serializable {
+public class ThemeManagerImpl extends org.cyk.user.interface_.theme.web.jsf.primefaces.atlantis.dgbf.ThemeManagerImpl implements Serializable {
 
 	private TabMenu identificationTabMenu,myAccountTabMenu;
 	

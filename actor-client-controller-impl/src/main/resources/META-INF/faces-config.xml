@@ -131,6 +131,12 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>actorEditFunctionsView</from-outcome>
+			<to-view-id>/private/actor/editfunctions.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>scopeListView</from-outcome>
 			<to-view-id>/private/scope/list.jsf</to-view-id>
 			<redirect />

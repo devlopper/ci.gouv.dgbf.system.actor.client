@@ -3,7 +3,6 @@ package ci.gouv.dgbf.system.actor.client.controller.impl.identification;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.faces.component.UIComponent;
@@ -15,7 +14,6 @@ import javax.inject.Named;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntityReader;
-import org.cyk.utility.__kernel__.controller.EntitySaver;
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
@@ -24,7 +22,6 @@ import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.JsfController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
@@ -41,7 +38,6 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetaryFunction;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Civility;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentityGroup;
-import ci.gouv.dgbf.system.actor.server.business.api.AccountRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.CivilityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentityGroupQuerier;
 import lombok.Getter;
@@ -127,8 +123,10 @@ public class AccountRequestEditPage extends AbstractEntityEditPageContainerManag
 					,AccountRequest.FIELD_REGISTRATION_NUMBER,AccountRequest.FIELD_ELECTRONIC_MAIL_ADDRESS,AccountRequest.FIELD_POSTAL_BOX_ADDRESS
 					,AccountRequest.FIELD_MOBILE_PHONE_NUMBER,AccountRequest.FIELD_OFFICE_PHONE_NUMBER,AccountRequest.FIELD_OFFICE_PHONE_EXTENSION
 					,AccountRequest.FIELD_ADMINISTRATIVE_UNIT,AccountRequest.FIELD_ADMINISTRATIVE_FUNCTION
+					/*
 					,AccountRequest.FIELD_ACT_OF_APPOINTMENT_REFERENCE,AccountRequest.FIELD_ACT_OF_APPOINTMENT_SIGNATORY
 					,AccountRequest.FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE
+					*/
 					//,AccountRequest.FIELD_BUDGETARY_FUNCTIONS
 					//,AccountRequest.FIELD_FUNCTIONS
 					);
@@ -166,6 +164,8 @@ public class AccountRequestEditPage extends AbstractEntityEditPageContainerManag
 								.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(IdentityGroupQuerier.QUERY_IDENTIFIER_READ))));
 					}
 				});
+			}else if(AccountRequest.FIELD_MOBILE_PHONE_NUMBER.equals(fieldName)) {
+				map.put(InputText.FIELD_REQUIRED, Boolean.TRUE);
 			}else if(AccountRequest.FIELD_ADMINISTRATIVE_UNIT.equals(fieldName)) {
 				map.put(AutoComplete.FIELD_ENTITY_CLASS, AdministrativeUnit.class);
 				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);

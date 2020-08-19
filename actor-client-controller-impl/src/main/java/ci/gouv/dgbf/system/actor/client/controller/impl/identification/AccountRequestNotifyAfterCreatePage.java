@@ -1,4 +1,4 @@
-package ci.gouv.dgbf.system.actor.client.controller.impl;
+package ci.gouv.dgbf.system.actor.client.controller.impl.identification;
 
 import java.io.Serializable;
 
@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Named @ViewScoped @Getter @Setter
-public class AccountRequestNotifyAfterCreatePage extends AbstractPageContainerManagedImpl implements Serializable {
+public class AccountRequestNotifyAfterCreatePage extends AbstractPageContainerManagedImpl implements IdentificationTheme,Serializable {
 
 	@Override
 	protected String __getWindowTitleValue__() {
