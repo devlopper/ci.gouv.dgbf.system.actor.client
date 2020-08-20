@@ -10,12 +10,11 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter @Setter @NoArgsConstructor @Accessors(chain=true)
-public class Activity extends AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl implements Serializable {
+public class Action extends AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
-
+	
 	private String sectionCodeName;	
 	private String budgetSpecializationUnitCodeName;
-	private String actionCodeName;	
 	
 	@Override
 	public String toString() {
@@ -23,6 +22,5 @@ public class Activity extends AbstractDataIdentifiableSystemStringIdentifiableBu
 	}
 	
 	public static final String FIELD_SECTION_CODE_NAME = "sectionCodeName";
-	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME = "budgetSpecializationUnitCodeName";	
-	public static final String FIELD_ACTION_CODE_NAME = "actionCodeName";
+	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME = "budgetSpecializationUnitCodeName";
 }
