@@ -29,10 +29,11 @@ import org.primefaces.model.menu.MenuModel;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Scope;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeBudgetSpecializationUnitQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeImputationQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeSectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
 import lombok.Getter;
@@ -152,8 +153,20 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 				map.put(Column.FIELD_FILTER_BY, ScopeQuerier.PARAMETER_NAME_THIS);
 			}else if(Scope.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Programme/Dotation");
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, ScopeQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_CODE_NAME);
 			}else if(Scope.FIELD_ACTION_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Action");
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, ScopeQuerier.PARAMETER_NAME_ACTION_CODE_NAME);
+			}else if(Scope.FIELD_ACTIVITY_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Activité");
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, ScopeQuerier.PARAMETER_NAME_ACTIVITY_CODE_NAME);
+			}else if(Scope.FIELD_ECONOMIC_NATURE_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Nature économique");
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, ScopeQuerier.PARAMETER_NAME_ECONOMIC_NATURE_CODE_NAME);
 			}
 			return map;
 		}
@@ -170,6 +183,8 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 		
 		@Override
 		public String getReadQueryIdentifier(LazyDataModel<Scope> lazyDataModel) {
+			if(ScopeType.isCodeEqualsSECTION(scopeType))
+				return ScopeOfTypeSectionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER;
 			if(ScopeType.isCodeEqualsUSB(scopeType))
 				return ScopeOfTypeBudgetSpecializationUnitQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER;
 			if(ScopeType.isCodeEqualsACTION(scopeType))
