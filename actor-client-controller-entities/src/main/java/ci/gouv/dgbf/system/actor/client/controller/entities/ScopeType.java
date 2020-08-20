@@ -17,24 +17,28 @@ public class ScopeType extends AbstractDataIdentifiableSystemStringIdentifiableB
 	@Input
 	private Byte orderNumber;
 	
-	public Boolean isCodeEqualsUA() {
-		return ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_UA.equals(code);
-	}
-	
-	public Boolean isCodeEqualsACTIVITE() {
-		return ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_ACTIVITE.equals(code);
-	}
-	
 	public Boolean isCodeEqualsSECTION() {
 		return ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_SECTION.equals(code);
+	}
+	
+	public Boolean isCodeEqualsACTION() {
+		return ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_ACTION.equals(code);
 	}
 	
 	public Boolean isCodeEqualsUSB() {
 		return ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_USB.equals(code);
 	}
 	
+	public Boolean isCodeEqualsACTIVITE() {
+		return ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_ACTIVITE.equals(code);
+	}
+	
 	public Boolean isCodeEqualsIMPUTATION() {
 		return ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_IMPUTATION.equals(code);
+	}
+	
+	public Boolean isCodeEqualsUA() {
+		return ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_UA.equals(code);
 	}
 	
 	@Override
@@ -54,6 +58,10 @@ public class ScopeType extends AbstractDataIdentifiableSystemStringIdentifiableB
 	
 	public static Boolean isCodeEqualsUSB(ScopeType scopeType) {
 		return scopeType != null && scopeType.isCodeEqualsUSB();
+	}
+	
+	public static Boolean isCodeEqualsACTION(ScopeType scopeType) {
+		return scopeType != null && scopeType.isCodeEqualsACTION();
 	}
 	
 	public static Boolean isCodeEqualsACTIVITE(ScopeType scopeType) {

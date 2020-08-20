@@ -30,7 +30,9 @@ import org.primefaces.model.menu.MenuModel;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Scope;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeImputationQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeBudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
 import lombok.Getter;
@@ -82,10 +84,23 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 			arguments = new HashMap<>();
 		ScopeType scopeType = (ScopeType) MapHelper.readByKey(arguments, ScopeType.class);
 		Collection<String> columnsNames = CollectionHelper.listOf(Scope.FIELD_CODE,Scope.FIELD_NAME);
-		if(ScopeType.isCodeEqualsUA(scopeType) || ScopeType.isCodeEqualsUSB(scopeType))
+		
+		if(ScopeType.isCodeEqualsUSB(scopeType)) {
 			columnsNames.add(Scope.FIELD_SECTION_AS_STRING);
-		if(ScopeType.isCodeEqualsACTIVITE(scopeType))
-			columnsNames.addAll(List.of(Scope.FIELD_ACTION_AS_STRING,Scope.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING));
+		}
+		if(ScopeType.isCodeEqualsACTION(scopeType)) {
+			columnsNames.addAll(List.of(Scope.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING,Scope.FIELD_SECTION_AS_STRING));
+		}
+		if(ScopeType.isCodeEqualsACTIVITE(scopeType)) {
+			columnsNames.addAll(List.of(Scope.FIELD_ACTION_AS_STRING,Scope.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING,Scope.FIELD_SECTION_AS_STRING));
+		}
+		if(ScopeType.isCodeEqualsIMPUTATION(scopeType)) {
+			columnsNames.addAll(List.of(Scope.FIELD_ACTIVITY_AS_STRING,Scope.FIELD_ACTION_AS_STRING,Scope.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING,Scope.FIELD_SECTION_AS_STRING));
+		}
+		if(ScopeType.isCodeEqualsUA(scopeType)) {
+			columnsNames.add(Scope.FIELD_SECTION_AS_STRING);
+		}			
+				
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, Scope.class);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, columnsNames);
@@ -129,6 +144,8 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 				map.put(Column.FIELD_FILTER_BY, ScopeQuerier.PARAMETER_NAME_TYPE);
 			}else if(Scope.FIELD_SECTION_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Section");
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, ScopeQuerier.PARAMETER_NAME_SECTION_CODE_NAME);
 			}else if(Scope.FIELD_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, scopeType == null ? "Domaine" : scopeType.getName());
 				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
@@ -153,14 +170,16 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 		
 		@Override
 		public String getReadQueryIdentifier(LazyDataModel<Scope> lazyDataModel) {
-			if(ScopeType.isCodeEqualsUA(scopeType))
-				return ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_UA_AND_FILTER;
 			if(ScopeType.isCodeEqualsUSB(scopeType))
-				return ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_USB_AND_FILTER;
+				return ScopeOfTypeBudgetSpecializationUnitQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER;
+			if(ScopeType.isCodeEqualsACTION(scopeType))
+				return ScopeOfTypeActionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER;
 			if(ScopeType.isCodeEqualsACTIVITE(scopeType))
 				return ScopeOfTypeActivityQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER;
 			if(ScopeType.isCodeEqualsIMPUTATION(scopeType))
 				return ScopeOfTypeImputationQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER;
+			if(ScopeType.isCodeEqualsUA(scopeType))
+				return ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_UA_AND_FILTER;
 			return ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER;
 		}
 		
@@ -169,8 +188,8 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 			Filter.Dto filter = super.instantiateFilter(lazyDataModel);
 			if(filter == null)
 				filter = new Filter.Dto();
-			if(ScopeType.isCodeEqualsUA(scopeType) || ScopeType.isCodeEqualsUSB(scopeType) || ScopeType.isCodeEqualsACTIVITE(scopeType)
-					|| ScopeType.isCodeEqualsIMPUTATION(scopeType)) {		
+			if(ScopeType.isCodeEqualsUSB(scopeType) || ScopeType.isCodeEqualsACTION(scopeType) || ScopeType.isCodeEqualsACTIVITE(scopeType)
+					|| ScopeType.isCodeEqualsIMPUTATION(scopeType) || ScopeType.isCodeEqualsUA(scopeType)) {		
 				
 			}else {
 				filter.addField(ScopeQuerier.PARAMETER_NAME_TYPE_CODE, scopeType.getCode());				
