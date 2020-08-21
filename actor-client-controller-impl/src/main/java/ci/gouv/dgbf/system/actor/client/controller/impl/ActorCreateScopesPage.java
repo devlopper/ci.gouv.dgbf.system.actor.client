@@ -70,7 +70,7 @@ public class ActorCreateScopesPage extends AbstractActorCreateScopesOrPrivileges
 			if(ScopeType.isCodeEqualsUA(scopeType))
 				return ScopeOfTypeAdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_WITH_SECTIONS_WHERE_FILTER;
 			if(ScopeType.isCodeEqualsUSB(scopeType))
-				return ScopeOfTypeBudgetSpecializationUnitQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_WITH_SECTIONS_WHERE_FILTER;
+				return ScopeOfTypeBudgetSpecializationUnitQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_WHERE_FILTER;
 			if(ScopeType.isCodeEqualsACTIVITE(scopeType))
 				return ScopeOfTypeActivityQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_WHERE_FILTER;
 			if(ScopeType.isCodeEqualsIMPUTATION(scopeType))
@@ -89,6 +89,8 @@ public class ActorCreateScopesPage extends AbstractActorCreateScopesOrPrivileges
 			else if(ScopeType.isCodeEqualsUSB(scopeType))
 				;
 			else if(ScopeType.isCodeEqualsACTIVITE(scopeType))
+				;
+			else if(ScopeType.isCodeEqualsACTION(scopeType))
 				;
 			else if(ScopeType.isCodeEqualsIMPUTATION(scopeType))
 				;

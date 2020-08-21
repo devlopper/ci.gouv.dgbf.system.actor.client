@@ -56,14 +56,14 @@ public abstract class AbstractActorListScopesPage extends AbstractActorListPrivi
 						.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(ScopeTypeQuerier.QUERY_IDENTIFIER_READ_ORDER_BY_ORDER_NUMBER_ASCENDING))));
 		if(scopeType == null)
 			scopeType = CollectionHelper.getFirst(scopeTypes);
-		
+		/*
 		Collection<String> columnsNames = CollectionHelper.listOf(Scope.FIELD_CODE,Scope.FIELD_NAME);
 		if(ScopeType.isCodeEqualsUA(scopeType) || ScopeType.isCodeEqualsUSB(scopeType))
 			columnsNames.add(Scope.FIELD_SECTION_AS_STRING);
-		
+		*/
 		dataTable = ScopeListPage.buildDataTable(DataTable.FIELD_LISTENER,new DataTableListenerImpl()
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl().setActor(actor).setScopeType(scopeType)
-				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,columnsNames);
+				,ScopeType.class,scopeType);
 		dataTable.set__parentElement__(actor);
 		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate(CommandButton.FIELD_VALUE,"Ajouter",CommandButton.FIELD_LISTENER
 				,new AbstractAction.Listener.AbstractImpl() {
@@ -173,7 +173,7 @@ public abstract class AbstractActorListScopesPage extends AbstractActorListPrivi
 			if(ScopeType.isCodeEqualsSECTION(scopeType))
 				return ScopeOfTypeSectionQuerier.QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER;
 			else if(ScopeType.isCodeEqualsUSB(scopeType))
-				return ScopeOfTypeBudgetSpecializationUnitQuerier.QUERY_IDENTIFIER_READ_VISIBLE_WITH_SECTIONS_WHERE_FILTER;
+				return ScopeOfTypeBudgetSpecializationUnitQuerier.QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER;
 			else if(ScopeType.isCodeEqualsACTION(scopeType))
 				return ScopeOfTypeActionQuerier.QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER;
 			else if(ScopeType.isCodeEqualsACTIVITE(scopeType))
@@ -181,7 +181,7 @@ public abstract class AbstractActorListScopesPage extends AbstractActorListPrivi
 			else if(ScopeType.isCodeEqualsIMPUTATION(scopeType))
 				return ScopeOfTypeImputationQuerier.QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER;
 			else if(ScopeType.isCodeEqualsUA(scopeType))
-				return ScopeOfTypeAdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_VISIBLE_WITH_SECTIONS_WHERE_FILTER;
+				return ScopeOfTypeAdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER;
 			return ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER;
 		}
 		
