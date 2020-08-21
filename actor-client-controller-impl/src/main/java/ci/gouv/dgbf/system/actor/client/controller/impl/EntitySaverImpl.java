@@ -127,7 +127,22 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 					AccountRequestDto accountRequest = (AccountRequestDto) index;
 					accountRequests.add(accountRequest);
 				}
-			return ((AccountRequestRepresentation)representation).reject(accountRequests);
+			return ((AccountRequestRepresentation)representation).record(accountRequests);
+		}
+		
+		if(arguments != null && AccountRequestBusiness.SUBMIT.equals(arguments.getActionIdentifier())) {
+			Collection<AccountRequestDto> accountRequests = new ArrayList<>();
+			if(CollectionHelper.isNotEmpty(creatables))
+				for(Object index : creatables) {
+					AccountRequestDto accountRequest = (AccountRequestDto) index;
+					accountRequests.add(accountRequest);
+				}
+			if(CollectionHelper.isNotEmpty(updatables))
+				for(Object index : updatables) {
+					AccountRequestDto accountRequest = (AccountRequestDto) index;
+					accountRequests.add(accountRequest);
+				}
+			return ((AccountRequestRepresentation)representation).submit(accountRequests);
 		}
 		
 		if(arguments != null && AccountRequestBusiness.ACCEPT.equals(arguments.getActionIdentifier())) {

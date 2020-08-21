@@ -10,7 +10,9 @@
 	
     <cyk:page value="#{accountRequestNotifyAfterCreatePage}">
     	<ui:define name="centerCenter">
-    		<h:outputText value="Votre demande de compte a été enregistrée." />
+    		<h4>
+    			<h:outputText value="#{accountRequestNotifyAfterCreatePage.message}" escape="false"/>
+    		</h4>    		
     	</ui:define>
     </cyk:page>
 </html>

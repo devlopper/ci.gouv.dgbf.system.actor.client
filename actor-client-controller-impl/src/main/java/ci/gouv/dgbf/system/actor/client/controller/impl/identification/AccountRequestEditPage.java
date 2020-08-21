@@ -3,6 +3,7 @@ package ci.gouv.dgbf.system.actor.client.controller.impl.identification;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.faces.component.UIComponent;
@@ -14,6 +15,7 @@ import javax.inject.Named;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntityReader;
+import org.cyk.utility.__kernel__.controller.EntitySaver;
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
@@ -38,6 +40,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetaryFunction;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Civility;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentityGroup;
+import ci.gouv.dgbf.system.actor.server.business.api.AccountRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.CivilityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentityGroupQuerier;
 import lombok.Getter;
@@ -105,9 +108,9 @@ public class AccountRequestEditPage extends AbstractEntityEditPageContainerManag
 				accountRequest.setActOfAppointmentSignatureDateAsTimestamp(accountRequest.getActOfAppointmentSignatureDate().getTime());
 				accountRequest.setActOfAppointmentSignatureDate(null);
 			}
-			//EntitySaver.getInstance().save(AccountRequest.class, new Arguments<AccountRequest>().setUpdatables(List.of(accountRequest))
-			//		.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(AccountRequestBusiness.SAVE_INITIALS_FROM_COMPUTATION)));
-			super.act(form);
+			EntitySaver.getInstance().save(AccountRequest.class, new Arguments<AccountRequest>().setUpdatables(List.of(accountRequest))
+					.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(AccountRequestBusiness.RECORD)));
+			//super.act(form);
 		}
 		
 		@Override
