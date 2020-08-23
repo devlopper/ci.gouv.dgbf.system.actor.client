@@ -150,6 +150,7 @@ public class AccountRequestEditPage extends AbstractEntityEditPageContainerManag
 					}
 				});
 			}else if(AccountRequest.FIELD_CIVILITY.equals(fieldName)) {
+				map.put(AbstractInputChoice.FIELD_LAYOUT,"lineDirection");
 				map.put(AbstractInputChoice.FIELD_LISTENER, new AbstractInputChoice.Listener.AbstractImpl<Civility>() {
 					@Override
 					public Collection<Civility> computeChoices(AbstractInputChoice<Civility> input) {
@@ -159,6 +160,7 @@ public class AccountRequestEditPage extends AbstractEntityEditPageContainerManag
 					}
 				});
 			}else if(AccountRequest.FIELD_GROUP.equals(fieldName)) {
+				map.put(AbstractInputChoice.FIELD_LAYOUT,"lineDirection");
 				map.put(AbstractInputChoice.FIELD_LISTENER, new AbstractInputChoice.Listener.AbstractImpl<IdentityGroup>() {
 					@Override
 					public Collection<IdentityGroup> computeChoices(AbstractInputChoice<IdentityGroup> input) {
