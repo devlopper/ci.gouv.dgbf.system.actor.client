@@ -15,5 +15,5 @@ public class ProfileFunction extends AbstractDataIdentifiableSystemStringImpl im
 	
 	private Profile profile;
 	private Function function;
-	
+	private String actorIdentifier;
 }

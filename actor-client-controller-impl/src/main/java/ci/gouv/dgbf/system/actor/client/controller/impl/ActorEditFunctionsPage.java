@@ -79,10 +79,14 @@ public class ActorEditFunctionsPage extends AbstractPageContainerManagedImpl imp
 									Collection<Function> selectedFunctions = CollectionHelper.cast(Function.class, functionsSelectManyCheckbox.getValue());
 									arguments.addCreatablesOrUpdatables(functions.stream().filter(function -> CollectionHelper
 											.contains(selectedFunctions, function) && !CollectionHelper.contains(initialSelectedFunctions, function))
-											.map(function -> new ProfileFunction().setProfile(profile).setFunction(function))
+											.map(function -> new ProfileFunction().setProfile(profile).setFunction(function).setActorIdentifier(actor.getIdentifier()))
 										.collect(Collectors.toList()));
 									if(CollectionHelper.isNotEmpty(profilesFunctions))
-										arguments.addDeletables(profilesFunctions.stream().filter(profilesFunction -> !selectedFunctions.contains(profilesFunction.getFunction())).collect(Collectors.toList()));
+										arguments.addDeletables(profilesFunctions.stream()
+												.filter(profilesFunction -> !selectedFunctions.contains(profilesFunction.getFunction()))
+												.collect(Collectors.toList()));
+									if(CollectionHelper.isNotEmpty(arguments.getDeletables()))
+										arguments.getDeletables().forEach(x -> x.setActorIdentifier(actor.getIdentifier()));
 								}
 								if(CollectionHelper.isNotEmpty(arguments.getCreatables()) || CollectionHelper.isNotEmpty(arguments.getDeletables())) {
 									EntitySaver.getInstance().save(ProfileFunction.class, arguments);	

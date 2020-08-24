@@ -18,6 +18,7 @@ import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputC
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputPass;
 import org.cyk.utility.__kernel__.string.StringHelper;
 
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -51,7 +52,9 @@ public class Actor extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 	@Input @InputChoice(choices = @Choices(count = Count.ALL)) @InputChoiceMany @InputChoiceManyCheck
 	private Collection<Function> functions;
 	private Collection<Privilege> privileges;
+	private Collection<Privilege> visibleModules;
 	private Collection<Scope> scopes;
+	private Collection<Scope> visibleSections;
 	
 	public String getNames() {
 		if(names == null) {
@@ -93,4 +96,6 @@ public class Actor extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 	public static final String FIELD_PASSWORD = "password";
 	public static final String FIELD_PASSWORD_CONFIRMATION = "passwordConfirmation";
 	public static final String FIELD_FUNCTIONS = "functions";
+	public static final String FIELD_VISIBLE_MODULES = "visibleModules";
+	public static final String FIELD_VISIBLE_SECTIONS = "visibleSections";
 }

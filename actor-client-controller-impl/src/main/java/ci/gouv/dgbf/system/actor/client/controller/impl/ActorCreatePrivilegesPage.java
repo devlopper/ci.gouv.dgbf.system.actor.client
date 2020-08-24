@@ -67,8 +67,9 @@ public class ActorCreatePrivilegesPage extends AbstractActorCreateScopesOrPrivil
 	
 	@Override
 	protected void create(Collection<Privilege> privileges) {
-		__inject__(ProfilePrivilegeController.class).createMany(privileges.stream().map(privilege -> new ProfilePrivilege().setProfile(profile).setPrivilege(privilege))
-				.collect(Collectors.toList()));
+		Collection<ProfilePrivilege> profilePrivileges = privileges.stream().map(privilege -> new ProfilePrivilege().setProfile(profile).setPrivilege(privilege))
+				.collect(Collectors.toList());
+		__inject__(ProfilePrivilegeController.class).createMany(profilePrivileges);
 	}
 	
 	@Override
