@@ -11,10 +11,12 @@ import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntitySaver;
 
 import ci.gouv.dgbf.system.actor.server.business.api.AccountRequestBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.ActorBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
 import ci.gouv.dgbf.system.actor.server.representation.api.AccountRequestRepresentation;
+import ci.gouv.dgbf.system.actor.server.representation.api.ActorRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorScopeRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfileFunctionRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfilePrivilegeRepresentation;
@@ -49,6 +51,8 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				arguments.setRepresentation(AccountRequestRepresentation.getProxy());
 			else if(AccountRequestBusiness.SUBMIT.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(AccountRequestRepresentation.getProxy());
+			else if(ActorBusiness.CREATE_PRIVILEGES_FROM_FUNCTIONS.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ActorRepresentation.getProxy());
 		}
 		super.prepare(controllerEntityClass, arguments);
 	}
@@ -163,6 +167,16 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 					accountRequests.add(accountRequest);
 				}
 			return ((AccountRequestRepresentation)representation).reject(accountRequests);
+		}
+		
+		if(arguments != null && ActorBusiness.CREATE_PRIVILEGES_FROM_FUNCTIONS.equals(arguments.getActionIdentifier())) {
+			Collection<ActorDto> actors = new ArrayList<>();
+			if(CollectionHelper.isNotEmpty(updatables))
+				for(Object index : updatables) {
+					ActorDto actor = (ActorDto) index;
+					actors.add(actor);
+				}
+			return ((ActorRepresentation)representation).createPrivilegesFromFunctions(actors);
 		}
 		return super.save(representation, creatables, updatables, deletables, arguments);
 	}

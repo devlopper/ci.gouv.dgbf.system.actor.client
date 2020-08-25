@@ -70,13 +70,22 @@ public abstract class AbstractActorListPage extends AbstractEntityListPageContai
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl()
 				.setFunctionCode((String) MapHelper.readByKey(arguments, Function.class)));
 		DataTable dataTable = DataTable.build(arguments);
-		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();
-		dataTable.addRecordMenuItemByArgumentsNavigateToView(null,"actorListPrivilegesStaticView", MenuItem.FIELD_VALUE,"Assignation", MenuItem.FIELD_ICON,"fa fa-lock"
-				,MenuItem.FIELD_PARAMETERS,Map.of(ParameterName.IS_STATIC.getValue(),"true"));
-		dataTable.addRecordMenuItemByArgumentsNavigateToView(null,"actorListScopesStaticView", MenuItem.FIELD_VALUE,"Affectation", MenuItem.FIELD_ICON,"fa fa-eye"
-				,MenuItem.FIELD_PARAMETERS,Map.of(ParameterName.IS_STATIC.getValue(),"true"));
-		dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("actorEditFunctionsView", MenuItem.FIELD_VALUE,"Fonctions", MenuItem.FIELD_ICON,"fa fa-flash");
-		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
+		
+		Boolean usableAsSelectionOnly = (Boolean) MapHelper.readByKey(arguments, DataTable.ConfiguratorImpl.FIELD_USABLE_AS_SELECTION_ONLY);
+		
+		String assignIcon = "fa fa-lock";
+		if(!Boolean.TRUE.equals(usableAsSelectionOnly)) {
+			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();
+			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog("assignPrivilegesToActorsByFunctionsView", MenuItem.FIELD_VALUE,"Assignation par fonction"
+					,MenuItem.FIELD_ICON,assignIcon);
+			
+			dataTable.addRecordMenuItemByArgumentsNavigateToView(null,"actorListPrivilegesStaticView", MenuItem.FIELD_VALUE,"Assignation", MenuItem.FIELD_ICON,assignIcon
+					,MenuItem.FIELD_PARAMETERS,Map.of(ParameterName.IS_STATIC.getValue(),"true"));
+			dataTable.addRecordMenuItemByArgumentsNavigateToView(null,"actorListScopesStaticView", MenuItem.FIELD_VALUE,"Affectation", MenuItem.FIELD_ICON,"fa fa-eye"
+					,MenuItem.FIELD_PARAMETERS,Map.of(ParameterName.IS_STATIC.getValue(),"true"));
+			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("actorEditFunctionsView", MenuItem.FIELD_VALUE,"Fonctions", MenuItem.FIELD_ICON,"fa fa-flash");
+			dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
+		}
 		return dataTable;
 	}
 	
