@@ -101,6 +101,7 @@ public class ActorCreatePage extends AbstractEntityEditPageContainerManagedImpl<
 					map.put(InputText.FIELD_REQUIRED, Boolean.FALSE);
 					map.put(InputText.ConfiguratorImpl.FIELD_MESSAGABLE, Boolean.TRUE);
 				}else if(Actor.FIELD_CIVILITY.equals(fieldName)) {
+					map.put(AbstractInputChoice.FIELD_COLUMNS, 6);
 					map.put(AbstractInputChoice.FIELD_LISTENER, new AbstractInputChoice.Listener.AbstractImpl<Civility>() {
 						@Override
 						public Collection<Civility> computeChoices(AbstractInputChoice<Civility> input) {
@@ -110,6 +111,7 @@ public class ActorCreatePage extends AbstractEntityEditPageContainerManagedImpl<
 						}
 					});
 				}else if(Actor.FIELD_GROUP.equals(fieldName)) {
+					map.put(AbstractInputChoice.FIELD_COLUMNS, 6);
 					map.put(AbstractInputChoice.FIELD_LISTENER, new AbstractInputChoice.Listener.AbstractImpl<IdentityGroup>() {
 						@Override
 						public Collection<IdentityGroup> computeChoices(AbstractInputChoice<IdentityGroup> input) {

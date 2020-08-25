@@ -59,6 +59,12 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>actorListAdministrateurView</from-outcome>
+			<to-view-id>/private/actor/listadministrateur.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>actorCreateView</from-outcome>
 			<to-view-id>/private/actor/create.jsf</to-view-id>
 			<redirect />
