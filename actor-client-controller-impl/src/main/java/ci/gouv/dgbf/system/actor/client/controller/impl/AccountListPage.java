@@ -37,20 +37,22 @@ public class AccountListPage extends AbstractPageContainerManagedImpl implements
 		super.__listenPostConstruct__();
 		Integer activeIndex;
 		if(TYPE_ACTOR.equals(type))
-			activeIndex = 1;
-		else if(TYPE_REQUEST_REJECTED.equals(type))
-			activeIndex = 3;
+			activeIndex = 0;
 		else if(TYPE_ADMINISTRATEUR.equals(type))
-			activeIndex = 2;
+			activeIndex = 1;
+		else if(TYPE_REQUEST_TO_PROCESS.equals(type))
+			activeIndex = 2;		
+		else if(TYPE_REQUEST_REJECTED.equals(type))
+			activeIndex = 3;		
 		else
 			activeIndex = 0;
 		tabMenu = TabMenu.build(TabMenu.ConfiguratorImpl.FIELD_ITEMS_OUTCOME,"accountListView",TabMenu.FIELD_ACTIVE_INDEX,activeIndex
 				,TabMenu.ConfiguratorImpl.FIELD_ITEMS,CollectionHelper.listOf(
-				new MenuItem().setValue("Demandes à traiter").addParameter(TYPE, TYPE_REQUEST_TO_PROCESS)
-				,new MenuItem().setValue("Comptes").addParameter(TYPE, TYPE_ACTOR)
-				,new MenuItem().setValue("Administrateurs").addParameter(TYPE, TYPE_ADMINISTRATEUR).addParameter(ParameterName.stringify(Function.class)
+					new MenuItem().setValue("Comptes").addParameter(TYPE, TYPE_ACTOR)
+					,new MenuItem().setValue("Administrateurs").addParameter(TYPE, TYPE_ADMINISTRATEUR).addParameter(ParameterName.stringify(Function.class)
 						, ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ADMINISTRATEUR)
-				,new MenuItem().setValue("Demandes rejetées").addParameter(TYPE, TYPE_REQUEST_REJECTED)
+					,new MenuItem().setValue("Demandes à traiter").addParameter(TYPE, TYPE_REQUEST_TO_PROCESS)				
+					,new MenuItem().setValue("Demandes rejetées").addParameter(TYPE, TYPE_REQUEST_REJECTED)
 				));
 		
 		if(TYPE_ACTOR.equals(type))
