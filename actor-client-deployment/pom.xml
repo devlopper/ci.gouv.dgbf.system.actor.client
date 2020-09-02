@@ -81,7 +81,7 @@
 		<profile>
 			<id>docker</id>
 			<properties>
-				<jboss-web.context-root>/sib/acteur</jboss-web.context-root>
+				<jboss-web.context-root>/acteur</jboss-web.context-root>
 			</properties>
 		</profile>
 		
