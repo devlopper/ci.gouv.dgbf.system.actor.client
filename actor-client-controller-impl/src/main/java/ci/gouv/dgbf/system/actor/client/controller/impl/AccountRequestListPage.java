@@ -50,7 +50,7 @@ public class AccountRequestListPage extends AbstractEntityListPageContainerManag
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, AccountRequest.class);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, CollectionHelper.listOf(AccountRequest.FIELD_FIRST_NAME
-				,AccountRequest.FIELD_LAST_NAMES,AccountRequest.FIELD_ELECTRONIC_MAIL_ADDRESS,AccountRequest.FIELD_CREATION_DATE_AS_STRING));
+				,AccountRequest.FIELD_LAST_NAMES,AccountRequest.FIELD_SERVICE,AccountRequest.FIELD_ELECTRONIC_MAIL_ADDRESS,AccountRequest.FIELD_CREATION_DATE_AS_STRING));
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl());
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl());
@@ -113,8 +113,20 @@ public class AccountRequestListPage extends AbstractEntityListPageContainerManag
 			}else if(AccountRequest.FIELD_CREATION_DATE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Date");
 				map.put(Column.FIELD_WIDTH, "150");
+			}else if(AccountRequest.FIELD_SERVICE.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Service");
+				
 			}
 			return map;
+		}
+		
+		@Override
+		public Object getCellValueByRecordByColumn(Object record, Integer recordIndex, Column column,Integer columnIndex) {
+			if(column != null && AccountRequest.FIELD_SERVICE.equals(column.getFieldName())) {
+				AccountRequest accountRequest = (AccountRequest) record;
+				return Helper.formatService(accountRequest.getAdministrativeUnitAsString(), accountRequest.getAdministrativeFunction(), accountRequest.getSectionAsString());
+			}
+			return super.getCellValueByRecordByColumn(record, recordIndex, column, columnIndex);
 		}
 	}
 	

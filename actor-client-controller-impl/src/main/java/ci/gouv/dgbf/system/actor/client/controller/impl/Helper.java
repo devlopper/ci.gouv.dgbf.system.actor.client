@@ -2,7 +2,9 @@ package ci.gouv.dgbf.system.actor.client.controller.impl;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.constant.ConstantEmpty;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
@@ -15,6 +17,15 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 
 public interface Helper {
 
+	static String formatService(String administrativeUnit,String administrativeFunction,String section) {
+		if(StringHelper.isBlank(administrativeUnit))
+			return ConstantEmpty.STRING;
+		String string = administrativeUnit;
+		if(StringHelper.isNotBlank(string) && StringHelper.isNotBlank(administrativeFunction))
+			string = StringUtils.substringBefore(section," ")+" - " + string + " | "+administrativeFunction;
+		return string;
+	}
+	
 	static Profile getProfileFromRequestParameterEntityAsParent(Actor actor) {
 		Profile profile = WebController.getInstance().getRequestParameterEntityAsParent(Profile.class);
 		if(profile != null)

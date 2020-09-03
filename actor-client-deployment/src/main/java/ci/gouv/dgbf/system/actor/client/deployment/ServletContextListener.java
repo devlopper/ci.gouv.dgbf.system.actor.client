@@ -6,11 +6,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.annotation.WebListener;
 
 import org.cyk.user.interface_.theme.web.jsf.primefaces.atlantis.dgbf.DesktopDefault;
-import org.cyk.utility.__kernel__.configuration.ConfigurationHelper;
-import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.deployment.AbstractServletContextListener;
 
-import ci.gouv.dgbf.sib.menu.generator.api.service.ActeurApiService;
 import ci.gouv.dgbf.system.actor.client.controller.impl.ApplicationScopeLifeCycleListener;
 
 @WebListener
@@ -21,8 +18,6 @@ public class ServletContextListener extends AbstractServletContextListener imple
 	public void __initialize__(ServletContext context) {
 		super.__initialize__(context);
 		__inject__(ApplicationScopeLifeCycleListener.class).initialize(null);
-		//ActeurApiService.
-		
 		DesktopDefault.initialize(ci.gouv.dgbf.system.actor.server.annotation.System.class,null);
 	}	
 }

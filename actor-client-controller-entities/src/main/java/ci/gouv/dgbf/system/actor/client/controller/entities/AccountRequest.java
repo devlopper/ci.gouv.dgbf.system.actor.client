@@ -45,6 +45,7 @@ public class AccountRequest extends AbstractDataIdentifiableSystemStringImpl imp
 	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceOneAutoComplete private AdministrativeUnit administrativeUnit;
 	private String administrativeUnitAsString;
 	private String administrativeFunction;
+	private String sectionAsString;
 	@Input @InputChoice(choices = @Choices(count = Count.ALL)) @InputChoiceOneRadio private Civility civility;
 	private String civilityAsString;
 	@Input @InputChoice(choices = @Choices(count = Count.ALL)) @InputChoiceOneRadio private IdentityGroup group;
@@ -99,6 +100,7 @@ public class AccountRequest extends AbstractDataIdentifiableSystemStringImpl imp
 	public static final String FIELD_OFFICE_PHONE_EXTENSION = "officePhoneExtension";
 	public static final String FIELD_ADMINISTRATIVE_UNIT = "administrativeUnit";
 	public static final String FIELD_ADMINISTRATIVE_FUNCTION = "administrativeFunction";
+	public static final String FIELD_SERVICE = "service";
 	public static final String FIELD_CIVILITY = "civility";
 	public static final String FIELD_GROUP = "group";
 	public static final String FIELD_ACT_OF_APPOINTMENT_REFERENCE = "actOfAppointmentReference";

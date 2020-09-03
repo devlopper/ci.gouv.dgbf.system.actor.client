@@ -12,6 +12,7 @@ import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
@@ -62,7 +63,7 @@ public abstract class AbstractActorListPage extends AbstractEntityListPageContai
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, Actor.class);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, CollectionHelper.listOf(Actor.FIELD_CODE,Actor.FIELD_FIRST_NAME
-				,Actor.FIELD_LAST_NAMES,Actor.FIELD_FUNCTIONS
+				,Actor.FIELD_LAST_NAMES,Actor.FIELD_SERVICE,Actor.FIELD_FUNCTIONS
 				//,Actor.FIELD_VISIBLE_SECTIONS,Actor.FIELD_VISIBLE_MODULES
 				));
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
@@ -131,6 +132,12 @@ public abstract class AbstractActorListPage extends AbstractEntityListPageContai
 				map.put(Column.FIELD_HEADER_TEXT, "Section(s) visible(s)");
 			}else if(Actor.FIELD_VISIBLE_MODULES.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Module(s) visible(s)");
+			}else if(Actor.FIELD_SERVICE.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Service");
+				map.put(Column.FIELD_WIDTH, "300");
+			}else if(Actor.FIELD_SECTION_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Section");
+				map.put(Column.FIELD_WIDTH, "50");
 			}
 			return map;
 		}
@@ -139,8 +146,28 @@ public abstract class AbstractActorListPage extends AbstractEntityListPageContai
 		public Object getCellValueByRecordByColumn(Object record, Integer recordIndex, Column column,Integer columnIndex) {
 			if(column != null && Actor.FIELD_FUNCTIONS.equals(column.getFieldName()))
 				return CollectionHelper.isEmpty(((Actor)record).getFunctions()) ? null : ((Actor)record).getFunctions().stream().map(x -> x.getName()).collect(Collectors.joining(","));
+			if(column != null && Actor.FIELD_SERVICE.equals(column.getFieldName())) {
+				Actor actor = (Actor) record;
+				return Helper.formatService(actor.getAdministrativeUnitAsString(), actor.getAdministrativeFunction(), actor.getSectionAsString());
+			}
 			return super.getCellValueByRecordByColumn(record, recordIndex, column, columnIndex);
 		}
+		
+		@Override
+		public String getTooltipByRecord(Object record, Integer recordIndex) {
+			if(record instanceof Actor) {
+				Actor actor = (Actor) record;			
+				return String.format(ROW_TOOLTIP_FORMAT,actor.getNames(),ValueHelper.defaultToIfBlank(actor.getSectionAsString(),ConstantEmpty.STRING)
+						,ValueHelper.defaultToIfBlank(actor.getAdministrativeUnitAsString(),ConstantEmpty.STRING)
+						,ValueHelper.defaultToIfBlank(actor.getAdministrativeFunction(),ConstantEmpty.STRING)
+						,CollectionHelper.isEmpty(actor.getFunctions()) ? ConstantEmpty.STRING : actor.getFunctions().stream().map(x -> x.getName()).collect(Collectors.toList()) 
+						);
+			}	
+			return super.getTooltipByRecord(record, recordIndex);
+		}
+		
+		private static final String ROW_TOOLTIP_FORMAT = "Nom et prénom(s) : %s<br/>Section : %s<br/>Unité administrative : %s<br/>Fonction administrative : %s"
+				+ "<br/>Fonction(s) applicative(s) : %s";
 	}
 	
 	@Getter @Setter @Accessors(chain=true)

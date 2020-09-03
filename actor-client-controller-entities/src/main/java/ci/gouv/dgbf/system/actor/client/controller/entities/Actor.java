@@ -44,7 +44,7 @@ public class Actor extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 	@Input @InputPass @NotNull private String passwordConfirmation;
 	private Byte notation;
 	private String color;
-	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceOneAutoComplete private AdministrativeUnit administrativeUnit;	
+	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceOneAutoComplete private AdministrativeUnit administrativeUnit;
 	private String administrativeFunction;
 	@Input @InputChoice(choices = @Choices(count = Count.ALL)) @InputChoiceOneRadio private Civility civility;
 	@Input @InputChoice(choices = @Choices(count = Count.ALL)) @InputChoiceOneRadio private IdentityGroup group;
@@ -56,6 +56,8 @@ public class Actor extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 	private Collection<Privilege> visibleModules;
 	private Collection<Scope> scopes;
 	private Collection<Scope> visibleSections;
+	
+	private String administrativeUnitAsString,sectionAsString;
 	
 	public String getNames() {
 		if(names == null) {
@@ -90,7 +92,9 @@ public class Actor extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 	public static final String FIELD_OFFICE_PHONE_EXTENSION = "officePhoneExtension";
 	public static final String FIELD_ADMINISTRATIVE_UNIT = "administrativeUnit";
 	public static final String FIELD_ADMINISTRATIVE_UNIT_AS_STRING = "administrativeUnitAsString";
+	public static final String FIELD_SERVICE = "service";
 	public static final String FIELD_ADMINISTRATIVE_FUNCTION = "administrativeFunction";
+	public static final String FIELD_SECTION_AS_STRING = "sectionAsString";
 	public static final String FIELD_CIVILITY = "civility";
 	public static final String FIELD_GROUP = "group";
 	public static final String FIELD_USER_NAME = "username";
