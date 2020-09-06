@@ -33,6 +33,12 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>accountRequestReadView</from-outcome>
+			<to-view-id>/private/accountrequest/read.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>accountRequestOpenView</from-outcome>
 			<to-view-id>/public/accountrequest/open.jsf</to-view-id>
 			<redirect />

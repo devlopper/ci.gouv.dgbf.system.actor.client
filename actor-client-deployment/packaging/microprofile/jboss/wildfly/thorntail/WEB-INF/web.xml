@@ -64,6 +64,43 @@
 		<param-value>${cyk.variable.system.security.authentication.enable}</param-value>
 	</context-param>
 	
+	<!-- keycloak Server -->
+	
+	<context-param>
+		<param-name>cyk.variable.keycloak.enabled</param-name>
+		<param-value>${cyk.variable.keycloak.enabled}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.keycloak.client.identifier</param-name>
+		<param-value>${cyk.variable.keycloak.client.identifier}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.keycloak.client.secret</param-name>
+		<param-value>${cyk.variable.keycloak.client.secret}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.keycloak.credential.password</param-name>
+		<param-value>${cyk.variable.keycloak.credential.password}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.keycloak.credential.username</param-name>
+		<param-value>${cyk.variable.keycloak.credential.username}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.keycloak.realm.name</param-name>
+		<param-value>${cyk.variable.keycloak.realm.name}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.keycloak.server.url</param-name>
+		<param-value>${cyk.variable.keycloak.server.url}</param-value>
+	</context-param>
+	
 	<!-- Static resources -->
 	
 	<!-- Favicon -->

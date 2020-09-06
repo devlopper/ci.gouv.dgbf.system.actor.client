@@ -55,7 +55,7 @@ public class AccountRequestListPage extends AbstractEntityListPageContainerManag
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl());
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl());
 		DataTable dataTable = DataTable.build(arguments);
-		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
+		dataTable.addRecordMenuItemByArgumentsOpenViewInDialogRead();
 		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Accepter", "fa fa-check", new AbstractAction.Listener.AbstractImpl() {
 			@Override
 			protected Object __runExecuteFunction__(AbstractAction action) {
@@ -78,6 +78,7 @@ public class AccountRequestListPage extends AbstractEntityListPageContainerManag
 				return null;
 			}
 		});
+		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
 		return dataTable;
 	}
 	

@@ -23,6 +23,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityL
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentityQuerier;
 import lombok.Getter;
@@ -69,7 +70,9 @@ public abstract class AbstractActorListPage extends AbstractEntityListPageContai
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl());
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl()
-				.setFunctionCode((String) MapHelper.readByKey(arguments, Function.class)));
+				.setFunctionCode((String) MapHelper.readByKey(arguments, Function.class))
+				.setVisibleSectionCode((String) MapHelper.readByKey(arguments, Section.class))
+				);
 		DataTable dataTable = DataTable.build(arguments);
 		
 		Boolean usableAsSelectionOnly = (Boolean) MapHelper.readByKey(arguments, DataTable.ConfiguratorImpl.FIELD_USABLE_AS_SELECTION_ONLY);
@@ -173,7 +176,7 @@ public abstract class AbstractActorListPage extends AbstractEntityListPageContai
 	@Getter @Setter @Accessors(chain=true)
 	public static class LazyDataModelListenerImpl extends LazyDataModel.Listener.AbstractImpl<Actor> implements Serializable {
 		
-		private String functionCode;
+		private String functionCode,visibleSectionCode;
 		
 		@Override
 		public Boolean getReaderUsable(LazyDataModel<Actor> lazyDataModel) {
@@ -190,10 +193,13 @@ public abstract class AbstractActorListPage extends AbstractEntityListPageContai
 		@Override
 		public Filter.Dto instantiateFilter(LazyDataModel<Actor> lazyDataModel) {
 			Filter.Dto filter = super.instantiateFilter(lazyDataModel);			
-			if(StringHelper.isNotBlank(functionCode)) {
+			if(StringHelper.isNotBlank(functionCode) || StringHelper.isNotBlank(visibleSectionCode)) {
 				if(filter == null)
 					filter = new Filter.Dto();
-				filter.addField(ActorQuerier.PARAMETER_NAME_FUNCTION_CODE, functionCode);
+				if(StringHelper.isNotBlank(functionCode))
+					filter.addField(ActorQuerier.PARAMETER_NAME_FUNCTION_CODE, functionCode);
+				if(StringHelper.isNotBlank(visibleSectionCode))
+					filter.addField(ActorQuerier.PARAMETER_NAME_VISIBLE_SECTION_CODE, visibleSectionCode);
 			}
 			return filter;
 		}

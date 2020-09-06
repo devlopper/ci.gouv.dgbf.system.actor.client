@@ -18,6 +18,8 @@
 		<cyk.variable.system.identifier>acteur</cyk.variable.system.identifier>
 		<cyk.variable.system.name>Gestion des acteurs</cyk.variable.system.name>
 		<cyk.variable.system.logging.throwable.print.stack.trace>true</cyk.variable.system.logging.throwable.print.stack.trace>
+		<cyk.variable.keycloak.enabled>true</cyk.variable.keycloak.enabled>
+		
 		<!-- Theme -->
 		<cyk.variable.user.interface.theme.primefaces>atlantis-blue</cyk.variable.user.interface.theme.primefaces>
 		<cyk.variable.user.interface.theme.class.name>org.cyk.user.interface_.theme.web.jsf.primefaces.atlantis.dgbf.DesktopDefault</cyk.variable.user.interface.theme.class.name>
@@ -31,6 +33,14 @@
 		<!-- Production -->
 		<server.application.jboss.wildfly.prod.hostname>xx.xx.xx.xx</server.application.jboss.wildfly.prod.hostname>
 		<server.application.jboss.wildfly.prod.username>WILDFLY.PROD.USER</server.application.jboss.wildfly.prod.username>
+		
+		<security.single.sign.on.system.keycloak.prod.url>http://10.3.4.60:8080/auth</security.single.sign.on.system.keycloak.prod.url>
+		<security.single.sign.on.system.keycloak.prod.realm.name>SIIBTEST</security.single.sign.on.system.keycloak.prod.realm.name>
+		<security.single.sign.on.system.keycloak.prod.client.identifier>admin-cli</security.single.sign.on.system.keycloak.prod.client.identifier>
+		<security.single.sign.on.system.keycloak.prod.client.secret>ac0749e3-14f8-4a14-a6e1-4edfb9375e69</security.single.sign.on.system.keycloak.prod.client.secret>
+		<security.single.sign.on.system.keycloak.prod.credential.username>mic-acteur-api</security.single.sign.on.system.keycloak.prod.credential.username>
+		<security.single.sign.on.system.keycloak.prod.credential.password>mic-@cteur-@pi@2O2o</security.single.sign.on.system.keycloak.prod.credential.password>
+		
 		<!--
 		<web-app.security-constraint.web-resource-collection.all.url-pattern>/_d_i_s_a_b_l_e_d_/*</web-app.security-constraint.web-resource-collection.all.url-pattern>
 		<web-app.login-config.auth-method>BASIC</web-app.login-config.auth-method>
@@ -52,6 +62,11 @@
 			<groupId>org.cyk.jee.utility.client.deployment</groupId>
 			<artifactId>jee-utility-client-deployment</artifactId>
 			<version>0.1.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.keycloak</groupId>
+			<artifactId>keycloak-admin-client</artifactId>
 		</dependency>
 	</dependencies>	
 	
