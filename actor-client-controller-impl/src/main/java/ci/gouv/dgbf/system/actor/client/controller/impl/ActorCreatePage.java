@@ -50,7 +50,7 @@ public class ActorCreatePage extends AbstractEntityEditPageContainerManagedImpl<
 	protected Map<Object, Object> __getFormArguments__() {
 		Map<Object, Object> arguments = super.__getFormArguments__();
 		arguments.put(Form.FIELD_ACTION, Action.CREATE);
-		arguments.put(Form.FIELD_ENTITY, new Actor());
+		arguments.put(Form.FIELD_ENTITY, new Actor().setEmailSendableAfterCreation(Boolean.TRUE));
 		arguments.put(Form.ConfiguratorImpl.FIELD_LISTENER, new Form.ConfiguratorImpl.Listener.AbstractImpl() {
 			@Override
 			public Collection<String> getFieldsNames(Form form) {

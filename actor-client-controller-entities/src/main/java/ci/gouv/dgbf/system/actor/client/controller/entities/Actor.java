@@ -56,6 +56,7 @@ public class Actor extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 	private Collection<Privilege> visibleModules;
 	private Collection<Scope> scopes;
 	private Collection<Scope> visibleSections;
+	private Boolean emailSendableAfterCreation;
 	
 	private String administrativeUnitAsString,sectionAsString;
 	

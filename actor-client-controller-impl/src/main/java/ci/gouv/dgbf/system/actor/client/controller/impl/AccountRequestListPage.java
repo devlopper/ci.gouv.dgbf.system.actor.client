@@ -2,6 +2,7 @@ package ci.gouv.dgbf.system.actor.client.controller.impl;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.faces.view.ViewScoped;
@@ -11,12 +12,14 @@ import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntitySaver;
+import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.AccountRequest;
@@ -67,7 +70,22 @@ public class AccountRequestListPage extends AbstractEntityListPageContainerManag
 				return null;
 			}
 		});
-		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Rejecter", "fa fa-trash", new AbstractAction.Listener.AbstractImpl() {
+		dataTable.addRecordMenuItemByArgumentsOpenViewInDialog(Action.READ,MenuItem.FIELD_VALUE,"Rejeter",MenuItem.FIELD_ICON,"fa fa-trash"
+				,MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+					@Override
+					protected Map<String, List<String>> getViewParameters(AbstractAction action) {
+						Map<String, List<String>> map = super.getViewParameters(action);
+						if(map == null)
+							map = new HashMap<>();
+						map.put("traitement", List.of("rejeter"));
+						return map;
+					}
+				});
+		/*dataTable.addRecordMenuItemByArgumentsExecuteFunction("Rejecter", "fa fa-trash", new AbstractAction.Listener.AbstractImpl() {
+			@Override
+			protected String getOutcome(AbstractAction action) {
+				return "";
+			}
 			@Override
 			protected Object __runExecuteFunction__(AbstractAction action) {
 				AccountRequest accountRequest = (AccountRequest) action.get__argument__();
@@ -77,7 +95,7 @@ public class AccountRequestListPage extends AbstractEntityListPageContainerManag
 						.addCreatablesOrUpdatables(accountRequest));
 				return null;
 			}
-		});
+		});*/
 		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
 		return dataTable;
 	}

@@ -39,7 +39,7 @@ public class AccountRequest extends AbstractDataIdentifiableSystemStringImpl imp
 	
 	private String registrationNumber;
 	private String postalBoxAddress;
-	private String mobilePhoneNumber;
+	@NotNull private String mobilePhoneNumber;
 	private String officePhoneNumber;
 	private String officePhoneExtension;
 	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceOneAutoComplete private AdministrativeUnit administrativeUnit;
@@ -55,6 +55,8 @@ public class AccountRequest extends AbstractDataIdentifiableSystemStringImpl imp
 	@Input @InputDate private Date actOfAppointmentSignatureDate;
 	private String actOfAppointmentSignatureDateAsString;
 	private Long actOfAppointmentSignatureDateAsTimestamp;
+	@Input @InputChoice @InputChoiceOneRadio @NotNull private String treatment;
+	private String rejectReason;
 	
 	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceMany @InputChoiceManyAutoComplete 
 	private Collection<Function> functions;
@@ -99,10 +101,13 @@ public class AccountRequest extends AbstractDataIdentifiableSystemStringImpl imp
 	public static final String FIELD_OFFICE_PHONE_NUMBER = "officePhoneNumber";
 	public static final String FIELD_OFFICE_PHONE_EXTENSION = "officePhoneExtension";
 	public static final String FIELD_ADMINISTRATIVE_UNIT = "administrativeUnit";
+	public static final String FIELD_ADMINISTRATIVE_UNIT_AS_STRING = "administrativeUnitAsString";
 	public static final String FIELD_ADMINISTRATIVE_FUNCTION = "administrativeFunction";
 	public static final String FIELD_SERVICE = "service";
 	public static final String FIELD_CIVILITY = "civility";
+	public static final String FIELD_CIVILITY_AS_STRING = "civilityAsString";
 	public static final String FIELD_GROUP = "group";
+	public static final String FIELD_GROUP_AS_STRING = "groupAsString";
 	public static final String FIELD_ACT_OF_APPOINTMENT_REFERENCE = "actOfAppointmentReference";
 	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATORY = "actOfAppointmentSignatory";
 	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE = "actOfAppointmentSignatureDate";
@@ -110,4 +115,6 @@ public class AccountRequest extends AbstractDataIdentifiableSystemStringImpl imp
 	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE_TIMESTAMP = "actOfAppointmentSignatureDateTimestamp";
 	public static final String FIELD_FUNCTIONS = "functions";
 	public static final String FIELD_BUDGETARY_FUNCTIONS = "budgetaryFunctions";
+	public static final String FIELD_TREATMENT = "treatment";
+	public static final String FIELD_REJECT_REASON = "rejectReason";
 }
