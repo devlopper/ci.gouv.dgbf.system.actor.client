@@ -31,12 +31,15 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AccountRequest;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Profile;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RejectedAccountRequest;
+import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -58,6 +61,8 @@ public class AccountListPage extends AbstractPageContainerManagedImpl implements
 		super.__listenPostConstruct__();
 		Collection<MenuItem> tabMenuItems = new ArrayList<>();
 		for(Tab tab : Tab.values()) {
+			if(Boolean.TRUE.equals(tab.skippable))
+				continue;
 			String name = tab.name;
 			if(Tab.ACTOR.equals(tab))
 				name += "("+EntityCounter.getInstance().count(Actor.class,ActorQuerier.QUERY_IDENTIFIER_COUNT_ALL_01)+")";
@@ -73,7 +78,17 @@ public class AccountListPage extends AbstractPageContainerManagedImpl implements
 		
 		if(Tab.ACTOR.equals(selectedTab))
 			dataTable = ActorListPage.buildDataTable();
-		else if(Tab.FUNCTIONS.equals(selectedTab)) {
+		else if(Tab.PROFILES.equals(selectedTab)) {
+			String code = WebController.getInstance().getRequestParameter(AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl.FIELD_CODE);
+			Collection<Profile> profiles = EntityReader.getInstance().readMany(Profile.class, ProfileQuerier.QUERY_IDENTIFIER_READ);
+			if(CollectionHelper.isNotEmpty(profiles)) {
+				if(StringHelper.isBlank(code))
+					code = ci.gouv.dgbf.system.actor.server.persistence.entities.Profile.CODE_ADMINISTRATEUR;
+				dataTable = ActorListPage.buildDataTable(Profile.class,code);	
+				cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,buildProfilesSelectOneCombo(profiles,code),Cell.FIELD_WIDTH,12));				
+			}		
+		}
+		/*else if(Tab.FUNCTIONS.equals(selectedTab)) {
 			String code = WebController.getInstance().getRequestParameter(AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl.FIELD_CODE);
 			Collection<Function> functions = EntityReader.getInstance().readMany(Function.class, FunctionQuerier.QUERY_IDENTIFIER_READ);
 			if(CollectionHelper.isNotEmpty(functions)) {
@@ -82,9 +97,28 @@ public class AccountListPage extends AbstractPageContainerManagedImpl implements
 				dataTable = ActorListPage.buildDataTable(Function.class,code);	
 				cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,buildFunctionsSelectOneCombo(functions,code),Cell.FIELD_WIDTH,12));				
 			}		
-		}//else if(Tab.ADMINISTRATEUR.equals(selectedTab))
+		}*///else if(Tab.ADMINISTRATEUR.equals(selectedTab))
 		//	dataTable = ActorListPage.buildDataTable(Function.class,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ADMINISTRATEUR);
-		else if(Tab.VISIBLE_SECTIONS.equals(selectedTab)) {
+		else if(Tab.SCOPE_TYPES.equals(selectedTab)) {
+			String code = WebController.getInstance().getRequestParameter(AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl.FIELD_CODE);
+			Collection<ScopeType> scopeTypes = EntityReader.getInstance().readMany(ScopeType.class, ScopeTypeQuerier.QUERY_IDENTIFIER_READ_ORDER_BY_ORDER_NUMBER_ASCENDING);
+			if(CollectionHelper.isNotEmpty(scopeTypes)) {
+				if(StringHelper.isBlank(code))
+					code = ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_SECTION;
+				TabMenu scopeTypesTabMenu = buildScopeTypesTab(scopeTypes, code);	
+				cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeTypesTabMenu,Cell.FIELD_WIDTH,12));
+				if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_SECTION.equals(code)) {
+					Collection<Section> sections = EntityReader.getInstance().readMany(Section.class, SectionQuerier.QUERY_IDENTIFIER_READ);
+					if(CollectionHelper.isNotEmpty(sections)) {
+						if(StringHelper.isBlank(code))
+							code = CollectionHelper.getFirst(sections).getCode();
+						dataTable = ActorListPage.buildDataTable(Section.class,code);
+						cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,buildVisibleSectionsSelectOneCombo(sections,code),Cell.FIELD_WIDTH,12));
+					}
+				}
+			}			
+		}
+		/*else if(Tab.VISIBLE_SECTIONS.equals(selectedTab)) {
 			String code = WebController.getInstance().getRequestParameter(AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl.FIELD_CODE);
 			Collection<Section> sections = EntityReader.getInstance().readMany(Section.class, SectionQuerier.QUERY_IDENTIFIER_READ);
 			if(CollectionHelper.isNotEmpty(sections)) {
@@ -93,7 +127,7 @@ public class AccountListPage extends AbstractPageContainerManagedImpl implements
 				dataTable = ActorListPage.buildDataTable(Section.class,code);
 				cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,buildVisibleSectionsSelectOneCombo(sections,code),Cell.FIELD_WIDTH,12));				
 			}			
-		}
+		}*/
 		else if(Tab.REQUEST.equals(selectedTab)) {
 			RequestTab selectedRequestTab = RequestTab.getByParameterValue(WebController.getInstance().getRequestParameter(RequestTab.PARAMETER_NAME));
 			if(selectedRequestTab == null)
@@ -122,7 +156,7 @@ public class AccountListPage extends AbstractPageContainerManagedImpl implements
 	}
 	
 	public static TabMenu buildFunctionsTab(Collection<Function> functions,String code) {
-		if(CollectionHelper.isEmpty(functions))
+		/*if(CollectionHelper.isEmpty(functions))
 			return null;		
 		Collection<MenuItem> tabMenuItems = new ArrayList<>();
 		Integer activeIndex = null;
@@ -135,6 +169,24 @@ public class AccountListPage extends AbstractPageContainerManagedImpl implements
 		}
 		return TabMenu.build(TabMenu.ConfiguratorImpl.FIELD_ITEMS_OUTCOME,"accountListView",TabMenu.FIELD_ACTIVE_INDEX,activeIndex
 				,TabMenu.ConfiguratorImpl.FIELD_ITEMS,tabMenuItems);
+		*/
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public SelectOneCombo buildProfilesSelectOneCombo(Collection<Profile> profiles,String code) {
+		if(CollectionHelper.isEmpty(profiles))
+			return null;
+		SelectOneCombo selectOneCombo = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICES,profiles);
+		selectOneCombo.selectByBusinessIdentifier(code);
+		selectOneCombo.enableValueChangeListener(new AbstractInputChoiceOne.ValueChangeListener() {
+			@Override
+			protected void select(AbstractAction action, Object value) {
+				((AbstractActorListPage.LazyDataModelListenerImpl)((LazyDataModel<Actor>)dataTable.getValue()).getListener())
+					.setProfileCode((String)FieldHelper.readBusinessIdentifier(value));
+			}
+		}, List.of(dataTable));
+		return selectOneCombo;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -154,6 +206,7 @@ public class AccountListPage extends AbstractPageContainerManagedImpl implements
 	}
 	
 	public static TabMenu buildSectionsTab(Collection<Section> sections,String code) {
+		/*
 		if(CollectionHelper.isEmpty(sections))
 			return null;		
 		Collection<MenuItem> tabMenuItems = new ArrayList<>();
@@ -167,6 +220,8 @@ public class AccountListPage extends AbstractPageContainerManagedImpl implements
 		}
 		return TabMenu.build(TabMenu.ConfiguratorImpl.FIELD_ITEMS_OUTCOME,"accountListView",TabMenu.FIELD_ACTIVE_INDEX,activeIndex
 				,TabMenu.ConfiguratorImpl.FIELD_ITEMS,tabMenuItems);
+		*/
+		return null;
 	}
 	
 	public SelectOneCombo buildVisibleSectionsSelectOneCombo(Collection<Section> sections,String code) {
@@ -185,6 +240,23 @@ public class AccountListPage extends AbstractPageContainerManagedImpl implements
 		return selectOneCombo;
 	}
 	
+	public static TabMenu buildScopeTypesTab(Collection<ScopeType> scopeTypes,String code) {
+		if(CollectionHelper.isEmpty(scopeTypes))
+			return null;		
+		Collection<MenuItem> tabMenuItems = new ArrayList<>();
+		Integer activeIndex = null;
+		Integer count = 0;
+		for(ScopeType scopeType : scopeTypes) {
+			tabMenuItems.add(new MenuItem().setValue(scopeType.getName()).addParameter(Tab.PARAMETER_NAME, Tab.SCOPE_TYPES.parameterValue)
+					.addParameter(AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl.FIELD_CODE, scopeType.getCode()));
+			if(activeIndex == null && scopeType.getCode().equals(code))
+				activeIndex = count;
+			count++;
+		}
+		return TabMenu.build(TabMenu.ConfiguratorImpl.FIELD_ITEMS_OUTCOME,"accountListView",TabMenu.FIELD_ACTIVE_INDEX,activeIndex
+				,TabMenu.ConfiguratorImpl.FIELD_ITEMS,tabMenuItems);
+	}
+	
 	@Override
 	protected String __getWindowTitleValue__() {
 		return "Comptes";
@@ -194,14 +266,17 @@ public class AccountListPage extends AbstractPageContainerManagedImpl implements
 	
 	@AllArgsConstructor @Getter
 	public static enum Tab {
-		ACTOR("Liste des comptes","liste_comptes")
-		,FUNCTIONS("Liste des comptes par fonction","liste_comptes_par_fonction")
-		,VISIBLE_SECTIONS("Liste des comptes par section visible","liste_comptes_par_section_visible")
-		,REQUEST("Liste des demandes de comptes","liste_demandes")
+		ACTOR("Comptes","comptes",Boolean.FALSE)
+		,PROFILES("Assignation","assignation",Boolean.FALSE)
+		//,FUNCTIONS("Liste des comptes par fonction","liste_comptes_par_fonction",Boolean.TRUE)
+		,SCOPE_TYPES("Affectation","affectation",Boolean.FALSE)
+		//,VISIBLE_SECTIONS("Liste des comptes par section visible","liste_comptes_par_section_visible",Boolean.TRUE)
+		,REQUEST("Demandes","demandes",Boolean.FALSE)
 		
 		;
 		private String name;
 		private String parameterValue;
+		private Boolean skippable;
 		
 		public static Tab getByParameterValue(String value) {
 			for(Tab tab : Tab.values())
