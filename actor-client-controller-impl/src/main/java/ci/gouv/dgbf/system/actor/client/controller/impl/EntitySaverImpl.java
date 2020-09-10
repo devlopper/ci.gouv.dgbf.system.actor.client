@@ -12,16 +12,19 @@ import org.cyk.utility.__kernel__.controller.EntitySaver;
 
 import ci.gouv.dgbf.system.actor.server.business.api.AccountRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.ActorProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
 import ci.gouv.dgbf.system.actor.server.representation.api.AccountRequestRepresentation;
+import ci.gouv.dgbf.system.actor.server.representation.api.ActorProfileRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorScopeRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfileFunctionRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfilePrivilegeRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.entities.AccountRequestDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorDto;
+import ci.gouv.dgbf.system.actor.server.representation.entities.ActorProfileDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorScopeDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.FunctionDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ProfileDto;
@@ -43,6 +46,8 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				arguments.setRepresentation(ProfilePrivilegeRepresentation.getProxy());
 			else if(ProfileFunctionBusiness.SAVE.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ProfileFunctionRepresentation.getProxy());
+			else if(ActorProfileBusiness.SAVE.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ActorProfileRepresentation.getProxy());
 			else if(ActorScopeBusiness.CREATE_BY_ACTOR_BY_SCOPES.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ActorScopeRepresentation.getProxy());
 			else if(ActorScopeBusiness.DELETE_BY_ACTOR_BY_SCOPES.equals(arguments.getRepresentationArguments().getActionIdentifier()))
@@ -93,6 +98,20 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				for(Object index : deletables)
 					dtos.add(((ProfileFunctionDto) index).set__deletable__(Boolean.TRUE));
 			return ((ProfileFunctionRepresentation)representation).save(dtos);
+		}
+		
+		if(arguments != null && ActorProfileBusiness.SAVE.equals(arguments.getActionIdentifier())) {
+			Collection<ActorProfileDto> dtos = new ArrayList<>();
+			if(CollectionHelper.isNotEmpty(creatables))
+				for(Object index : creatables)
+					dtos.add((ActorProfileDto) index);
+			if(CollectionHelper.isNotEmpty(updatables))
+				for(Object index : updatables)
+					dtos.add((ActorProfileDto) index);
+			if(CollectionHelper.isNotEmpty(deletables))
+				for(Object index : deletables)
+					dtos.add(((ActorProfileDto) index).set__deletable__(Boolean.TRUE));
+			return ((ActorProfileRepresentation)representation).save(dtos);
 		}
 		
 		if(arguments != null && ActorScopeBusiness.CREATE_BY_ACTOR_BY_SCOPES.equals(arguments.getActionIdentifier())) {

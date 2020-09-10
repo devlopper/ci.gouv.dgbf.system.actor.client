@@ -2,6 +2,7 @@ package ci.gouv.dgbf.system.actor.client.controller.impl;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.faces.view.ViewScoped;
@@ -10,9 +11,11 @@ import javax.inject.Named;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntityReader;
+import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Tree;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
@@ -82,5 +85,19 @@ public class PrivilegeListPage extends AbstractPageContainerManagedImpl implemen
 				}			
 			});
 		}
+	}
+	
+	public static Tree buildTree(Map<Object,Object> arguments) {
+		MapHelper.writeByKeyDoNotOverride(arguments, Tree.FIELD_LISTENER,new Tree.Listener.AbstractImpl<Privilege>() {		
+			@Override
+			public Boolean isParent(Privilege data1, Privilege data2) {
+				return data1 != null && data2 != null && StringHelper.isNotBlank(data1.getIdentifier()) && data1.getIdentifier().equals(data2.getParentIdentifier());
+			}
+		});
+		return Tree.build(arguments);
+	}
+	
+	public static Tree buildTree(Object...objects) {
+		return buildTree(MapHelper.instantiate(objects));
 	}
 }

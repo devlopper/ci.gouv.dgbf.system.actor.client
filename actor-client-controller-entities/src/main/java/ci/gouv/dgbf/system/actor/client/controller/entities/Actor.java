@@ -51,6 +51,10 @@ public class Actor extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 	
 	@Input @InputChoice(choices = @Choices(count = Count.ALL)) @InputChoiceMany @InputChoiceManyCheck
 	private Collection<Function> functions;
+	
+	@Input @InputChoice(choices = @Choices(count = Count.ALL)) @InputChoiceMany @InputChoiceManyCheck
+	private Collection<Profile> profiles;
+	
 	private Collection<String> functionsCodes;
 	private Collection<Privilege> privileges;
 	private Collection<Privilege> visibleModules;
@@ -102,6 +106,7 @@ public class Actor extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 	public static final String FIELD_PASSWORD = "password";
 	public static final String FIELD_PASSWORD_CONFIRMATION = "passwordConfirmation";
 	public static final String FIELD_FUNCTIONS = "functions";
+	public static final String FIELD_PROFILES = "profiles";
 	public static final String FIELD_VISIBLE_MODULES = "visibleModules";
 	public static final String FIELD_VISIBLE_SECTIONS = "visibleSections";
 }

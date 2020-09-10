@@ -151,6 +151,12 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>actorEditProfilesView</from-outcome>
+			<to-view-id>/private/actor/editprofiles.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>assignPrivilegesToActorsByFunctionsView</from-outcome>
 			<to-view-id>/private/actor/assignprivilegestoactorsbyfunctions.jsf</to-view-id>
 			<redirect />

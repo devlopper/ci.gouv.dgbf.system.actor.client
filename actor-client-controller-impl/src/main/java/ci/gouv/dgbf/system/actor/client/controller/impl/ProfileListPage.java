@@ -70,31 +70,31 @@ public class ProfileListPage extends AbstractEntityListPageContainerManagedImpl<
 	
 	@Override
 	protected DataTable __buildDataTable__() {
-		DataTable dataTable = buildDataTable(DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl().setProfileType(profileType));
-		if(profileType == null || profileType.getCode().equals(ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType.CODE_SYSTEME)) {
-			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate(CommandButton.FIELD_LISTENER
-					,new CommandButton.Listener.AbstractImpl() {
-				@Override
-				protected Map<String, List<String>> getViewParameters(AbstractAction action) {
-					Map<String, List<String>> parameters = super.getViewParameters(action);
-					if(profileType != null) {
-						if(parameters == null)
-							parameters = new HashMap<>();
-						parameters.put(ParameterName.stringify(ProfileType.class), List.of(((ProfileType)profileType).getIdentifier()));
-					}					
-					return parameters;
-				}
-				
-				@Override
-				protected String getOutcome(AbstractAction action) {
-					return "profileEditView";
-				}
-			});
-			dataTable.addRecordMenuItemByArgumentsOpenViewInDialogUpdate();
+		DataTable dataTable = buildDataTable(DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl().setProfileType(profileType));		
+		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate(CommandButton.FIELD_LISTENER
+				,new CommandButton.Listener.AbstractImpl() {
+			@Override
+			protected Map<String, List<String>> getViewParameters(AbstractAction action) {
+				Map<String, List<String>> parameters = super.getViewParameters(action);
+				if(profileType != null) {
+					if(parameters == null)
+						parameters = new HashMap<>();
+					parameters.put(ParameterName.stringify(ProfileType.class), List.of(((ProfileType)profileType).getIdentifier()));
+				}					
+				return parameters;
+			}
+			
+			@Override
+			protected String getOutcome(AbstractAction action) {
+				return "profileEditView";
+			}
+		});
+		dataTable.addRecordMenuItemByArgumentsOpenViewInDialogUpdate();
+		if(profileType != null && !profileType.getCode().equals(ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType.CODE_SYSTEME)) {
 			dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
-			dataTable.addRecordMenuItemByArgumentsNavigateToView(null,"profileEditPrivilegesView", CommandButton.FIELD_VALUE,"Privilèges"
-					, CommandButton.FIELD_ICON,"fa fa-lock");
 		}
+		dataTable.addRecordMenuItemByArgumentsNavigateToView(null,"profileEditPrivilegesView", CommandButton.FIELD_VALUE,"Privilèges"
+				, CommandButton.FIELD_ICON,"fa fa-lock");
 		return dataTable;
 	}
 	

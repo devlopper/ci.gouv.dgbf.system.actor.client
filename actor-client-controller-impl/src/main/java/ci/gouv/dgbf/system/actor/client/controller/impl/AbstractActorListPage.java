@@ -64,7 +64,7 @@ public abstract class AbstractActorListPage extends AbstractEntityListPageContai
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, Actor.class);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, CollectionHelper.listOf(Actor.FIELD_CODE,Actor.FIELD_FIRST_NAME
-				,Actor.FIELD_LAST_NAMES,Actor.FIELD_SERVICE,Actor.FIELD_FUNCTIONS
+				,Actor.FIELD_LAST_NAMES,Actor.FIELD_SERVICE,Actor.FIELD_PROFILES
 				//,Actor.FIELD_VISIBLE_SECTIONS,Actor.FIELD_VISIBLE_MODULES
 				));
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
@@ -75,6 +75,8 @@ public abstract class AbstractActorListPage extends AbstractEntityListPageContai
 				);
 		DataTable dataTable = DataTable.build(arguments);
 		
+		dataTable.setAreColumnsChoosable(Boolean.TRUE);
+		
 		Boolean usableAsSelectionOnly = (Boolean) MapHelper.readByKey(arguments, DataTable.ConfiguratorImpl.FIELD_USABLE_AS_SELECTION_ONLY);
 		
 		String assignIcon = "fa fa-lock";
@@ -83,11 +85,16 @@ public abstract class AbstractActorListPage extends AbstractEntityListPageContai
 			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog("assignPrivilegesToActorsByFunctionsView", MenuItem.FIELD_VALUE,"Assignation par fonction"
 					,MenuItem.FIELD_ICON,assignIcon);
 			
+			/*
 			dataTable.addRecordMenuItemByArgumentsNavigateToView(null,"actorListPrivilegesStaticView", MenuItem.FIELD_VALUE,"Assignation", MenuItem.FIELD_ICON,assignIcon
 					,MenuItem.FIELD_PARAMETERS,Map.of(ParameterName.IS_STATIC.getValue(),"true"));
+			*/
+			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("actorEditProfilesView", MenuItem.FIELD_VALUE,"Assignation", MenuItem.FIELD_ICON,assignIcon);
+			
 			dataTable.addRecordMenuItemByArgumentsNavigateToView(null,"actorListScopesStaticView", MenuItem.FIELD_VALUE,"Affectation", MenuItem.FIELD_ICON,"fa fa-eye"
 					,MenuItem.FIELD_PARAMETERS,Map.of(ParameterName.IS_STATIC.getValue(),"true"));
-			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("actorEditFunctionsView", MenuItem.FIELD_VALUE,"Fonctions", MenuItem.FIELD_ICON,"fa fa-flash");
+			//dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("actorEditFunctionsView", MenuItem.FIELD_VALUE,"Fonctions", MenuItem.FIELD_ICON,"fa fa-flash");
+			
 			dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
 		}
 		return dataTable;
@@ -129,6 +136,17 @@ public abstract class AbstractActorListPage extends AbstractEntityListPageContai
 				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
 				map.put(Column.FIELD_FILTER_BY, IdentityQuerier.PARAMETER_NAME_CODE);
 				map.put(Column.FIELD_WIDTH, "200");
+			}else if(Actor.FIELD_PROFILES.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Profile(s)");
+				map.put(Column.FIELD_FILTER_BY, ActorQuerier.PARAMETER_NAME_PROFILE_CODE);
+				/*map.put(Column.FIELD_FILTER_INPUT_TYPE, Column.FilterInputType.SELECT_ONE_MENU);
+				Collection<Profile> profiles = EntityReader.getInstance().readMany(Profile.class, ProfileQuerier.QUERY_IDENTIFIER_READ);
+				if(CollectionHelper.isNotEmpty(profiles)) {
+					Collection<SelectItem> selectItems = new ArrayList<SelectItem>();
+					selectItems.add(new SelectItem(null, "--- Aucune sélection ---"));
+					selectItems.addAll(profiles.stream().map(profile -> new SelectItem(profile.getCode(), profile.getName())).collect(Collectors.toList()));
+					map.put(Column.FIELD_FILTER_INPUT_SELECT_ITEMS, selectItems);
+				}*/
 			}else if(Actor.FIELD_FUNCTIONS.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Fonction(s)");
 			}else if(Actor.FIELD_VISIBLE_SECTIONS.equals(fieldName)) {
@@ -138,6 +156,7 @@ public abstract class AbstractActorListPage extends AbstractEntityListPageContai
 			}else if(Actor.FIELD_SERVICE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Service");
 				map.put(Column.FIELD_WIDTH, "300");
+				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}else if(Actor.FIELD_SECTION_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Section");
 				map.put(Column.FIELD_WIDTH, "50");
@@ -149,6 +168,8 @@ public abstract class AbstractActorListPage extends AbstractEntityListPageContai
 		public Object getCellValueByRecordByColumn(Object record, Integer recordIndex, Column column,Integer columnIndex) {
 			if(column != null && Actor.FIELD_FUNCTIONS.equals(column.getFieldName()))
 				return CollectionHelper.isEmpty(((Actor)record).getFunctions()) ? null : ((Actor)record).getFunctions().stream().map(x -> x.getName()).collect(Collectors.joining(","));
+			if(column != null && Actor.FIELD_PROFILES.equals(column.getFieldName()))
+				return CollectionHelper.isEmpty(((Actor)record).getProfiles()) ? null : ((Actor)record).getProfiles().stream().map(x -> x.getName()).collect(Collectors.joining(","));
 			if(column != null && Actor.FIELD_SERVICE.equals(column.getFieldName())) {
 				Actor actor = (Actor) record;
 				return Helper.formatService(actor.getAdministrativeUnitAsString(), actor.getAdministrativeFunction(), actor.getSectionAsString());
@@ -163,14 +184,14 @@ public abstract class AbstractActorListPage extends AbstractEntityListPageContai
 				return String.format(ROW_TOOLTIP_FORMAT,actor.getNames(),ValueHelper.defaultToIfBlank(actor.getSectionAsString(),ConstantEmpty.STRING)
 						,ValueHelper.defaultToIfBlank(actor.getAdministrativeUnitAsString(),ConstantEmpty.STRING)
 						,ValueHelper.defaultToIfBlank(actor.getAdministrativeFunction(),ConstantEmpty.STRING)
-						,CollectionHelper.isEmpty(actor.getFunctions()) ? ConstantEmpty.STRING : actor.getFunctions().stream().map(x -> x.getName()).collect(Collectors.toList()) 
+						,CollectionHelper.isEmpty(actor.getProfiles()) ? ConstantEmpty.STRING : actor.getProfiles().stream().map(x -> x.getName()).collect(Collectors.toList()) 
 						);
 			}	
 			return super.getTooltipByRecord(record, recordIndex);
 		}
 		
 		private static final String ROW_TOOLTIP_FORMAT = "Nom et prénom(s) : %s<br/>Section : %s<br/>Unité administrative : %s<br/>Fonction administrative : %s"
-				+ "<br/>Fonction(s) applicative(s) : %s";
+				+ "<br/>Profile(s) : %s";
 	}
 	
 	@Getter @Setter @Accessors(chain=true)

@@ -13,4 +13,7 @@ import lombok.experimental.Accessors;
 public class ActorProfile extends AbstractDataIdentifiableSystemStringImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	private Actor actor;
+	private Profile profile;
+	
 }
