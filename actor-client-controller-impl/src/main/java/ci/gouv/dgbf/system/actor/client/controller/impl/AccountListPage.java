@@ -110,9 +110,7 @@ public class AccountListPage extends AbstractPageContainerManagedImpl implements
 				if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_SECTION.equals(code)) {
 					Collection<Section> sections = EntityReader.getInstance().readMany(Section.class, SectionQuerier.QUERY_IDENTIFIER_READ);
 					if(CollectionHelper.isNotEmpty(sections)) {
-						if(StringHelper.isBlank(code))
-							code = CollectionHelper.getFirst(sections).getCode();
-						dataTable = ActorListPage.buildDataTable(Section.class,code);
+						dataTable = ActorListPage.buildDataTable(Section.class,CollectionHelper.getFirst(sections).getCode());
 						cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,buildVisibleSectionsSelectOneCombo(sections,code),Cell.FIELD_WIDTH,12));
 					}
 				}
