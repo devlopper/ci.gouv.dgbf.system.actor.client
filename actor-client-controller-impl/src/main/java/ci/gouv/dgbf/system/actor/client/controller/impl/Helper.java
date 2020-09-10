@@ -1,22 +1,67 @@
 package ci.gouv.dgbf.system.actor.client.controller.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.constant.ConstantEmpty;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntityReader;
+import org.cyk.utility.__kernel__.field.FieldHelper;
+import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.WebController;
+import org.cyk.utility.client.controller.web.jsf.JsfController;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.ajax.Ajax;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AutoComplete;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Profile;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 
 public interface Helper {
 
+	static AutoComplete buildActorAutoCompleteRedirector(Actor actor,String outcome_) {
+		AutoComplete autoComplete = AutoComplete.build(AutoComplete.FIELD_ENTITY_CLASS,Actor.class,AutoComplete.FIELD_LISTENER,new AutoComplete.Listener.AbstractImpl<Actor>() {
+			@Override
+			public Filter.Dto instantiateFilter(AutoComplete autoComplete) {
+				return new Filter.Dto().addField(ActorQuerier.PARAMETER_NAME_STRING, "%"+ValueHelper.defaultToIfBlank(autoComplete.get__queryString__(),ConstantEmpty.STRING)+"%");
+			}
+		},AutoComplete.FIELD_PLACEHOLDER,"Rechercher...");
+		
+		autoComplete.enableAjaxItemSelect();
+		autoComplete.getAjaxes().get("itemSelect").setListener(new Ajax.Listener.AbstractImpl() {
+			@Override
+			protected void run(AbstractAction action) {
+				Actor actor = (Actor) FieldHelper.read(action.get__argument__(), "source.value");
+				if(actor != null) {
+					Map<String,List<String>> map = new HashMap<>();
+					map.put(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(actor.getIdentifier()));
+					JsfController.getInstance().redirect(outcome_,map);
+				}
+			}
+		});
+		autoComplete.getAjaxes().get("itemSelect").setDisabled(Boolean.FALSE);
+		autoComplete.setReaderUsable(Boolean.TRUE);
+		autoComplete.setReadQueryIdentifier(ActorQuerier.QUERY_IDENTIFIER_READ_BY_STRING);
+		autoComplete.setCountQueryIdentifier(ActorQuerier.QUERY_NAME_COUNT_BY_STRING);
+		
+		if(actor == null) {
+			
+		}else {
+			if(autoComplete != null)
+				autoComplete.setValue(actor);
+		}
+		return autoComplete;
+	}
+	
 	static String formatService(String administrativeUnit,String administrativeFunction,String section) {
 		if(StringHelper.isBlank(administrativeUnit))
 			return ConstantEmpty.STRING;
