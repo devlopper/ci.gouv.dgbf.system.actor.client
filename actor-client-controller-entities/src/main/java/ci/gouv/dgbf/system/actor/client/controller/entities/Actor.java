@@ -55,6 +55,7 @@ public class Actor extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 	@Input @InputChoice(choices = @Choices(count = Count.ALL)) @InputChoiceMany @InputChoiceManyCheck
 	private Collection<Profile> profiles;
 	
+	private Collection<String> profilesCodes;
 	private Collection<String> functionsCodes;
 	private Collection<Privilege> privileges;
 	private Collection<Privilege> visibleModules;

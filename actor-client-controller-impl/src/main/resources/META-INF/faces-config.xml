@@ -163,6 +163,18 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>actorProfileCreateManyView</from-outcome>
+			<to-view-id>/private/actor/createprofiles.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>actorProfileDeleteManyView</from-outcome>
+			<to-view-id>/private/actor/deleteprofiles.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>scopeListView</from-outcome>
 			<to-view-id>/private/scope/list.jsf</to-view-id>
 			<redirect />

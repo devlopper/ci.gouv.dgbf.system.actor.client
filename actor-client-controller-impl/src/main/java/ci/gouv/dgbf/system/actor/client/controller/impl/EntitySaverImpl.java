@@ -58,6 +58,10 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				arguments.setRepresentation(AccountRequestRepresentation.getProxy());
 			else if(ActorBusiness.CREATE_PRIVILEGES_FROM_FUNCTIONS.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ActorRepresentation.getProxy());
+			else if(ActorBusiness.CREATE_PROFILES.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ActorRepresentation.getProxy());
+			else if(ActorBusiness.DELETE_PROFILES.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ActorRepresentation.getProxy());
 		}
 		super.prepare(controllerEntityClass, arguments);
 	}
@@ -196,6 +200,26 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 					actors.add(actor);
 				}
 			return ((ActorRepresentation)representation).createPrivilegesFromFunctions(actors);
+		}
+		
+		if(arguments != null && ActorBusiness.CREATE_PROFILES.equals(arguments.getActionIdentifier())) {
+			Collection<ActorDto> actors = new ArrayList<>();
+			if(CollectionHelper.isNotEmpty(creatables))
+				for(Object index : creatables) {
+					ActorDto actor = (ActorDto) index;
+					actors.add(actor);
+				}
+			return ((ActorRepresentation)representation).createProfiles(actors);
+		}
+		
+		if(arguments != null && ActorBusiness.DELETE_PROFILES.equals(arguments.getActionIdentifier())) {
+			Collection<ActorDto> actors = new ArrayList<>();
+			if(CollectionHelper.isNotEmpty(deletables))
+				for(Object index : deletables) {
+					ActorDto actor = (ActorDto) index;
+					actors.add(actor);
+				}
+			return ((ActorRepresentation)representation).deleteProfiles(actors);
 		}
 		return super.save(representation, creatables, updatables, deletables, arguments);
 	}

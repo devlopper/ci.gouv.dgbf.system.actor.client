@@ -84,8 +84,13 @@ public abstract class AbstractActorListPage extends AbstractEntityListPageContai
 		String assignIcon = "fa fa-lock";
 		if(!Boolean.TRUE.equals(usableAsSelectionOnly)) {
 			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();
-			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog("assignPrivilegesToActorsByFunctionsView", MenuItem.FIELD_VALUE,"Assignation par fonction"
+			/*dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog("assignPrivilegesToActorsByFunctionsView", MenuItem.FIELD_VALUE,"Assignation par fonction"
 					,MenuItem.FIELD_ICON,assignIcon);
+			*/
+			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog("actorProfileCreateManyView", MenuItem.FIELD_VALUE,"Ajout de profile"
+					,MenuItem.FIELD_ICON,"fa fa-plus-square");
+			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog("actorProfileDeleteManyView", MenuItem.FIELD_VALUE,"Retrait de profile"
+					,MenuItem.FIELD_ICON,"fa fa-minus-square");
 			
 			/*
 			dataTable.addRecordMenuItemByArgumentsNavigateToView(null,"actorListPrivilegesStaticView", MenuItem.FIELD_VALUE,"Assignation", MenuItem.FIELD_ICON,assignIcon
