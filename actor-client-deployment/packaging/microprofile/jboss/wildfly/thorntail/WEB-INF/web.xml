@@ -21,7 +21,22 @@
 		<param-name>cyk.variable.system.name</param-name>
 		<param-value>${cyk.variable.system.name}</param-value>
 	</context-param>
-		
+	
+	<context-param>
+		<param-name>cyk.variable.system.version</param-name>
+		<param-value>${cyk.variable.system.version}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.system.timestamp</param-name>
+		<param-value>${cyk.variable.system.timestamp}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.system.timestamp.as.string</param-name>
+		<param-value>${cyk.variable.system.timestamp.as.string}</param-value>
+	</context-param>
+	
 	<context-param>
 		<param-name>cyk.variable.system.proxy.uniform.resource.identifier</param-name>
 		<param-value>${cyk.variable.system.proxy.uniform.resource.identifier}</param-value>
@@ -47,60 +62,10 @@
 		<param-value>${cyk.variable.system.logging.throwable.print.stack.trace}</param-value>
 	</context-param>
 	
-	<!-- User Interface -->
-	
-	<context-param>
-		<param-name>cyk.variable.user.interface.theme.menu.identifier</param-name>
-		<param-value>${cyk.variable.user.interface.theme.menu.identifier}</param-value>
-	</context-param>
-	
-	<context-param>
-		<param-name>cyk.variable.user.interface.theme.menu.is.dynamic</param-name>
-		<param-value>${cyk.variable.user.interface.theme.menu.is.dynamic}</param-value>
-	</context-param>
-	
 	<context-param>
 		<param-name>cyk.variable.system.security.authentication.enable</param-name>
 		<param-value>${cyk.variable.system.security.authentication.enable}</param-value>
 	</context-param>
-	
-	<!-- keycloak Server -->
-	
-	<context-param>
-		<param-name>cyk.variable.keycloak.enabled</param-name>
-		<param-value>${cyk.variable.keycloak.enabled}</param-value>
-	</context-param>
-	
-	<context-param>
-		<param-name>cyk.variable.keycloak.client.identifier</param-name>
-		<param-value>${cyk.variable.keycloak.client.identifier}</param-value>
-	</context-param>
-	
-	<context-param>
-		<param-name>cyk.variable.keycloak.client.secret</param-name>
-		<param-value>${cyk.variable.keycloak.client.secret}</param-value>
-	</context-param>
-	
-	<context-param>
-		<param-name>cyk.variable.keycloak.credential.password</param-name>
-		<param-value>${cyk.variable.keycloak.credential.password}</param-value>
-	</context-param>
-	
-	<context-param>
-		<param-name>cyk.variable.keycloak.credential.username</param-name>
-		<param-value>${cyk.variable.keycloak.credential.username}</param-value>
-	</context-param>
-	
-	<context-param>
-		<param-name>cyk.variable.keycloak.realm.name</param-name>
-		<param-value>${cyk.variable.keycloak.realm.name}</param-value>
-	</context-param>
-	
-	<context-param>
-		<param-name>cyk.variable.keycloak.server.url</param-name>
-		<param-value>${cyk.variable.keycloak.server.url}</param-value>
-	</context-param>
-	
 	<!-- Static resources -->
 	
 	<!-- Favicon -->
@@ -158,12 +123,15 @@
 		</auth-constraint>
 	</security-constraint>
 	
+	<security-constraint>
+  		<web-resource-collection>
+    		<web-resource-name>all</web-resource-name>
+    		<url-pattern>/public/*</url-pattern>
+  		</web-resource-collection>
+  		<!-- No auth-constraint means everybody has access! -->
+	</security-constraint>
+	
 	<login-config>
 		<auth-method>${web-app.login-config.auth-method}</auth-method>
 	</login-config>
-	
-	<error-page>
-		<error-code>403</error-code>
-		<location>/403.jsf</location>
-	</error-page>
 </web-app>

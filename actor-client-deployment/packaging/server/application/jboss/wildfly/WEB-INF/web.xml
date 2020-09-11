@@ -23,6 +23,21 @@
 	</context-param>
 	
 	<context-param>
+		<param-name>cyk.variable.system.version</param-name>
+		<param-value>${cyk.variable.system.version}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.system.timestamp</param-name>
+		<param-value>${cyk.variable.system.timestamp}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.system.timestamp.as.string</param-name>
+		<param-value>${cyk.variable.system.timestamp.as.string}</param-value>
+	</context-param>
+	
+	<context-param>
 		<param-name>cyk.variable.system.proxy.uniform.resource.identifier</param-name>
 		<param-value>${cyk.variable.system.proxy.uniform.resource.identifier}</param-value>
 	</context-param>
@@ -119,10 +134,4 @@
 	<login-config>
 		<auth-method>${web-app.login-config.auth-method}</auth-method>
 	</login-config>
-	<!--
-	<error-page>
-		<error-code>403</error-code>
-		<location>/403.jsf</location>
-	</error-page>
-	-->
 </web-app>

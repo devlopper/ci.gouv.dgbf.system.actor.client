@@ -1,0 +1,11 @@
+cd ../../..
+cd actor-client-controller-entities/script
+call install.bat
+cd ../..
+cd actor-client-controller-api/script
+call install.bat
+cd ../..
+cd actor-client-controller-impl/script
+call install.bat
+cd ../..
+cd actor-client-deployment/script/docker

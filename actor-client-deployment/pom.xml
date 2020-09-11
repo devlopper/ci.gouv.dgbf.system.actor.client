@@ -17,6 +17,7 @@
 	<properties>
 		<cyk.variable.system.identifier>acteur</cyk.variable.system.identifier>
 		<cyk.variable.system.name>Gestion des acteurs</cyk.variable.system.name>
+		<cyk.variable.system.version>0.1</cyk.variable.system.version>
 		<cyk.variable.system.logging.throwable.print.stack.trace>true</cyk.variable.system.logging.throwable.print.stack.trace>
 		<cyk.variable.keycloak.enabled>true</cyk.variable.keycloak.enabled>
 		
