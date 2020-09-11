@@ -77,7 +77,7 @@ public class AccountRequestEditPage extends AbstractEntityEditPageContainerManag
 				//accountRequest = __inject__(AccountRequestController.class).readBySystemIdentifier(accountRequestIdentifier);
 				//accountRequest = EntityReader.getInstance().readOne(AccountRequest.class, AccountRequestQuerier.QUERY_IDENTIFIER_READ_PROJECTION_01_BY_IDENTIFIER
 				//		, AccountRequestQuerier.PARAMETER_NAME_IDENTIFIER,WebController.getInstance().getRequestParameter(ParameterName.ENTITY_IDENTIFIER));
-				accountRequest = __inject__(AccountRequestController.class).readProjection02WithBudgetaryFunctionsAndFunctionsByIdentifier(accountRequestIdentifier);
+				accountRequest = __inject__(AccountRequestController.class).readProjection01WithBudgetaryFunctionsAndFunctionsByIdentifier(accountRequestIdentifier);
 			}
 		}
 		super.__listenPostConstruct__();
@@ -92,8 +92,9 @@ public class AccountRequestEditPage extends AbstractEntityEditPageContainerManag
 	protected String __getWindowTitleValue__() {
 		if(Action.CREATE.equals(action))
 			return "Demande de compte";
-		if(Action.READ.equals(action))
+		if(Action.READ.equals(action)) {
 			return (isRejectable() ? "Rejet" : "Consultation")+" de la demande de compte de "+accountRequest.getElectronicMailAddress()+" | "+accountRequest.getNames();
+		}
 		return super.__getWindowTitleValue__();
 	}
 	

@@ -18,6 +18,7 @@ import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputC
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceOneAutoComplete;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceOneRadio;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputDate;
+import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputTextarea;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -56,7 +57,7 @@ public class AccountRequest extends AbstractDataIdentifiableSystemStringImpl imp
 	private String actOfAppointmentSignatureDateAsString;
 	private Long actOfAppointmentSignatureDateAsTimestamp;
 	@Input @InputChoice @InputChoiceOneRadio @NotNull private String treatment;
-	private String rejectReason;
+	@Input @InputTextarea private String rejectReason;
 	
 	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceMany @InputChoiceManyAutoComplete 
 	private Collection<Function> functions;
