@@ -17,6 +17,8 @@ public class Profile extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	private ProfileType type;
 	private String profileIdentifier;
 	private Collection<String> privilegesAsStrings;
+	private Collection<String> creatablePrivilegesIdentifiers;
+	private Collection<String> deletablePrivilegesIdentifiers;
 	
 	public static final String FIELD_PRIVILEGES_AS_STRINGS = "privilegesAsStrings";
 }

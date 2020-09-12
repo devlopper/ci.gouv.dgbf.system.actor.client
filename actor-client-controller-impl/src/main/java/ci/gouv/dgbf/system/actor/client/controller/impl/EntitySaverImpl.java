@@ -14,6 +14,7 @@ import ci.gouv.dgbf.system.actor.server.business.api.AccountRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.ProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
 import ci.gouv.dgbf.system.actor.server.representation.api.AccountRequestRepresentation;
@@ -22,6 +23,7 @@ import ci.gouv.dgbf.system.actor.server.representation.api.ActorRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorScopeRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfileFunctionRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfilePrivilegeRepresentation;
+import ci.gouv.dgbf.system.actor.server.representation.api.ProfileRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.entities.AccountRequestDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorProfileDto;
@@ -40,6 +42,10 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 		if(arguments.getRepresentationArguments() != null && arguments.getRepresentation() == null) {
 			if(ProfilePrivilegeBusiness.SAVE.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ProfilePrivilegeRepresentation.getProxy());
+			
+			else if(ProfileBusiness.SAVE_PRIVILEGES.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ProfileRepresentation.getProxy());
+			
 			else if(ProfilePrivilegeBusiness.CREATE_FROM_FUNCTIONS.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ProfilePrivilegeRepresentation.getProxy());
 			else if(ProfilePrivilegeBusiness.CREATE_FROM_PROFILES.equals(arguments.getRepresentationArguments().getActionIdentifier()))
@@ -56,6 +62,7 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				arguments.setRepresentation(AccountRequestRepresentation.getProxy());
 			else if(AccountRequestBusiness.SUBMIT.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(AccountRequestRepresentation.getProxy());
+			
 			else if(ActorBusiness.CREATE_PRIVILEGES_FROM_FUNCTIONS.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ActorRepresentation.getProxy());
 			else if(ActorBusiness.CREATE_PROFILES.equals(arguments.getRepresentationArguments().getActionIdentifier()))
@@ -220,6 +227,17 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 					actors.add(actor);
 				}
 			return ((ActorRepresentation)representation).deleteProfiles(actors);
+		}
+		
+		if(arguments != null && ProfileBusiness.SAVE_PRIVILEGES.equals(arguments.getActionIdentifier())) {
+			Collection<ProfileDto> profiles = new ArrayList<>();
+			if(CollectionHelper.isEmpty(updatables))
+				throw new RuntimeException("Profiles à mettre à jour obligatoire");		
+			for(Object index : updatables) {
+				ProfileDto profile = (ProfileDto) index;
+				profiles.add(profile);
+			}
+			return ((ProfileRepresentation)representation).savePrivileges(profiles);
 		}
 		return super.save(representation, creatables, updatables, deletables, arguments);
 	}

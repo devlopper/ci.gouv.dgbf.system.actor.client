@@ -1,7 +1,6 @@
 package ci.gouv.dgbf.system.actor.client.controller.impl;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +31,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.Privilege;
 import ci.gouv.dgbf.system.actor.client.controller.entities.PrivilegeType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Profile;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ProfilePrivilege;
-import ci.gouv.dgbf.system.actor.server.business.api.ProfileBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfilePrivilegeQuerier;
@@ -40,7 +39,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Named @ViewScoped @Getter @Setter
-public class ProfileEditPrivilegesPage extends AbstractPageContainerManagedImpl implements Serializable {
+public class ProfileEditPrivilegesPageOLD extends AbstractPageContainerManagedImpl implements Serializable {
 
 	private Layout layout;
 	private Profile profile;
@@ -123,24 +122,14 @@ public class ProfileEditPrivilegesPage extends AbstractPageContainerManagedImpl 
 						,CommandButton.FIELD_LISTENER,new CommandButton.Listener.AbstractImpl() {
 							@Override
 							protected Object __runExecuteFunction__(AbstractAction action) {
-								if(ArrayHelper.isEmpty(availableTree.getSelection()) && ArrayHelper.isEmpty(selectedTree.getSelection()))
-									throw new RuntimeException("Sélectionné des privilèges à assigner ou à retirer");
-								if(ArrayHelper.isNotEmpty(availableTree.getSelection())) {
-									profile.setCreatablePrivilegesIdentifiers(new ArrayList<>());
-									availableTree.getSelectionDatas(Privilege.class).forEach(privilege -> {
-										profile.getCreatablePrivilegesIdentifiers().add(privilege.getIdentifier());
-									});
-								}								
-								if(ArrayHelper.isNotEmpty(selectedTree.getSelection())) {
-									profile.setDeletablePrivilegesIdentifiers(new ArrayList<>());
-									selectedTree.getSelectionDatas(ProfilePrivilege.class).forEach(profilePrivilege -> {
-										profile.getDeletablePrivilegesIdentifiers().add(profilePrivilege.getPrivilege().getIdentifier());
-									});
-								}
-								Arguments<Profile> arguments = new Arguments<Profile>();
-								arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(ProfileBusiness.SAVE_PRIVILEGES));
-								arguments.setUpdatables(List.of(profile));
-								EntitySaver.getInstance().save(Profile.class, arguments);	
+								Arguments<ProfilePrivilege> arguments = new Arguments<ProfilePrivilege>();
+								arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(ProfilePrivilegeBusiness.SAVE));
+								if(ArrayHelper.isNotEmpty(availableTree.getSelection()))
+									arguments.setCreatables(availableTree.getSelectionDatas(Privilege.class).stream().map(x -> new ProfilePrivilege().setProfile(profile).setPrivilege(x)).collect(Collectors.toList()));
+								if(ArrayHelper.isNotEmpty(selectedTree.getSelection()))
+									arguments.setDeletables(selectedTree.getSelectionDatas(ProfilePrivilege.class).stream()
+											.filter(x -> x.getProfile() != null && StringHelper.isNotBlank(x.getIdentifier())).collect(Collectors.toList()));
+								EntitySaver.getInstance().save(ProfilePrivilege.class, arguments);	
 								JsfController.getInstance().redirect("profileEditPrivilegesView",Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(profile.getIdentifier())));
 								return null;
 							}
