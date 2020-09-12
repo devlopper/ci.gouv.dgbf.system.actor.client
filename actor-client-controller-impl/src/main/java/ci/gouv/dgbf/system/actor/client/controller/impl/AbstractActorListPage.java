@@ -87,10 +87,15 @@ public abstract class AbstractActorListPage extends AbstractEntityListPageContai
 			/*dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog("assignPrivilegesToActorsByFunctionsView", MenuItem.FIELD_VALUE,"Assignation par fonction"
 					,MenuItem.FIELD_ICON,assignIcon);
 			*/
-			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog("actorProfileCreateManyView", MenuItem.FIELD_VALUE,"Ajout de profile"
+			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog("actorProfileCreateManyView", MenuItem.FIELD_VALUE,"Assigner profile"
 					,MenuItem.FIELD_ICON,"fa fa-plus-square");
-			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog("actorProfileDeleteManyView", MenuItem.FIELD_VALUE,"Retrait de profile"
+			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog("actorProfileDeleteManyView", MenuItem.FIELD_VALUE,"Retirer profile"
 					,MenuItem.FIELD_ICON,"fa fa-minus-square");
+			
+			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog("actorScopeCreateManySectionsView", MenuItem.FIELD_VALUE,"Affecter section"
+					,MenuItem.FIELD_ICON,"fa fa-arrow-circle-o-up");
+			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog("actorScopeDeleteManySectionsView", MenuItem.FIELD_VALUE,"Retirer section"
+					,MenuItem.FIELD_ICON,"fa fa-arrow-circle-down");
 			
 			/*
 			dataTable.addRecordMenuItemByArgumentsNavigateToView(null,"actorListPrivilegesStaticView", MenuItem.FIELD_VALUE,"Assignation", MenuItem.FIELD_ICON,assignIcon

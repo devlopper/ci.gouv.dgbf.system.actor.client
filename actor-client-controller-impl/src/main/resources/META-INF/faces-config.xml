@@ -175,6 +175,18 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>actorScopeCreateManySectionsView</from-outcome>
+			<to-view-id>/private/actor/scope/createsections.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>actorScopeDeleteManySectionsView</from-outcome>
+			<to-view-id>/private/actor/scope/deletesections.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>scopeListView</from-outcome>
 			<to-view-id>/private/scope/list.jsf</to-view-id>
 			<redirect />
