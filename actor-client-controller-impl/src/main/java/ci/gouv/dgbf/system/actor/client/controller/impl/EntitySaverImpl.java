@@ -56,7 +56,11 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				arguments.setRepresentation(ActorProfileRepresentation.getProxy());
 			else if(ActorScopeBusiness.CREATE_BY_ACTOR_BY_SCOPES.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ActorScopeRepresentation.getProxy());
+			else if(ActorScopeBusiness.CREATE_BY_ACTORS_BY_SCOPES.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ActorScopeRepresentation.getProxy());
 			else if(ActorScopeBusiness.DELETE_BY_ACTOR_BY_SCOPES.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ActorScopeRepresentation.getProxy());
+			else if(ActorScopeBusiness.DELETE_BY_ACTORS_BY_SCOPES.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ActorScopeRepresentation.getProxy());
 			else if(AccountRequestBusiness.RECORD.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(AccountRequestRepresentation.getProxy());
@@ -69,6 +73,11 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				arguments.setRepresentation(ActorRepresentation.getProxy());
 			else if(ActorBusiness.DELETE_PROFILES.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ActorRepresentation.getProxy());
+			
+			else if(ActorBusiness.CREATE_SCOPES.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ActorScopeRepresentation.getProxy());
+			else if(ActorBusiness.DELETE_SCOPES.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ActorScopeRepresentation.getProxy());
 		}
 		super.prepare(controllerEntityClass, arguments);
 	}
@@ -148,6 +157,13 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				}
 			return ((ActorScopeRepresentation)representation).deleteByScopes(scopes);
 		}
+		
+		if(arguments != null && ActorBusiness.CREATE_SCOPES.equals(arguments.getActionIdentifier()))
+			return ((ActorScopeRepresentation)representation).createByActors(CollectionHelper.cast(ActorDto.class, creatables));
+		
+		if(arguments != null && ActorBusiness.DELETE_SCOPES.equals(arguments.getActionIdentifier()))
+			return ((ActorScopeRepresentation)representation).deleteByActors(CollectionHelper.cast(ActorDto.class, deletables));
+		
 		
 		if(arguments != null && AccountRequestBusiness.RECORD.equals(arguments.getActionIdentifier())) {
 			Collection<AccountRequestDto> accountRequests = new ArrayList<>();

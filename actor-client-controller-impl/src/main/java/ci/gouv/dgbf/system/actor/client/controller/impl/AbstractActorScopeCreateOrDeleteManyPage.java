@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntitySaver;
+import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.client.controller.web.WebController;
@@ -20,7 +21,6 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.ScopeTypeController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
-import ci.gouv.dgbf.system.actor.client.controller.entities.Scope;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorBusiness;
 import lombok.Getter;
@@ -56,12 +56,12 @@ public abstract class AbstractActorScopeCreateOrDeleteManyPage<SCOPE> extends Ab
 						if(CollectionHelper.isEmpty(actors))
 							throw new RuntimeException("Sélectionner au moins un compte");
 						@SuppressWarnings("unchecked")
-						Collection<Scope> scopes = (Collection<Scope>) scopesAutoComplete.getValue();
+						Collection<Object> scopes = (Collection<Object>) scopesAutoComplete.getValue();
 						if(CollectionHelper.isEmpty(scopes))
 							throw new RuntimeException("Sélectionner au moins "+scopeType.getName());												
 						Arguments<Actor> arguments = new Arguments<Actor>();
 						arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(getActionIdentifier()));																
-						CollectionHelper.getFirst(actors).setSectionsIdentifiers(scopes.stream().map(x -> x.getIdentifier()).collect(Collectors.toList()));
+						CollectionHelper.getFirst(actors).setScopesIdentifiers(scopes.stream().map(x -> (String)FieldHelper.readSystemIdentifier(x)).collect(Collectors.toList()));
 						if(ActorBusiness.CREATE_SCOPES.equals(getActionIdentifier()))
 							arguments.setCreatables(actors);
 						else
