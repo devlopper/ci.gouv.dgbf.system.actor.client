@@ -14,6 +14,7 @@ public class Activity extends AbstractDataIdentifiableSystemStringIdentifiableBu
 	private static final long serialVersionUID = 1L;
 
 	private String sectionCodeName;	
+	private String categoryCodeName;	
 	private String budgetSpecializationUnitCodeName;
 	private String actionCodeName;	
 	

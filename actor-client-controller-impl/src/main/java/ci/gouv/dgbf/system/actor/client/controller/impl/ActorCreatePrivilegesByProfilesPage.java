@@ -35,8 +35,8 @@ public class ActorCreatePrivilegesByProfilesPage extends AbstractActorCreatePriv
 	protected void __create__() {
 		Arguments<Profile> arguments = new Arguments<Profile>();
 		arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(ProfilePrivilegeBusiness.CREATE_FROM_PROFILES));		
-		((Profile)dataTable.getSelection().iterator().next()).setProfileIdentifier(profile.getIdentifier());
-		arguments.setCreatables(CollectionHelper.cast(Profile.class, dataTable.getSelection()));
+		((Profile)dataTable.getSelectionAsCollection().iterator().next()).setProfileIdentifier(profile.getIdentifier());
+		arguments.setCreatables(CollectionHelper.cast(Profile.class, dataTable.getSelectionAsCollection()));
 		EntitySaver.getInstance().save(Profile.class, arguments);
 	}
 }

@@ -39,15 +39,15 @@ public class AssignPrivilegesToActorsByFunctionsPage extends AbstractPageContain
 		super.__listenPostConstruct__();		
 		functionsAutoComplete = AutoComplete.build(AutoComplete.FIELD_ENTITY_CLASS,Function.class,AutoComplete.FIELD_READER_USABLE,Boolean.TRUE
 				,AutoComplete.FIELD_MULTIPLE,Boolean.TRUE);
-		actorsDataTable = ActorListPage.buildDataTable(DataTable.FIELD_SELECTION_MODE,"multiple",DataTable.ConfiguratorImpl.FIELD_USABLE_AS_SELECTION_ONLY,Boolean.TRUE);	
+		actorsDataTable = ActorListPage.buildDataTable(DataTable.FIELD_SELECTION_MODE,"multiple");	
 		saveCommandButton = CommandButton.build(CommandButton.FIELD_VALUE,"Enregistrer",CommandButton.FIELD_ICON,"fa fa-floppy-o"
 				,CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION,CommandButton.FIELD_STYLE_CLASS,"cyk-float-right"
 				,CommandButton.FIELD_LISTENER,new CommandButton.Listener.AbstractImpl() {
 					@Override
 					protected Object __runExecuteFunction__(AbstractAction action) {
-						if(CollectionHelper.isNotEmpty(actorsDataTable.getSelection())) {
+						if(CollectionHelper.isNotEmpty(actorsDataTable.getSelectionAsCollection())) {
 							@SuppressWarnings("unchecked")
-							Collection<Actor> actors = (Collection<Actor>) actorsDataTable.getSelection();
+							Collection<Actor> actors = (Collection<Actor>) actorsDataTable.getSelectionAsCollection();
 							@SuppressWarnings("unchecked")
 							Collection<Function> functions = (Collection<Function>) functionsAutoComplete.getValue();
 							if(CollectionHelper.isNotEmpty(functions)) {

@@ -1067,3 +1067,101 @@ f1b5933fe4b5: Layer already exists
 e5095cdd95b0: Pushed
 v0.0.0-202009150801: digest: sha256:45a88556d5b30888856b19ca8366fc94e4ebadde45579478fb9b033420f2edd5 size: 1377
 Deploying with time stamp : v0.0.0-202009150801 
+Publishing with time stamp : v0.0.0-202009161851 
+The push refers to repository [10.3.4.18:5000/mic-acteur]
+745b95993754: Preparing
+55e0f1d18af3: Preparing
+13f0b213c32d: Preparing
+849cb74592b3: Preparing
+f1b5933fe4b5: Preparing
+13f0b213c32d: Layer already exists
+f1b5933fe4b5: Layer already exists
+55e0f1d18af3: Layer already exists
+849cb74592b3: Layer already exists
+745b95993754: Pushed
+v0.0.0-202009161851: digest: sha256:88561d41737dbb4642fd21b3daa4bd290507bed3faf78d4f83fe490afc2a3538 size: 1377
+Deploying with time stamp : v0.0.0-202009161851 
+Publishing with time stamp : v0.0.0-202009161859 
+The push refers to repository [10.3.4.18:5000/mic-acteur]
+95e7e5d34b66: Preparing
+55e0f1d18af3: Preparing
+13f0b213c32d: Preparing
+849cb74592b3: Preparing
+f1b5933fe4b5: Preparing
+13f0b213c32d: Layer already exists
+849cb74592b3: Layer already exists
+f1b5933fe4b5: Layer already exists
+55e0f1d18af3: Layer already exists
+95e7e5d34b66: Pushed
+v0.0.0-202009161859: digest: sha256:c7f75081b87ca30edbe53e1857027a01bfc404686af0c810062b39d8f2dddefe size: 1377
+Deploying with time stamp : v0.0.0-202009161859 
+Publishing with time stamp : v0.0.0-202009171905 
+The push refers to repository [10.3.4.18:5000/mic-acteur]
+47b73ff0457b: Preparing
+55e0f1d18af3: Preparing
+13f0b213c32d: Preparing
+849cb74592b3: Preparing
+f1b5933fe4b5: Preparing
+f1b5933fe4b5: Layer already exists
+13f0b213c32d: Layer already exists
+849cb74592b3: Layer already exists
+55e0f1d18af3: Layer already exists
+47b73ff0457b: Pushed
+v0.0.0-202009171905: digest: sha256:daf255ed352939e204572b971673256fbcf9847759d61c946d7b90c7c365f30f size: 1377
+Deploying with time stamp : v0.0.0-202009171905 
+Publishing with time stamp : v0.0.0-202009172028 
+The push refers to repository [10.3.4.18:5000/mic-acteur]
+2635ac2bff36: Preparing
+55e0f1d18af3: Preparing
+13f0b213c32d: Preparing
+849cb74592b3: Preparing
+f1b5933fe4b5: Preparing
+f1b5933fe4b5: Layer already exists
+55e0f1d18af3: Layer already exists
+13f0b213c32d: Layer already exists
+849cb74592b3: Layer already exists
+2635ac2bff36: Pushed
+v0.0.0-202009172028: digest: sha256:5365dbe5f50b86f9dcf1bebad49c00fced6c614740774661ba618aff869b57e6 size: 1377
+Deploying with time stamp : v0.0.0-202009172028 
+Publishing with time stamp : v0.0.0-202009181700 
+The push refers to repository [10.3.4.18:5000/mic-acteur]
+8ab502e5d5ee: Preparing
+55e0f1d18af3: Preparing
+13f0b213c32d: Preparing
+849cb74592b3: Preparing
+f1b5933fe4b5: Preparing
+55e0f1d18af3: Layer already exists
+f1b5933fe4b5: Layer already exists
+13f0b213c32d: Layer already exists
+849cb74592b3: Layer already exists
+8ab502e5d5ee: Pushed
+v0.0.0-202009181700: digest: sha256:bb70d108ee7dd4efdce8ade48b61701f93fe1a9efb97555a57f6387ade57c882 size: 1377
+Deploying with time stamp : v0.0.0-202009181700 
+Publishing with time stamp : v0.0.0-202009192026 
+The push refers to repository [10.3.4.18:5000/mic-acteur]
+1a1284ac52d5: Preparing
+55e0f1d18af3: Preparing
+13f0b213c32d: Preparing
+849cb74592b3: Preparing
+f1b5933fe4b5: Preparing
+55e0f1d18af3: Layer already exists
+849cb74592b3: Layer already exists
+13f0b213c32d: Layer already exists
+f1b5933fe4b5: Layer already exists
+1a1284ac52d5: Pushed
+v0.0.0-202009192026: digest: sha256:bd6decb47996e42035f4152c5c4e49a0b5862023b614d5030b5764fcf9a469ca size: 1377
+Deploying with time stamp : v0.0.0-202009192026 
+Publishing with time stamp : v0.0.0-202009251611 
+The push refers to repository [10.3.4.18:5000/mic-acteur]
+4f8ebdc6c69b: Preparing
+55e0f1d18af3: Preparing
+13f0b213c32d: Preparing
+849cb74592b3: Preparing
+f1b5933fe4b5: Preparing
+13f0b213c32d: Layer already exists
+849cb74592b3: Layer already exists
+f1b5933fe4b5: Layer already exists
+55e0f1d18af3: Layer already exists
+4f8ebdc6c69b: Pushed
+v0.0.0-202009251611: digest: sha256:ec86708d91148f58b892ab637d09d80caf42a502930b0d9e7995aa59a4cb8d90 size: 1377
+Deploying with time stamp : v0.0.0-202009251611 

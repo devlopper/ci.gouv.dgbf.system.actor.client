@@ -67,7 +67,7 @@ public abstract class AbstractActorCreatePrivilegesByPage extends AbstractPageCo
 	protected abstract String getByName();
 	
 	protected void create() {
-		if(CollectionHelper.isEmpty(dataTable.getSelection()))
+		if(CollectionHelper.isEmpty(dataTable.getSelectionAsCollection()))
 			return;
 		__create__();
 	}

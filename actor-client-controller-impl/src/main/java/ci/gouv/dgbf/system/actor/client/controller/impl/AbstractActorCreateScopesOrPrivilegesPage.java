@@ -38,8 +38,8 @@ public abstract class AbstractActorCreateScopesOrPrivilegesPage<T> extends Abstr
 			@SuppressWarnings("unchecked")
 			@Override
 			protected Object __runExecuteFunction__(AbstractAction action) {
-				if(CollectionHelper.isNotEmpty(dataTable.getSelection()))
-					create((Collection<T>) dataTable.getSelection());
+				if(CollectionHelper.isNotEmpty(dataTable.getSelectionAsCollection()))
+					create((Collection<T>) dataTable.getSelectionAsCollection());
 				return null;
 			}
 		});

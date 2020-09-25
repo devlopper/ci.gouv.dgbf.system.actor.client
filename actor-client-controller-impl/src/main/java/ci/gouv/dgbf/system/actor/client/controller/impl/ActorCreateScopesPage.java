@@ -21,6 +21,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityCategoryQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeAdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeBudgetSpecializationUnitQuerier;
@@ -74,6 +75,8 @@ public class ActorCreateScopesPage extends AbstractActorCreateScopesOrPrivileges
 				return ScopeOfTypeActionQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_WHERE_FILTER;
 			if(ScopeType.isCodeEqualsACTIVITE(scopeType))
 				return ScopeOfTypeActivityQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_WHERE_FILTER;
+			if(ScopeType.isCodeEqualsCATEGORIE_ACTIVITE(scopeType))
+				return ScopeOfTypeActivityCategoryQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_WHERE_FILTER;
 			if(ScopeType.isCodeEqualsIMPUTATION(scopeType))
 				return ScopeOfTypeImputationQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_WHERE_FILTER;
 			if(ScopeType.isCodeEqualsUA(scopeType))
@@ -92,6 +95,8 @@ public class ActorCreateScopesPage extends AbstractActorCreateScopesOrPrivileges
 			else if(ScopeType.isCodeEqualsUSB(scopeType))
 				;
 			else if(ScopeType.isCodeEqualsACTIVITE(scopeType))
+				;
+			else if(ScopeType.isCodeEqualsCATEGORIE_ACTIVITE(scopeType))
 				;
 			else if(ScopeType.isCodeEqualsACTION(scopeType))
 				;

@@ -187,6 +187,30 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>actorScopeCreateManyBudgetSpecializationUnitsView</from-outcome>
+			<to-view-id>/private/actor/scope/createbudgetspecializationunits.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>actorScopeDeleteManyBudgetSpecializationUnitsView</from-outcome>
+			<to-view-id>/private/actor/scope/deletebudgetspecializationunits.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>actorScopeCreateManyActivityCategoriesView</from-outcome>
+			<to-view-id>/private/actor/scope/createactivitycategories.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>actorScopeDeleteManyActivityCategoriesView</from-outcome>
+			<to-view-id>/private/actor/scope/deleteactivitycategories.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>scopeListView</from-outcome>
 			<to-view-id>/private/scope/list.jsf</to-view-id>
 			<redirect />

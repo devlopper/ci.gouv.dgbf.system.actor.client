@@ -33,6 +33,10 @@ public class ScopeType extends AbstractDataIdentifiableSystemStringIdentifiableB
 		return ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_ACTIVITE.equals(code);
 	}
 	
+	public Boolean isCodeEqualsCATEGORIE_ACTIVITE() {
+		return ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_CATEGORIE_ACTIVITE.equals(code);
+	}
+	
 	public Boolean isCodeEqualsIMPUTATION() {
 		return ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_IMPUTATION.equals(code);
 	}
@@ -66,6 +70,10 @@ public class ScopeType extends AbstractDataIdentifiableSystemStringIdentifiableB
 	
 	public static Boolean isCodeEqualsACTIVITE(ScopeType scopeType) {
 		return scopeType != null && scopeType.isCodeEqualsACTIVITE();
+	}
+	
+	public static Boolean isCodeEqualsCATEGORIE_ACTIVITE(ScopeType scopeType) {
+		return scopeType != null && scopeType.isCodeEqualsCATEGORIE_ACTIVITE();
 	}
 	
 	public static Boolean isCodeEqualsIMPUTATION(ScopeType scopeType) {

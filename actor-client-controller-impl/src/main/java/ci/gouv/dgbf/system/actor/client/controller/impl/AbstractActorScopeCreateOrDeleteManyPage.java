@@ -44,7 +44,7 @@ public abstract class AbstractActorScopeCreateOrDeleteManyPage<SCOPE> extends Ab
 		
 		scopesAutoComplete = AutoComplete.build(AutoComplete.FIELD_ENTITY_CLASS,getScopeClass(),AutoComplete.FIELD_READER_USABLE,Boolean.TRUE
 				,AutoComplete.FIELD_MULTIPLE,Boolean.TRUE);
-		actorsDataTable = ActorListPage.buildDataTable(DataTable.FIELD_SELECTION_MODE,"multiple",DataTable.ConfiguratorImpl.FIELD_USABLE_AS_SELECTION_ONLY,Boolean.TRUE);	
+		actorsDataTable = ActorListPage.buildDataTable(DataTable.FIELD_SELECTION_MODE,"multiple");	
 		saveCommandButton = CommandButton.build(CommandButton.FIELD_VALUE,ActorBusiness.CREATE_SCOPES.equals(getActionIdentifier()) ? "Affecter" : "Retirer"
 			,CommandButton.FIELD_ICON,"fa fa-floppy-o"
 				,CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION,CommandButton.FIELD_STYLE_CLASS,"cyk-float-right"
@@ -52,7 +52,7 @@ public abstract class AbstractActorScopeCreateOrDeleteManyPage<SCOPE> extends Ab
 					@Override
 					protected Object __runExecuteFunction__(AbstractAction action) {
 						@SuppressWarnings("unchecked")
-						Collection<Actor> actors = (Collection<Actor>) actorsDataTable.getSelection();
+						Collection<Actor> actors = (Collection<Actor>) actorsDataTable.getSelectionAsCollection();
 						if(CollectionHelper.isEmpty(actors))
 							throw new RuntimeException("Sélectionner au moins un compte");
 						@SuppressWarnings("unchecked")

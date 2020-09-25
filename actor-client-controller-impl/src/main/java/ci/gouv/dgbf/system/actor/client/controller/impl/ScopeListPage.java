@@ -93,7 +93,10 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 			columnsNames.addAll(List.of(Scope.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING,Scope.FIELD_SECTION_AS_STRING));
 		}
 		if(ScopeType.isCodeEqualsACTIVITE(scopeType)) {
-			columnsNames.addAll(List.of(Scope.FIELD_ACTION_AS_STRING,Scope.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING,Scope.FIELD_SECTION_AS_STRING));
+			columnsNames.addAll(List.of(Scope.FIELD_ACTIVITY_CATEGORY_AS_STRING,Scope.FIELD_ACTION_AS_STRING,Scope.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING,Scope.FIELD_SECTION_AS_STRING));
+		}
+		if(ScopeType.isCodeEqualsCATEGORIE_ACTIVITE(scopeType)) {
+			
 		}
 		if(ScopeType.isCodeEqualsIMPUTATION(scopeType)) {
 			columnsNames.addAll(List.of(Scope.FIELD_ACTIVITY_AS_STRING,Scope.FIELD_ACTION_AS_STRING,Scope.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING,Scope.FIELD_SECTION_AS_STRING));
@@ -159,6 +162,10 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 				map.put(Column.FIELD_HEADER_TEXT, "Action");
 				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
 				map.put(Column.FIELD_FILTER_BY, ScopeQuerier.PARAMETER_NAME_ACTION_CODE_NAME);
+			}else if(Scope.FIELD_ACTIVITY_CATEGORY_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Catégorie");
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, ScopeQuerier.PARAMETER_NAME_CATEGORY_CODE_NAME);
 			}else if(Scope.FIELD_ACTIVITY_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Activité");
 				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);

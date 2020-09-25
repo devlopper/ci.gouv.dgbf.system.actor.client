@@ -15,7 +15,7 @@ public class Scope extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 
 	private ScopeType type;	
 	private Scope section;
-	private String sectionAsString,budgetSpecializationUnitAsString,actionAsString,activityAsString,economicNatureAsString;
+	private String sectionAsString,budgetSpecializationUnitAsString,actionAsString,activityAsString,activityCategoryAsString,economicNatureAsString;
 	
 	@Override
 	public String toString() {
@@ -28,5 +28,6 @@ public class Scope extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING = "budgetSpecializationUnitAsString";
 	public static final String FIELD_ACTION_AS_STRING = "actionAsString";
 	public static final String FIELD_ACTIVITY_AS_STRING = "activityAsString";
+	public static final String FIELD_ACTIVITY_CATEGORY_AS_STRING = "activityCategoryAsString";
 	public static final String FIELD_ECONOMIC_NATURE_AS_STRING = "economicNatureAsString";
 }

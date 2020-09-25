@@ -15,6 +15,8 @@ import org.cyk.utility.__kernel__.controller.EntityReader;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.object.__static__.controller.AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl;
+import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierGetter;
+import org.cyk.utility.__kernel__.persistence.query.QueryName;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
@@ -29,7 +31,10 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.AccountRequest;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Action;
+import ci.gouv.dgbf.system.actor.client.controller.entities.ActivityCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
+import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Profile;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RejectedAccountRequest;
@@ -40,7 +45,6 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -84,7 +88,7 @@ public class AccountListPage extends AbstractPageContainerManagedImpl implements
 			if(CollectionHelper.isNotEmpty(profiles)) {
 				if(StringHelper.isBlank(code))
 					code = ci.gouv.dgbf.system.actor.server.persistence.entities.Profile.CODE_ADMINISTRATEUR;
-				dataTable = ActorListPage.buildDataTable(Profile.class,code);	
+				dataTable = ActorListPage.buildDataTable(Profile.class,code,AbstractActorListPage.RenderType.class,AbstractActorListPage.RenderType.PROFILES);	
 				cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,buildProfilesSelectOneCombo(profiles,code),Cell.FIELD_WIDTH,12));				
 			}		
 		}
@@ -107,25 +111,24 @@ public class AccountListPage extends AbstractPageContainerManagedImpl implements
 					code = ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_SECTION;
 				TabMenu scopeTypesTabMenu = buildScopeTypesTab(scopeTypes, code);	
 				cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeTypesTabMenu,Cell.FIELD_WIDTH,12));
-				if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_SECTION.equals(code)) {
-					Collection<Section> sections = EntityReader.getInstance().readMany(Section.class, SectionQuerier.QUERY_IDENTIFIER_READ);
-					if(CollectionHelper.isNotEmpty(sections)) {
-						dataTable = ActorListPage.buildDataTable(Section.class,CollectionHelper.getFirst(sections).getCode());
-						cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,buildVisibleSectionsSelectOneCombo(sections,code),Cell.FIELD_WIDTH,12));
-					}
-				}
-			}			
+				
+				if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_SECTION.equals(code))
+					addVisibleScopesSelectOneCombo(cellsMaps, Section.class, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_SECTION);
+				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_USB.equals(code))
+					addVisibleScopesSelectOneCombo(cellsMaps, BudgetSpecializationUnit.class, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_USB);
+				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_ACTION.equals(code))
+					addVisibleScopesSelectOneCombo(cellsMaps, Action.class, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_ACTION);
+				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_ACTIVITE.equals(code))
+					;//addVisibleScopesSelectOneCombo(cellsMaps, Activity.class, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_ACTIVITE);
+				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_CATEGORIE_ACTIVITE.equals(code))
+					addVisibleScopesSelectOneCombo(cellsMaps, ActivityCategory.class, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_CATEGORIE_ACTIVITE);
+				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_IMPUTATION.equals(code))
+					;//addVisibleScopesSelectOneCombo(cellsMaps, Imputation.class, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_IMPUTATION);
+				
+				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_UA.equals(code))
+					;//addVisibleScopesSelectOneCombo(cellsMaps, AdministrativeUnit.class, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_UA);
+			}
 		}
-		/*else if(Tab.VISIBLE_SECTIONS.equals(selectedTab)) {
-			String code = WebController.getInstance().getRequestParameter(AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl.FIELD_CODE);
-			Collection<Section> sections = EntityReader.getInstance().readMany(Section.class, SectionQuerier.QUERY_IDENTIFIER_READ);
-			if(CollectionHelper.isNotEmpty(sections)) {
-				if(StringHelper.isBlank(code))
-					code = CollectionHelper.getFirst(sections).getCode();
-				dataTable = ActorListPage.buildDataTable(Section.class,code);
-				cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,buildVisibleSectionsSelectOneCombo(sections,code),Cell.FIELD_WIDTH,12));				
-			}			
-		}*/
 		else if(Tab.REQUEST.equals(selectedTab)) {
 			RequestTab selectedRequestTab = RequestTab.getByParameterValue(WebController.getInstance().getRequestParameter(RequestTab.PARAMETER_NAME));
 			if(selectedRequestTab == null)
@@ -236,6 +239,63 @@ public class AccountListPage extends AbstractPageContainerManagedImpl implements
 			}
 		}, List.of(dataTable));
 		return selectOneCombo;
+	}
+	
+	public SelectOneCombo buildVisibleBudgetSpecializationUnitsSelectOneCombo(Collection<BudgetSpecializationUnit> budgetSpecializationUnits,String code) {
+		if(CollectionHelper.isEmpty(budgetSpecializationUnits))
+			return null;		
+		SelectOneCombo selectOneCombo = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICES,budgetSpecializationUnits);
+		selectOneCombo.selectByBusinessIdentifier(code);
+		selectOneCombo.enableValueChangeListener(new AbstractInputChoiceOne.ValueChangeListener() {
+			@SuppressWarnings("unchecked")
+			@Override
+			protected void select(AbstractAction action, Object value) {
+				((AbstractActorListPage.LazyDataModelListenerImpl)((LazyDataModel<Actor>)dataTable.getValue()).getListener())
+					.setVisibleBudgetSpecializationUnitCode((String)FieldHelper.readBusinessIdentifier(value));
+			}
+		}, List.of(dataTable));
+		return selectOneCombo;
+	}
+	
+	public SelectOneCombo buildVisibleScopesSelectOneCombo(String scopeTypeCode,Collection<?> scopes,String code) {
+		if(StringHelper.isBlank(scopeTypeCode) || CollectionHelper.isEmpty(scopes))
+			return null;
+		SelectOneCombo selectOneCombo = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICES,scopes);
+		selectOneCombo.selectByBusinessIdentifier(code);
+		selectOneCombo.enableValueChangeListener(new AbstractInputChoiceOne.ValueChangeListener() {
+			@SuppressWarnings("unchecked")
+			@Override
+			protected void select(AbstractAction action, Object value) {
+				AbstractActorListPage.LazyDataModelListenerImpl lazyDataModel = ((AbstractActorListPage.LazyDataModelListenerImpl)((LazyDataModel<Actor>)dataTable.getValue())
+						.getListener());
+				String scopeCode = (String)FieldHelper.readBusinessIdentifier(value);
+				if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_SECTION.equals(scopeTypeCode))
+					lazyDataModel.setVisibleSectionCode(scopeCode);
+				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_USB.equals(scopeTypeCode))
+					lazyDataModel.setVisibleBudgetSpecializationUnitCode(scopeCode);
+				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_ACTION.equals(scopeTypeCode))
+					lazyDataModel.setVisibleActionCode(scopeCode);
+				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_ACTIVITE.equals(scopeTypeCode))
+					lazyDataModel.setVisibleActivityCode(scopeCode);
+				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_CATEGORIE_ACTIVITE.equals(scopeTypeCode))
+					lazyDataModel.setVisibleActivityCategoryCode(scopeCode);
+				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_IMPUTATION.equals(scopeTypeCode))
+					lazyDataModel.setVisibleImputationCode(scopeCode);
+				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_UA.equals(scopeTypeCode))
+					lazyDataModel.setVisibleAdministrativeUnitCode(scopeCode);
+			}
+		}, List.of(dataTable));
+		return selectOneCombo;
+	}
+	
+	public void addVisibleScopesSelectOneCombo(Collection<Map<Object,Object>> cellsMaps,Class<?> scopeClass,String scopeTypeCode) {
+		String queryIdentifier = QueryIdentifierGetter.getInstance().get(scopeClass, QueryName.READ);
+		Collection<?> scopes = EntityReader.getInstance().readMany(scopeClass, queryIdentifier);
+		if(CollectionHelper.isEmpty(scopes))
+			return;
+		String code = (String) FieldHelper.readBusinessIdentifier(CollectionHelper.getFirst(scopes));
+		dataTable = ActorListPage.buildDataTable(scopeClass,code,AbstractActorListPage.RenderType.class,AbstractActorListPage.RenderType.SCOPES,ScopeType.class,scopeTypeCode);
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,buildVisibleScopesSelectOneCombo(scopeTypeCode, scopes, code),Cell.FIELD_WIDTH,12));
 	}
 	
 	public static TabMenu buildScopeTypesTab(Collection<ScopeType> scopeTypes,String code) {

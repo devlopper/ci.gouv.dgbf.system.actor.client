@@ -11,6 +11,7 @@ import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection.RenderType;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AutoComplete;
@@ -36,29 +37,29 @@ public abstract class AbstractActorProfileCreateOrDeleteManyPage extends Abstrac
 		super.__listenPostConstruct__();		
 		profilesAutoComplete = AutoComplete.build(AutoComplete.FIELD_ENTITY_CLASS,Profile.class,AutoComplete.FIELD_READER_USABLE,Boolean.TRUE
 				,AutoComplete.FIELD_MULTIPLE,Boolean.TRUE);
-		actorsDataTable = ActorListPage.buildDataTable(DataTable.FIELD_SELECTION_MODE,"multiple",DataTable.ConfiguratorImpl.FIELD_USABLE_AS_SELECTION_ONLY,Boolean.TRUE);	
+		actorsDataTable = ActorListPage.buildDataTable(DataTable.FIELD_SELECTION_MODE,"multiple",DataTable.FIELD_RENDER_TYPE,RenderType.SELECTION);	
 		saveCommandButton = CommandButton.build(CommandButton.FIELD_VALUE,ActorBusiness.CREATE_PROFILES.equals(getActionIdentifier()) ? "Assigner" : "Retirer"
 			,CommandButton.FIELD_ICON,"fa fa-floppy-o"
 				,CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION,CommandButton.FIELD_STYLE_CLASS,"cyk-float-right"
 				,CommandButton.FIELD_LISTENER,new CommandButton.Listener.AbstractImpl() {
 					@Override
 					protected Object __runExecuteFunction__(AbstractAction action) {
-						if(CollectionHelper.isNotEmpty(actorsDataTable.getSelection())) {
-							@SuppressWarnings("unchecked")
-							Collection<Actor> actors = (Collection<Actor>) actorsDataTable.getSelection();
-							@SuppressWarnings("unchecked")
-							Collection<Profile> profiles = (Collection<Profile>) profilesAutoComplete.getValue();
-							if(CollectionHelper.isNotEmpty(profiles)) {
-								Arguments<Actor> arguments = new Arguments<Actor>();
-								arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(getActionIdentifier()));																
-								CollectionHelper.getFirst(actors).setProfilesCodes(profiles.stream().map(x -> x.getCode()).collect(Collectors.toList()));
-								if(ActorBusiness.CREATE_PROFILES.equals(getActionIdentifier()))
-									arguments.setCreatables(actors);
-								else
-									arguments.setDeletables(actors);
-								EntitySaver.getInstance().save(Actor.class, arguments);
-							}
-						}
+						@SuppressWarnings("unchecked")
+						Collection<Actor> actors = (Collection<Actor>) actorsDataTable.getSelectionAsCollection();
+						if(CollectionHelper.isEmpty(actors))
+							throw new RuntimeException("Sélectionner au moins un compte utilisateur");
+						@SuppressWarnings("unchecked")
+						Collection<Profile> profiles = (Collection<Profile>) profilesAutoComplete.getValue();
+						if(CollectionHelper.isEmpty(profiles))
+							throw new RuntimeException("Sélectionner au moins un profile");
+						Arguments<Actor> arguments = new Arguments<Actor>();
+						arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(getActionIdentifier()));																
+						CollectionHelper.getFirst(actors).setProfilesCodes(profiles.stream().map(x -> x.getCode()).collect(Collectors.toList()));
+						if(ActorBusiness.CREATE_PROFILES.equals(getActionIdentifier()))
+							arguments.setCreatables(actors);
+						else
+							arguments.setDeletables(actors);
+						EntitySaver.getInstance().save(Actor.class, arguments);						
 						return null;
 					}
 				});
