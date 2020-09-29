@@ -119,7 +119,7 @@
 			<url-pattern>${web-app.security-constraint.web-resource-collection.all.url-pattern}</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
-			<role-name>ADMINISTRATEUR</role-name>
+			<role-name>*</role-name>
 		</auth-constraint>
 	</security-constraint>
 	

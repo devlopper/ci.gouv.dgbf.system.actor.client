@@ -9,7 +9,7 @@ import org.primefaces.model.menu.DefaultMenuItem;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.ActorController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
-import ci.gouv.dgbf.system.actor.client.controller.impl.AbstractActorListScopesPage;
+import ci.gouv.dgbf.system.actor.client.controller.impl.scope.AbstractActorListScopesPage;
 import lombok.Getter;
 import lombok.Setter;
 
