@@ -17,6 +17,7 @@ import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.ServiceBusiness;
 import ci.gouv.dgbf.system.actor.server.representation.api.AccountRequestRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorProfileRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorRepresentation;
@@ -24,6 +25,7 @@ import ci.gouv.dgbf.system.actor.server.representation.api.ActorScopeRepresentat
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfileFunctionRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfilePrivilegeRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfileRepresentation;
+import ci.gouv.dgbf.system.actor.server.representation.api.ServiceRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.entities.AccountRequestDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorProfileDto;
@@ -33,6 +35,7 @@ import ci.gouv.dgbf.system.actor.server.representation.entities.ProfileDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ProfileFunctionDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ProfilePrivilegeDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ScopeDto;
+import ci.gouv.dgbf.system.actor.server.representation.entities.ServiceDto;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
 public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Serializable {
@@ -78,6 +81,21 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				arguments.setRepresentation(ActorScopeRepresentation.getProxy());
 			else if(ActorBusiness.DELETE_SCOPES.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ActorScopeRepresentation.getProxy());
+			
+			else if(ServiceBusiness.DELETE_ALL_KEYCLOAK_AUTHORIZATION_POLICIES.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ServiceRepresentation.getProxy());
+			else if(ServiceBusiness.DELETE_ALL_KEYCLOAK_AUTHORIZATION_RESOURCES.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ServiceRepresentation.getProxy());
+			else if(ServiceBusiness.DERIVE_KEYCLOAK_AUTHORIZATION_POLICIES.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ServiceRepresentation.getProxy());
+			else if(ServiceBusiness.DERIVE_KEYCLOAK_AUTHORIZATION_RESOURCES.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ServiceRepresentation.getProxy());
+			else if(ServiceBusiness.DERIVE_KEYCLOAK_AUTHORIZATION_PERMISSIONS.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ServiceRepresentation.getProxy());
+			else if(ServiceBusiness.DERIVE_KEYCLOAK_AUTHORIZATIONS.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ServiceRepresentation.getProxy());
+			else if(ServiceBusiness.DELETE_KEYCLOAK_AUTHORIZATIONS.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ServiceRepresentation.getProxy());
 		}
 		super.prepare(controllerEntityClass, arguments);
 	}
@@ -254,6 +272,48 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				profiles.add(profile);
 			}
 			return ((ProfileRepresentation)representation).savePrivileges(profiles);
+		}
+		
+		if(arguments != null && ServiceBusiness.DELETE_ALL_KEYCLOAK_AUTHORIZATION_POLICIES.equals(arguments.getActionIdentifier())) {
+			if(CollectionHelper.isEmpty(updatables))
+				throw new RuntimeException("Services à mettre à jour obligatoire");		
+			return ((ServiceRepresentation)representation).deleteAllKeycloakAuthorizationPolicies(CollectionHelper.cast(ServiceDto.class, updatables));
+		}
+		
+		if(arguments != null && ServiceBusiness.DERIVE_KEYCLOAK_AUTHORIZATION_POLICIES.equals(arguments.getActionIdentifier())) {
+			if(CollectionHelper.isEmpty(updatables))
+				throw new RuntimeException("Services à mettre à jour obligatoire");		
+			return ((ServiceRepresentation)representation).deriveKeycloakAuthorizationPolicies(CollectionHelper.cast(ServiceDto.class, updatables));
+		}
+		
+		if(arguments != null && ServiceBusiness.DELETE_ALL_KEYCLOAK_AUTHORIZATION_RESOURCES.equals(arguments.getActionIdentifier())) {
+			if(CollectionHelper.isEmpty(updatables))
+				throw new RuntimeException("Services à mettre à jour obligatoire");		
+			return ((ServiceRepresentation)representation).deleteAllKeycloakAuthorizationResources(CollectionHelper.cast(ServiceDto.class, updatables));
+		}
+		
+		if(arguments != null && ServiceBusiness.DERIVE_KEYCLOAK_AUTHORIZATION_RESOURCES.equals(arguments.getActionIdentifier())) {
+			if(CollectionHelper.isEmpty(updatables))
+				throw new RuntimeException("Services à mettre à jour obligatoire");		
+			return ((ServiceRepresentation)representation).deriveKeycloakAuthorizationResources(CollectionHelper.cast(ServiceDto.class, updatables));
+		}
+		
+		if(arguments != null && ServiceBusiness.DERIVE_KEYCLOAK_AUTHORIZATION_PERMISSIONS.equals(arguments.getActionIdentifier())) {
+			if(CollectionHelper.isEmpty(updatables))
+				throw new RuntimeException("Services à mettre à jour obligatoire");		
+			return ((ServiceRepresentation)representation).deriveKeycloakAuthorizationPermissions(CollectionHelper.cast(ServiceDto.class, updatables));
+		}
+		
+		if(arguments != null && ServiceBusiness.DERIVE_KEYCLOAK_AUTHORIZATIONS.equals(arguments.getActionIdentifier())) {
+			if(CollectionHelper.isEmpty(updatables))
+				throw new RuntimeException("Services à mettre à jour obligatoire");		
+			return ((ServiceRepresentation)representation).deriveKeycloakAuthorizations(CollectionHelper.cast(ServiceDto.class, updatables));
+		}
+		
+		if(arguments != null && ServiceBusiness.DELETE_KEYCLOAK_AUTHORIZATIONS.equals(arguments.getActionIdentifier())) {
+			if(CollectionHelper.isEmpty(updatables))
+				throw new RuntimeException("Services à mettre à jour obligatoire");		
+			return ((ServiceRepresentation)representation).deleteKeycloakAuthorizations(CollectionHelper.cast(ServiceDto.class, updatables));
 		}
 		return super.save(representation, creatables, updatables, deletables, arguments);
 	}

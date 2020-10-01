@@ -12,6 +12,7 @@ import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
@@ -30,6 +31,8 @@ import lombok.experimental.Accessors;
 @Named @ViewScoped @Getter @Setter
 public class MenuListPage extends AbstractEntityListPageContainerManagedImpl<Menu> implements Serializable {
 
+	
+	
 	@Override
 	protected void __listenPostConstruct__() {
 		super.__listenPostConstruct__();				
@@ -43,7 +46,8 @@ public class MenuListPage extends AbstractEntityListPageContainerManagedImpl<Men
 	
 	@Override
 	protected DataTable __buildDataTable__() {
-		DataTable dataTable = buildDataTable();		
+		DataTable dataTable = buildDataTable();
+		dataTable.setAreColumnsChoosable(Boolean.TRUE);
 		return dataTable;
 	}
 	
@@ -53,13 +57,13 @@ public class MenuListPage extends AbstractEntityListPageContainerManagedImpl<Men
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, Menu.class);
 		Collection<String> columnsFieldsNames = CollectionHelper.listOf(Menu.FIELD_MODULE_CODE_NAME,Menu.FIELD_SERVICE_CODE_NAME,Menu.FIELD_CODE,Menu.FIELD_NAME
-				,Menu.FIELD_UNIFORM_RESOURCE_IDENTIFIER,Menu.FIELD_DEFINED);
+				,Menu.FIELD_UNIFORM_RESOURCE_IDENTIFIER,Menu.FIELD_PROFILES_AS_STRING,Menu.FIELD_DEFINED);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, columnsFieldsNames);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl());
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl());
 		DataTable dataTable = DataTable.build(arguments);
-		dataTable.setAreColumnsChoosable(Boolean.TRUE);
+		
 		return dataTable;
 	}
 	
@@ -93,6 +97,9 @@ public class MenuListPage extends AbstractEntityListPageContainerManagedImpl<Men
 			}else if(Menu.FIELD_UNIFORM_RESOURCE_IDENTIFIER.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Lien");
 				
+			}else if(Menu.FIELD_PROFILES_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Profile(s)");
+				
 			}
 			return map;
 		}
@@ -112,6 +119,8 @@ public class MenuListPage extends AbstractEntityListPageContainerManagedImpl<Men
 	@Getter @Setter @Accessors(chain=true)
 	public static class LazyDataModelListenerImpl extends LazyDataModel.Listener.AbstractImpl<Menu> implements Serializable {
 		
+		private String serviceIdentifier;
+		
 		@Override
 		public Boolean getReaderUsable(LazyDataModel<Menu> lazyDataModel) {
 			return Boolean.TRUE;
@@ -119,13 +128,19 @@ public class MenuListPage extends AbstractEntityListPageContainerManagedImpl<Men
 		
 		@Override
 		public String getReadQueryIdentifier(LazyDataModel<Menu> lazyDataModel) {
+			if(StringHelper.isNotBlank(serviceIdentifier))
+				return MenuQuerier.QUERY_IDENTIFIER_READ_WITH_ALL_BY_SERVICE_IDENTIFIER;
 			return MenuQuerier.QUERY_IDENTIFIER_READ_WITH_ALL;
 		}
 		
 		@Override
 		public Filter.Dto instantiateFilter(LazyDataModel<Menu> lazyDataModel) {
 			Filter.Dto filter = super.instantiateFilter(lazyDataModel);			
-			
+			if(StringHelper.isNotBlank(serviceIdentifier)) {
+				if(filter == null)
+					filter = new Filter.Dto();
+				filter.addField(MenuQuerier.PARAMETER_NAME_SERVICE_IDENTIFIER, serviceIdentifier);
+			}
 			return filter;
 		}
 	}

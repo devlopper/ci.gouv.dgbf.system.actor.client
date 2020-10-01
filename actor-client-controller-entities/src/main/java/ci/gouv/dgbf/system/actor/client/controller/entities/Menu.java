@@ -20,6 +20,7 @@ public class Menu extends AbstractDataIdentifiableSystemStringIdentifiableBusine
 	private String uniformResourceIdentifier;
 	private Boolean defined;
 	private String status;
+	private String profilesAsString;
 	
 	public static final String FIELD_MODULE_AS_STRING = "moduleAsString";
 	public static final String FIELD_MODULE_CODE_NAME = "moduleCodeName";
@@ -28,4 +29,5 @@ public class Menu extends AbstractDataIdentifiableSystemStringIdentifiableBusine
 	public static final String FIELD_UNIFORM_RESOURCE_IDENTIFIER = "uniformResourceIdentifier";
 	public static final String FIELD_DEFINED = "defined";
 	public static final String FIELD_STATUS = "status";
+	public static final String FIELD_PROFILES_AS_STRING = "profilesAsString";
 }
