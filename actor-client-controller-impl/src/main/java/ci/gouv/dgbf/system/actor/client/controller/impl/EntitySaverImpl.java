@@ -96,6 +96,8 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				arguments.setRepresentation(ServiceRepresentation.getProxy());
 			else if(ServiceBusiness.DELETE_KEYCLOAK_AUTHORIZATIONS.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ServiceRepresentation.getProxy());
+			else if(ServiceBusiness.DERIVE_KEYCLOAK_AUTHORIZATIONS_FROM_SCRATCH.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ServiceRepresentation.getProxy());
 		}
 		super.prepare(controllerEntityClass, arguments);
 	}
@@ -314,6 +316,12 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 			if(CollectionHelper.isEmpty(updatables))
 				throw new RuntimeException("Services à mettre à jour obligatoire");		
 			return ((ServiceRepresentation)representation).deleteKeycloakAuthorizations(CollectionHelper.cast(ServiceDto.class, updatables));
+		}
+		
+		if(arguments != null && ServiceBusiness.DERIVE_KEYCLOAK_AUTHORIZATIONS_FROM_SCRATCH.equals(arguments.getActionIdentifier())) {
+			if(CollectionHelper.isEmpty(updatables))
+				throw new RuntimeException("Services à mettre à jour obligatoire");		
+			return ((ServiceRepresentation)representation).deriveKeycloakAuthorizationsFromScratch(CollectionHelper.cast(ServiceDto.class, updatables));
 		}
 		return super.save(representation, creatables, updatables, deletables, arguments);
 	}

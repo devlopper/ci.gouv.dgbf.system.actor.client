@@ -8,9 +8,9 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:cyk="http://primefaces.jsf.web.utility.cyk.org">
 	
-    <cyk:page value="#{privilegeListPage}">
+    <cyk:page value="#{privilegeTreePage}">
     	<ui:define name="centerCenter">
-    		<p:treeTable value="#{privilegeListPage.root}" var="privilege">
+    		<p:treeTable value="#{privilegeTreePage.root}" var="privilege">
 		        <p:column headerText="Libellé" styleClass="#{privilege.type.code.toLowerCase()}">
 		            <h:outputText value="#{privilege.name}" />
 		        </p:column>
