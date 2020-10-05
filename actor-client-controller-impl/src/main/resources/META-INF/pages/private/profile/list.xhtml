@@ -10,9 +10,8 @@
 	
     <cyk:page value="#{profileListPage}">
     	<ui:define name="centerCenter">
-    		<p:tabMenu model="#{profileListPage.tabMenu}" activeIndex="#{profileListPage.tabMenuActiveIndex}"/>
-    		<ui:decorate template="#{primefacesHelper.getModelTemplate(profileListPage.dataTable)}">
-    			<ui:param name="dataTable" value="#{profileListPage.dataTable}"/>   			
+    		<ui:decorate template="#{primefacesHelper.getModelTemplate(profileListPage.layout)}">
+    			<ui:param name="layout" value="#{profileListPage.layout}"/>   			
     		</ui:decorate>
     	</ui:define>
     </cyk:page>

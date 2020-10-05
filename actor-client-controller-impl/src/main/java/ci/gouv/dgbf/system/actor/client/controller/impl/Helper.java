@@ -1,5 +1,7 @@
 package ci.gouv.dgbf.system.actor.client.controller.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,14 +22,34 @@ import org.cyk.utility.client.controller.web.jsf.JsfController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.ajax.Ajax;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AutoComplete;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Profile;
+import ci.gouv.dgbf.system.actor.client.controller.entities.ProfileType;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Service;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileTypeQuerier;
 
 public interface Helper {
 
+	static TabMenu buildProfileListPageTabMenu(ProfileType profileType,Boolean isService) {
+		Collection<ProfileType> profileTypes = EntityReader.getInstance().readMany(ProfileType.class, new Arguments<ProfileType>()
+				.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+						.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(ProfileTypeQuerier.QUERY_IDENTIFIER_READ_ORDER_BY_CODE_ASCENDING))));
+		Collection<MenuItem> tabMenuItems = new ArrayList<>();
+		if(CollectionHelper.isNotEmpty(profileTypes)) {		
+			for(ProfileType index : profileTypes)
+				tabMenuItems.add(new MenuItem().setValue(index.getName()).setOutcome("profileListView")
+						.addParameter(ParameterName.stringify(ProfileType.class), index.getIdentifier()));
+		}		
+		tabMenuItems.add(new MenuItem().setValue("Service").setOutcome("profileListView").addParameter(ParameterName.stringify(Service.class), Boolean.TRUE.toString()));
+		return TabMenu.build(TabMenu.FIELD_ACTIVE_INDEX,Boolean.TRUE.equals(isService) ? CollectionHelper.getSize(profileTypes) : ((List<ProfileType>)profileTypes).indexOf(profileType)
+				,TabMenu.ConfiguratorImpl.FIELD_ITEMS,tabMenuItems);
+	}
+	
 	static AutoComplete buildActorAutoCompleteRedirector(Actor actor,String outcome_) {
 		AutoComplete autoComplete = AutoComplete.build(AutoComplete.FIELD_ENTITY_CLASS,Actor.class,AutoComplete.FIELD_LISTENER,new AutoComplete.Listener.AbstractImpl<Actor>() {
 			@Override

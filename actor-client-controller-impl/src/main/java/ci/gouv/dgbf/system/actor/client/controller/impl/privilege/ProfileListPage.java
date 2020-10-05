@@ -1,7 +1,6 @@
 package ci.gouv.dgbf.system.actor.client.controller.impl.privilege;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,29 +11,30 @@ import javax.inject.Named;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.constant.ConstantEmpty;
-import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntityReader;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.AbstractMenu;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
-import org.primefaces.model.menu.DefaultMenuItem;
-import org.primefaces.model.menu.DefaultMenuModel;
-import org.primefaces.model.menu.MenuModel;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Profile;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ProfileType;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Service;
+import ci.gouv.dgbf.system.actor.client.controller.impl.Helper;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileTypeQuerier;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -43,33 +43,26 @@ import lombok.experimental.Accessors;
 public class ProfileListPage extends AbstractEntityListPageContainerManagedImpl<Profile> implements Serializable {
 
 	private ProfileType profileType;
-	private MenuModel tabMenu;
-	private Integer tabMenuActiveIndex;
+	private Boolean isService;
+	private Layout layout;
 	
 	@Override
 	protected void __listenPostConstruct__() {
 		profileType = WebController.getInstance().getRequestParameterEntityAsParent(ProfileType.class);
-		Collection<ProfileType> profileTypes = EntityReader.getInstance().readMany(ProfileType.class, new Arguments<ProfileType>()
-				.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
-						.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(ProfileTypeQuerier.QUERY_IDENTIFIER_READ_ORDER_BY_CODE_ASCENDING))));
-		if(profileType == null)
-			profileType = CollectionHelper.getFirst(profileTypes);
-		super.__listenPostConstruct__();				
-		if(CollectionHelper.isNotEmpty(profileTypes)) {		
-			tabMenu = new DefaultMenuModel();
-			tabMenuActiveIndex = ((List<ProfileType>)profileTypes).indexOf(profileType);	
-			for(ProfileType index : profileTypes) {
-				DefaultMenuItem item = new DefaultMenuItem();
-				item.setValue(index.getName());
-				item.setOutcome("profileListView");
-				item.setParam(ParameterName.stringify(ProfileType.class), index.getIdentifier());
-				tabMenu.addElement(item);
-			}
-		}
+		isService = ValueHelper.convertToBoolean(WebController.getInstance().getRequestParameter(ParameterName.stringify(Service.class)));
+		super.__listenPostConstruct__();		
+		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS
+				,CollectionHelper.listOf(
+					MapHelper.instantiate(Cell.FIELD_CONTROL,Helper.buildProfileListPageTabMenu(profileType,isService),Cell.FIELD_WIDTH,12)
+					,MapHelper.instantiate(Cell.FIELD_CONTROL,Boolean.TRUE.equals(isService) ? ServiceListPage.buildDataTable() : dataTable,Cell.FIELD_WIDTH,12)
+					)
+			);
 	}
 	
 	@Override
 	protected DataTable __buildDataTable__() {
+		if(Boolean.TRUE.equals(isService))
+			return null;
 		DataTable dataTable = buildDataTable(DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl().setProfileType(profileType));		
 		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate(CommandButton.FIELD_LISTENER
 				,new CommandButton.Listener.AbstractImpl() {
@@ -102,7 +95,7 @@ public class ProfileListPage extends AbstractEntityListPageContainerManagedImpl<
 	protected String __getWindowTitleValue__() {
 		return "Liste des profiles";
 	}
-	
+		
 	/**/
 	
 	public static DataTable buildDataTable(Map<Object,Object> arguments) {
@@ -110,6 +103,7 @@ public class ProfileListPage extends AbstractEntityListPageContainerManagedImpl<
 			arguments = new HashMap<>();
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, Profile.class);
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ROWS, 100);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, CollectionHelper.listOf(Profile.FIELD_CODE,Profile.FIELD_NAME));
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl());
@@ -118,9 +112,11 @@ public class ProfileListPage extends AbstractEntityListPageContainerManagedImpl<
 		return dataTable;
 	}
 	
+	
 	public static DataTable buildDataTable(Object...objects) {
 		return buildDataTable(ArrayHelper.isEmpty(objects) ? null : MapHelper.instantiate(objects));
 	}
+	
 	
 	@Getter @Setter @Accessors(chain=true)
 	public static class DataTableListenerImpl extends DataTable.Listener.AbstractImpl implements Serializable {
@@ -146,6 +142,11 @@ public class ProfileListPage extends AbstractEntityListPageContainerManagedImpl<
 				return CollectionHelper.isEmpty(profile.getPrivilegesAsStrings()) ? ConstantEmpty.STRING : StringHelper.concatenate(profile.getPrivilegesAsStrings(), "<br/>");
 			}
 			return super.getCellValueByRecordByColumn(record, recordIndex, column, columnIndex);
+		}
+		
+		@Override
+		public Class<? extends AbstractMenu> getRecordMenuClass(AbstractCollection collection) {
+			return ContextMenu.class;
 		}
 	}
 	

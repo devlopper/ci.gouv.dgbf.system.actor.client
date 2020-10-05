@@ -235,6 +235,12 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>serviceListView</from-outcome>
+			<to-view-id>/private/privilege/service/list.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>privilegeTypeListView</from-outcome>
 			<to-view-id>/private/privilegetype/list.jsf</to-view-id>
 			<redirect />
