@@ -17,6 +17,7 @@ import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ServiceBusiness;
 import ci.gouv.dgbf.system.actor.server.representation.api.AccountRequestRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorProfileRepresentation;
@@ -25,6 +26,7 @@ import ci.gouv.dgbf.system.actor.server.representation.api.ActorScopeRepresentat
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfileFunctionRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfilePrivilegeRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfileRepresentation;
+import ci.gouv.dgbf.system.actor.server.representation.api.ScopeFunctionRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ServiceRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.entities.AccountRequestDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorDto;
@@ -102,6 +104,11 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				arguments.setRepresentation(ServiceRepresentation.getProxy());
 			else if(ServiceBusiness.DERIVE_ALL_KEYCLOAK_AUTHORIZATIONS_FROM_SCRATCH.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ServiceRepresentation.getProxy());
+			
+			else if(ScopeFunctionBusiness.DERIVE_ALL.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ScopeFunctionRepresentation.getProxy());
+			else if(ScopeFunctionBusiness.CODIFY_ALL.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ScopeFunctionRepresentation.getProxy());
 		}
 		super.prepare(controllerEntityClass, arguments);
 	}
@@ -333,6 +340,12 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 		
 		if(arguments != null && ServiceBusiness.DERIVE_ALL_KEYCLOAK_AUTHORIZATIONS_FROM_SCRATCH.equals(arguments.getActionIdentifier()))
 			return ((ServiceRepresentation)representation).deriveAllKeycloakAuthorizationsFromScratch();
+		
+		if(arguments != null && ScopeFunctionBusiness.DERIVE_ALL.equals(arguments.getActionIdentifier()))
+			return ((ScopeFunctionRepresentation)representation).deriveAll();
+		
+		if(arguments != null && ScopeFunctionBusiness.CODIFY_ALL.equals(arguments.getActionIdentifier()))
+			return ((ScopeFunctionRepresentation)representation).codifyAll();
 		
 		return super.save(representation, creatables, updatables, deletables, arguments);
 	}

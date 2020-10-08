@@ -10,10 +10,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter @Setter @NoArgsConstructor @Accessors(chain=true)
-public class ScopeTypeFunction extends AbstractDataIdentifiableSystemStringImpl implements Serializable {
+public class ExecutionImputation extends AbstractDataIdentifiableSystemStringImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
-
-	private ScopeType scopeType;
-	private Function function;
 	
 }
