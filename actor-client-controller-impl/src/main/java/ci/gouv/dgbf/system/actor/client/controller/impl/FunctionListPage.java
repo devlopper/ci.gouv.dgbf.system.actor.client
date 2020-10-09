@@ -11,25 +11,25 @@ import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.constant.ConstantEmpty;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntityReader;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
-import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.AbstractMenu;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
-import org.primefaces.model.menu.DefaultMenuItem;
-import org.primefaces.model.menu.DefaultMenuModel;
-import org.primefaces.model.menu.MenuModel;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.FunctionType;
@@ -43,8 +43,7 @@ import lombok.experimental.Accessors;
 public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl<Function> implements Serializable {
 
 	private FunctionType functionType;
-	private MenuModel tabMenu;
-	private Integer tabMenuActiveIndex;
+	private Layout layout;
 	
 	@Override
 	protected void __listenPostConstruct__() {
@@ -54,18 +53,13 @@ public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl
 						.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(FunctionTypeQuerier.QUERY_IDENTIFIER_READ_ORDER_BY_CODE_ASCENDING))));
 		if(functionType == null)
 			functionType = CollectionHelper.getFirst(functionTypes);
-		super.__listenPostConstruct__();				
-		if(CollectionHelper.isNotEmpty(functionTypes)) {		
-			tabMenu = new DefaultMenuModel();
-			tabMenuActiveIndex = ((List<FunctionType>)functionTypes).indexOf(functionType);	
-			for(FunctionType index : functionTypes) {
-				DefaultMenuItem item = new DefaultMenuItem();
-				item.setValue(index.getName());
-				item.setOutcome("functionListView");
-				item.setParam(ParameterName.stringify(FunctionType.class), index.getIdentifier());
-				tabMenu.addElement(item);
-			}
-		}
+		super.__listenPostConstruct__();
+		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS
+				,CollectionHelper.listOf(
+					MapHelper.instantiate(Cell.FIELD_CONTROL,Helper.buildFunctionListPageTabMenu(functionType),Cell.FIELD_WIDTH,12)
+					,MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12)
+					)
+			);
 	}
 	
 	@Override
@@ -110,7 +104,9 @@ public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl
 			arguments = new HashMap<>();
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, Function.class);
-		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, CollectionHelper.listOf(Function.FIELD_CODE,Function.FIELD_NAME,Function.FIELD_PROFILES_AS_STRINGS));
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES
+				, CollectionHelper.listOf(Function.FIELD_CODE,Function.FIELD_NAME,Function.FIELD_SHARED_AS_STRING
+						,Function.FIELD_SCOPE_TYPES_AS_STRING,Function.FIELD_NUMBER_OF_SCOPES,Function.FIELD_PROFILES_AS_STRING));
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl());
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl());
@@ -134,18 +130,21 @@ public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl
 				map.put(Column.FIELD_WIDTH, "200");
 			}else if(Function.FIELD_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Libellé");
-			}else if(Function.FIELD_PROFILES_AS_STRINGS.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Profiles");
+			}else if(Function.FIELD_PROFILES_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Profile(s)");
+			}else if(Function.FIELD_SCOPE_TYPES_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Type de domaine(s)");
+			}else if(Function.FIELD_NUMBER_OF_SCOPES.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Nombre de poste(s)");
+			}else if(Function.FIELD_SHARED_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Partagé");
+				map.put(Column.FIELD_WIDTH, "100");
 			}
 			return map;
 		}
 		
-		public Object getCellValueByRecordByColumn(Object record, Integer recordIndex, Column column, Integer columnIndex) {
-			if(column != null && Function.FIELD_PROFILES_AS_STRINGS.equals(column.getFieldName())) {
-				Function function = (Function) record;
-				return CollectionHelper.isEmpty(function.getProfilesAsStrings()) ? ConstantEmpty.STRING : StringHelper.concatenate(function.getProfilesAsStrings(), ",");
-			}
-			return super.getCellValueByRecordByColumn(record, recordIndex, column, columnIndex);
+		public Class<? extends AbstractMenu> getRecordMenuClass(AbstractCollection collection) {
+			return ContextMenu.class;
 		}
 	}
 	
@@ -160,7 +159,7 @@ public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl
 		
 		@Override
 		public String getReadQueryIdentifier(LazyDataModel<Function> lazyDataModel) {
-			return functionType == null ? FunctionQuerier.QUERY_IDENTIFIER_READ_WITH_PROFILES : FunctionQuerier.QUERY_IDENTIFIER_READ_WITH_PROFILES_BY_TYPES_CODES;
+			return functionType == null ? FunctionQuerier.QUERY_IDENTIFIER_READ_WITH_PROFILES : FunctionQuerier.QUERY_IDENTIFIER_READ_WITH_ALL_BY_TYPE_IDENTIFIER;
 		}
 		
 		@Override
@@ -169,7 +168,7 @@ public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl
 			if(functionType != null) {
 				if(filter == null)
 					filter = new Filter.Dto();
-				filter.addField(FunctionQuerier.PARAMETER_NAME_TYPES_CODES, List.of(functionType.getCode()));
+				filter.addField(FunctionQuerier.PARAMETER_NAME_TYPE_IDENTIFIER, functionType.getIdentifier());
 			}
 			return filter;
 		}
