@@ -1,4 +1,4 @@
-package ci.gouv.dgbf.system.actor.client.controller.impl;
+package ci.gouv.dgbf.system.actor.client.controller.impl.scope;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -16,12 +16,15 @@ import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.AbstractMenu;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 
@@ -47,6 +50,8 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 	@Override
 	protected DataTable __buildDataTable__() {
 		DataTable dataTable = buildDataTable();
+		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();
+		
 		dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Dériver tous les postes",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
 				,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
 				,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
@@ -72,6 +77,11 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 						return null;
 					}
 				});
+		
+		dataTable.addRecordMenuItemByArgumentsOpenViewInDialogUpdate();
+		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
+		
+		
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);
 		return dataTable;
 	}
@@ -127,6 +137,10 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}
 			return map;
+		}
+		
+		public Class<? extends AbstractMenu> getRecordMenuClass(AbstractCollection collection) {
+			return ContextMenu.class;
 		}
 	}
 	

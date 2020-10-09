@@ -37,6 +37,7 @@ import ci.gouv.dgbf.system.actor.server.representation.entities.ProfileDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ProfileFunctionDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ProfilePrivilegeDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ScopeDto;
+import ci.gouv.dgbf.system.actor.server.representation.entities.ScopeFunctionDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ServiceDto;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
@@ -108,6 +109,9 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 			else if(ScopeFunctionBusiness.DERIVE_ALL.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ScopeFunctionRepresentation.getProxy());
 			else if(ScopeFunctionBusiness.CODIFY_ALL.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ScopeFunctionRepresentation.getProxy());
+			
+			else if(ScopeFunctionBusiness.SAVE.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ScopeFunctionRepresentation.getProxy());
 		}
 		super.prepare(controllerEntityClass, arguments);
@@ -346,6 +350,17 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 		
 		if(arguments != null && ScopeFunctionBusiness.CODIFY_ALL.equals(arguments.getActionIdentifier()))
 			return ((ScopeFunctionRepresentation)representation).codifyAll();
+		
+		if(arguments != null && ScopeFunctionBusiness.SAVE.equals(arguments.getActionIdentifier())) {
+			if(CollectionHelper.isEmpty(creatables) && CollectionHelper.isEmpty(updatables))
+				throw new RuntimeException("Poste à enregistrer obligatoire");
+			Collection<ScopeFunctionDto> scopeFunctionDtos = new ArrayList<>();
+			if(CollectionHelper.isNotEmpty(creatables))
+				scopeFunctionDtos.addAll(CollectionHelper.cast(ScopeFunctionDto.class, creatables));
+			if(CollectionHelper.isNotEmpty(updatables))
+				scopeFunctionDtos.addAll(CollectionHelper.cast(ScopeFunctionDto.class, updatables));
+			return ((ScopeFunctionRepresentation)representation).save(scopeFunctionDtos);
+		}
 		
 		return super.save(representation, creatables, updatables, deletables, arguments);
 	}

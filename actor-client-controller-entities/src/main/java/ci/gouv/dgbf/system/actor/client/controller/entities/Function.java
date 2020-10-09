@@ -17,6 +17,7 @@ public class Function extends AbstractDataIdentifiableSystemStringIdentifiableBu
 	private FunctionType type;
 	private String profileIdentifier;
 	private Collection<String> profilesAsStrings;
+	private Collection<ScopeType> scopeTypes;
 	
 	public static final String FIELD_TYPE = "type";
 	public static final String FIELD_PROFILES_AS_STRINGS = "profilesAsStrings";
