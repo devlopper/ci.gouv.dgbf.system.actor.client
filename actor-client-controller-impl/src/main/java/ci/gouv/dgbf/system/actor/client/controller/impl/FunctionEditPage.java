@@ -2,6 +2,7 @@ package ci.gouv.dgbf.system.actor.client.controller.impl;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import javax.faces.view.ViewScoped;
@@ -66,4 +67,8 @@ public class FunctionEditPage extends AbstractEntityEditPageContainerManagedImpl
 	protected String __getWindowTitleValue__() {
 		return super.__getWindowTitleValue__()+(functionType == null /*|| !Action.CREATE.equals(action)*/ ? ConstantEmpty.STRING : " de type <<"+functionType.getName()+">>");
 	}
+	
+	public static final String SHARED_CHOICE_YES = "Oui , le poste est partagé";
+	public static final String SHARED_CHOICE_NO = "Non , le poste n'est pas partagé";
+	public static final List<String> SHARED_CHOICES = List.of(SHARED_CHOICE_NO,SHARED_CHOICE_YES);
 }

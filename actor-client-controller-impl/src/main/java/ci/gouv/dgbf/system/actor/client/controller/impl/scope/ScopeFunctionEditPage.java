@@ -25,6 +25,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.Abstract
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoiceOne;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AutoComplete;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectBooleanCheckbox;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneRadio;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityEditPageContainerManagedImpl;
@@ -49,13 +50,10 @@ public class ScopeFunctionEditPage extends AbstractEntityEditPageContainerManage
 		SelectOneCombo functionSelectOneCombo = form.getInput(SelectOneCombo.class, ScopeFunction.FIELD_FUNCTION);
 		SelectOneRadio scopeTypeSelectOneRadio = form.getInput(SelectOneRadio.class, ScopeFunction.FIELD_SCOPE_TYPE);
 		AutoComplete scopeAutocomplete = form.getInput(AutoComplete.class, ScopeFunction.FIELD_SCOPE);
-		SelectOneRadio sharedSelectOneRadio = form.getInput(SelectOneRadio.class, ScopeFunction.FIELD_SHARED_AS_STRING);
-		
-		scopeAutocomplete.getOutputLabel().addStyleClasses(scopeAutocomplete.getOutputLabel().getIdentifier());
+		//SelectBooleanCheckbox sharedSelectOneRadio = form.getInput(SelectBooleanCheckbox.class, ScopeFunction.FIELD_SHARED);
 		
 		functionSelectOneCombo.enableValueChangeListener(List.of(scopeTypeSelectOneRadio,scopeAutocomplete));
-		functionSelectOneCombo.getAjaxes().get("valueChange").setUpdate(functionSelectOneCombo.getAjaxes().get("valueChange").getUpdate()
-				+",@(."+scopeAutocomplete.getOutputLabel().getIdentifier()+")");
+		functionSelectOneCombo.getAjaxes().get("valueChange").addUpdatablesUsingStyleClass(scopeAutocomplete.getOutputLabel());
 		functionSelectOneCombo.setListener(new SelectOneCombo.Listener.AbstractImpl<Function>() {
 			@Override
 			public void select(AbstractInputChoiceOne input, Function function) {
@@ -72,7 +70,8 @@ public class ScopeFunctionEditPage extends AbstractEntityEditPageContainerManage
 					scopeAutocomplete.setValue(null);
 					if(CollectionHelper.isNotEmpty(function.getScopeTypes())) {
 						scopeAutocomplete.getOutputLabel().setValue(function.getScopeTypes().stream().map(scopeType -> scopeType.getName()).collect(Collectors.joining("/")));
-					}					
+						scopeAutocomplete.setPlaceholder(scopeAutocomplete.getOutputLabel().getValue());
+					}
 				}				
 			}
 		});
@@ -112,7 +111,9 @@ public class ScopeFunctionEditPage extends AbstractEntityEditPageContainerManage
 		else
 			functionSelectOneCombo.selectBySystemIdentifier(scopeFunction.getFunction().getIdentifier());		
 		scopeAutocomplete.setValue(scopeFunction.getScope());
-		sharedSelectOneRadio.setValue(scopeFunction.getNumberOfActor() == 1 ? SHARED_CHOICE_NO : SHARED_CHOICE_YES);
+		
+		//if(sharedSelectOneRadio.getValue() == null && Action.UPDATE.equals(form.getAction()))
+		//	sharedSelectOneRadio.setValue(ScopeFunctionBusiness.computeShared(scopeFunction.getNumberOfActor()));
 	}
 	
 	@Override
@@ -141,7 +142,7 @@ public class ScopeFunctionEditPage extends AbstractEntityEditPageContainerManage
 		@Override
 		public void act(Form form) {
 			ScopeFunction scopeFunction = (ScopeFunction) form.getEntity();
-			scopeFunction.setShared(SHARED_CHOICE_YES.equals(scopeFunction.getSharedAsString()));
+			//scopeFunction.setShared(AbstractInputChoice.equalsChoiceYes(scopeFunction.getSharedAsString()));
 			if(Action.CREATE.equals(form.getAction()) || Action.UPDATE.equals(form.getAction())) {
 				Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>().addCreatablesOrUpdatables(scopeFunction);
 				arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(ScopeFunctionBusiness.SAVE));
@@ -160,7 +161,7 @@ public class ScopeFunctionEditPage extends AbstractEntityEditPageContainerManage
 	public static class FormConfiguratorListenerImpl extends Form.ConfiguratorImpl.Listener.AbstractImpl implements Serializable {
 		@Override
 		public Collection<String> getFieldsNames(Form form) {
-			return CollectionHelper.listOf(ScopeFunction.FIELD_FUNCTION,ScopeFunction.FIELD_SCOPE_TYPE,ScopeFunction.FIELD_SCOPE,ScopeFunction.FIELD_SHARED_AS_STRING);
+			return CollectionHelper.listOf(ScopeFunction.FIELD_FUNCTION,ScopeFunction.FIELD_SCOPE_TYPE,ScopeFunction.FIELD_SCOPE,ScopeFunction.FIELD_SHARED);
 		}
 		
 		@Override
@@ -170,19 +171,14 @@ public class ScopeFunctionEditPage extends AbstractEntityEditPageContainerManage
 				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Fonction");
 				map.put(AbstractInputChoice.FIELD_CHOICES, EntityReader.getInstance().readMany(Function.class
 						, FunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE_WITH_ALL));
-				map.put(AbstractInputChoice.FIELD_LISTENER,new AbstractInputChoice.Listener.AbstractImpl<Function>() {
-					
-				});
 			}else if(ScopeFunction.FIELD_SCOPE.equals(fieldName)) {
 				map.put(AutoComplete.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Domaine");
 				map.put(AutoComplete.FIELD_ENTITY_CLASS, Scope.class);
 				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
 				map.put(AutoComplete.FIELD_READ_QUERY_IDENTIFIER, ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_AND_NOT_ASSOCIATED_TO_FUNCTION_BY_TYPE_IDENTIFIER);
 				map.put(AutoComplete.FIELD_MULTIPLE, Boolean.FALSE);
-			}else if(ScopeFunction.FIELD_SHARED_AS_STRING.equals(fieldName)) {
-				map.put(AbstractInputChoice.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Partagé ?");
-				map.put(AbstractInputChoice.FIELD_COLUMNS,2);
-				map.put(AbstractInputChoice.FIELD_CHOICES, SHARED_CHOICES);
+			}else if(ScopeFunction.FIELD_SHARED.equals(fieldName)) {
+				map.put(AbstractInputChoice.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Partageable par plusieurs acteurs ?");
 			}else if(ScopeFunction.FIELD_SCOPE_TYPE.equals(fieldName)) {
 				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Type de domaine");
 				map.put(AbstractInputChoice.FIELD_COLUMNS,4);
@@ -198,8 +194,4 @@ public class ScopeFunctionEditPage extends AbstractEntityEditPageContainerManage
 			return map;
 		}
 	}
-	
-	public static final String SHARED_CHOICE_YES = "Oui , le poste est partagé";
-	public static final String SHARED_CHOICE_NO = "Non , le poste n'est pas partagé";
-	public static final List<String> SHARED_CHOICES = List.of(SHARED_CHOICE_NO,SHARED_CHOICE_YES);
 }
