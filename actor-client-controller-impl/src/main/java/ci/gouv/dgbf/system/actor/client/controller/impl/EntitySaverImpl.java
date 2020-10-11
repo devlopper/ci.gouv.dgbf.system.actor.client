@@ -18,6 +18,7 @@ import ci.gouv.dgbf.system.actor.server.business.api.ProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.ScopeTypeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ServiceBusiness;
 import ci.gouv.dgbf.system.actor.server.representation.api.AccountRequestRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorProfileRepresentation;
@@ -27,6 +28,7 @@ import ci.gouv.dgbf.system.actor.server.representation.api.ProfileFunctionRepres
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfilePrivilegeRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfileRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ScopeFunctionRepresentation;
+import ci.gouv.dgbf.system.actor.server.representation.api.ScopeTypeFunctionRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ServiceRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.entities.AccountRequestDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorDto;
@@ -38,6 +40,7 @@ import ci.gouv.dgbf.system.actor.server.representation.entities.ProfileFunctionD
 import ci.gouv.dgbf.system.actor.server.representation.entities.ProfilePrivilegeDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ScopeDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ScopeFunctionDto;
+import ci.gouv.dgbf.system.actor.server.representation.entities.ScopeTypeFunctionDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ServiceDto;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
@@ -113,6 +116,9 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 			
 			else if(ScopeFunctionBusiness.SAVE.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ScopeFunctionRepresentation.getProxy());
+			
+			else if(ScopeTypeFunctionBusiness.SAVE.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ScopeTypeFunctionRepresentation.getProxy());
 		}
 		super.prepare(controllerEntityClass, arguments);
 	}
@@ -153,6 +159,20 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				for(Object index : deletables)
 					dtos.add(((ProfileFunctionDto) index).set__deletable__(Boolean.TRUE));
 			return ((ProfileFunctionRepresentation)representation).save(dtos);
+		}
+		
+		if(arguments != null && ScopeTypeFunctionBusiness.SAVE.equals(arguments.getActionIdentifier())) {
+			Collection<ScopeTypeFunctionDto> dtos = new ArrayList<>();
+			if(CollectionHelper.isNotEmpty(creatables))
+				for(Object index : creatables)
+					dtos.add((ScopeTypeFunctionDto) index);
+			if(CollectionHelper.isNotEmpty(updatables))
+				for(Object index : updatables)
+					dtos.add((ScopeTypeFunctionDto) index);
+			if(CollectionHelper.isNotEmpty(deletables))
+				for(Object index : deletables)
+					dtos.add(((ScopeTypeFunctionDto) index).set__deletable__(Boolean.TRUE));
+			return ((ScopeTypeFunctionRepresentation)representation).save(dtos);
 		}
 		
 		if(arguments != null && ActorProfileBusiness.SAVE.equals(arguments.getActionIdentifier())) {

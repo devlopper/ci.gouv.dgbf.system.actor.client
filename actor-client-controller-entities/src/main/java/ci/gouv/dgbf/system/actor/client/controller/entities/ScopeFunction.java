@@ -24,7 +24,7 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	private static final long serialVersionUID = 1L;
 	
 	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceOneAutoComplete private Scope scope;
-	@Input @InputChoice(choices = @Choices(count = Count.ALL)) @InputChoiceOneRadio private ScopeType scopeType;
+	@Input @InputChoice @InputChoiceOne @InputChoiceOneRadio private ScopeType scopeType;
 	private String scopeAsString;
 	@Input @InputChoice @InputChoiceOne @InputChoiceOneCombo private Function function;
 	private String functionAsString;

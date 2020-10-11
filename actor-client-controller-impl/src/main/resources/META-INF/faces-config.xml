@@ -307,6 +307,12 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>functionEditScopeTypesView</from-outcome>
+			<to-view-id>/private/function/editscopetypes.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>functionTypeListView</from-outcome>
 			<to-view-id>/private/functiontype/list.jsf</to-view-id>
 			<redirect />

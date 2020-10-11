@@ -25,7 +25,6 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.Abstract
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoiceOne;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AutoComplete;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectBooleanCheckbox;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneRadio;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityEditPageContainerManagedImpl;
@@ -50,7 +49,6 @@ public class ScopeFunctionEditPage extends AbstractEntityEditPageContainerManage
 		SelectOneCombo functionSelectOneCombo = form.getInput(SelectOneCombo.class, ScopeFunction.FIELD_FUNCTION);
 		SelectOneRadio scopeTypeSelectOneRadio = form.getInput(SelectOneRadio.class, ScopeFunction.FIELD_SCOPE_TYPE);
 		AutoComplete scopeAutocomplete = form.getInput(AutoComplete.class, ScopeFunction.FIELD_SCOPE);
-		//SelectBooleanCheckbox sharedSelectOneRadio = form.getInput(SelectBooleanCheckbox.class, ScopeFunction.FIELD_SHARED);
 		
 		functionSelectOneCombo.enableValueChangeListener(List.of(scopeTypeSelectOneRadio,scopeAutocomplete));
 		functionSelectOneCombo.getAjaxes().get("valueChange").addUpdatablesUsingStyleClass(scopeAutocomplete.getOutputLabel());
@@ -111,9 +109,6 @@ public class ScopeFunctionEditPage extends AbstractEntityEditPageContainerManage
 		else
 			functionSelectOneCombo.selectBySystemIdentifier(scopeFunction.getFunction().getIdentifier());		
 		scopeAutocomplete.setValue(scopeFunction.getScope());
-		
-		//if(sharedSelectOneRadio.getValue() == null && Action.UPDATE.equals(form.getAction()))
-		//	sharedSelectOneRadio.setValue(ScopeFunctionBusiness.computeShared(scopeFunction.getNumberOfActor()));
 	}
 	
 	@Override

@@ -4,6 +4,12 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import org.cyk.utility.__kernel__.object.__static__.controller.AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl;
+import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Input;
+import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputBoolean;
+import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputBooleanButton;
+import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoice;
+import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceOne;
+import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceOneRadio;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +20,7 @@ import lombok.experimental.Accessors;
 public class Function extends AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	private FunctionType type;
+	@Input @InputChoice @InputChoiceOne @InputChoiceOneRadio private FunctionType type;
 	private String profileIdentifier;
 	private Integer numberOfActorPerScope;
 	private String profilesAsString;
@@ -23,7 +29,7 @@ public class Function extends AbstractDataIdentifiableSystemStringIdentifiableBu
 	private String scopeTypesAsString;
 	private Collection<String> profilesAsStrings;
 	private Collection<ScopeType> scopeTypes;
-	private Boolean shared;
+	@Input @InputBoolean @InputBooleanButton private Boolean shared;
 	private String sharedAsString;
 	
 	public static final String FIELD_TYPE = "type";

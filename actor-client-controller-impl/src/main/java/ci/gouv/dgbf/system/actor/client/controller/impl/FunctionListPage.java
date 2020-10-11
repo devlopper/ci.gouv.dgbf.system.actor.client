@@ -86,6 +86,8 @@ public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl
 			}
 		});		
 		dataTable.addRecordMenuItemByArgumentsOpenViewInDialogUpdate();
+		dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("functionEditScopeTypesView", CommandButton.FIELD_VALUE,"Champs d'action"
+				,CommandButton.FIELD_ICON,"fa fa-institution");
 		dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("functionEditProfilesView", CommandButton.FIELD_VALUE,"Profiles"
 				,CommandButton.FIELD_ICON,"fa fa-user");
 		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();		
@@ -127,15 +129,17 @@ public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl
 			map.put(Column.ConfiguratorImpl.FIELD_EDITABLE, Boolean.FALSE);
 			if(Function.FIELD_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Code");
-				map.put(Column.FIELD_WIDTH, "200");
+				map.put(Column.FIELD_WIDTH, "50");
 			}else if(Function.FIELD_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Libellé");
 			}else if(Function.FIELD_PROFILES_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Profile(s)");
 			}else if(Function.FIELD_SCOPE_TYPES_AS_STRING.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Type de domaine(s)");
+				map.put(Column.FIELD_HEADER_TEXT, "Champ(s) d'action");
+				map.put(Column.FIELD_WIDTH, "150");
 			}else if(Function.FIELD_NUMBER_OF_SCOPES.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Nombre de poste(s)");
+				map.put(Column.FIELD_WIDTH, "150");
 			}else if(Function.FIELD_SHARED_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Partagé");
 				map.put(Column.FIELD_WIDTH, "100");
