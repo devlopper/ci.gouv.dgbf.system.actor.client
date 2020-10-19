@@ -19,7 +19,6 @@ import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
-import org.cyk.utility.client.controller.web.jsf.JavaServerFacesHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
@@ -60,29 +59,14 @@ public class ExecutionImputationsEditScopeFunctionsPage extends AbstractPageCont
 	@Override
 	protected void __listenPostConstruct__() {
 		super.__listenPostConstruct__();
-		creditManagerHolderAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER);		
-		creditManagerHolderAutoComplete.setBindingByDerivation("executionImputationsEditScopeFunctionsPage.creditManagerHolderAutoComplete", "record.creditManager.holder");
-		
-		/*
-		org.primefaces.component.autocomplete.AutoComplete creditManagerHolderAutoCompleteBinding = new org.primefaces.component.autocomplete.AutoComplete();
-		creditManagerHolderAutoCompleteBinding.setVar("item");
-		__inject__(JavaServerFacesHelper.class).setValueExpression(creditManagerHolderAutoCompleteBinding, "placeholder", JavaServerFacesHelper.buildValueExpression("#{executionImputationsEditScopeFunctionsPage.creditManagerHolderAutoComplete.placeholder}", String.class));
-		__inject__(JavaServerFacesHelper.class).setValueExpression(creditManagerHolderAutoCompleteBinding, "value", JavaServerFacesHelper.buildValueExpression("#{record.creditManager.holder}", Object.class));
-		__inject__(JavaServerFacesHelper.class).setValueExpression(creditManagerHolderAutoCompleteBinding, "itemValue", JavaServerFacesHelper.buildValueExpression("#{executionImputationsEditScopeFunctionsPage.creditManagerHolderAutoComplete.readItemValue(item)}", Object.class));
-		__inject__(JavaServerFacesHelper.class).setValueExpression(creditManagerHolderAutoCompleteBinding, "itemLabel", JavaServerFacesHelper.buildValueExpression("#{executionImputationsEditScopeFunctionsPage.creditManagerHolderAutoComplete.readItemLabel(item)}", String.class));
-		__inject__(JavaServerFacesHelper.class).setValueExpression(creditManagerHolderAutoCompleteBinding, "converter", JavaServerFacesHelper.buildValueExpression("#{executionImputationsEditScopeFunctionsPage.creditManagerHolderAutoComplete.converter}", Object.class));
-		__inject__(JavaServerFacesHelper.class).setValueExpression(creditManagerHolderAutoCompleteBinding, "maxResults", JavaServerFacesHelper.buildValueExpression("#{executionImputationsEditScopeFunctionsPage.creditManagerHolderAutoComplete.maxResults}", Integer.class));
-		__inject__(JavaServerFacesHelper.class).setValueExpression(creditManagerHolderAutoCompleteBinding, "queryDelay", JavaServerFacesHelper.buildValueExpression("#{executionImputationsEditScopeFunctionsPage.creditManagerHolderAutoComplete.queryDelay}", Integer.class));
-		__inject__(JavaServerFacesHelper.class).setValueExpression(creditManagerHolderAutoCompleteBinding, "emptyMessage", JavaServerFacesHelper.buildValueExpression("#{executionImputationsEditScopeFunctionsPage.creditManagerHolderAutoComplete.emptyMessage}", String.class));
-		__inject__(JavaServerFacesHelper.class).setValueExpression(creditManagerHolderAutoCompleteBinding, "rendered", JavaServerFacesHelper.buildValueExpression("#{executionImputationsEditScopeFunctionsPage.creditManagerHolderAutoComplete.rendered}", Boolean.class));
-		__inject__(JavaServerFacesHelper.class).setValueExpression(creditManagerHolderAutoCompleteBinding, "dropdown", JavaServerFacesHelper.buildValueExpression("#{executionImputationsEditScopeFunctionsPage.creditManagerHolderAutoComplete.dropdown}", Boolean.class));
-		__inject__(JavaServerFacesHelper.class).setValueExpression(creditManagerHolderAutoCompleteBinding, "dropdownMode", JavaServerFacesHelper.buildValueExpression("#{executionImputationsEditScopeFunctionsPage.creditManagerHolderAutoComplete.dropdownMode}", String.class));
-		__inject__(JavaServerFacesHelper.class).setValueExpression(creditManagerHolderAutoCompleteBinding, "onchange", JavaServerFacesHelper.buildValueExpression("#{executionImputationsEditScopeFunctionsPage.creditManagerHolderAutoComplete.onChange}", String.class));
-		creditManagerHolderAutoCompleteBinding.setCompleteMethod(__inject__(JavaServerFacesHelper.class).buildMethodExpression(
-				"executionImputationsEditScopeFunctionsPage.creditManagerHolderAutoComplete.complete", List.class, new Class<?>[] {String.class}));
-		
-		creditManagerHolderAutoComplete.setBinding(creditManagerHolderAutoCompleteBinding);
-		*/
+		creditManagerHolderAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER
+				,FIELD_CREDIT_MANAGER_HOLDER_AUTO_COMPLETE,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER);
+		authorizingOfficerHolderAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_HOLDER
+				,FIELD_AUTHORIZING_OFFICER_HOLDER_AUTO_COMPLETE,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER);
+		financialControllerHolderAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_HOLDER
+				,FIELD_FINANCIAL_CONTROLLER_HOLDER_AUTO_COMPLETE,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER);
+		accountingHolderAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_HOLDER
+				,FIELD_ACCOUNTING_HOLDER_AUTO_COMPLETE,ExecutionImputation.FIELD_ACCOUNTING_HOLDER);
 		buildDataTable();
 		buildSaveCommandButton();
 		buildLayout();
@@ -92,7 +76,6 @@ public class ExecutionImputationsEditScopeFunctionsPage extends AbstractPageCont
 		executionImputationsDataTable = ExecutionImputationListPage.buildDataTable(DataTable.FIELD_LISTENER,new DataTableListenerImpl()
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl()
 				,DataTable.FIELD_RENDER_TYPE,org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection.RenderType.INPUT
-				,DataTable.FIELD_SELECTION_MODE,"multiple"
 				);		
 	}
 	
@@ -136,7 +119,7 @@ public class ExecutionImputationsEditScopeFunctionsPage extends AbstractPageCont
 				));
 	}
 	
-	private static AutoComplete buildScopeFunctionAutoComplete(String functionCode) {
+	private static AutoComplete buildScopeFunctionAutoComplete(String functionCode,String componentFieldName,String functionFieldName) {
 		if(StringHelper.isBlank(functionCode))
 			return null;
 		AutoComplete autoComplete = AutoComplete.build(AutoComplete.FIELD_ENTITY_CLASS,ScopeFunction.class,AutoComplete.FIELD_READER_USABLE,Boolean.TRUE
@@ -150,6 +133,7 @@ public class ExecutionImputationsEditScopeFunctionsPage extends AbstractPageCont
 						.addField(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_CODE, functionCode);
 			}			
 		});
+		autoComplete.setBindingByDerivation("executionImputationsEditScopeFunctionsPage."+componentFieldName, "record."+functionFieldName);
 		/*autoComplete.setReadItemLabelListener(new ReadListener() {
 			@Override
 			public Object read(Object object) {
@@ -178,6 +162,11 @@ public class ExecutionImputationsEditScopeFunctionsPage extends AbstractPageCont
 				map.put(Column.FIELD_INPUTABLE, Boolean.TRUE);
 			}
 			return map;
+		}
+		
+		public String getTooltipByRecord(Object record, Integer recordIndex) {
+			//Disable tooltip while editing
+			return null;
 		}
 	}
 	
@@ -215,4 +204,11 @@ public class ExecutionImputationsEditScopeFunctionsPage extends AbstractPageCont
 			return Boolean.TRUE;
 		return  Boolean.FALSE;
 	}
+
+	/**/
+	
+	public static final String FIELD_CREDIT_MANAGER_HOLDER_AUTO_COMPLETE = "creditManagerHolderAutoComplete";
+	public static final String FIELD_AUTHORIZING_OFFICER_HOLDER_AUTO_COMPLETE = "authorizingOfficerHolderAutoComplete";
+	public static final String FIELD_FINANCIAL_CONTROLLER_HOLDER_AUTO_COMPLETE = "financialControllerHolderAutoComplete";
+	public static final String FIELD_ACCOUNTING_HOLDER_AUTO_COMPLETE = "accountingHolderAutoComplete";
 }

@@ -15,6 +15,7 @@ import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
@@ -65,6 +66,7 @@ public class ExecutionImputationListPage extends AbstractEntityListPageContainer
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl());
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl());
 		DataTable dataTable = DataTable.build(arguments);
+		dataTable.setAreColumnsChoosable(Boolean.TRUE);
 		return dataTable;
 	}
 	
@@ -183,10 +185,14 @@ public class ExecutionImputationListPage extends AbstractEntityListPageContainer
 			ExecutionImputation executionImputation = (ExecutionImputation) record;
 			return String.format(tooltipFormat,executionImputation.getSectionCodeName(),executionImputation.getBudgetSpecializationUnitCodeName()
 					,executionImputation.getActionCodeName(),executionImputation.getActivityCodeName(),executionImputation.getEconomicNatureCodeName()
-					,executionImputation.getCreditManager() == null ? ConstantEmpty.STRING : executionImputation.getCreditManager().getHolder()
-					,executionImputation.getAuthorizingOfficer() == null ? ConstantEmpty.STRING : executionImputation.getAuthorizingOfficer().getHolder()
-					,executionImputation.getFinancialController() == null ? ConstantEmpty.STRING : executionImputation.getFinancialController().getHolder()
-					,executionImputation.getAccounting() == null ? ConstantEmpty.STRING : executionImputation.getAccounting().getHolder()
+					,executionImputation.getCreditManager() == null ? ConstantEmpty.STRING : 
+						ValueHelper.defaultToIfBlank(StringHelper.get(executionImputation.getCreditManager().getHolder()),ConstantEmpty.STRING)
+					,executionImputation.getAuthorizingOfficer() == null ? ConstantEmpty.STRING : 
+						ValueHelper.defaultToIfBlank(StringHelper.get(executionImputation.getAuthorizingOfficer().getHolder()),ConstantEmpty.STRING)
+					,executionImputation.getFinancialController() == null ? ConstantEmpty.STRING : 
+						ValueHelper.defaultToIfBlank(StringHelper.get(executionImputation.getFinancialController().getHolder()),ConstantEmpty.STRING)
+					,executionImputation.getAccounting() == null ? ConstantEmpty.STRING : 
+						ValueHelper.defaultToIfBlank(StringHelper.get(executionImputation.getAccounting().getHolder()),ConstantEmpty.STRING)
 				);
 		}
 		

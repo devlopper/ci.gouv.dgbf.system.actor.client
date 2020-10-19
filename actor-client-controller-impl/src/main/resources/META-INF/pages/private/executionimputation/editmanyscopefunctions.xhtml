@@ -19,8 +19,7 @@
 							<ui:fragment rendered="#{column.inputable}">
 								<ui:fragment rendered="#{column.fieldName eq 'creditManager.holder'}">
 	    							<p:autoComplete binding="#{executionImputationsEditScopeFunctionsPage.creditManagerHolderAutoComplete.binding}" />
-	    						</ui:fragment>
-	    						<!--
+	    						</ui:fragment>	    						
 	    						<ui:fragment rendered="#{column.fieldName eq 'authorizingOfficer.holder'}">
 	    							<p:autoComplete binding="#{executionImputationsEditScopeFunctionsPage.authorizingOfficerHolderAutoComplete.binding}" />
 	    						</ui:fragment>
@@ -30,7 +29,6 @@
 	    						<ui:fragment rendered="#{column.fieldName eq 'accounting.holder'}">
 	    							<p:autoComplete binding="#{executionImputationsEditScopeFunctionsPage.accountingHolderAutoComplete.binding}" />
 	    						</ui:fragment>
-	    						-->
 							</ui:fragment>
     						<ui:fragment rendered="#{not column.inputable}">
     							<ui:decorate template="/collection/datatable/__columns__bodies.xhtml" />
