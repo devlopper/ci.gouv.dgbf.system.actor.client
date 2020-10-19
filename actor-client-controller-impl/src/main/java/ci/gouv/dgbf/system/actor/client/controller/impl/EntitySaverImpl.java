@@ -14,6 +14,7 @@ import ci.gouv.dgbf.system.actor.server.business.api.AccountRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.ExecutionImputationBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
@@ -24,6 +25,7 @@ import ci.gouv.dgbf.system.actor.server.representation.api.AccountRequestReprese
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorProfileRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorScopeRepresentation;
+import ci.gouv.dgbf.system.actor.server.representation.api.ExecutionImputationRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfileFunctionRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfilePrivilegeRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfileRepresentation;
@@ -34,6 +36,7 @@ import ci.gouv.dgbf.system.actor.server.representation.entities.AccountRequestDt
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorProfileDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorScopeDto;
+import ci.gouv.dgbf.system.actor.server.representation.entities.ExecutionImputationDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.FunctionDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ProfileDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ProfileFunctionDto;
@@ -119,6 +122,9 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 			
 			else if(ScopeTypeFunctionBusiness.SAVE.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ScopeTypeFunctionRepresentation.getProxy());
+			
+			else if(ExecutionImputationBusiness.SAVE_SCOPE_FUNCTIONS.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ExecutionImputationRepresentation.getProxy());
 		}
 		super.prepare(controllerEntityClass, arguments);
 	}
@@ -380,6 +386,12 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 			if(CollectionHelper.isNotEmpty(updatables))
 				scopeFunctionDtos.addAll(CollectionHelper.cast(ScopeFunctionDto.class, updatables));
 			return ((ScopeFunctionRepresentation)representation).save(scopeFunctionDtos);
+		}
+		
+		if(arguments != null && ExecutionImputationBusiness.SAVE_SCOPE_FUNCTIONS.equals(arguments.getActionIdentifier())) {
+			if(CollectionHelper.isEmpty(updatables))
+				throw new RuntimeException("Imputations à enregistrer obligatoire");
+			return ((ExecutionImputationRepresentation)representation).saveScopeFunctions(CollectionHelper.cast(ExecutionImputationDto.class, updatables));
 		}
 		
 		return super.save(representation, creatables, updatables, deletables, arguments);

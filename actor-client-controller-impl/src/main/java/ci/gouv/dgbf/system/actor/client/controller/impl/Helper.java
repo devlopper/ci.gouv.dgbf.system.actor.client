@@ -29,6 +29,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.FunctionType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Profile;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ProfileType;
+import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Service;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionTypeQuerier;
@@ -37,7 +38,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileTypeQuerier
 
 public interface Helper {
 
-	static TabMenu buildProfileListPageTabMenu(ProfileType profileType,Boolean isService) {
+	static TabMenu buildProfileListPageTabMenu(ProfileType profileType) {
 		Collection<ProfileType> profileTypes = EntityReader.getInstance().readMany(ProfileType.class, new Arguments<ProfileType>()
 				.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
 						.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(ProfileTypeQuerier.QUERY_IDENTIFIER_READ_ORDER_BY_CODE_ASCENDING))));
@@ -46,7 +47,8 @@ public interface Helper {
 			for(ProfileType index : profileTypes)
 				tabMenuItems.add(new MenuItem().setValue(index.getName()).setOutcome("profileListView")
 						.addParameter(ParameterName.stringify(ProfileType.class), index.getIdentifier()));
-		}		
+		}
+		Boolean isService = ValueHelper.convertToBoolean(WebController.getInstance().getRequestParameter(ParameterName.stringify(Service.class)));
 		tabMenuItems.add(new MenuItem().setValue("Service").setOutcome("profileListView").addParameter(ParameterName.stringify(Service.class), Boolean.TRUE.toString()));
 		return TabMenu.build(TabMenu.FIELD_ACTIVE_INDEX,Boolean.TRUE.equals(isService) ? CollectionHelper.getSize(profileTypes) : ((List<ProfileType>)profileTypes).indexOf(profileType)
 				,TabMenu.ConfiguratorImpl.FIELD_ITEMS,tabMenuItems);
@@ -62,7 +64,9 @@ public interface Helper {
 				tabMenuItems.add(new MenuItem().setValue(index.getName()).setOutcome("functionListView")
 						.addParameter(ParameterName.stringify(FunctionType.class), index.getIdentifier()));
 		}
-		return TabMenu.build(TabMenu.FIELD_ACTIVE_INDEX,((List<FunctionType>)functionTypes).indexOf(functionType),TabMenu.ConfiguratorImpl.FIELD_ITEMS,tabMenuItems);
+		Boolean isScopeFunction = ValueHelper.convertToBoolean(WebController.getInstance().getRequestParameter(ParameterName.stringify(ScopeFunction.class)));
+		tabMenuItems.add(new MenuItem().setValue("Poste").setOutcome("scopeFunctionListView").addParameter(ParameterName.stringify(ScopeFunction.class), Boolean.TRUE.toString()));
+		return TabMenu.build(TabMenu.FIELD_ACTIVE_INDEX,Boolean.TRUE.equals(isScopeFunction) ? CollectionHelper.getSize(functionTypes) : ((List<FunctionType>)functionTypes).indexOf(functionType),TabMenu.ConfiguratorImpl.FIELD_ITEMS,tabMenuItems);
 	}
 	
 	static AutoComplete buildActorAutoCompleteRedirector(Actor actor,String outcome_) {

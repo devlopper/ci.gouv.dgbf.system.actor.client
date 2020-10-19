@@ -324,6 +324,18 @@
 			<redirect />
 		</navigation-case>
 		
+		<navigation-case>
+			<from-outcome>executionImputationListView</from-outcome>
+			<to-view-id>/private/executionimputation/list.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>executionImputationEditScopeFunctionsView</from-outcome>
+			<to-view-id>/private/executionimputation/editscopefunctions.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
 		<!--  -->
 		
 		<navigation-case>

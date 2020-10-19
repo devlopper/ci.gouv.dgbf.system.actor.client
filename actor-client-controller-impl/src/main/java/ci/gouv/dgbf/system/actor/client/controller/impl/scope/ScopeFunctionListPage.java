@@ -29,6 +29,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
+import ci.gouv.dgbf.system.actor.client.controller.impl.Helper;
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import lombok.Getter;
@@ -44,7 +45,10 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 	protected void __listenPostConstruct__() {
 		super.__listenPostConstruct__();
 		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS
-				,CollectionHelper.listOf(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12)));
+				,CollectionHelper.listOf(
+						MapHelper.instantiate(Cell.FIELD_CONTROL,Helper.buildFunctionListPageTabMenu(null),Cell.FIELD_WIDTH,12)
+						,MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12)					
+						));
 	}
 	
 	@Override

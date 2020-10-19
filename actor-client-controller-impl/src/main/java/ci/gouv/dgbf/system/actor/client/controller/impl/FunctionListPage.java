@@ -17,6 +17,7 @@ import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
@@ -33,6 +34,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityL
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.FunctionType;
+import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionTypeQuerier;
 import lombok.Getter;
@@ -42,12 +44,14 @@ import lombok.experimental.Accessors;
 @Named @ViewScoped @Getter @Setter
 public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl<Function> implements Serializable {
 
+	private Boolean isScopeFunction;
 	private FunctionType functionType;
 	private Layout layout;
 	
 	@Override
 	protected void __listenPostConstruct__() {
 		functionType = WebController.getInstance().getRequestParameterEntityAsParent(FunctionType.class);
+		isScopeFunction = ValueHelper.convertToBoolean(WebController.getInstance().getRequestParameter(ParameterName.stringify(ScopeFunction.class)));
 		Collection<FunctionType> functionTypes = EntityReader.getInstance().readMany(FunctionType.class, new Arguments<FunctionType>()
 				.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
 						.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(FunctionTypeQuerier.QUERY_IDENTIFIER_READ_ORDER_BY_CODE_ASCENDING))));
@@ -64,6 +68,8 @@ public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl
 	
 	@Override
 	protected DataTable __buildDataTable__() {
+		if(Boolean.TRUE.equals(isScopeFunction))
+			return null;
 		DataTable dataTable = buildDataTable(MapHelper.instantiate(DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER
 				,new LazyDataModelListenerImpl().setFunctionType(functionType)));
 		dataTable.set__parentElement__(functionType);		
