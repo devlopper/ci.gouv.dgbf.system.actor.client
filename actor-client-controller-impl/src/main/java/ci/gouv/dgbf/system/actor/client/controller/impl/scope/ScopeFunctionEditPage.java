@@ -52,6 +52,7 @@ public class ScopeFunctionEditPage extends AbstractEntityEditPageContainerManage
 		
 		functionSelectOneCombo.enableValueChangeListener(List.of(scopeTypeSelectOneRadio,scopeAutocomplete));
 		functionSelectOneCombo.getAjaxes().get("valueChange").addUpdatablesUsingStyleClass(scopeAutocomplete.getOutputLabel());
+		
 		functionSelectOneCombo.setListener(new SelectOneCombo.Listener.AbstractImpl<Function>() {
 			@Override
 			public void select(AbstractInputChoiceOne input, Function function) {
@@ -62,8 +63,8 @@ public class ScopeFunctionEditPage extends AbstractEntityEditPageContainerManage
 					scopeTypeSelectOneRadio.setValue(null);
 					scopeTypeSelectOneRadio.updateChoices();
 					scopeTypeSelectOneRadio.selectFirstChoice();
-					scopeTypeSelectOneRadio.setRendered(CollectionHelper.getSize(function.getScopeTypes()) > 1);
-					scopeTypeSelectOneRadio.getOutputLabel().setRendered(scopeTypeSelectOneRadio.getRendered());
+					//scopeTypeSelectOneRadio.setRendered(CollectionHelper.getSize(function.getScopeTypes()) > 1);
+					//scopeTypeSelectOneRadio.getOutputLabel().setRendered(scopeTypeSelectOneRadio.getRendered());
 					
 					scopeAutocomplete.setValue(null);
 					if(CollectionHelper.isNotEmpty(function.getScopeTypes())) {

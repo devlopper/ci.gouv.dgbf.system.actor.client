@@ -84,8 +84,7 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 		
 		dataTable.addRecordMenuItemByArgumentsOpenViewInDialogUpdate();
 		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
-		
-		
+				
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);
 		return dataTable;
 	}

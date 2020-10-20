@@ -8,14 +8,14 @@ import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Input;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
-@Getter @Setter @NoArgsConstructor @Accessors(chain=true)
+@Getter @Setter @NoArgsConstructor
 public class ScopeType extends AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	@Input
-	private Byte orderNumber;
+	@Input private Byte orderNumber;
+	private Boolean scopeFunctionDerivable;
+	
 	
 	public Boolean isCodeEqualsSECTION() {
 		return ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_SECTION.equals(code);
@@ -81,4 +81,5 @@ public class ScopeType extends AbstractDataIdentifiableSystemStringIdentifiableB
 	}
 	
 	public static final String FIELD_ORDER_NUMBER = "orderNumber";
+	public static final String FIELD_SCOPE_FUNCTION_DERIVABLE = "scopeFunctionDerivable";
 }

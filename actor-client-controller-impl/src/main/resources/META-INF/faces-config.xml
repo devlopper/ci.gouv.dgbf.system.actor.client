@@ -336,6 +336,18 @@
 			<redirect />
 		</navigation-case>
 		
+		<navigation-case>
+			<from-outcome>executionImputationEditManyScopeFunctionsView</from-outcome>
+			<to-view-id>/private/executionimputation/editmanyscopefunctions.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>scopeTypeFunctionEditView</from-outcome>
+			<to-view-id>/private/scopetypefunction/edit.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
 		<!--  -->
 		
 		<navigation-case>

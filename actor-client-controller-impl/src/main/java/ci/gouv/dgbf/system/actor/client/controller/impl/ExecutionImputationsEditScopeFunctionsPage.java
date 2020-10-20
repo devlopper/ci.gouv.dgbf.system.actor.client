@@ -29,6 +29,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.Comman
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AutoComplete;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.ExecutionImputation;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
@@ -76,7 +77,14 @@ public class ExecutionImputationsEditScopeFunctionsPage extends AbstractPageCont
 		executionImputationsDataTable = ExecutionImputationListPage.buildDataTable(DataTable.FIELD_LISTENER,new DataTableListenerImpl()
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl()
 				,DataTable.FIELD_RENDER_TYPE,org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection.RenderType.INPUT
-				);		
+				);
+		executionImputationsDataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Liste",MenuItem.FIELD_ICON,"fa fa-file",MenuItem.FIELD_USER_INTERFACE_ACTION
+				,UserInterfaceAction.NAVIGATE_TO_VIEW,MenuItem.FIELD_LISTENER,new MenuItem.Listener.AbstractImpl() {
+			@Override
+			protected String getOutcome(AbstractAction action) {
+				return "executionImputationListView";
+			}
+		});
 	}
 	
 	private void buildSaveCommandButton() {

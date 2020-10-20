@@ -1,6 +1,7 @@
 package ci.gouv.dgbf.system.actor.client.controller.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,28 +18,34 @@ import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectManyCheckbox;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectBooleanButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeTypeFunction;
+import ci.gouv.dgbf.system.actor.client.controller.impl.scope.ScopeTypeListPage;
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeTypeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 @Named @ViewScoped @Getter @Setter
 public class FunctionEditScopeTypesPage extends AbstractPageContainerManagedImpl implements Serializable {
 
 	private Layout layout;
 	private Function function;
-	private SelectManyCheckbox scopeTypesSelectManyCheckbox;
+	private DataTable scopeTypesDataTable;
+	private SelectBooleanButton scopeTypeScopeFunctionDerivableSelectBooleanButton;
+	//private SelectManyCheckbox scopeTypesSelectManyCheckbox;
 	private Collection<ScopeTypeFunction> scopeTypesFunctions;
-	private Collection<ScopeType> scopeTypes,initialSelectedScopeTypes;
+	private List<ScopeType> scopeTypes,initialSelectedScopeTypes;
 	
 	@Override
 	protected String __getWindowTitleValue__() {
@@ -49,18 +56,46 @@ public class FunctionEditScopeTypesPage extends AbstractPageContainerManagedImpl
 	protected void __listenPostConstruct__() {
 		function = WebController.getInstance().getRequestParameterEntity(Function.class);
 		super.__listenPostConstruct__();		
-		scopeTypes = EntityReader.getInstance().readMany(ScopeType.class, ScopeTypeQuerier.QUERY_IDENTIFIER_READ_ORDER_BY_ORDER_NUMBER_ASCENDING);
+		scopeTypes = (List<ScopeType>) EntityReader.getInstance().readMany(ScopeType.class, ScopeTypeQuerier.QUERY_IDENTIFIER_READ_ORDER_BY_ORDER_NUMBER_ASCENDING);
 		if(CollectionHelper.isNotEmpty(scopeTypes)) {
 			scopeTypesFunctions = EntityReader.getInstance().readMany(ScopeTypeFunction.class, ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_READ_BY_FUNCTIONS_IDENTIFIERS
 					,ScopeTypeFunctionQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS,List.of(function.getIdentifier()));
-			if(CollectionHelper.isNotEmpty(scopeTypesFunctions))
+			if(CollectionHelper.isNotEmpty(scopeTypesFunctions)) {
 				initialSelectedScopeTypes = scopeTypesFunctions.stream().map(x -> x.getScopeType()).collect(Collectors.toList());
+				for(ScopeType scopeType : scopeTypes) {
+					for(ScopeTypeFunction scopeTypesFunction : scopeTypesFunctions) {
+						if(scopeType.equals(scopeTypesFunction.getScopeType())) {
+							scopeType.setScopeFunctionDerivable(scopeTypesFunction.getScopeFunctionDerivable());
+							break;
+						}
+					}
+				}
+				
+				for(ScopeType initialSelectedScopeType : initialSelectedScopeTypes) {
+					for(ScopeTypeFunction scopeTypesFunction : scopeTypesFunctions) {
+						if(initialSelectedScopeType.equals(scopeTypesFunction.getScopeType())) {
+							initialSelectedScopeType.setScopeFunctionDerivable(scopeTypesFunction.getScopeFunctionDerivable());
+							break;
+						}
+					}
+				}
+			}
 		}
 		
-		scopeTypesSelectManyCheckbox = SelectManyCheckbox.build(SelectManyCheckbox.FIELD_CHOICES,scopeTypes,SelectManyCheckbox.FIELD_VALUE,initialSelectedScopeTypes);
+		//scopeTypesSelectManyCheckbox = SelectManyCheckbox.build(SelectManyCheckbox.FIELD_CHOICES,scopeTypes,SelectManyCheckbox.FIELD_VALUE,initialSelectedScopeTypes);
+		
+		scopeTypesDataTable = ScopeTypeListPage.buildDataTable(DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new ScopeTypeLazyDataModelListenerImpl()
+				,DataTable.FIELD_SELECTION_AS_COLLECTION,CollectionHelper.isEmpty(initialSelectedScopeTypes) ? null : new ArrayList<>(initialSelectedScopeTypes)
+				,DataTable.FIELD_SELECTION_MODE,"multiple"
+				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, CollectionHelper.listOf(
+						ScopeType.FIELD_CODE,ScopeType.FIELD_NAME,ScopeType.FIELD_SCOPE_FUNCTION_DERIVABLE));
+		
+		scopeTypeScopeFunctionDerivableSelectBooleanButton = SelectBooleanButton.build();
+		scopeTypeScopeFunctionDerivableSelectBooleanButton.setBindingByDerivation("functionEditScopeTypesPage.scopeTypeScopeFunctionDerivableSelectBooleanButton", "record.scopeFunctionDerivable");
 		
 		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,CollectionHelper.listOf(
-				MapHelper.instantiate(Cell.FIELD_CONTROL,scopeTypesSelectManyCheckbox,Cell.FIELD_WIDTH,12)
+				MapHelper.instantiate(Cell.FIELD_CONTROL,scopeTypesDataTable,Cell.FIELD_WIDTH,12)
+				//,MapHelper.instantiate(Cell.FIELD_CONTROL,scopeTypesSelectManyCheckbox,Cell.FIELD_WIDTH,12)
 				,MapHelper.instantiate(Cell.FIELD_CONTROL,CommandButton.build(CommandButton.FIELD_VALUE,"Enregistrer",CommandButton.FIELD_ICON,"fa fa-floppy-o"
 						,CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
 						,CommandButton.FIELD_LISTENER,new CommandButton.Listener.AbstractImpl() {
@@ -69,20 +104,76 @@ public class FunctionEditScopeTypesPage extends AbstractPageContainerManagedImpl
 								Arguments<ScopeTypeFunction> arguments = new Arguments<ScopeTypeFunction>();
 								arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(ScopeTypeFunctionBusiness.SAVE));
 								if(CollectionHelper.isNotEmpty(scopeTypes)) {
-									Collection<ScopeType> selectedScopeTypes = CollectionHelper.cast(ScopeType.class, scopeTypesSelectManyCheckbox.getValue());
-									arguments.addCreatablesOrUpdatables(scopeTypes.stream().filter(scopeType -> CollectionHelper
+									//Collection<ScopeType> selectedScopeTypes = CollectionHelper.cast(ScopeType.class, scopeTypesSelectManyCheckbox.getValue());
+									Collection<ScopeType> selectedScopeTypes = CollectionHelper.cast(ScopeType.class, scopeTypesDataTable.getSelectionAsCollection());
+									if(CollectionHelper.isNotEmpty(selectedScopeTypes)) {
+										arguments.setCreatables(selectedScopeTypes.stream().filter(scopeType -> !CollectionHelper.contains(initialSelectedScopeTypes, scopeType))
+												.map(scopeType -> new ScopeTypeFunction().setScopeType(scopeType).setFunction(function).setScopeFunctionDerivable(scopeType.getScopeFunctionDerivable()))
+											.collect(Collectors.toList()));
+										arguments.setUpdatables(scopeTypesFunctions.stream().filter(scopeTypesFunction -> selectedScopeTypes
+												.contains(scopeTypesFunction.getScopeType()) && isHasBeenEdited(scopeTypesFunction)).collect(Collectors.toList()));
+										if(CollectionHelper.isNotEmpty(arguments.getUpdatables())) {
+											for(ScopeTypeFunction scopeTypeFunction : arguments.getUpdatables()) {
+												for(ScopeType selectedScopeType : selectedScopeTypes)
+													if(selectedScopeType.equals(scopeTypeFunction.getScopeType())) {
+														scopeTypeFunction.setScopeFunctionDerivable(selectedScopeType.getScopeFunctionDerivable());
+														break;
+													}
+												System.out.println("U : "+scopeTypeFunction.getScopeType()+" : "+scopeTypeFunction.getScopeFunctionDerivable());
+											}
+										}
+									}								
+									/*arguments.addCreatablesOrUpdatables(scopeTypes.stream().filter(scopeType -> CollectionHelper
 											.contains(selectedScopeTypes, scopeType) && !CollectionHelper.contains(initialSelectedScopeTypes, scopeType))
 											.map(scopeType -> new ScopeTypeFunction().setScopeType(scopeType).setFunction(function))
 										.collect(Collectors.toList()));
+									*/
 									if(CollectionHelper.isNotEmpty(scopeTypesFunctions))
 										arguments.addDeletables(scopeTypesFunctions.stream().filter(scopeTypesFunction -> !selectedScopeTypes.contains(scopeTypesFunction.getScopeType())).collect(Collectors.toList()));
 								}
-								if(CollectionHelper.isNotEmpty(arguments.getCreatables()) || CollectionHelper.isNotEmpty(arguments.getDeletables())) {
+								if(CollectionHelper.isNotEmpty(arguments.getCreatables()) || CollectionHelper.isNotEmpty(arguments.getUpdatables()) || CollectionHelper.isNotEmpty(arguments.getDeletables())) {
 									EntitySaver.getInstance().save(ScopeTypeFunction.class, arguments);	
 								}
 								return null;
 							}
 						},CommandButton.FIELD_STYLE_CLASS,"cyk-float-right"),Cell.FIELD_WIDTH,12)
 				));
+	}
+	
+	private Boolean isHasBeenEdited(ScopeTypeFunction current) {
+		if(current == null)
+			return Boolean.FALSE;
+		ScopeType initialScopeType = null;
+		for(ScopeType index : initialSelectedScopeTypes)
+			if(index.equals(current.getScopeType())) {
+				initialScopeType = index;
+				break;
+			}
+		if(initialScopeType == null)
+			return Boolean.FALSE;
+		ScopeType scopeType = null;
+		for(ScopeType index : scopeTypes)
+			if(index.equals(current.getScopeType())) {
+				scopeType = index;
+				break;
+			}
+		if(scopeType == null)
+			return Boolean.FALSE;
+		if(initialScopeType.getScopeFunctionDerivable() == null)
+			return scopeType.getScopeFunctionDerivable() != null;
+		return !initialScopeType.getScopeFunctionDerivable().equals(scopeType.getScopeFunctionDerivable());
+	}
+	
+	@Getter @Setter @Accessors(chain=true)
+	private class ScopeTypeLazyDataModelListenerImpl extends ScopeTypeListPage.LazyDataModelListenerImpl implements Serializable {		
+		@Override
+		public List<ScopeType> read(LazyDataModel<ScopeType> lazyDataModel) {
+			return scopeTypes;
+		}
+		
+		@Override
+		public Integer getCount(LazyDataModel<ScopeType> lazyDataModel) {
+			return CollectionHelper.getSize(scopeTypes);
+		}
 	}
 }

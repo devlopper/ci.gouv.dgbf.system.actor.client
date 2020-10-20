@@ -1,13 +1,15 @@
 package ci.gouv.dgbf.system.actor.client.controller.impl.scope;
 
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
+import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
@@ -28,7 +30,7 @@ public class ScopeTypeListPage extends AbstractEntityListPageContainerManagedImp
 
 	@Override
 	protected DataTable __buildDataTable__() {
-		DataTable dataTable = instantiateDataTable();		
+		DataTable dataTable = buildDataTable();		
 		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();
 		dataTable.addRecordMenuItemByArgumentsOpenViewInDialogUpdate();
 		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();	
@@ -40,24 +42,26 @@ public class ScopeTypeListPage extends AbstractEntityListPageContainerManagedImp
 		return "Liste des domaines de visibilités";
 	}
 	
-	public static DataTable instantiateDataTable(Collection<String> columnsFieldsNames,DataTableListenerImpl listener,LazyDataModelListenerImpl lazyDataModelListener) {
-		if(listener == null)
-			listener = new DataTableListenerImpl();
-		if(columnsFieldsNames == null) {
-			columnsFieldsNames = CollectionHelper.listOf(ScopeType.FIELD_CODE,ScopeType.FIELD_NAME,ScopeType.FIELD_ORDER_NUMBER);
-		}
-		
-		DataTable dataTable = DataTable.build(DataTable.FIELD_LAZY,Boolean.TRUE,DataTable.FIELD_ELEMENT_CLASS,ScopeType.class
-				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,columnsFieldsNames,DataTable.FIELD_LISTENER,listener
-				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,lazyDataModelListener);
-		
+	/**/
+	
+	public static DataTable buildDataTable(Map<Object,Object> arguments) {
+		if(arguments == null)
+			arguments = new HashMap<>();
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, ScopeType.class);
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES
+				, CollectionHelper.listOf(ScopeType.FIELD_CODE,ScopeType.FIELD_NAME,ScopeType.FIELD_ORDER_NUMBER));
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl());
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl());
+		DataTable dataTable = DataTable.build(arguments);
 		return dataTable;
 	}
 	
-	public static DataTable instantiateDataTable() {
-		return instantiateDataTable(null, new DataTableListenerImpl(), new LazyDataModelListenerImpl());
+	public static DataTable buildDataTable(Object...objects) {
+		return buildDataTable(ArrayHelper.isEmpty(objects) ? null : MapHelper.instantiate(objects));
 	}
-	
+		
 	@Getter @Setter @Accessors(chain=true)
 	public static class DataTableListenerImpl extends DataTable.Listener.AbstractImpl implements Serializable {
 		
@@ -73,6 +77,10 @@ public class ScopeTypeListPage extends AbstractEntityListPageContainerManagedImp
 			}else if(ScopeType.FIELD_ORDER_NUMBER.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Numéro d'ordre");
 				map.put(Column.FIELD_WIDTH, "150");
+			}else if(ScopeType.FIELD_SCOPE_FUNCTION_DERIVABLE.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Poste dérivable ?");
+				map.put(Column.FIELD_WIDTH, "150");
+				map.put(Column.FIELD_INPUTABLE, Boolean.TRUE);
 			}
 			return map;
 		}

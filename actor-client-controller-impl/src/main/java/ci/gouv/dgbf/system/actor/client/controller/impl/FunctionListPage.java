@@ -135,7 +135,7 @@ public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl
 			map.put(Column.ConfiguratorImpl.FIELD_EDITABLE, Boolean.FALSE);
 			if(Function.FIELD_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Code");
-				map.put(Column.FIELD_WIDTH, "50");
+				map.put(Column.FIELD_WIDTH, "150");
 			}else if(Function.FIELD_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Libellé");
 			}else if(Function.FIELD_PROFILES_AS_STRING.equals(fieldName)) {
