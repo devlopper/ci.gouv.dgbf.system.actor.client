@@ -2,6 +2,7 @@ package ci.gouv.dgbf.system.actor.client.controller.impl;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.faces.view.ViewScoped;
@@ -11,11 +12,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.constant.ConstantEmpty;
+import org.cyk.utility.__kernel__.controller.Arguments;
+import org.cyk.utility.__kernel__.controller.EntitySaver;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
+import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
@@ -34,6 +38,8 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityL
 import ci.gouv.dgbf.system.actor.client.controller.api.FunctionController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ExecutionImputation;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
+import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
+import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionExecutionImputationBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
 import lombok.Getter;
 import lombok.Setter;
@@ -64,6 +70,20 @@ public class ExecutionImputationListPage extends AbstractEntityListPageContainer
 						return "executionImputationEditManyScopeFunctionsView";
 					}
 				});
+		
+		dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Dériver toutes les assignations",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
+				,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
+				,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+					@Override
+					protected Object __runExecuteFunction__(AbstractAction action) {
+						Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>();
+						arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+								.setActionIdentifier(ScopeFunctionExecutionImputationBusiness.DERIVE_ALL));					
+						EntitySaver.getInstance().save(ScopeFunction.class, arguments);
+						return null;
+					}
+				});
+		
 		dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("executionImputationEditScopeFunctionsView", CommandButton.FIELD_VALUE,"Postes"
 				,CommandButton.FIELD_ICON,"fa fa-pencil");
 		return dataTable;
@@ -84,6 +104,7 @@ public class ExecutionImputationListPage extends AbstractEntityListPageContainer
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES
 				, CollectionHelper.listOf(ExecutionImputation.FIELD_SECTION_CODE_NAME,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME
 						,ExecutionImputation.FIELD_ACTION_CODE_NAME,ExecutionImputation.FIELD_ACTIVITY_CODE_NAME,ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME
+						,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME
 						,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER
 						,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER,ExecutionImputation.FIELD_ACCOUNTING_HOLDER));
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
@@ -115,6 +136,7 @@ public class ExecutionImputationListPage extends AbstractEntityListPageContainer
 					,"Action : %s"
 					,"Activité : %s"
 					,"Nature économique : %s"
+					,"Unité administrative : %s"
 					,FieldHelper.readName(creditManagerHolder)+" : %s"
 					,FieldHelper.readName(authorizingOfficerHolder)+" : %s"
 					,FieldHelper.readName(financialControllerHolder)+" : %s"
@@ -152,16 +174,28 @@ public class ExecutionImputationListPage extends AbstractEntityListPageContainer
 				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readName(accountingHolder));
 			}else if(ExecutionImputation.FIELD_SECTION_CODE_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Section");
-				map.put(Column.FIELD_WIDTH, "65");
+				map.put(Column.FIELD_WIDTH, "80");
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, ExecutionImputationQuerier.PARAMETER_NAME_SECTION_CODE_NAME);
 			}else if(ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "USB");
-				map.put(Column.FIELD_WIDTH, "60");
+				map.put(Column.FIELD_WIDTH, "100");
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, ExecutionImputationQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_CODE_NAME);
 			}else if(ExecutionImputation.FIELD_ACTION_CODE_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Action");
-				map.put(Column.FIELD_WIDTH, "60");
+				map.put(Column.FIELD_WIDTH, "120");
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, ExecutionImputationQuerier.PARAMETER_NAME_ACTION_CODE_NAME);
+			}else if(ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Unité administrative");
+				map.put(Column.FIELD_WIDTH, "150");
+				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, ExecutionImputationQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT_CODE_NAME);
 			}
 			return map;
 		}
@@ -209,6 +243,7 @@ public class ExecutionImputationListPage extends AbstractEntityListPageContainer
 			ExecutionImputation executionImputation = (ExecutionImputation) record;
 			return String.format(tooltipFormat,executionImputation.getSectionCodeName(),executionImputation.getBudgetSpecializationUnitCodeName()
 					,executionImputation.getActionCodeName(),executionImputation.getActivityCodeName(),executionImputation.getEconomicNatureCodeName()
+					,executionImputation.getAdministrativeUnitCodeName()
 					,executionImputation.getCreditManager() == null ? ConstantEmpty.STRING : 
 						ValueHelper.defaultToIfBlank(StringHelper.get(executionImputation.getCreditManager().getHolder()),ConstantEmpty.STRING)
 					,executionImputation.getAuthorizingOfficer() == null ? ConstantEmpty.STRING : 

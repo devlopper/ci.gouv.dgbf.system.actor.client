@@ -19,6 +19,7 @@ import ci.gouv.dgbf.system.actor.server.business.api.ProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionExecutionImputationBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeTypeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ServiceBusiness;
 import ci.gouv.dgbf.system.actor.server.representation.api.AccountRequestRepresentation;
@@ -29,6 +30,7 @@ import ci.gouv.dgbf.system.actor.server.representation.api.ExecutionImputationRe
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfileFunctionRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfilePrivilegeRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfileRepresentation;
+import ci.gouv.dgbf.system.actor.server.representation.api.ScopeFunctionExecutionImputationRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ScopeFunctionRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ScopeTypeFunctionRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ServiceRepresentation;
@@ -125,6 +127,9 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 			
 			else if(ExecutionImputationBusiness.SAVE_SCOPE_FUNCTIONS.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ExecutionImputationRepresentation.getProxy());
+			
+			else if(ScopeFunctionExecutionImputationBusiness.DERIVE_ALL.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ScopeFunctionExecutionImputationRepresentation.getProxy());
 		}
 		super.prepare(controllerEntityClass, arguments);
 	}
@@ -393,6 +398,9 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				throw new RuntimeException("Imputations à enregistrer obligatoire");
 			return ((ExecutionImputationRepresentation)representation).saveScopeFunctions(CollectionHelper.cast(ExecutionImputationDto.class, updatables));
 		}
+		
+		if(arguments != null && ScopeFunctionExecutionImputationBusiness.DERIVE_ALL.equals(arguments.getActionIdentifier()))
+			return ((ScopeFunctionExecutionImputationRepresentation)representation).deriveAll();
 		
 		return super.save(representation, creatables, updatables, deletables, arguments);
 	}
