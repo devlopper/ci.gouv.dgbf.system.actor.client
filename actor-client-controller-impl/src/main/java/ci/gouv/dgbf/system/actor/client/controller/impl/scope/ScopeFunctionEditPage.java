@@ -48,7 +48,7 @@ public class ScopeFunctionEditPage extends AbstractEntityEditPageContainerManage
 		ScopeFunction scopeFunction = (ScopeFunction) form.getEntity();
 		SelectOneCombo functionSelectOneCombo = form.getInput(SelectOneCombo.class, ScopeFunction.FIELD_FUNCTION);
 		SelectOneRadio scopeTypeSelectOneRadio = form.getInput(SelectOneRadio.class, ScopeFunction.FIELD_SCOPE_TYPE);
-		AutoComplete scopeAutocomplete = form.getInput(AutoComplete.class, ScopeFunction.FIELD_SCOPE);
+		AutoComplete scopeAutocomplete = form.getInput(AutoComplete.class, Action.UPDATE.equals(form.getAction()) ? ScopeFunction.FIELD_SCOPE : ScopeFunction.FIELD_SCOPES);
 		
 		functionSelectOneCombo.enableValueChangeListener(List.of(scopeTypeSelectOneRadio,scopeAutocomplete));
 		functionSelectOneCombo.getAjaxes().get("valueChange").addUpdatablesUsingStyleClass(scopeAutocomplete.getOutputLabel());
@@ -140,13 +140,16 @@ public class ScopeFunctionEditPage extends AbstractEntityEditPageContainerManage
 			ScopeFunction scopeFunction = (ScopeFunction) form.getEntity();
 			//scopeFunction.setShared(AbstractInputChoice.equalsChoiceYes(scopeFunction.getSharedAsString()));
 			if(Action.CREATE.equals(form.getAction()) || Action.UPDATE.equals(form.getAction())) {
-				Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>().addCreatablesOrUpdatables(scopeFunction);
+				Collection<ScopeFunction> scopeFunctions = Action.CREATE.equals(form.getAction()) 
+						? scopeFunction.getScopes().stream().map(scope -> new ScopeFunction().setScope(scope).setFunction(scopeFunction.getFunction())
+								.setShared(scopeFunction.getShared())).collect(Collectors.toList()) 
+								: List.of(scopeFunction);
+				Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>().addCreatablesOrUpdatables(scopeFunctions);
 				arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(ScopeFunctionBusiness.SAVE));
 				EntitySaver.getInstance().save(ScopeFunction.class, arguments);
 			}else
 				super.act(form);
 		}
-		
 		
 		@Override
 		public Boolean isSubmitButtonShowable(Form form) {
@@ -157,7 +160,9 @@ public class ScopeFunctionEditPage extends AbstractEntityEditPageContainerManage
 	public static class FormConfiguratorListenerImpl extends Form.ConfiguratorImpl.Listener.AbstractImpl implements Serializable {
 		@Override
 		public Collection<String> getFieldsNames(Form form) {
-			return CollectionHelper.listOf(ScopeFunction.FIELD_FUNCTION,ScopeFunction.FIELD_SCOPE_TYPE,ScopeFunction.FIELD_SCOPE,ScopeFunction.FIELD_SHARED);
+			return CollectionHelper.listOf(ScopeFunction.FIELD_FUNCTION,ScopeFunction.FIELD_SCOPE_TYPE
+					,Action.UPDATE.equals(form.getAction()) ? ScopeFunction.FIELD_SCOPE : ScopeFunction.FIELD_SCOPES
+					,ScopeFunction.FIELD_SHARED);
 		}
 		
 		@Override
@@ -167,12 +172,12 @@ public class ScopeFunctionEditPage extends AbstractEntityEditPageContainerManage
 				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Fonction");
 				map.put(AbstractInputChoice.FIELD_CHOICES, EntityReader.getInstance().readMany(Function.class
 						, FunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE_WITH_ALL));
-			}else if(ScopeFunction.FIELD_SCOPE.equals(fieldName)) {
+			}else if(ScopeFunction.FIELD_SCOPE.equals(fieldName) || ScopeFunction.FIELD_SCOPES.equals(fieldName)) {
 				map.put(AutoComplete.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Domaine");
 				map.put(AutoComplete.FIELD_ENTITY_CLASS, Scope.class);
 				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
 				map.put(AutoComplete.FIELD_READ_QUERY_IDENTIFIER, ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_AND_NOT_ASSOCIATED_TO_FUNCTION_BY_TYPE_IDENTIFIER);
-				map.put(AutoComplete.FIELD_MULTIPLE, Boolean.FALSE);
+				map.put(AutoComplete.FIELD_MULTIPLE, Action.CREATE.equals(form.getAction()));
 			}else if(ScopeFunction.FIELD_SHARED.equals(fieldName)) {
 				map.put(AbstractInputChoice.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Partageable par plusieurs acteurs ?");
 			}else if(ScopeFunction.FIELD_SCOPE_TYPE.equals(fieldName)) {
