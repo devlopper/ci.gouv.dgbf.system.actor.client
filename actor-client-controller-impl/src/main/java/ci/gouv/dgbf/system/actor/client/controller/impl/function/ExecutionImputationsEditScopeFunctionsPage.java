@@ -1,4 +1,4 @@
-package ci.gouv.dgbf.system.actor.client.controller.impl;
+package ci.gouv.dgbf.system.actor.client.controller.impl.function;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -31,7 +31,9 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 
+import ci.gouv.dgbf.system.actor.client.controller.api.FunctionController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ExecutionImputation;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.business.api.ExecutionImputationBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
@@ -127,10 +129,12 @@ public class ExecutionImputationsEditScopeFunctionsPage extends AbstractPageCont
 				));
 	}
 	
-	private static AutoComplete buildScopeFunctionAutoComplete(String functionCode,String componentFieldName,String functionFieldName) {
+	public static AutoComplete buildScopeFunctionAutoComplete(String functionCode,String componentFieldName,String functionFieldName) {
 		if(StringHelper.isBlank(functionCode))
 			return null;
+		Function function = __inject__(FunctionController.class).readByBusinessIdentifier(functionCode);
 		AutoComplete autoComplete = AutoComplete.build(AutoComplete.FIELD_ENTITY_CLASS,ScopeFunction.class,AutoComplete.FIELD_READER_USABLE,Boolean.TRUE
+				,AutoComplete.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,function.getName()
 				,AutoComplete.FIELD_READ_QUERY_IDENTIFIER,ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE
 				,AutoComplete.FIELD_LISTENER,new AutoComplete.Listener.AbstractImpl<ScopeFunction>() {
 			@Override

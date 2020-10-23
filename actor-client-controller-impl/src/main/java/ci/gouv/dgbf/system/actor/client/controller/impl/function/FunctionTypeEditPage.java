@@ -1,4 +1,4 @@
-package ci.gouv.dgbf.system.actor.client.controller.impl;
+package ci.gouv.dgbf.system.actor.client.controller.impl.function;
 
 import java.io.Serializable;
 import java.util.Collection;

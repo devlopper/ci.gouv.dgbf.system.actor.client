@@ -12,6 +12,12 @@ public class ExecutionImputationScopeFunction implements Serializable {
 	private ScopeFunction holder;
 	private ScopeFunction assistant;
 	
+	private Boolean holderOverridable;
+	private Boolean assistantOverridable;
+	
 	public static final String FIELD_HOLDER = "holder";
 	public static final String FIELD_ASSISTANT = "assistant";
+	
+	public static final String FIELD_HOLDER_OVERRIDABLE = "holderOverridable";
+	public static final String FIELD_ASSISTANT_OVERRIDABLE = "assistantOverridable";
 }

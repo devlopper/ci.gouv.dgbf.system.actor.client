@@ -128,6 +128,9 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 			else if(ExecutionImputationBusiness.SAVE_SCOPE_FUNCTIONS.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ExecutionImputationRepresentation.getProxy());
 			
+			else if(ExecutionImputationBusiness.DERIVE_SCOPE_FUNCTIONS_FROM_MODEL.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ExecutionImputationRepresentation.getProxy());
+			
 			else if(ScopeFunctionExecutionImputationBusiness.DERIVE_ALL.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ScopeFunctionExecutionImputationRepresentation.getProxy());
 		}
@@ -397,6 +400,12 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 			if(CollectionHelper.isEmpty(updatables))
 				throw new RuntimeException("Imputations à enregistrer obligatoire");
 			return ((ExecutionImputationRepresentation)representation).saveScopeFunctions(CollectionHelper.cast(ExecutionImputationDto.class, updatables));
+		}
+		
+		if(arguments != null && ExecutionImputationBusiness.DERIVE_SCOPE_FUNCTIONS_FROM_MODEL.equals(arguments.getActionIdentifier())) {
+			if(CollectionHelper.isEmpty(updatables))
+				throw new RuntimeException("Imputations à enregistrer obligatoire");
+			return ((ExecutionImputationRepresentation)representation).deriveScopeFunctionsFromModel((ExecutionImputationDto)updatables.iterator().next());
 		}
 		
 		if(arguments != null && ScopeFunctionExecutionImputationBusiness.DERIVE_ALL.equals(arguments.getActionIdentifier()))

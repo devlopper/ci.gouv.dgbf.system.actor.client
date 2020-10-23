@@ -1,4 +1,4 @@
-package ci.gouv.dgbf.system.actor.client.controller.impl;
+package ci.gouv.dgbf.system.actor.client.controller.impl.function;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -35,6 +35,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityL
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.FunctionType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
+import ci.gouv.dgbf.system.actor.client.controller.impl.Helper;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionTypeQuerier;
 import lombok.Getter;

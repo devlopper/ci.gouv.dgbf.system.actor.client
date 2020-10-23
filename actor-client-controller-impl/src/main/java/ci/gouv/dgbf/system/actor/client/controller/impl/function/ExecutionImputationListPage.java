@@ -1,4 +1,4 @@
-package ci.gouv.dgbf.system.actor.client.controller.impl;
+package ci.gouv.dgbf.system.actor.client.controller.impl.function;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -39,6 +39,7 @@ import ci.gouv.dgbf.system.actor.client.controller.api.FunctionController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ExecutionImputation;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
+import ci.gouv.dgbf.system.actor.client.controller.impl.Helper;
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionExecutionImputationBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
 import lombok.Getter;
@@ -158,30 +159,30 @@ public class ExecutionImputationListPage extends AbstractEntityListPageContainer
 				map.put(Column.FIELD_HEADER_TEXT, "Activité");
 				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
 				map.put(Column.FIELD_FILTER_BY, ExecutionImputationQuerier.PARAMETER_NAME_ACTIVITY_CODE_NAME);
-				map.put(Column.FIELD_WIDTH, "110");
+				map.put(Column.FIELD_WIDTH, "100");
 			}else if(ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Nature économique");
+				map.put(Column.FIELD_HEADER_TEXT, "Nat. Éco.");
 				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
 				map.put(Column.FIELD_FILTER_BY, ExecutionImputationQuerier.PARAMETER_NAME_ECONOMIC_NATURE_CODE_NAME);
-				map.put(Column.FIELD_WIDTH, "140");
+				map.put(Column.FIELD_WIDTH, "100");
 			}else if(ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readName(creditManagerHolder));
+				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readBusinessIdentifier(creditManagerHolder));
 			}else if(ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readName(authorizingOfficerHolder));
+				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readBusinessIdentifier(authorizingOfficerHolder));
 			}else if(ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readName(financialControllerHolder));
+				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readBusinessIdentifier(financialControllerHolder));
 			}else if(ExecutionImputation.FIELD_ACCOUNTING_HOLDER.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readName(accountingHolder));
+				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readBusinessIdentifier(accountingHolder));
 			}else if(ExecutionImputation.FIELD_SECTION_CODE_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Section");
 				map.put(Column.FIELD_WIDTH, "80");
-				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
+				//map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
 				map.put(Column.FIELD_FILTER_BY, ExecutionImputationQuerier.PARAMETER_NAME_SECTION_CODE_NAME);
 			}else if(ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "USB");
 				map.put(Column.FIELD_WIDTH, "100");
-				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
+				//map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
 				map.put(Column.FIELD_FILTER_BY, ExecutionImputationQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_CODE_NAME);
 			}else if(ExecutionImputation.FIELD_ACTION_CODE_NAME.equals(fieldName)) {
@@ -191,9 +192,9 @@ public class ExecutionImputationListPage extends AbstractEntityListPageContainer
 				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
 				map.put(Column.FIELD_FILTER_BY, ExecutionImputationQuerier.PARAMETER_NAME_ACTION_CODE_NAME);
 			}else if(ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Unité administrative");
-				map.put(Column.FIELD_WIDTH, "150");
-				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
+				map.put(Column.FIELD_HEADER_TEXT, "Unité adm.");
+				map.put(Column.FIELD_WIDTH, "100");
+				//map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
 				map.put(Column.FIELD_FILTER_BY, ExecutionImputationQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT_CODE_NAME);
 			}
@@ -211,6 +212,8 @@ public class ExecutionImputationListPage extends AbstractEntityListPageContainer
 				return StringHelper.getFirstWord(((ExecutionImputation)record).getActivityCodeName());
 			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME))
 				return StringHelper.getFirstWord(((ExecutionImputation)record).getEconomicNatureCodeName());
+			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME))
+				return StringHelper.getFirstWord(((ExecutionImputation)record).getAdministrativeUnitCodeName());
 			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER))
 				return ((ExecutionImputation)record).getCreditManager() == null ? null 
 						: FieldHelper.readBusinessIdentifier(((ExecutionImputation)record).getCreditManager().getHolder());

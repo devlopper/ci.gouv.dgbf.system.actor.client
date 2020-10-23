@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.object.__static__.controller.AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl;
+import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,6 +29,8 @@ public class ExecutionImputation extends AbstractDataIdentifiableSystemStringIde
 	private ExecutionImputationScopeFunction accounting;
 	
 	private Collection<Function> functions;
+	
+	private Filter.Dto filter;
 	
 	public ExecutionImputationScopeFunction getCreditManager(Boolean instantiateIfNull) {
 		if(creditManager == null && Boolean.TRUE.equals(instantiateIfNull))

@@ -12,7 +12,7 @@ import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
-import ci.gouv.dgbf.system.actor.client.controller.impl.FunctionListPage;
+import ci.gouv.dgbf.system.actor.client.controller.impl.function.FunctionListPage;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
 import lombok.Getter;
 import lombok.Setter;
