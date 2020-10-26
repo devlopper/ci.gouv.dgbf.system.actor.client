@@ -33,6 +33,16 @@
 		<view-id value="/private/account/list.jsf" />
 	</url-mapping>
 	
+	<url-mapping id="assignation">
+		<pattern value="/private/assignation.jsf" />
+		<view-id value="/private/actor/assignation.jsf" />
+	</url-mapping>
+	
+	<url-mapping id="affectation">
+		<pattern value="/private/affectation.jsf" />
+		<view-id value="/private/scopefunction/affectation.jsf" />
+	</url-mapping>
+	
 	<!--  -->
 	
 	<url-mapping id="mon_compte">

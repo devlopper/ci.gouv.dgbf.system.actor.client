@@ -12,7 +12,10 @@ import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntitySaver;
+import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
@@ -28,6 +31,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMe
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 
+import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.impl.Helper;
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionBusiness;
@@ -53,39 +57,7 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 	
 	@Override
 	protected DataTable __buildDataTable__() {
-		DataTable dataTable = buildDataTable();
-		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();
-		
-		dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Dériver tous les postes",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
-				,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
-				,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
-					@Override
-					protected Object __runExecuteFunction__(AbstractAction action) {
-						Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>();
-						arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
-								.setActionIdentifier(ScopeFunctionBusiness.DERIVE_ALL));					
-						EntitySaver.getInstance().save(ScopeFunction.class, arguments);
-						return null;
-					}
-				});
-		
-		dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Codifier tous les postes",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
-				,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
-				,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
-					@Override
-					protected Object __runExecuteFunction__(AbstractAction action) {
-						Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>();
-						arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
-								.setActionIdentifier(ScopeFunctionBusiness.CODIFY_ALL));					
-						EntitySaver.getInstance().save(ScopeFunction.class, arguments);
-						return null;
-					}
-				});
-		
-		dataTable.addRecordMenuItemByArgumentsOpenViewInDialogUpdate();
-		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
-				
-		dataTable.setAreColumnsChoosable(Boolean.TRUE);
+		DataTable dataTable = buildDataTable(ScopeFunctionListPage.class,Boolean.TRUE);
 		return dataTable;
 	}
 	
@@ -106,8 +78,45 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 				,ScopeFunction.FIELD_NAME,ScopeFunction.FIELD_SHARED_AS_STRING));
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl());
-		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl());
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl()
+				.setFunctionCode((String) MapHelper.readByKey(arguments, FieldHelper.join(ScopeFunction.FIELD_FUNCTION,Function.FIELD_CODE))));
 		DataTable dataTable = DataTable.build(arguments);
+		if(Boolean.TRUE.equals(MapHelper.readByKey(arguments, ScopeFunctionListPage.class))) {
+			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();
+			
+			dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Initialiser",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
+					,MenuItem.FIELD_ICON,"fa fa-database"
+					,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
+					,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+						@Override
+						protected Object __runExecuteFunction__(AbstractAction action) {
+							Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>();
+							arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+									.setActionIdentifier(ScopeFunctionBusiness.DERIVE_ALL));					
+							EntitySaver.getInstance().save(ScopeFunction.class, arguments);
+							return null;
+						}
+					});
+			
+			dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Codifier",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
+					,MenuItem.FIELD_ICON,"fa fa-cubes"
+					,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
+					,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+						@Override
+						protected Object __runExecuteFunction__(AbstractAction action) {
+							Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>();
+							arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+									.setActionIdentifier(ScopeFunctionBusiness.CODIFY_ALL));					
+							EntitySaver.getInstance().save(ScopeFunction.class, arguments);
+							return null;
+						}
+					});
+			
+			dataTable.addRecordMenuItemByArgumentsOpenViewInDialogUpdate();
+			dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
+					
+			dataTable.setAreColumnsChoosable(Boolean.TRUE);
+		}
 		return dataTable;
 	}
 	
@@ -149,6 +158,7 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 	
 	@Getter @Setter @Accessors(chain=true)
 	public static class LazyDataModelListenerImpl extends LazyDataModel.Listener.AbstractImpl<ScopeFunction> implements Serializable {				
+		private String functionCode;
 		
 		@Override
 		public Boolean getReaderUsable(LazyDataModel<ScopeFunction> lazyDataModel) {
@@ -158,6 +168,16 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 		@Override
 		public String getReadQueryIdentifier(LazyDataModel<ScopeFunction> lazyDataModel) {
 			return ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER;
+		}
+		
+		@Override
+		public Filter.Dto instantiateFilter(LazyDataModel<ScopeFunction> lazyDataModel) {
+			Filter.Dto filter =  super.instantiateFilter(lazyDataModel);
+			if(filter == null)
+				filter = new Filter.Dto();
+			if(StringHelper.isNotBlank(functionCode))
+				filter.addField(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_CODE, functionCode);
+			return filter;
 		}
 	}
 }

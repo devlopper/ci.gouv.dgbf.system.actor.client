@@ -22,6 +22,8 @@ public class ExecutionImputation extends AbstractDataIdentifiableSystemStringIde
 	private String activityCodeName;	
 	private String economicNatureCodeName;
 	private String administrativeUnitCodeName;
+	private String activityCategoryCodeName;
+	private String expenditureNatureCodeName;
 	
 	private ExecutionImputationScopeFunction creditManager;	
 	private ExecutionImputationScopeFunction authorizingOfficer;	
@@ -62,6 +64,8 @@ public class ExecutionImputation extends AbstractDataIdentifiableSystemStringIde
 	public static final String FIELD_ACTIVITY_CODE_NAME = "activityCodeName";
 	public static final String FIELD_ECONOMIC_NATURE_CODE_NAME = "economicNatureCodeName";
 	public static final String FIELD_ADMINISTRATIVE_UNIT_CODE_NAME = "administrativeUnitCodeName";
+	public static final String FIELD_ACTIVITY_CATEGORY_CODE_NAME = "activityCategoryCodeName";
+	public static final String FIELD_EXPENDITURE_NATURE_CODE_NAME = "expenditureNatureCodeName";
 	
 	public static final String FIELD_CREDIT_MANAGER = "creditManager";
 	public static final String FIELD_CREDIT_MANAGER_HOLDER = FieldHelper.join(FIELD_CREDIT_MANAGER,ExecutionImputationScopeFunction.FIELD_HOLDER);

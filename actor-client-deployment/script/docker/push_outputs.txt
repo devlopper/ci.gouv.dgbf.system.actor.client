@@ -1295,3 +1295,48 @@ f1b5933fe4b5: Layer already exists
 d61e622fd21a: Pushed
 v0.0.0-202010221340: digest: sha256:5cf6b96c0b29e3daf819d576fffd839b1381f0be7758b3fdfd72c003905bf92c size: 1377
 Deploying with time stamp : v0.0.0-202010221340 
+Publishing with time stamp : v0.0.0-202010261145 
+The push refers to repository [10.3.4.18:5000/mic-acteur]
+d61e622fd21a: Preparing
+55e0f1d18af3: Preparing
+13f0b213c32d: Preparing
+849cb74592b3: Preparing
+f1b5933fe4b5: Preparing
+13f0b213c32d: Layer already exists
+55e0f1d18af3: Layer already exists
+f1b5933fe4b5: Layer already exists
+849cb74592b3: Layer already exists
+d61e622fd21a: Layer already exists
+v0.0.0-202010261145: digest: sha256:5cf6b96c0b29e3daf819d576fffd839b1381f0be7758b3fdfd72c003905bf92c size: 1377
+Deploying with time stamp : v0.0.0-202010261145 
+Publishing with time stamp : v0.0.0-202010261159 
+The push refers to repository [10.3.4.18:5000/mic-acteur]
+d61e622fd21a: Preparing
+55e0f1d18af3: Preparing
+13f0b213c32d: Preparing
+849cb74592b3: Preparing
+f1b5933fe4b5: Preparing
+55e0f1d18af3: Layer already exists
+d61e622fd21a: Layer already exists
+849cb74592b3: Layer already exists
+13f0b213c32d: Layer already exists
+f1b5933fe4b5: Layer already exists
+v0.0.0-202010261159: digest: sha256:5cf6b96c0b29e3daf819d576fffd839b1381f0be7758b3fdfd72c003905bf92c size: 1377
+Deploying with time stamp : v0.0.0-202010261159 
+Publishing with time stamp : v0.0.0-202010261211 
+The push refers to repository [10.3.4.18:5000/mic-acteur]
+Deploying with time stamp : v0.0.0-202010261211 
+Publishing with time stamp : v0.0.0-202010261217 
+The push refers to repository [10.3.4.18:5000/mic-acteur]
+ffe62ba08b21: Preparing
+724530404fc7: Preparing
+13f0b213c32d: Preparing
+849cb74592b3: Preparing
+f1b5933fe4b5: Preparing
+f1b5933fe4b5: Layer already exists
+849cb74592b3: Layer already exists
+13f0b213c32d: Layer already exists
+ffe62ba08b21: Pushed
+724530404fc7: Pushed
+v0.0.0-202010261217: digest: sha256:3d2edbf373f1950169d61a53ec68b5a794134abce68004045b72105852233f06 size: 1377
+Deploying with time stamp : v0.0.0-202010261217 

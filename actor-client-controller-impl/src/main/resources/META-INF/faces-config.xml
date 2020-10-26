@@ -343,8 +343,26 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>executionImputationEditManyScopeFunctionsByModelView</from-outcome>
+			<to-view-id>/private/executionimputation/masssetscopefunctions.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>scopeTypeFunctionEditView</from-outcome>
 			<to-view-id>/private/scopetypefunction/edit.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>affectationView</from-outcome>
+			<to-view-id>/private/affectation.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>assignationView</from-outcome>
+			<to-view-id>/private/assignation.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		

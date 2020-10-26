@@ -5,13 +5,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntitySaver;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
@@ -72,7 +75,7 @@ public class ExecutionImputationsMassSetScopeFunctionsPage extends AbstractPageC
 		accountingHolderAutoComplete = ExecutionImputationsEditScopeFunctionsPage.buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_HOLDER
 				,FIELD_ACCOUNTING_HOLDER_AUTO_COMPLETE,ExecutionImputation.FIELD_ACCOUNTING_HOLDER);
 		
-		String offLabel = "Non",onLabel = "Oui";
+		String offLabel = "Non, ne pas écraser existant",onLabel = "Oui, écraser existant";
 		overrideCreditManagerHolderSelectBooleanButton = SelectBooleanButton.build(SelectBooleanButton.FIELD_OFF_LABEL,offLabel,SelectBooleanButton.FIELD_ON_LABEL,onLabel);
 		overrideAuthorizingOfficerHolderSelectBooleanButton = SelectBooleanButton.build(SelectBooleanButton.FIELD_OFF_LABEL,offLabel,SelectBooleanButton.FIELD_ON_LABEL,onLabel);
 		overrideFinancialControllerHolderSelectBooleanButton = SelectBooleanButton.build(SelectBooleanButton.FIELD_OFF_LABEL,offLabel,SelectBooleanButton.FIELD_ON_LABEL,onLabel);
@@ -87,8 +90,11 @@ public class ExecutionImputationsMassSetScopeFunctionsPage extends AbstractPageC
 					@SuppressWarnings("unchecked")
 					@Override
 					protected Object __runExecuteFunction__(AbstractAction action) {
+						Map<String,Object> filters = ((LazyDataModel<ExecutionImputation>)executionImputationsDataTable.getValue()).get__filters__();						
+						if(filters == null || MapHelper.isEmpty(filters) || CollectionHelper.isEmpty(filters.values().stream().filter(value -> StringHelper.isNotBlank((String)value)).collect(Collectors.toList())))
+							throw new RuntimeException("Le filtre est obligatoire");
 						ExecutionImputation model = new ExecutionImputation();
-						model.setFilter( ((LazyDataModel<ExecutionImputation>)executionImputationsDataTable.getValue()).get__filter__());
+						model.setFilter(((LazyDataModel<ExecutionImputation>)executionImputationsDataTable.getValue()).get__filter__());
 						model.getCreditManager(Boolean.TRUE).setHolder((ScopeFunction) creditManagerHolderAutoComplete.getValue());
 						model.getCreditManager(Boolean.TRUE).setHolderOverridable(overrideCreditManagerHolderSelectBooleanButton.getValue());
 						model.getAuthorizingOfficer(Boolean.TRUE).setHolder((ScopeFunction) authorizingOfficerHolderAutoComplete.getValue());
@@ -122,14 +128,14 @@ public class ExecutionImputationsMassSetScopeFunctionsPage extends AbstractPageC
 		cells.add(MapHelper.instantiate(Cell.FIELD_CONTROL,saveCommandButton,Cell.FIELD_WIDTH,12));
 		cells.add(MapHelper.instantiate(Cell.FIELD_CONTROL,executionImputationsDataTable,Cell.FIELD_WIDTH,12));
 		
-		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cells);
+		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cells);
 	}
 	
 	private void buildLayoutAddInput(Collection<Map<Object,Object>> cells,AutoComplete autoComplete,SelectBooleanButton overrideHolderSelectBooleanButton) {
 		cells.add(MapHelper.instantiate(Cell.FIELD_CONTROL,autoComplete.getOutputLabel(),Cell.FIELD_WIDTH,2));
-		cells.add(MapHelper.instantiate(Cell.FIELD_CONTROL,autoComplete,Cell.FIELD_WIDTH,9));
+		cells.add(MapHelper.instantiate(Cell.FIELD_CONTROL,autoComplete,Cell.FIELD_WIDTH,7));
 		//cells.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Écraser ?"),Cell.FIELD_WIDTH,1));
-		cells.add(MapHelper.instantiate(Cell.FIELD_CONTROL,overrideHolderSelectBooleanButton,Cell.FIELD_WIDTH,1));
+		cells.add(MapHelper.instantiate(Cell.FIELD_CONTROL,overrideHolderSelectBooleanButton,Cell.FIELD_WIDTH,3));
 	}
 		
 

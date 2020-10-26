@@ -29,7 +29,6 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.Comman
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AutoComplete;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.FunctionController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ExecutionImputation;
@@ -80,6 +79,7 @@ public class ExecutionImputationsEditScopeFunctionsPage extends AbstractPageCont
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl()
 				,DataTable.FIELD_RENDER_TYPE,org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection.RenderType.INPUT
 				);
+		/*
 		executionImputationsDataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Liste",MenuItem.FIELD_ICON,"fa fa-file",MenuItem.FIELD_USER_INTERFACE_ACTION
 				,UserInterfaceAction.NAVIGATE_TO_VIEW,MenuItem.FIELD_LISTENER,new MenuItem.Listener.AbstractImpl() {
 			@Override
@@ -87,6 +87,7 @@ public class ExecutionImputationsEditScopeFunctionsPage extends AbstractPageCont
 				return "executionImputationListView";
 			}
 		});
+		*/
 	}
 	
 	private void buildSaveCommandButton() {
@@ -134,6 +135,7 @@ public class ExecutionImputationsEditScopeFunctionsPage extends AbstractPageCont
 			return null;
 		Function function = __inject__(FunctionController.class).readByBusinessIdentifier(functionCode);
 		AutoComplete autoComplete = AutoComplete.build(AutoComplete.FIELD_ENTITY_CLASS,ScopeFunction.class,AutoComplete.FIELD_READER_USABLE,Boolean.TRUE
+				,AutoComplete.FIELD_DROPDOWN,Boolean.FALSE
 				,AutoComplete.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,function.getName()
 				,AutoComplete.FIELD_READ_QUERY_IDENTIFIER,ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE
 				,AutoComplete.FIELD_LISTENER,new AutoComplete.Listener.AbstractImpl<ScopeFunction>() {

@@ -14,7 +14,6 @@ import org.cyk.utility.__kernel__.controller.EntityCounter;
 import org.cyk.utility.__kernel__.controller.EntityReader;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.__kernel__.object.__static__.controller.AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl;
 import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierGetter;
 import org.cyk.utility.__kernel__.persistence.query.QueryName;
 import org.cyk.utility.__kernel__.string.StringHelper;
@@ -31,8 +30,6 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.AccountRequest;
-import ci.gouv.dgbf.system.actor.client.controller.entities.Action;
-import ci.gouv.dgbf.system.actor.client.controller.entities.ActivityCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
@@ -43,9 +40,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.client.controller.impl.identification.RejectedAccountRequestListPage;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -82,6 +77,7 @@ public class AccountListPage extends AbstractPageContainerManagedImpl implements
 		
 		if(Tab.ACTOR.equals(selectedTab))
 			dataTable = ActorListPage.buildDataTable();
+		/*
 		else if(Tab.PROFILES.equals(selectedTab)) {
 			String code = WebController.getInstance().getRequestParameter(AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl.FIELD_CODE);
 			Collection<Profile> profiles = EntityReader.getInstance().readMany(Profile.class, ProfileQuerier.QUERY_IDENTIFIER_READ);
@@ -92,6 +88,7 @@ public class AccountListPage extends AbstractPageContainerManagedImpl implements
 				cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,buildProfilesSelectOneCombo(profiles,code),Cell.FIELD_WIDTH,12));				
 			}		
 		}
+		*/
 		/*else if(Tab.FUNCTIONS.equals(selectedTab)) {
 			String code = WebController.getInstance().getRequestParameter(AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl.FIELD_CODE);
 			Collection<Function> functions = EntityReader.getInstance().readMany(Function.class, FunctionQuerier.QUERY_IDENTIFIER_READ);
@@ -103,6 +100,7 @@ public class AccountListPage extends AbstractPageContainerManagedImpl implements
 			}		
 		}*///else if(Tab.ADMINISTRATEUR.equals(selectedTab))
 		//	dataTable = ActorListPage.buildDataTable(Function.class,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ADMINISTRATEUR);
+		/*
 		else if(Tab.SCOPE_TYPES.equals(selectedTab)) {
 			String code = WebController.getInstance().getRequestParameter(AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl.FIELD_CODE);
 			Collection<ScopeType> scopeTypes = EntityReader.getInstance().readMany(ScopeType.class, ScopeTypeQuerier.QUERY_IDENTIFIER_READ_ORDER_BY_ORDER_NUMBER_ASCENDING);
@@ -129,6 +127,7 @@ public class AccountListPage extends AbstractPageContainerManagedImpl implements
 					;//addVisibleScopesSelectOneCombo(cellsMaps, AdministrativeUnit.class, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_UA);
 			}
 		}
+		*/
 		else if(Tab.REQUEST.equals(selectedTab)) {
 			RequestTab selectedRequestTab = RequestTab.getByParameterValue(WebController.getInstance().getRequestParameter(RequestTab.PARAMETER_NAME));
 			if(selectedRequestTab == null)
@@ -297,7 +296,7 @@ public class AccountListPage extends AbstractPageContainerManagedImpl implements
 		dataTable = ActorListPage.buildDataTable(scopeClass,code,AbstractActorListPage.RenderType.class,AbstractActorListPage.RenderType.SCOPES,ScopeType.class,scopeTypeCode);
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,buildVisibleScopesSelectOneCombo(scopeTypeCode, scopes, code),Cell.FIELD_WIDTH,12));
 	}
-	
+	/*
 	public static TabMenu buildScopeTypesTab(Collection<ScopeType> scopeTypes,String code) {
 		if(CollectionHelper.isEmpty(scopeTypes))
 			return null;		
@@ -314,7 +313,7 @@ public class AccountListPage extends AbstractPageContainerManagedImpl implements
 		return TabMenu.build(TabMenu.ConfiguratorImpl.FIELD_ITEMS_OUTCOME,"accountListView",TabMenu.FIELD_ACTIVE_INDEX,activeIndex
 				,TabMenu.ConfiguratorImpl.FIELD_ITEMS,tabMenuItems);
 	}
-	
+	*/
 	@Override
 	protected String __getWindowTitleValue__() {
 		return "Comptes";
@@ -325,9 +324,9 @@ public class AccountListPage extends AbstractPageContainerManagedImpl implements
 	@AllArgsConstructor @Getter
 	public static enum Tab {
 		ACTOR("Comptes","comptes",Boolean.FALSE)
-		,PROFILES("Assignation","assignation",Boolean.FALSE)
+		//,PROFILES("Assignation","assignation",Boolean.FALSE)
 		//,FUNCTIONS("Liste des comptes par fonction","liste_comptes_par_fonction",Boolean.TRUE)
-		,SCOPE_TYPES("Affectation","affectation",Boolean.FALSE)
+		//,SCOPE_TYPES("Affectation","affectation",Boolean.FALSE)
 		//,VISIBLE_SECTIONS("Liste des comptes par section visible","liste_comptes_par_section_visible",Boolean.TRUE)
 		,REQUEST("Demandes","demandes",Boolean.FALSE)
 		

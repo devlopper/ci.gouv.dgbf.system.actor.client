@@ -32,6 +32,11 @@ public class Function extends AbstractDataIdentifiableSystemStringIdentifiableBu
 	@Input @InputBoolean @InputBooleanButton private Boolean shared;
 	private String sharedAsString;
 	
+	@Override
+	public String toString() {
+		return code+" "+name;
+	}
+	
 	public static final String FIELD_TYPE = "type";
 	public static final String FIELD_PROFILES_AS_STRINGS = "profilesAsStrings";
 	public static final String FIELD_PROFILES_AS_STRING = "profilesAsString";
