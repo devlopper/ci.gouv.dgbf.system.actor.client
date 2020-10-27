@@ -84,8 +84,8 @@ public class ExecutionImputationListPage extends AbstractEntityListPageContainer
 						,ExecutionImputation.FIELD_ACTION_CODE_NAME,ExecutionImputation.FIELD_ACTIVITY_CODE_NAME,ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME
 						,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME,ExecutionImputation.FIELD_ACTIVITY_CATEGORY_CODE_NAME
 						,ExecutionImputation.FIELD_EXPENDITURE_NATURE_CODE_NAME
-						,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER
-						,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER,ExecutionImputation.FIELD_ACCOUNTING_HOLDER));
+						,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_CODE_NAME,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_CODE_NAME
+						,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_CODE_NAME,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_CODE_NAME));
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl());
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl());
@@ -178,14 +178,22 @@ public class ExecutionImputationListPage extends AbstractEntityListPageContainer
 				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
 				map.put(Column.FIELD_FILTER_BY, ExecutionImputationQuerier.PARAMETER_NAME_ECONOMIC_NATURE_CODE_NAME);
 				map.put(Column.FIELD_WIDTH, "100");
-			}else if(ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER.equals(fieldName)) {
+			}else if(ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_CODE_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readBusinessIdentifier(creditManagerHolder));
-			}else if(ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER.equals(fieldName)) {
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, ExecutionImputationQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER_CODE_NAME);
+			}else if(ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_CODE_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readBusinessIdentifier(authorizingOfficerHolder));
-			}else if(ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER.equals(fieldName)) {
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, ExecutionImputationQuerier.PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_CODE_NAME);
+			}else if(ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_CODE_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readBusinessIdentifier(financialControllerHolder));
-			}else if(ExecutionImputation.FIELD_ACCOUNTING_HOLDER.equals(fieldName)) {
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, ExecutionImputationQuerier.PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_CODE_NAME);
+			}else if(ExecutionImputation.FIELD_ACCOUNTING_HOLDER_CODE_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readBusinessIdentifier(accountingHolder));
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, ExecutionImputationQuerier.PARAMETER_NAME_ACCOUNTING_HOLDER_CODE_NAME);
 			}else if(ExecutionImputation.FIELD_SECTION_CODE_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Section");
 				map.put(Column.FIELD_WIDTH, "80");
@@ -211,13 +219,13 @@ public class ExecutionImputationListPage extends AbstractEntityListPageContainer
 				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
 				map.put(Column.FIELD_FILTER_BY, ExecutionImputationQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT_CODE_NAME);
 			}else if(ExecutionImputation.FIELD_ACTIVITY_CATEGORY_CODE_NAME.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Catég. Act.");
+				map.put(Column.FIELD_HEADER_TEXT, "CA");
 				map.put(Column.FIELD_WIDTH, "100");
 				//map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
 				map.put(Column.FIELD_FILTER_BY, ExecutionImputationQuerier.PARAMETER_NAME_ACTIVITY_CATEGORY_CODE_NAME);
 			}else if(ExecutionImputation.FIELD_EXPENDITURE_NATURE_CODE_NAME.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Nat. Dep.");
+				map.put(Column.FIELD_HEADER_TEXT, "ND");
 				map.put(Column.FIELD_WIDTH, "80");
 				//map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
@@ -243,30 +251,22 @@ public class ExecutionImputationListPage extends AbstractEntityListPageContainer
 				return StringHelper.getFirstWord(((ExecutionImputation)record).getActivityCategoryCodeName());
 			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_EXPENDITURE_NATURE_CODE_NAME))
 				return StringHelper.getFirstWord(((ExecutionImputation)record).getExpenditureNatureCodeName());
-			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER))
-				return ((ExecutionImputation)record).getCreditManager() == null ? null 
-						: FieldHelper.readBusinessIdentifier(((ExecutionImputation)record).getCreditManager().getHolder());
-			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_CREDIT_MANAGER_ASSISTANT))
-				return ((ExecutionImputation)record).getCreditManager() == null ? null 
-						: FieldHelper.readBusinessIdentifier(((ExecutionImputation)record).getCreditManager().getAssistant());
-			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER))
-				return ((ExecutionImputation)record).getAuthorizingOfficer() == null ? null 
-						: FieldHelper.readBusinessIdentifier(((ExecutionImputation)record).getAuthorizingOfficer().getHolder());
-			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_AUTHORIZING_OFFICER_ASSISTANT))
-				return ((ExecutionImputation)record).getAuthorizingOfficer() == null ? null 
-						: FieldHelper.readBusinessIdentifier(((ExecutionImputation)record).getAuthorizingOfficer().getAssistant());
-			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER))
-				return ((ExecutionImputation)record).getFinancialController() == null ? null 
-						: FieldHelper.readBusinessIdentifier(((ExecutionImputation)record).getFinancialController().getHolder());
-			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_ASSISTANT))
-				return ((ExecutionImputation)record).getFinancialController() == null ? null 
-						: FieldHelper.readBusinessIdentifier(((ExecutionImputation)record).getFinancialController().getAssistant());
-			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_ACCOUNTING_HOLDER))
-				return ((ExecutionImputation)record).getAccounting() == null ? null 
-						: FieldHelper.readBusinessIdentifier(((ExecutionImputation)record).getAccounting().getHolder());
-			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_ACCOUNTING_ASSISTANT))
-				return ((ExecutionImputation)record).getAccounting() == null ? null 
-						: FieldHelper.readBusinessIdentifier(((ExecutionImputation)record).getAccounting().getAssistant());
+			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_CODE_NAME))
+				return StringHelper.getFirstWord(((ExecutionImputation)record).getCreditManagerHolderCodeName());
+			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_CREDIT_MANAGER_ASSISTANT_CODE_NAME))
+				return StringHelper.getFirstWord(((ExecutionImputation)record).getCreditManagerAssistantCodeName());
+			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_CODE_NAME))
+				return StringHelper.getFirstWord(((ExecutionImputation)record).getAuthorizingOfficerHolderCodeName());
+			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_AUTHORIZING_OFFICER_ASSISTANT_CODE_NAME))
+				return StringHelper.getFirstWord(((ExecutionImputation)record).getAuthorizingOfficerAssistantCodeName());
+			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_CODE_NAME))
+				return StringHelper.getFirstWord(((ExecutionImputation)record).getFinancialControllerHolderCodeName());
+			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_ASSISTANT_CODE_NAME))
+				return StringHelper.getFirstWord(((ExecutionImputation)record).getFinancialControllerAssistantCodeName());
+			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_ACCOUNTING_HOLDER_CODE_NAME))
+				return StringHelper.getFirstWord(((ExecutionImputation)record).getAccountingHolderCodeName());
+			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_ACCOUNTING_ASSISTANT_CODE_NAME))
+				return StringHelper.getFirstWord(((ExecutionImputation)record).getAccountingAssistantCodeName());
 			return super.getCellValueByRecordByColumn(record, recordIndex, column, columnIndex);
 		}
 		
@@ -276,14 +276,10 @@ public class ExecutionImputationListPage extends AbstractEntityListPageContainer
 			return String.format(tooltipFormat,executionImputation.getSectionCodeName(),executionImputation.getBudgetSpecializationUnitCodeName()
 					,executionImputation.getActionCodeName(),executionImputation.getActivityCodeName(),executionImputation.getEconomicNatureCodeName()
 					,executionImputation.getAdministrativeUnitCodeName(),executionImputation.getActivityCategoryCodeName(),executionImputation.getExpenditureNatureCodeName()
-					,executionImputation.getCreditManager() == null ? ConstantEmpty.STRING : 
-						ValueHelper.defaultToIfBlank(StringHelper.get(executionImputation.getCreditManager().getHolder()),ConstantEmpty.STRING)
-					,executionImputation.getAuthorizingOfficer() == null ? ConstantEmpty.STRING : 
-						ValueHelper.defaultToIfBlank(StringHelper.get(executionImputation.getAuthorizingOfficer().getHolder()),ConstantEmpty.STRING)
-					,executionImputation.getFinancialController() == null ? ConstantEmpty.STRING : 
-						ValueHelper.defaultToIfBlank(StringHelper.get(executionImputation.getFinancialController().getHolder()),ConstantEmpty.STRING)
-					,executionImputation.getAccounting() == null ? ConstantEmpty.STRING : 
-						ValueHelper.defaultToIfBlank(StringHelper.get(executionImputation.getAccounting().getHolder()),ConstantEmpty.STRING)
+					,ValueHelper.defaultToIfBlank(StringHelper.get(executionImputation.getCreditManagerHolderCodeName()),ConstantEmpty.STRING)
+					,ValueHelper.defaultToIfBlank(StringHelper.get(executionImputation.getAuthorizingOfficerHolderCodeName()),ConstantEmpty.STRING)
+					,ValueHelper.defaultToIfBlank(StringHelper.get(executionImputation.getFinancialControllerHolderCodeName()),ConstantEmpty.STRING)
+					,ValueHelper.defaultToIfBlank(StringHelper.get(executionImputation.getAccountingHolderCodeName()),ConstantEmpty.STRING)
 				);
 		}
 		
@@ -302,7 +298,7 @@ public class ExecutionImputationListPage extends AbstractEntityListPageContainer
 		
 		@Override
 		public String getReadQueryIdentifier(LazyDataModel<ExecutionImputation> lazyDataModel) {
-			return ExecutionImputationQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_WITH_ALL;
+			return ExecutionImputationQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER;
 		}
 		
 		@Override

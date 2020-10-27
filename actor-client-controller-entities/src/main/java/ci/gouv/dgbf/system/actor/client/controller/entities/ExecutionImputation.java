@@ -25,6 +25,15 @@ public class ExecutionImputation extends AbstractDataIdentifiableSystemStringIde
 	private String activityCategoryCodeName;
 	private String expenditureNatureCodeName;
 	
+	private String creditManagerHolderCodeName;
+	private String creditManagerAssistantCodeName;	
+	private String authorizingOfficerHolderCodeName;
+	private String authorizingOfficerAssistantCodeName;	
+	private String financialControllerHolderCodeName;
+	private String financialControllerAssistantCodeName;	
+	private String accountingHolderCodeName;
+	private String accountingAssistantCodeName;
+	
 	private ExecutionImputationScopeFunction creditManager;	
 	private ExecutionImputationScopeFunction authorizingOfficer;	
 	private ExecutionImputationScopeFunction financialController;
@@ -70,16 +79,24 @@ public class ExecutionImputation extends AbstractDataIdentifiableSystemStringIde
 	public static final String FIELD_CREDIT_MANAGER = "creditManager";
 	public static final String FIELD_CREDIT_MANAGER_HOLDER = FieldHelper.join(FIELD_CREDIT_MANAGER,ExecutionImputationScopeFunction.FIELD_HOLDER);
 	public static final String FIELD_CREDIT_MANAGER_ASSISTANT = FieldHelper.join(FIELD_CREDIT_MANAGER,ExecutionImputationScopeFunction.FIELD_ASSISTANT);
+	public static final String FIELD_CREDIT_MANAGER_HOLDER_CODE_NAME = "creditManagerHolderCodeName";
+	public static final String FIELD_CREDIT_MANAGER_ASSISTANT_CODE_NAME = "creditManagerAssistantCodeName";
 	
 	public static final String FIELD_AUTHORIZING_OFFICER = "authorizingOfficer";
 	public static final String FIELD_AUTHORIZING_OFFICER_HOLDER = FieldHelper.join(FIELD_AUTHORIZING_OFFICER,ExecutionImputationScopeFunction.FIELD_HOLDER);
 	public static final String FIELD_AUTHORIZING_OFFICER_ASSISTANT = FieldHelper.join(FIELD_AUTHORIZING_OFFICER,ExecutionImputationScopeFunction.FIELD_ASSISTANT);
+	public static final String FIELD_AUTHORIZING_OFFICER_HOLDER_CODE_NAME = "authorizingOfficerHolderCodeName";
+	public static final String FIELD_AUTHORIZING_OFFICER_ASSISTANT_CODE_NAME = "authorizingOfficerAssistantCodeName";
 	
 	public static final String FIELD_FINANCIAL_CONTROLLER = "financialController";
 	public static final String FIELD_FINANCIAL_CONTROLLER_HOLDER = FieldHelper.join(FIELD_FINANCIAL_CONTROLLER,ExecutionImputationScopeFunction.FIELD_HOLDER);
 	public static final String FIELD_FINANCIAL_CONTROLLER_ASSISTANT = FieldHelper.join(FIELD_FINANCIAL_CONTROLLER,ExecutionImputationScopeFunction.FIELD_ASSISTANT);
+	public static final String FIELD_FINANCIAL_CONTROLLER_HOLDER_CODE_NAME = "financialControllerHolderCodeName";
+	public static final String FIELD_FINANCIAL_CONTROLLER_ASSISTANT_CODE_NAME = "financialControllerAssistantCodeName";
 	
 	public static final String FIELD_ACCOUNTING = "accounting";
 	public static final String FIELD_ACCOUNTING_HOLDER = FieldHelper.join(FIELD_ACCOUNTING,ExecutionImputationScopeFunction.FIELD_HOLDER);
 	public static final String FIELD_ACCOUNTING_ASSISTANT = FieldHelper.join(FIELD_ACCOUNTING,ExecutionImputationScopeFunction.FIELD_ASSISTANT);
+	public static final String FIELD_ACCOUNTING_HOLDER_CODE_NAME = "accountingHolderCodeName";
+	public static final String FIELD_ACCOUNTING_ASSISTANT_CODE_NAME = "accountingAssistantCodeName";
 }

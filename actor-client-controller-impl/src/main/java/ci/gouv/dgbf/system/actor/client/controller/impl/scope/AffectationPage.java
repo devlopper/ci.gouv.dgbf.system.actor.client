@@ -68,7 +68,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	
 	private void buildTabScopeFunction(Collection<Map<Object,Object>> cellsMaps) {
 		String functionCode = WebController.getInstance().getRequestParameter(ParameterName.stringify(Function.class));
-		Collection<Function> functions = EntityReader.getInstance().readMany(Function.class, FunctionQuerier.QUERY_IDENTIFIER_READ);
+		Collection<Function> functions = EntityReader.getInstance().readMany(Function.class, FunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_FOR_UI);
 		if(StringHelper.isBlank(functionCode) && CollectionHelper.isNotEmpty(functions))
 			functionCode = ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER;
 		DataTable dataTable = ScopeFunctionListPage.buildDataTable(ScopeFunctionListPage.class,Boolean.TRUE,FieldHelper.join(ScopeFunction.FIELD_FUNCTION,Function.FIELD_CODE)
