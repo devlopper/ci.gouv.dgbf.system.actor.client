@@ -14,6 +14,7 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntityReader;
 import org.cyk.utility.__kernel__.controller.EntitySaver;
+import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
@@ -29,6 +30,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputText;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.ExecutionImputation;
+import ci.gouv.dgbf.system.actor.client.controller.entities.ExecutionImputationScopeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.business.api.ExecutionImputationBusiness;
@@ -49,7 +51,7 @@ public class ExecutionImputationEditScopeFunctionsPage extends AbstractPageConta
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Postes de l'imputation "+executionImputation.getCode();
+		return "Affectations de l'imputation "+executionImputation.getCode();
 	}
 	
 	@Override
@@ -64,22 +66,28 @@ public class ExecutionImputationEditScopeFunctionsPage extends AbstractPageConta
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Nature économique"),Cell.FIELD_WIDTH,3));
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue(executionImputation.getEconomicNatureCodeName()),Cell.FIELD_WIDTH,9));
 		
-		gcAutoComplete = addScopeFunctionAutoComplete(executionImputation,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER,cellsMaps);				
-		ordAutoComplete = addScopeFunctionAutoComplete(executionImputation,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_HOLDER,cellsMaps);
-		cfAutoComplete = addScopeFunctionAutoComplete(executionImputation,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_HOLDER,cellsMaps);
-		cptAutoComplete = addScopeFunctionAutoComplete(executionImputation,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_HOLDER,cellsMaps);
+		gcAutoComplete = addScopeFunctionAutoComplete(executionImputation,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER
+				,ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation.FIELD_CREDIT_MANAGER
+				,ExecutionImputationScopeFunction.FIELD_HOLDER,cellsMaps);				
+		ordAutoComplete = addScopeFunctionAutoComplete(executionImputation,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_HOLDER
+				,ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation.FIELD_AUTHORIZING_OFFICER
+				,ExecutionImputationScopeFunction.FIELD_HOLDER,cellsMaps);
+		cfAutoComplete = addScopeFunctionAutoComplete(executionImputation,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_HOLDER
+				,ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation.FIELD_FINANCIAL_CONTROLLER
+				,ExecutionImputationScopeFunction.FIELD_HOLDER,cellsMaps);
+		cptAutoComplete = addScopeFunctionAutoComplete(executionImputation,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_HOLDER
+				,ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation.FIELD_ACCOUNTING
+				,ExecutionImputationScopeFunction.FIELD_HOLDER,cellsMaps);
 		
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,CommandButton.build(CommandButton.FIELD_VALUE,"Enregistrer",CommandButton.FIELD_ICON,"fa fa-floppy-o"
 				,CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
 				,CommandButton.FIELD_LISTENER,new CommandButton.Listener.AbstractImpl() {
 					@Override
 					protected Object __runExecuteFunction__(AbstractAction action) {
-						
-						executionImputation.getCreditManager(Boolean.TRUE).setHolder((ScopeFunction) gcAutoComplete.getValue());
-						executionImputation.getAuthorizingOfficer(Boolean.TRUE).setHolder((ScopeFunction) ordAutoComplete.getValue());
-						executionImputation.getFinancialController(Boolean.TRUE).setHolder((ScopeFunction) cfAutoComplete.getValue());
-						executionImputation.getAccounting(Boolean.TRUE).setHolder((ScopeFunction) cptAutoComplete.getValue());
-						
+						executionImputation.getCreditManager(Boolean.TRUE).setHolderIdentifier((String) FieldHelper.readSystemIdentifier(gcAutoComplete.getValue()));
+						executionImputation.getAuthorizingOfficer(Boolean.TRUE).setHolderIdentifier((String) FieldHelper.readSystemIdentifier(ordAutoComplete.getValue()));
+						executionImputation.getFinancialController(Boolean.TRUE).setHolderIdentifier((String) FieldHelper.readSystemIdentifier(cfAutoComplete.getValue()));
+						executionImputation.getAccounting(Boolean.TRUE).setHolderIdentifier((String) FieldHelper.readSystemIdentifier(cptAutoComplete.getValue()));						
 						Arguments<ExecutionImputation> arguments = new Arguments<ExecutionImputation>();
 						arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
 								.setActionIdentifier(ExecutionImputationBusiness.SAVE_SCOPE_FUNCTIONS));
@@ -93,32 +101,27 @@ public class ExecutionImputationEditScopeFunctionsPage extends AbstractPageConta
 		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
 	}
 	
-	private static AutoComplete addScopeFunctionAutoComplete(ExecutionImputation executionImputation,String functionCode,Collection<Map<Object,Object>> cellsMaps) {
+	private static AutoComplete addScopeFunctionAutoComplete(ExecutionImputation executionImputation,String functionCode,String functionFieldName,String functionFieldNameType,Collection<Map<Object,Object>> cellsMaps) {
 		if(StringHelper.isBlank(functionCode))
 			return null;
-		AutoComplete autoComplete = buildScopeFunctionAutoComplete(executionImputation,functionCode);
+		AutoComplete autoComplete = buildScopeFunctionAutoComplete(executionImputation,functionCode,functionFieldName,functionFieldNameType);
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,autoComplete.getOutputLabel(),Cell.FIELD_WIDTH,3));
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,autoComplete,Cell.FIELD_WIDTH,9));
 		return autoComplete;
 	}
 	
-	private static AutoComplete buildScopeFunctionAutoComplete(ExecutionImputation executionImputation,String functionCode) {
+	private static AutoComplete buildScopeFunctionAutoComplete(ExecutionImputation executionImputation,String functionCode,String functionFieldName,String functionFieldNameType) {
 		if(StringHelper.isBlank(functionCode))
 			return null;
 		Function function = CollectionHelper.getFirst(executionImputation.getFunctions().stream().filter(x -> functionCode.equals(x.getCode())).collect(Collectors.toList()));
 		if(function == null)
 			return null;
-		Object value = null;
-		if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER.equals(functionCode))
-			value = executionImputation.getCreditManager() == null ? null : executionImputation.getCreditManager(Boolean.TRUE).getHolder();
-		else if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_HOLDER.equals(functionCode))
-			value = executionImputation.getAuthorizingOfficer() == null ? null : executionImputation.getAuthorizingOfficer(Boolean.TRUE).getHolder();
-		else if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_HOLDER.equals(functionCode))
-			value = executionImputation.getFinancialController() == null ? null : executionImputation.getFinancialController(Boolean.TRUE).getHolder();
-		else if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_HOLDER.equals(functionCode))
-			value = executionImputation.getAccounting() == null ? null : executionImputation.getAccounting(Boolean.TRUE).getHolder();
+		ScopeFunction scopeFunction = null;
+		ExecutionImputationScopeFunction executionImputationScopeFunction = (ExecutionImputationScopeFunction) FieldHelper.read(executionImputation, functionFieldName);
+		if(executionImputationScopeFunction != null)
+			scopeFunction = (ScopeFunction) FieldHelper.read(executionImputationScopeFunction, functionFieldNameType);
 		return AutoComplete.build(AutoComplete.FIELD_ENTITY_CLASS,ScopeFunction.class,AutoComplete.FIELD_READER_USABLE,Boolean.TRUE
-				,AutoComplete.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,function.getName(),AutoComplete.FIELD_VALUE,value
+				,AutoComplete.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,function.getName(),AutoComplete.FIELD_VALUE,scopeFunction
 				,AutoComplete.FIELD_READ_QUERY_IDENTIFIER,ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE
 				,AutoComplete.FIELD_LISTENER,new AutoComplete.Listener.AbstractImpl<ScopeFunction>() {
 			@Override

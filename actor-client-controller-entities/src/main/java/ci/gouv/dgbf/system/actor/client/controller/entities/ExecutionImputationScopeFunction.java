@@ -12,6 +12,9 @@ public class ExecutionImputationScopeFunction implements Serializable {
 	private ScopeFunction holder;
 	private ScopeFunction assistant;
 	
+	private String holderIdentifier;
+	private String assistantIdentifier;
+	
 	private Boolean holderOverridable;
 	private Boolean assistantOverridable;
 	

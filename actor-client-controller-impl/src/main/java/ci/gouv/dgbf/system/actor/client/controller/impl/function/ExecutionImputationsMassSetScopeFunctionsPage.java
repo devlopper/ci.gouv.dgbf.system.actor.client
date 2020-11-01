@@ -13,6 +13,7 @@ import javax.inject.Named;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntitySaver;
+import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
@@ -30,7 +31,6 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.ExecutionImputation;
-import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.business.api.ExecutionImputationBusiness;
 import lombok.Getter;
 import lombok.Setter;
@@ -53,7 +53,7 @@ public class ExecutionImputationsMassSetScopeFunctionsPage extends AbstractPageC
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Assignation des postes";
+		return "Affectation par modèle";
 	}
 	
 	@Override
@@ -95,13 +95,13 @@ public class ExecutionImputationsMassSetScopeFunctionsPage extends AbstractPageC
 							throw new RuntimeException("Le filtre est obligatoire");
 						ExecutionImputation model = new ExecutionImputation();
 						model.setFilter(((LazyDataModel<ExecutionImputation>)executionImputationsDataTable.getValue()).get__filter__());
-						model.getCreditManager(Boolean.TRUE).setHolder((ScopeFunction) creditManagerHolderAutoComplete.getValue());
+						model.getCreditManager(Boolean.TRUE).setHolderIdentifier((String) FieldHelper.readSystemIdentifier(creditManagerHolderAutoComplete.getValue()));
 						model.getCreditManager(Boolean.TRUE).setHolderOverridable(overrideCreditManagerHolderSelectBooleanButton.getValue());
-						model.getAuthorizingOfficer(Boolean.TRUE).setHolder((ScopeFunction) authorizingOfficerHolderAutoComplete.getValue());
+						model.getAuthorizingOfficer(Boolean.TRUE).setHolderIdentifier((String) FieldHelper.readSystemIdentifier(authorizingOfficerHolderAutoComplete.getValue()));
 						model.getAuthorizingOfficer(Boolean.TRUE).setHolderOverridable(overrideAuthorizingOfficerHolderSelectBooleanButton.getValue());
-						model.getFinancialController(Boolean.TRUE).setHolder((ScopeFunction) financialControllerHolderAutoComplete.getValue());
+						model.getFinancialController(Boolean.TRUE).setHolderIdentifier((String) FieldHelper.readSystemIdentifier(financialControllerHolderAutoComplete.getValue()));
 						model.getFinancialController(Boolean.TRUE).setHolderOverridable(overrideFinancialControllerHolderSelectBooleanButton.getValue());
-						model.getAccounting(Boolean.TRUE).setHolder((ScopeFunction) accountingHolderAutoComplete.getValue());
+						model.getAccounting(Boolean.TRUE).setHolderIdentifier((String) FieldHelper.readSystemIdentifier(accountingHolderAutoComplete.getValue()));
 						model.getAccounting(Boolean.TRUE).setHolderOverridable(overrideAccountingHolderSelectBooleanButton.getValue());
 						EntitySaver.getInstance().save(ExecutionImputation.class, new Arguments<ExecutionImputation>()
 								.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()

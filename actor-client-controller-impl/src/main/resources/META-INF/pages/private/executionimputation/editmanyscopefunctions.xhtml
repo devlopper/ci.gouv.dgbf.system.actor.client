@@ -17,16 +17,16 @@
     					<ui:param name="dataTable" value="#{executionImputationsEditScopeFunctionsPage.executionImputationsDataTable}"/>
     					<ui:define name="collectionColumnsAfterRowIndexBodies">
 							<ui:fragment rendered="#{column.inputable}">
-								<ui:fragment rendered="#{column.fieldName eq 'creditManager.holder'}">
+								<ui:fragment rendered="#{column.fieldName eq 'creditManagerHolderScopeFunctionCodeName'}">
 	    							<p:autoComplete binding="#{executionImputationsEditScopeFunctionsPage.creditManagerHolderAutoComplete.binding}" />
 	    						</ui:fragment>	    						
-	    						<ui:fragment rendered="#{column.fieldName eq 'authorizingOfficer.holder'}">
+	    						<ui:fragment rendered="#{column.fieldName eq 'authorizingOfficerHolderScopeFunctionCodeName'}">
 	    							<p:autoComplete binding="#{executionImputationsEditScopeFunctionsPage.authorizingOfficerHolderAutoComplete.binding}" />
 	    						</ui:fragment>
-	    						<ui:fragment rendered="#{column.fieldName eq 'financialController.holder'}">
+	    						<ui:fragment rendered="#{column.fieldName eq 'financialControllerHolderScopeFunctionCodeName'}">
 	    							<p:autoComplete binding="#{executionImputationsEditScopeFunctionsPage.financialControllerHolderAutoComplete.binding}" />
 	    						</ui:fragment>
-	    						<ui:fragment rendered="#{column.fieldName eq 'accounting.holder'}">
+	    						<ui:fragment rendered="#{column.fieldName eq 'accountingHolderScopeFunctionCodeName'}">
 	    							<p:autoComplete binding="#{executionImputationsEditScopeFunctionsPage.accountingHolderAutoComplete.binding}" />
 	    						</ui:fragment>
 							</ui:fragment>
