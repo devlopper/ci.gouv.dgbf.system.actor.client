@@ -14,6 +14,8 @@ public class ScopeType extends AbstractDataIdentifiableSystemStringIdentifiableB
 	private static final long serialVersionUID = 1L;
 	
 	@Input private Byte orderNumber;
+	private String scopeFunctionCodeScript;
+	private String scopeFunctionNameScript;
 	private Boolean scopeFunctionDerivable;
 	
 	
@@ -82,4 +84,6 @@ public class ScopeType extends AbstractDataIdentifiableSystemStringIdentifiableB
 	
 	public static final String FIELD_ORDER_NUMBER = "orderNumber";
 	public static final String FIELD_SCOPE_FUNCTION_DERIVABLE = "scopeFunctionDerivable";
+	public static final String FIELD_SCOPE_FUNCTION_CODE_SCRIPT = "scopeFunctionCodeScript";
+	public static final String FIELD_SCOPE_FUNCTION_NAME_SCRIPT = "scopeFunctionNameScript";
 }

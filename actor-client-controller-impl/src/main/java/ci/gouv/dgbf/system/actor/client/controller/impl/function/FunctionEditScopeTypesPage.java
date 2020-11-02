@@ -88,7 +88,8 @@ public class FunctionEditScopeTypesPage extends AbstractPageContainerManagedImpl
 				,DataTable.FIELD_SELECTION_AS_COLLECTION,CollectionHelper.isEmpty(initialSelectedScopeTypes) ? null : new ArrayList<>(initialSelectedScopeTypes)
 				,DataTable.FIELD_SELECTION_MODE,"multiple"
 				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, CollectionHelper.listOf(
-						ScopeType.FIELD_CODE,ScopeType.FIELD_NAME,ScopeType.FIELD_SCOPE_FUNCTION_DERIVABLE));
+						ScopeType.FIELD_CODE,ScopeType.FIELD_NAME,ScopeType.FIELD_SCOPE_FUNCTION_CODE_SCRIPT,ScopeType.FIELD_SCOPE_FUNCTION_NAME_SCRIPT
+						,ScopeType.FIELD_SCOPE_FUNCTION_DERIVABLE));
 		
 		scopeTypeScopeFunctionDerivableSelectBooleanButton = SelectBooleanButton.build();
 		scopeTypeScopeFunctionDerivableSelectBooleanButton.setBindingByDerivation("functionEditScopeTypesPage.scopeTypeScopeFunctionDerivableSelectBooleanButton", "record.scopeFunctionDerivable");

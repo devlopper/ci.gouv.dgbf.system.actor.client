@@ -50,7 +50,8 @@ public class ScopeTypeListPage extends AbstractEntityListPageContainerManagedImp
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, ScopeType.class);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES
-				, CollectionHelper.listOf(ScopeType.FIELD_CODE,ScopeType.FIELD_NAME,ScopeType.FIELD_ORDER_NUMBER));
+				, CollectionHelper.listOf(ScopeType.FIELD_CODE,ScopeType.FIELD_NAME,ScopeType.FIELD_SCOPE_FUNCTION_CODE_SCRIPT,ScopeType.FIELD_SCOPE_FUNCTION_NAME_SCRIPT
+						,ScopeType.FIELD_ORDER_NUMBER));
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl());
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl());
@@ -74,6 +75,12 @@ public class ScopeTypeListPage extends AbstractEntityListPageContainerManagedImp
 				map.put(Column.FIELD_WIDTH, "100");
 			}else if(ScopeType.FIELD_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Libellé");
+			}else if(ScopeType.FIELD_SCOPE_FUNCTION_CODE_SCRIPT.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Script de génération du code des postes");
+				map.put(Column.FIELD_WIDTH, "300");
+			}else if(ScopeType.FIELD_ORDER_NUMBER.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Script de génération du libellé des postes");
+				map.put(Column.FIELD_WIDTH, "300");
 			}else if(ScopeType.FIELD_ORDER_NUMBER.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Numéro d'ordre");
 				map.put(Column.FIELD_WIDTH, "150");

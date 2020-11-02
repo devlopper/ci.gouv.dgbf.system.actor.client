@@ -8,6 +8,7 @@ import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputB
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoice;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceOne;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceOneCombo;
+import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputText;
 import org.cyk.utility.client.controller.data.AbstractDataIdentifiableSystemStringImpl;
 
 import lombok.Getter;
@@ -25,6 +26,8 @@ public class ScopeTypeFunction extends AbstractDataIdentifiableSystemStringImpl 
 	private String functionAsString;
 	@Input @InputBoolean @InputBooleanButton private Boolean scopeFunctionDerivable;
 	private String scopeFunctionDerivableAsString;
+	@Input @InputText private String scopeFunctionCodeScript;
+	@Input @InputText private String scopeFunctionNameScript;
 	
 	public static final String FIELD_SCOPE_TYPE = "scopeType";
 	public static final String FIELD_SCOPE_TYPE_AS_STRING = "scopeTypeAsString";
@@ -32,4 +35,6 @@ public class ScopeTypeFunction extends AbstractDataIdentifiableSystemStringImpl 
 	public static final String FIELD_FUNCTION_AS_STRING = "functionAsString";
 	public static final String FIELD_SCOPE_FUNCTION_DERIVABLE = "scopeFunctionDerivable";
 	public static final String FIELD_SCOPE_FUNCTION_DERIVABLE_AS_STRING = "scopeFunctionDerivableAsString";
+	public static final String FIELD_SCOPE_FUNCTION_CODE_SCRIPT = "scopeFunctionCodeScript";
+	public static final String FIELD_SCOPE_FUNCTION_NAME_SCRIPT = "scopeFunctionNameScript";
 }
