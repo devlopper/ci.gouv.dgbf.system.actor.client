@@ -26,11 +26,9 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
-import ci.gouv.dgbf.system.actor.client.controller.entities.ExecutionImputation;
 import ci.gouv.dgbf.system.actor.client.controller.entities.FunctionType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Profile;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ProfileType;
-import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Service;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionTypeQuerier;
@@ -65,18 +63,19 @@ public interface Helper {
 				tabMenuItems.add(new MenuItem().setValue(index.getName()).setOutcome("functionListView")
 						.addParameter(ParameterName.stringify(FunctionType.class), index.getIdentifier()));
 		}
+		/*
 		Boolean isScopeFunction = ValueHelper.convertToBoolean(WebController.getInstance().getRequestParameter(ParameterName.stringify(ScopeFunction.class)));
 		tabMenuItems.add(new MenuItem().setValue("Poste").setOutcome("scopeFunctionListView").addParameter(ParameterName.stringify(ScopeFunction.class), Boolean.TRUE.toString()));
 		
 		Boolean isScopeFunctionExecutionImputation = ValueHelper.convertToBoolean(WebController.getInstance().getRequestParameter(ParameterName.stringify(ExecutionImputation.class)));
 		tabMenuItems.add(new MenuItem().setValue("Imputation").setOutcome("executionImputationListView").addParameter(ParameterName.stringify(ExecutionImputation.class), Boolean.TRUE.toString()));
-		
+		*/
 		Integer index;
-		if(Boolean.TRUE.equals(isScopeFunction))
+		/*if(Boolean.TRUE.equals(isScopeFunction))
 			index = CollectionHelper.getSize(functionTypes);
 		else if(Boolean.TRUE.equals(isScopeFunctionExecutionImputation))
 			index = CollectionHelper.getSize(functionTypes) + 1;
-		else
+		else*/
 			index = ((List<FunctionType>)functionTypes).indexOf(functionType);
 		
 		return TabMenu.build(TabMenu.FIELD_ACTIVE_INDEX,index,TabMenu.ConfiguratorImpl.FIELD_ITEMS,tabMenuItems);

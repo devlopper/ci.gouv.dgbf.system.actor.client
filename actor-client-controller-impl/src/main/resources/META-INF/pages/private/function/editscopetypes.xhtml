@@ -20,7 +20,13 @@
 							<ui:fragment rendered="#{column.inputable}">
 								<ui:fragment rendered="#{column.fieldName eq 'scopeFunctionDerivable'}">
 	    							<p:selectBooleanButton binding="#{functionEditScopeTypesPage.scopeTypeScopeFunctionDerivableSelectBooleanButton.binding}" />
-	    						</ui:fragment>	    						
+	    						</ui:fragment>
+	    						<ui:fragment rendered="#{column.fieldName eq 'scopeFunctionCodeScript'}">
+	    							<p:inputTextarea binding="#{functionEditScopeTypesPage.scopeTypeScopeFunctionCodeScriptInputTextarea.binding}" />
+	    						</ui:fragment>
+	    						<ui:fragment rendered="#{column.fieldName eq 'scopeFunctionNameScript'}">
+	    							<p:inputTextarea binding="#{functionEditScopeTypesPage.scopeTypeScopeFunctionNameScriptInputTextarea.binding}" />
+	    						</ui:fragment>
 							</ui:fragment>
     						<ui:fragment rendered="#{not column.inputable}">
     							<ui:decorate template="/collection/datatable/__columns__bodies.xhtml" />

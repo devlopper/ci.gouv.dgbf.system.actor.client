@@ -26,6 +26,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputText;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
@@ -67,23 +68,25 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	}
 	
 	private void buildTabScopeFunction(Collection<Map<Object,Object>> cellsMaps) {
-		String functionCode = WebController.getInstance().getRequestParameter(ParameterName.stringify(Function.class));
-		Collection<Function> functions = EntityReader.getInstance().readMany(Function.class, FunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_FOR_UI);
-		if(StringHelper.isBlank(functionCode) && CollectionHelper.isNotEmpty(functions))
-			functionCode = ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER;
-		DataTable dataTable = ScopeFunctionListPage.buildDataTable(ScopeFunctionListPage.class,Boolean.TRUE,FieldHelper.join(ScopeFunction.FIELD_FUNCTION,Function.FIELD_CODE)
-				,functionCode);
-		SelectOneCombo functionSelectOneCombo = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICES,functions);
-		functionSelectOneCombo.selectByBusinessIdentifier(functionCode);
+		String functionIdentifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(Function.class));
+		Collection<Function> functions = EntityReader.getInstance().readMany(Function.class, FunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE_FOR_UI);
+		if(StringHelper.isBlank(functionIdentifier) && CollectionHelper.isNotEmpty(functions))
+			functionIdentifier = CollectionHelper.getFirst(functions).getIdentifier();
+		DataTable dataTable = ScopeFunctionListPage.buildDataTable(ScopeFunctionListPage.class,Boolean.TRUE,FieldHelper.join(ScopeFunction.FIELD_FUNCTION,Function.FIELD_IDENTIFIER)
+				,functionIdentifier);
+		dataTable.setTitle(OutputText.buildFromValue("Liste des postes"));
+		SelectOneCombo functionSelectOneCombo = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,Function.class,SelectOneCombo.FIELD_CHOICES,functions);
+		functionSelectOneCombo.selectBySystemIdentifier(functionIdentifier);
 		functionSelectOneCombo.enableValueChangeListener(new AbstractInputChoiceOne.ValueChangeListener() {
 			@SuppressWarnings("unchecked")
 			@Override
 			protected void select(AbstractAction action, Object value) {
 				((ScopeFunctionListPage.LazyDataModelListenerImpl)((LazyDataModel<ScopeFunction>)dataTable.getValue()).getListener())
-					.setFunctionCode((String)FieldHelper.readBusinessIdentifier(value));
+					.setFunctionIdentifier((String)FieldHelper.readSystemIdentifier(value));
 			}
 		}, List.of(dataTable));		
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,functionSelectOneCombo,Cell.FIELD_WIDTH,12));		
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Fonction"),Cell.FIELD_WIDTH,1));	
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,functionSelectOneCombo,Cell.FIELD_WIDTH,11));	
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
 	}
 	

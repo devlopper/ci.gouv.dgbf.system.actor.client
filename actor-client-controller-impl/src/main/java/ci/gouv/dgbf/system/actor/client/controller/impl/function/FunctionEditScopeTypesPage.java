@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntityReader;
@@ -21,6 +22,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.InputTextarea;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectBooleanButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
@@ -43,6 +45,8 @@ public class FunctionEditScopeTypesPage extends AbstractPageContainerManagedImpl
 	private Function function;
 	private DataTable scopeTypesDataTable;
 	private SelectBooleanButton scopeTypeScopeFunctionDerivableSelectBooleanButton;
+	private InputTextarea scopeTypeScopeFunctionCodeScriptInputTextarea;
+	private InputTextarea scopeTypeScopeFunctionNameScriptInputTextarea;
 	//private SelectManyCheckbox scopeTypesSelectManyCheckbox;
 	private Collection<ScopeTypeFunction> scopeTypesFunctions;
 	private List<ScopeType> scopeTypes,initialSelectedScopeTypes;
@@ -66,6 +70,8 @@ public class FunctionEditScopeTypesPage extends AbstractPageContainerManagedImpl
 					for(ScopeTypeFunction scopeTypesFunction : scopeTypesFunctions) {
 						if(scopeType.equals(scopeTypesFunction.getScopeType())) {
 							scopeType.setScopeFunctionDerivable(scopeTypesFunction.getScopeFunctionDerivable());
+							scopeType.setScopeFunctionCodeScript(scopeTypesFunction.getScopeFunctionCodeScript());
+							scopeType.setScopeFunctionNameScript(scopeTypesFunction.getScopeFunctionNameScript());
 							break;
 						}
 					}
@@ -88,11 +94,18 @@ public class FunctionEditScopeTypesPage extends AbstractPageContainerManagedImpl
 				,DataTable.FIELD_SELECTION_AS_COLLECTION,CollectionHelper.isEmpty(initialSelectedScopeTypes) ? null : new ArrayList<>(initialSelectedScopeTypes)
 				,DataTable.FIELD_SELECTION_MODE,"multiple"
 				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, CollectionHelper.listOf(
-						ScopeType.FIELD_CODE,ScopeType.FIELD_NAME,ScopeType.FIELD_SCOPE_FUNCTION_CODE_SCRIPT,ScopeType.FIELD_SCOPE_FUNCTION_NAME_SCRIPT
-						,ScopeType.FIELD_SCOPE_FUNCTION_DERIVABLE));
+						ScopeType.FIELD_CODE,ScopeType.FIELD_NAME,ScopeType.FIELD_SCOPE_FUNCTION_DERIVABLE,ScopeType.FIELD_SCOPE_FUNCTION_CODE_SCRIPT
+						,ScopeType.FIELD_SCOPE_FUNCTION_NAME_SCRIPT
+						));
 		
 		scopeTypeScopeFunctionDerivableSelectBooleanButton = SelectBooleanButton.build();
-		scopeTypeScopeFunctionDerivableSelectBooleanButton.setBindingByDerivation("functionEditScopeTypesPage.scopeTypeScopeFunctionDerivableSelectBooleanButton", "record.scopeFunctionDerivable");
+		scopeTypeScopeFunctionDerivableSelectBooleanButton.setBindingByDerivation("functionEditScopeTypesPage.scopeTypeScopeFunctionDerivableSelectBooleanButton", "record."+ScopeType.FIELD_SCOPE_FUNCTION_DERIVABLE);
+		
+		scopeTypeScopeFunctionCodeScriptInputTextarea = InputTextarea.build(InputTextarea.FIELD_STYLE,"color:black;");
+		scopeTypeScopeFunctionCodeScriptInputTextarea.setBindingByDerivation("functionEditScopeTypesPage.scopeTypeScopeFunctionCodeScriptInputTextarea", "record."+ScopeType.FIELD_SCOPE_FUNCTION_CODE_SCRIPT);
+		
+		scopeTypeScopeFunctionNameScriptInputTextarea = InputTextarea.build(InputTextarea.FIELD_STYLE,"color:black;");
+		scopeTypeScopeFunctionNameScriptInputTextarea.setBindingByDerivation("functionEditScopeTypesPage.scopeTypeScopeFunctionNameScriptInputTextarea", "record."+ScopeType.FIELD_SCOPE_FUNCTION_NAME_SCRIPT);
 		
 		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,CollectionHelper.listOf(
 				MapHelper.instantiate(Cell.FIELD_CONTROL,scopeTypesDataTable,Cell.FIELD_WIDTH,12)
@@ -119,9 +132,10 @@ public class FunctionEditScopeTypesPage extends AbstractPageContainerManagedImpl
 												for(ScopeType selectedScopeType : selectedScopeTypes)
 													if(selectedScopeType.equals(scopeTypeFunction.getScopeType())) {
 														scopeTypeFunction.setScopeFunctionDerivable(selectedScopeType.getScopeFunctionDerivable());
+														scopeTypeFunction.setScopeFunctionCodeScript(selectedScopeType.getScopeFunctionCodeScript());
+														scopeTypeFunction.setScopeFunctionNameScript(selectedScopeType.getScopeFunctionNameScript());
 														break;
 													}
-												System.out.println("U : "+scopeTypeFunction.getScopeType()+" : "+scopeTypeFunction.getScopeFunctionDerivable());
 											}
 										}
 									}								
@@ -163,7 +177,13 @@ public class FunctionEditScopeTypesPage extends AbstractPageContainerManagedImpl
 			return Boolean.FALSE;
 		if(initialScopeType.getScopeFunctionDerivable() == null)
 			return scopeType.getScopeFunctionDerivable() != null;
-		return !initialScopeType.getScopeFunctionDerivable().equals(scopeType.getScopeFunctionDerivable());
+		if(!initialScopeType.getScopeFunctionDerivable().equals(scopeType.getScopeFunctionDerivable()))
+			return Boolean.TRUE;
+		if(!StringUtils.equals(initialScopeType.getScopeFunctionCodeScript(), scopeType.getScopeFunctionCodeScript()))
+			return Boolean.TRUE;
+		if(!StringUtils.equals(initialScopeType.getScopeFunctionNameScript(), scopeType.getScopeFunctionNameScript()))
+			return Boolean.TRUE;
+		return Boolean.FALSE;
 	}
 	
 	@Getter @Setter @Accessors(chain=true)

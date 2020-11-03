@@ -171,7 +171,7 @@ public class ScopeFunctionEditPage extends AbstractEntityEditPageContainerManage
 			if(ScopeFunction.FIELD_FUNCTION.equals(fieldName)) {
 				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Fonction");
 				map.put(AbstractInputChoice.FIELD_CHOICES, EntityReader.getInstance().readMany(Function.class
-						, FunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE_WITH_ALL));
+						, FunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE_FOR_UI_CREATE_SCOPE_FUNCTION));
 			}else if(ScopeFunction.FIELD_SCOPE.equals(fieldName) || ScopeFunction.FIELD_SCOPES.equals(fieldName)) {
 				map.put(AutoComplete.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Domaine");
 				map.put(AutoComplete.FIELD_ENTITY_CLASS, Scope.class);

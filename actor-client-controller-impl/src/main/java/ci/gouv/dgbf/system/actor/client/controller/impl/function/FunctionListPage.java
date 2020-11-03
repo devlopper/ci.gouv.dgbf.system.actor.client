@@ -103,7 +103,7 @@ public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Liste des catégories de fonctions";
+		return "Liste des fonctions";
 	}
 	
 	/**/

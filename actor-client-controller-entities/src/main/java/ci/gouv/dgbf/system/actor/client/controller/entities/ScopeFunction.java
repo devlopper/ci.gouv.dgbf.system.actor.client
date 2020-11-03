@@ -35,6 +35,8 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	@Input @InputBoolean @InputBooleanButton private Boolean shared;
 	private String sharedAsString;
 	
+	private Collection<String> functionsIdentifiers;
+	
 	@Override
 	public String toString() {
 		return code+" "+name;

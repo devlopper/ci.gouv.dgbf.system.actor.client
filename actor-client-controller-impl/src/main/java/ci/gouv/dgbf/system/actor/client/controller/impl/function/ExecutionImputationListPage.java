@@ -121,6 +121,20 @@ public class ExecutionImputationListPage extends AbstractEntityListPageContainer
 						}
 					});
 			
+			dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Éffacer",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
+					,MenuItem.FIELD_ICON,"fa fa-trash"
+					,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
+					,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+						@Override
+						protected Object __runExecuteFunction__(AbstractAction action) {
+							Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>();
+							arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+									.setActionIdentifier(ScopeFunctionExecutionImputationBusiness.DELETE_ALL));					
+							EntitySaver.getInstance().save(ScopeFunction.class, arguments);
+							return null;
+						}
+					});
+			
 			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("executionImputationEditScopeFunctionsView", CommandButton.FIELD_VALUE,"Modifier"
 					,CommandButton.FIELD_ICON,"fa fa-pencil");
 		}

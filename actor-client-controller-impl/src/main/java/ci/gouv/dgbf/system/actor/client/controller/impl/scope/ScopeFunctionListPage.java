@@ -79,7 +79,7 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl());
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl()
-				.setFunctionCode((String) MapHelper.readByKey(arguments, FieldHelper.join(ScopeFunction.FIELD_FUNCTION,Function.FIELD_CODE))));
+				.setFunctionIdentifier((String) MapHelper.readByKey(arguments, FieldHelper.join(ScopeFunction.FIELD_FUNCTION,Function.FIELD_IDENTIFIER))));
 		DataTable dataTable = DataTable.build(arguments);
 		if(Boolean.TRUE.equals(MapHelper.readByKey(arguments, ScopeFunctionListPage.class))) {
 			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();
@@ -90,23 +90,46 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 					,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
 						@Override
 						protected Object __runExecuteFunction__(AbstractAction action) {
-							Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>();
+							@SuppressWarnings("unchecked")
+							LazyDataModelListenerImpl listener = (LazyDataModelListenerImpl) ((LazyDataModel<ScopeFunction>)dataTable.getValue()).getListener();
+							Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>().addCreatablesOrUpdatables(new ScopeFunction()
+									.setFunctionsIdentifiers(List.of(listener.getFunctionIdentifier())));
 							arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
-									.setActionIdentifier(ScopeFunctionBusiness.DERIVE_ALL));					
+									.setActionIdentifier(ScopeFunctionBusiness.DERIVE_BY_FUNCTIONS_IDENTIFIERS));					
 							EntitySaver.getInstance().save(ScopeFunction.class, arguments);
 							return null;
 						}
 					});
 			
-			dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Codifier",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
+			dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Recodifier",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
 					,MenuItem.FIELD_ICON,"fa fa-cubes"
 					,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
 					,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
 						@Override
 						protected Object __runExecuteFunction__(AbstractAction action) {
-							Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>();
+							@SuppressWarnings("unchecked")
+							LazyDataModelListenerImpl listener = (LazyDataModelListenerImpl) ((LazyDataModel<ScopeFunction>)dataTable.getValue()).getListener();
+							Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>().addCreatablesOrUpdatables(new ScopeFunction()
+									.setFunctionsIdentifiers(List.of(listener.getFunctionIdentifier())));
 							arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
-									.setActionIdentifier(ScopeFunctionBusiness.CODIFY_ALL));					
+									.setActionIdentifier(ScopeFunctionBusiness.CODIFY_BY_FUNCTIONS_IDENTIFIERS));					
+							EntitySaver.getInstance().save(ScopeFunction.class, arguments);
+							return null;
+						}
+					});
+			
+			dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Supprimer",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
+					,MenuItem.FIELD_ICON,"fa fa-trash"
+					,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
+					,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+						@Override
+						protected Object __runExecuteFunction__(AbstractAction action) {
+							@SuppressWarnings("unchecked")
+							LazyDataModelListenerImpl listener = (LazyDataModelListenerImpl) ((LazyDataModel<ScopeFunction>)dataTable.getValue()).getListener();
+							Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>().addCreatablesOrUpdatables(new ScopeFunction()
+									.setFunctionsIdentifiers(List.of(listener.getFunctionIdentifier())));
+							arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+									.setActionIdentifier(ScopeFunctionBusiness.DELETE_BY_FUNCTIONS_IDENTIFIERS));					
 							EntitySaver.getInstance().save(ScopeFunction.class, arguments);
 							return null;
 						}
@@ -158,7 +181,7 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 	
 	@Getter @Setter @Accessors(chain=true)
 	public static class LazyDataModelListenerImpl extends LazyDataModel.Listener.AbstractImpl<ScopeFunction> implements Serializable {				
-		private String functionCode;
+		private String functionIdentifier;
 		
 		@Override
 		public Boolean getReaderUsable(LazyDataModel<ScopeFunction> lazyDataModel) {
@@ -175,8 +198,8 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 			Filter.Dto filter =  super.instantiateFilter(lazyDataModel);
 			if(filter == null)
 				filter = new Filter.Dto();
-			if(StringHelper.isNotBlank(functionCode))
-				filter.addField(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_CODE, functionCode);
+			if(StringHelper.isNotBlank(functionIdentifier))
+				filter.addField(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER, functionIdentifier);
 			return filter;
 		}
 	}

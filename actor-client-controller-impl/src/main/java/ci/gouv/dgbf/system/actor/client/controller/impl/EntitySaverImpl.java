@@ -114,9 +114,11 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 			else if(ServiceBusiness.DERIVE_ALL_KEYCLOAK_AUTHORIZATIONS_FROM_SCRATCH.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ServiceRepresentation.getProxy());
 			
-			else if(ScopeFunctionBusiness.DERIVE_ALL.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+			else if(ScopeFunctionBusiness.DERIVE_BY_FUNCTIONS_IDENTIFIERS.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ScopeFunctionRepresentation.getProxy());
-			else if(ScopeFunctionBusiness.CODIFY_ALL.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+			else if(ScopeFunctionBusiness.CODIFY_BY_FUNCTIONS_IDENTIFIERS.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ScopeFunctionRepresentation.getProxy());
+			else if(ScopeFunctionBusiness.DELETE_BY_FUNCTIONS_IDENTIFIERS.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ScopeFunctionRepresentation.getProxy());
 			
 			else if(ScopeFunctionBusiness.SAVE.equals(arguments.getRepresentationArguments().getActionIdentifier()))
@@ -132,6 +134,8 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				arguments.setRepresentation(ExecutionImputationRepresentation.getProxy());
 			
 			else if(ScopeFunctionExecutionImputationBusiness.DERIVE_ALL.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ScopeFunctionExecutionImputationRepresentation.getProxy());
+			else if(ScopeFunctionExecutionImputationBusiness.DELETE_ALL.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ScopeFunctionExecutionImputationRepresentation.getProxy());
 		}
 		super.prepare(controllerEntityClass, arguments);
@@ -379,11 +383,14 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 		if(arguments != null && ServiceBusiness.DERIVE_ALL_KEYCLOAK_AUTHORIZATIONS_FROM_SCRATCH.equals(arguments.getActionIdentifier()))
 			return ((ServiceRepresentation)representation).deriveAllKeycloakAuthorizationsFromScratch();
 		
-		if(arguments != null && ScopeFunctionBusiness.DERIVE_ALL.equals(arguments.getActionIdentifier()))
-			return ((ScopeFunctionRepresentation)representation).deriveAll();
+		if(arguments != null && ScopeFunctionBusiness.DERIVE_BY_FUNCTIONS_IDENTIFIERS.equals(arguments.getActionIdentifier()))
+			return ((ScopeFunctionRepresentation)representation).deriveByFunctionsIdentifiers(((ScopeFunctionDto) CollectionHelper.getFirst(creatables)).getFunctionsIdentifiers());
 		
-		if(arguments != null && ScopeFunctionBusiness.CODIFY_ALL.equals(arguments.getActionIdentifier()))
-			return ((ScopeFunctionRepresentation)representation).codifyAll();
+		if(arguments != null && ScopeFunctionBusiness.CODIFY_BY_FUNCTIONS_IDENTIFIERS.equals(arguments.getActionIdentifier()))
+			return ((ScopeFunctionRepresentation)representation).codifyByFunctionsIdentifiers(((ScopeFunctionDto) CollectionHelper.getFirst(creatables)).getFunctionsIdentifiers());
+		
+		if(arguments != null && ScopeFunctionBusiness.DELETE_BY_FUNCTIONS_IDENTIFIERS.equals(arguments.getActionIdentifier()))
+			return ((ScopeFunctionRepresentation)representation).deleteByFunctionsIdentifiers(((ScopeFunctionDto) CollectionHelper.getFirst(creatables)).getFunctionsIdentifiers());
 		
 		if(arguments != null && ScopeFunctionBusiness.SAVE.equals(arguments.getActionIdentifier())) {
 			if(CollectionHelper.isEmpty(creatables) && CollectionHelper.isEmpty(updatables))
@@ -410,6 +417,9 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 		
 		if(arguments != null && ScopeFunctionExecutionImputationBusiness.DERIVE_ALL.equals(arguments.getActionIdentifier()))
 			return ((ScopeFunctionExecutionImputationRepresentation)representation).deriveAll();
+		
+		if(arguments != null && ScopeFunctionExecutionImputationBusiness.DELETE_ALL.equals(arguments.getActionIdentifier()))
+			return ((ScopeFunctionExecutionImputationRepresentation)representation).deleteAll();
 		
 		return super.save(representation, creatables, updatables, deletables, arguments);
 	}

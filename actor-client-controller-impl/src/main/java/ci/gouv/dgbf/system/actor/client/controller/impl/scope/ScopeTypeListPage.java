@@ -78,9 +78,11 @@ public class ScopeTypeListPage extends AbstractEntityListPageContainerManagedImp
 			}else if(ScopeType.FIELD_SCOPE_FUNCTION_CODE_SCRIPT.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Script de génération du code des postes");
 				map.put(Column.FIELD_WIDTH, "300");
-			}else if(ScopeType.FIELD_ORDER_NUMBER.equals(fieldName)) {
+				map.put(Column.FIELD_INPUTABLE, Boolean.TRUE);
+			}else if(ScopeType.FIELD_SCOPE_FUNCTION_NAME_SCRIPT.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Script de génération du libellé des postes");
 				map.put(Column.FIELD_WIDTH, "300");
+				map.put(Column.FIELD_INPUTABLE, Boolean.TRUE);
 			}else if(ScopeType.FIELD_ORDER_NUMBER.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Numéro d'ordre");
 				map.put(Column.FIELD_WIDTH, "150");
