@@ -84,8 +84,11 @@ public class ExecutionImputationListPage extends AbstractEntityListPageContainer
 						,ExecutionImputation.FIELD_ACTION_CODE_NAME,ExecutionImputation.FIELD_ACTIVITY_CODE_NAME,ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME
 						,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME,ExecutionImputation.FIELD_ACTIVITY_CATEGORY_CODE_NAME
 						,ExecutionImputation.FIELD_EXPENDITURE_NATURE_CODE_NAME
-						,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_CODE_NAME,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_SCOPE_FUNCTION_CODE_NAME
-						,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_SCOPE_FUNCTION_CODE_NAME,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_SCOPE_FUNCTION_CODE_NAME));
+						,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_CODE_NAME,ExecutionImputation.FIELD_CREDIT_MANAGER_ASSISTANT_SCOPE_FUNCTION_CODE_NAME
+						,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_SCOPE_FUNCTION_CODE_NAME,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_ASSISTANT_SCOPE_FUNCTION_CODE_NAME
+						,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_SCOPE_FUNCTION_CODE_NAME,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_ASSISTANT_SCOPE_FUNCTION_CODE_NAME
+						,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_SCOPE_FUNCTION_CODE_NAME,ExecutionImputation.FIELD_ACCOUNTING_ASSISTANT_SCOPE_FUNCTION_CODE_NAME
+						));
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl());
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl());
@@ -148,14 +151,19 @@ public class ExecutionImputationListPage extends AbstractEntityListPageContainer
 	@Getter @Setter @Accessors(chain=true)
 	public static class DataTableListenerImpl extends DataTable.Listener.AbstractImpl implements Serializable {
 		
-		private Function creditManagerHolder,authorizingOfficerHolder,financialControllerHolder,accountingHolder;
+		private Function creditManagerHolder,creditManagerAssistant,authorizingOfficerHolder,authorizingOfficerAssistant
+			,financialControllerHolder,financialControllerAssistant,accountingHolder,accountingAssistant;
 		private String tooltipFormat;
 		
 		public DataTableListenerImpl() {
 			creditManagerHolder = __inject__(FunctionController.class).readByBusinessIdentifier(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER);
+			creditManagerAssistant = __inject__(FunctionController.class).readByBusinessIdentifier(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_ASSISTANT);
 			authorizingOfficerHolder = __inject__(FunctionController.class).readByBusinessIdentifier(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_HOLDER);
+			authorizingOfficerAssistant = __inject__(FunctionController.class).readByBusinessIdentifier(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_ASSISTANT);
 			financialControllerHolder = __inject__(FunctionController.class).readByBusinessIdentifier(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_HOLDER);
+			financialControllerAssistant = __inject__(FunctionController.class).readByBusinessIdentifier(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_ASSISTANT);
 			accountingHolder = __inject__(FunctionController.class).readByBusinessIdentifier(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_HOLDER);
+			accountingAssistant = __inject__(FunctionController.class).readByBusinessIdentifier(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_ASSISTANT);
 			tooltipFormat = StringUtils.join(new String[] {
 					 "Section              : %s"
 					,"USB                  : %s"
@@ -166,9 +174,13 @@ public class ExecutionImputationListPage extends AbstractEntityListPageContainer
 					,"Catégorie activité   : %s"
 					,"Nature dépense       : %s"
 					,FieldHelper.readName(creditManagerHolder)+"       : %s"
+					,FieldHelper.readName(creditManagerAssistant)+"       : %s"
 					,FieldHelper.readName(authorizingOfficerHolder)+"  : %s"
+					,FieldHelper.readName(authorizingOfficerAssistant)+"  : %s"
 					,FieldHelper.readName(financialControllerHolder)+" : %s"
+					,FieldHelper.readName(financialControllerAssistant)+" : %s"
 					,FieldHelper.readName(accountingHolder)+"          : %s"
+					,FieldHelper.readName(accountingAssistant)+"          : %s"
 				},"<br/>");
 		}
 		
@@ -196,18 +208,30 @@ public class ExecutionImputationListPage extends AbstractEntityListPageContainer
 				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readBusinessIdentifier(creditManagerHolder));
 				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
 				map.put(Column.FIELD_FILTER_BY, ExecutionImputationQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER_CODE_NAME);
+			}else if(ExecutionImputation.FIELD_CREDIT_MANAGER_ASSISTANT_SCOPE_FUNCTION_CODE_NAME.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readBusinessIdentifier(creditManagerAssistant));
+				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}else if(ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_SCOPE_FUNCTION_CODE_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readBusinessIdentifier(authorizingOfficerHolder));
 				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
 				map.put(Column.FIELD_FILTER_BY, ExecutionImputationQuerier.PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_CODE_NAME);
+			}else if(ExecutionImputation.FIELD_AUTHORIZING_OFFICER_ASSISTANT_SCOPE_FUNCTION_CODE_NAME.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readBusinessIdentifier(authorizingOfficerAssistant));
+				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}else if(ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_SCOPE_FUNCTION_CODE_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readBusinessIdentifier(financialControllerHolder));
 				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
 				map.put(Column.FIELD_FILTER_BY, ExecutionImputationQuerier.PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_CODE_NAME);
+			}else if(ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_ASSISTANT_SCOPE_FUNCTION_CODE_NAME.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readBusinessIdentifier(financialControllerAssistant));
+				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}else if(ExecutionImputation.FIELD_ACCOUNTING_HOLDER_SCOPE_FUNCTION_CODE_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readBusinessIdentifier(accountingHolder));
 				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
 				map.put(Column.FIELD_FILTER_BY, ExecutionImputationQuerier.PARAMETER_NAME_ACCOUNTING_HOLDER_CODE_NAME);
+			}else if(ExecutionImputation.FIELD_ACCOUNTING_ASSISTANT_SCOPE_FUNCTION_CODE_NAME.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readBusinessIdentifier(accountingAssistant));
+				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}else if(ExecutionImputation.FIELD_SECTION_CODE_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Section");
 				map.put(Column.FIELD_WIDTH, "80");
@@ -249,39 +273,10 @@ public class ExecutionImputationListPage extends AbstractEntityListPageContainer
 		}
 		
 		public Object getCellValueByRecordByColumn(Object record, Integer recordIndex, Column column, Integer columnIndex) {
-			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_SECTION_CODE_NAME))
-				return StringHelper.getFirstWord(((ExecutionImputation)record).getSectionCodeName());
-			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME))
-				return StringHelper.getFirstWord(((ExecutionImputation)record).getBudgetSpecializationUnitCodeName());
-			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_ACTION_CODE_NAME))
-				return StringHelper.getFirstWord(((ExecutionImputation)record).getActionCodeName());
-			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_ACTIVITY_CODE_NAME))
-				return StringHelper.getFirstWord(((ExecutionImputation)record).getActivityCodeName());
-			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME))
-				return StringHelper.getFirstWord(((ExecutionImputation)record).getEconomicNatureCodeName());
-			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME))
-				return StringHelper.getFirstWord(((ExecutionImputation)record).getAdministrativeUnitCodeName());
-			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_ACTIVITY_CATEGORY_CODE_NAME))
-				return StringHelper.getFirstWord(((ExecutionImputation)record).getActivityCategoryCodeName());
-			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_EXPENDITURE_NATURE_CODE_NAME))
-				return StringHelper.getFirstWord(((ExecutionImputation)record).getExpenditureNatureCodeName());
-			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_CODE_NAME))
-				return StringHelper.getFirstWord(((ExecutionImputation)record).getCreditManagerHolderScopeFunctionCodeName());
-			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_CREDIT_MANAGER_ASSISTANT_SCOPE_FUNCTION_CODE_NAME))
-				return StringHelper.getFirstWord(((ExecutionImputation)record).getCreditManagerAssistantScopeFunctionCodeName());
-			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_SCOPE_FUNCTION_CODE_NAME))
-				return StringHelper.getFirstWord(((ExecutionImputation)record).getAuthorizingOfficerHolderScopeFunctionCodeName());
-			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_AUTHORIZING_OFFICER_ASSISTANT_SCOPE_FUNCTION_CODE_NAME))
-				return StringHelper.getFirstWord(((ExecutionImputation)record).getAuthorizingOfficerAssistantScopeFunctionCodeName());
-			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_SCOPE_FUNCTION_CODE_NAME))
-				return StringHelper.getFirstWord(((ExecutionImputation)record).getFinancialControllerHolderScopeFunctionCodeName());
-			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_ASSISTANT_SCOPE_FUNCTION_CODE_NAME))
-				return StringHelper.getFirstWord(((ExecutionImputation)record).getFinancialControllerAssistantScopeFunctionCodeName());
-			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_ACCOUNTING_HOLDER_SCOPE_FUNCTION_CODE_NAME))
-				return StringHelper.getFirstWord(((ExecutionImputation)record).getAccountingHolderScopeFunctionCodeName());
-			if(column != null && column.getFieldName().equals(ExecutionImputation.FIELD_ACCOUNTING_ASSISTANT_SCOPE_FUNCTION_CODE_NAME))
-				return StringHelper.getFirstWord(((ExecutionImputation)record).getAccountingAssistantScopeFunctionCodeName());
-			return super.getCellValueByRecordByColumn(record, recordIndex, column, columnIndex);
+			Object value = super.getCellValueByRecordByColumn(record, recordIndex, column, columnIndex);		
+			if(value instanceof String)
+				return StringHelper.getFirstWord((String)value);			
+			return value;
 		}
 		
 		@Override
@@ -291,9 +286,13 @@ public class ExecutionImputationListPage extends AbstractEntityListPageContainer
 					,executionImputation.getActionCodeName(),executionImputation.getActivityCodeName(),executionImputation.getEconomicNatureCodeName()
 					,executionImputation.getAdministrativeUnitCodeName(),executionImputation.getActivityCategoryCodeName(),executionImputation.getExpenditureNatureCodeName()
 					,ValueHelper.defaultToIfBlank(StringHelper.get(executionImputation.getCreditManagerHolderScopeFunctionCodeName()),ConstantEmpty.STRING)
+					,ValueHelper.defaultToIfBlank(StringHelper.get(executionImputation.getCreditManagerAssistantScopeFunctionCodeName()),ConstantEmpty.STRING)
 					,ValueHelper.defaultToIfBlank(StringHelper.get(executionImputation.getAuthorizingOfficerHolderScopeFunctionCodeName()),ConstantEmpty.STRING)
+					,ValueHelper.defaultToIfBlank(StringHelper.get(executionImputation.getAuthorizingOfficerAssistantScopeFunctionCodeName()),ConstantEmpty.STRING)
 					,ValueHelper.defaultToIfBlank(StringHelper.get(executionImputation.getFinancialControllerHolderScopeFunctionCodeName()),ConstantEmpty.STRING)
+					,ValueHelper.defaultToIfBlank(StringHelper.get(executionImputation.getFinancialControllerAssistantScopeFunctionCodeName()),ConstantEmpty.STRING)
 					,ValueHelper.defaultToIfBlank(StringHelper.get(executionImputation.getAccountingHolderScopeFunctionCodeName()),ConstantEmpty.STRING)
+					,ValueHelper.defaultToIfBlank(StringHelper.get(executionImputation.getAccountingAssistantScopeFunctionCodeName()),ConstantEmpty.STRING)
 				);
 		}
 		

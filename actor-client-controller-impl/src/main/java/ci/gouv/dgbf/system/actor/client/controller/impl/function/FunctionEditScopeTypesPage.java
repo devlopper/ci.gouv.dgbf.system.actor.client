@@ -122,7 +122,11 @@ public class FunctionEditScopeTypesPage extends AbstractPageContainerManagedImpl
 									Collection<ScopeType> selectedScopeTypes = CollectionHelper.cast(ScopeType.class, scopeTypesDataTable.getSelectionAsCollection());
 									if(CollectionHelper.isNotEmpty(selectedScopeTypes)) {
 										arguments.setCreatables(selectedScopeTypes.stream().filter(scopeType -> !CollectionHelper.contains(initialSelectedScopeTypes, scopeType))
-												.map(scopeType -> new ScopeTypeFunction().setScopeType(scopeType).setFunction(function).setScopeFunctionDerivable(scopeType.getScopeFunctionDerivable()))
+												.map(scopeType -> new ScopeTypeFunction().setScopeType(scopeType).setFunction(function)
+														.setScopeFunctionDerivable(scopeType.getScopeFunctionDerivable())
+														.setScopeFunctionCodeScript(scopeType.getScopeFunctionCodeScript())
+														.setScopeFunctionNameScript(scopeType.getScopeFunctionNameScript())
+														)
 											.collect(Collectors.toList()));
 										if(CollectionHelper.isNotEmpty(scopeTypesFunctions))
 											arguments.setUpdatables(scopeTypesFunctions.stream().filter(scopeTypesFunction -> selectedScopeTypes

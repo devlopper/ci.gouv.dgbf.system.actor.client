@@ -44,10 +44,14 @@ public class ExecutionImputationEditScopeFunctionsPage extends AbstractPageConta
 
 	private Layout layout;
 	private ExecutionImputation executionImputation;
-	private AutoComplete gcAutoComplete;
-	private AutoComplete ordAutoComplete;
-	private AutoComplete cfAutoComplete;
-	private AutoComplete cptAutoComplete;
+	private AutoComplete creditManagerHolderAutoComplete;
+	private AutoComplete creditManagerAssistantAutoComplete;
+	private AutoComplete authorizingOfficerHolderAutoComplete;
+	private AutoComplete authorizingOfficerAssistantAutoComplete;
+	private AutoComplete financialControllerHolderAutoComplete;
+	private AutoComplete financialControllerAssistantAutoComplete;
+	private AutoComplete accountingHolderAutoComplete;
+	private AutoComplete accountingAssistantAutoComplete;
 	
 	@Override
 	protected String __getWindowTitleValue__() {
@@ -56,9 +60,8 @@ public class ExecutionImputationEditScopeFunctionsPage extends AbstractPageConta
 	
 	@Override
 	protected void __listenPostConstruct__() {
-		executionImputation = EntityReader.getInstance().readOne(ExecutionImputation.class, ExecutionImputationQuerier.QUERY_IDENTIFIER_READ_BY_SYSTEM_IDENTIFIER_FOR_EDIT
+		executionImputation = EntityReader.getInstance().readOne(ExecutionImputation.class, ExecutionImputationQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT
 				,ExecutionImputationQuerier.PARAMETER_NAME_IDENTIFIER, WebController.getInstance().getRequestParameter(ParameterName.ENTITY_IDENTIFIER));
-		WebController.getInstance().getRequestParameterEntity(ExecutionImputation.class);
 		super.__listenPostConstruct__();
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Activité"),Cell.FIELD_WIDTH,3));
@@ -66,28 +69,44 @@ public class ExecutionImputationEditScopeFunctionsPage extends AbstractPageConta
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Nature économique"),Cell.FIELD_WIDTH,3));
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue(executionImputation.getEconomicNatureCodeName()),Cell.FIELD_WIDTH,9));
 		
-		gcAutoComplete = addScopeFunctionAutoComplete(executionImputation,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER
+		creditManagerHolderAutoComplete = addScopeFunctionAutoComplete(executionImputation,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER
 				,ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation.FIELD_CREDIT_MANAGER
-				,ExecutionImputationScopeFunction.FIELD_HOLDER,cellsMaps);				
-		ordAutoComplete = addScopeFunctionAutoComplete(executionImputation,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_HOLDER
+				,ExecutionImputationScopeFunction.FIELD_HOLDER,cellsMaps);
+		creditManagerAssistantAutoComplete = addScopeFunctionAutoComplete(executionImputation,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_ASSISTANT
+				,ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation.FIELD_CREDIT_MANAGER
+				,ExecutionImputationScopeFunction.FIELD_ASSISTANT,cellsMaps);
+		authorizingOfficerHolderAutoComplete = addScopeFunctionAutoComplete(executionImputation,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_HOLDER
 				,ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation.FIELD_AUTHORIZING_OFFICER
 				,ExecutionImputationScopeFunction.FIELD_HOLDER,cellsMaps);
-		cfAutoComplete = addScopeFunctionAutoComplete(executionImputation,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_HOLDER
+		authorizingOfficerAssistantAutoComplete = addScopeFunctionAutoComplete(executionImputation,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_ASSISTANT
+				,ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation.FIELD_AUTHORIZING_OFFICER
+				,ExecutionImputationScopeFunction.FIELD_ASSISTANT,cellsMaps);
+		financialControllerHolderAutoComplete = addScopeFunctionAutoComplete(executionImputation,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_HOLDER
 				,ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation.FIELD_FINANCIAL_CONTROLLER
 				,ExecutionImputationScopeFunction.FIELD_HOLDER,cellsMaps);
-		cptAutoComplete = addScopeFunctionAutoComplete(executionImputation,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_HOLDER
+		financialControllerAssistantAutoComplete = addScopeFunctionAutoComplete(executionImputation,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_ASSISTANT
+				,ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation.FIELD_FINANCIAL_CONTROLLER
+				,ExecutionImputationScopeFunction.FIELD_ASSISTANT,cellsMaps);
+		accountingHolderAutoComplete = addScopeFunctionAutoComplete(executionImputation,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_HOLDER
 				,ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation.FIELD_ACCOUNTING
 				,ExecutionImputationScopeFunction.FIELD_HOLDER,cellsMaps);
+		accountingAssistantAutoComplete = addScopeFunctionAutoComplete(executionImputation,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_ASSISTANT
+				,ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation.FIELD_ACCOUNTING
+				,ExecutionImputationScopeFunction.FIELD_ASSISTANT,cellsMaps);
 		
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,CommandButton.build(CommandButton.FIELD_VALUE,"Enregistrer",CommandButton.FIELD_ICON,"fa fa-floppy-o"
 				,CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
 				,CommandButton.FIELD_LISTENER,new CommandButton.Listener.AbstractImpl() {
 					@Override
 					protected Object __runExecuteFunction__(AbstractAction action) {
-						executionImputation.getCreditManager(Boolean.TRUE).setHolderIdentifier((String) FieldHelper.readSystemIdentifier(gcAutoComplete.getValue()));
-						executionImputation.getAuthorizingOfficer(Boolean.TRUE).setHolderIdentifier((String) FieldHelper.readSystemIdentifier(ordAutoComplete.getValue()));
-						executionImputation.getFinancialController(Boolean.TRUE).setHolderIdentifier((String) FieldHelper.readSystemIdentifier(cfAutoComplete.getValue()));
-						executionImputation.getAccounting(Boolean.TRUE).setHolderIdentifier((String) FieldHelper.readSystemIdentifier(cptAutoComplete.getValue()));						
+						executionImputation.getCreditManager(Boolean.TRUE).setHolderIdentifier((String) FieldHelper.readSystemIdentifier(creditManagerHolderAutoComplete.getValue()));
+						executionImputation.getCreditManager(Boolean.TRUE).setAssistantIdentifier((String) FieldHelper.readSystemIdentifier(creditManagerAssistantAutoComplete.getValue()));
+						executionImputation.getAuthorizingOfficer(Boolean.TRUE).setHolderIdentifier((String) FieldHelper.readSystemIdentifier(authorizingOfficerHolderAutoComplete.getValue()));
+						executionImputation.getAuthorizingOfficer(Boolean.TRUE).setAssistantIdentifier((String) FieldHelper.readSystemIdentifier(authorizingOfficerAssistantAutoComplete.getValue()));
+						executionImputation.getFinancialController(Boolean.TRUE).setHolderIdentifier((String) FieldHelper.readSystemIdentifier(financialControllerHolderAutoComplete.getValue()));
+						executionImputation.getFinancialController(Boolean.TRUE).setAssistantIdentifier((String) FieldHelper.readSystemIdentifier(financialControllerAssistantAutoComplete.getValue()));
+						executionImputation.getAccounting(Boolean.TRUE).setHolderIdentifier((String) FieldHelper.readSystemIdentifier(accountingHolderAutoComplete.getValue()));						
+						executionImputation.getAccounting(Boolean.TRUE).setAssistantIdentifier((String) FieldHelper.readSystemIdentifier(accountingAssistantAutoComplete.getValue()));
 						Arguments<ExecutionImputation> arguments = new Arguments<ExecutionImputation>();
 						arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
 								.setActionIdentifier(ExecutionImputationBusiness.SAVE_SCOPE_FUNCTIONS));

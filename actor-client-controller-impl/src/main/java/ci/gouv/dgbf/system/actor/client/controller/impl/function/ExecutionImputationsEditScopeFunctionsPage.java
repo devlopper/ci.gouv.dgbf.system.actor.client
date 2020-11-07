@@ -13,6 +13,7 @@ import javax.inject.Named;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntitySaver;
+import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
@@ -49,9 +50,13 @@ public class ExecutionImputationsEditScopeFunctionsPage extends AbstractPageCont
 	private DataTable executionImputationsDataTable;
 	private List<ExecutionImputation> executionImputations;
 	private AutoComplete creditManagerHolderAutoComplete;
+	private AutoComplete creditManagerAssistantAutoComplete;
 	private AutoComplete authorizingOfficerHolderAutoComplete;
+	private AutoComplete authorizingOfficerAssistantAutoComplete;
 	private AutoComplete financialControllerHolderAutoComplete;
+	private AutoComplete financialControllerAssistantAutoComplete;
 	private AutoComplete accountingHolderAutoComplete;
+	private AutoComplete accountingAssistantAutoComplete;
 	private Map<String,Object[]> initialValues = new HashMap<>();
 	private CommandButton saveCommandButton;
 	
@@ -65,12 +70,24 @@ public class ExecutionImputationsEditScopeFunctionsPage extends AbstractPageCont
 		super.__listenPostConstruct__();
 		creditManagerHolderAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER
 				,FIELD_CREDIT_MANAGER_HOLDER_AUTO_COMPLETE,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER);
+		creditManagerAssistantAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_ASSISTANT
+				,FIELD_CREDIT_MANAGER_ASSISTANT_AUTO_COMPLETE,ExecutionImputation.FIELD_CREDIT_MANAGER_ASSISTANT);
+		
 		authorizingOfficerHolderAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_HOLDER
 				,FIELD_AUTHORIZING_OFFICER_HOLDER_AUTO_COMPLETE,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER);
+		authorizingOfficerAssistantAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_ASSISTANT
+				,FIELD_AUTHORIZING_OFFICER_ASSISTANT_AUTO_COMPLETE,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_ASSISTANT);
+		
 		financialControllerHolderAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_HOLDER
 				,FIELD_FINANCIAL_CONTROLLER_HOLDER_AUTO_COMPLETE,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER);
+		financialControllerAssistantAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_ASSISTANT
+				,FIELD_FINANCIAL_CONTROLLER_ASSISTANT_AUTO_COMPLETE,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_ASSISTANT);
+		
 		accountingHolderAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_HOLDER
 				,FIELD_ACCOUNTING_HOLDER_AUTO_COMPLETE,ExecutionImputation.FIELD_ACCOUNTING_HOLDER);
+		accountingAssistantAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_ASSISTANT
+				,FIELD_ACCOUNTING_ASSISTANT_AUTO_COMPLETE,ExecutionImputation.FIELD_ACCOUNTING_ASSISTANT);
+		
 		buildDataTable();
 		buildSaveCommandButton();
 		buildLayout();
@@ -99,10 +116,8 @@ public class ExecutionImputationsEditScopeFunctionsPage extends AbstractPageCont
 				,CommandButton.FIELD_LISTENER,new CommandButton.Listener.AbstractImpl() {
 					@Override
 					protected Object __runExecuteFunction__(AbstractAction action) {
-						LogHelper.logInfo("Nothing to update", getClass());
-						if(CollectionHelper.isEmpty(executionImputations)) {
+						if(CollectionHelper.isEmpty(executionImputations))
 							return null;
-						}						
 						Collection<ExecutionImputation> updatables = null;
 						for(ExecutionImputation executionImputation : executionImputations) {
 							if(!Boolean.TRUE.equals(isHasBeenEdited(executionImputation)))							
@@ -171,11 +186,19 @@ public class ExecutionImputationsEditScopeFunctionsPage extends AbstractPageCont
 			Map<Object, Object> map = super.getColumnArguments(dataTable, fieldName);
 			if(ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_CODE_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_INPUTABLE, Boolean.TRUE);
+			}else if(ExecutionImputation.FIELD_CREDIT_MANAGER_ASSISTANT_SCOPE_FUNCTION_CODE_NAME.equals(fieldName)) {
+				map.put(Column.FIELD_INPUTABLE, Boolean.TRUE);
 			}else if(ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_SCOPE_FUNCTION_CODE_NAME.equals(fieldName)) {
+				map.put(Column.FIELD_INPUTABLE, Boolean.TRUE);
+			}else if(ExecutionImputation.FIELD_AUTHORIZING_OFFICER_ASSISTANT_SCOPE_FUNCTION_CODE_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_INPUTABLE, Boolean.TRUE);
 			}else if(ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_SCOPE_FUNCTION_CODE_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_INPUTABLE, Boolean.TRUE);
+			}else if(ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_ASSISTANT_SCOPE_FUNCTION_CODE_NAME.equals(fieldName)) {
+				map.put(Column.FIELD_INPUTABLE, Boolean.TRUE);
 			}else if(ExecutionImputation.FIELD_ACCOUNTING_HOLDER_SCOPE_FUNCTION_CODE_NAME.equals(fieldName)) {
+				map.put(Column.FIELD_INPUTABLE, Boolean.TRUE);
+			}else if(ExecutionImputation.FIELD_ACCOUNTING_ASSISTANT_SCOPE_FUNCTION_CODE_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_INPUTABLE, Boolean.TRUE);
 			}
 			return map;
@@ -197,9 +220,16 @@ public class ExecutionImputationsEditScopeFunctionsPage extends AbstractPageCont
 				executionImputations.forEach(executionImputation -> {
 					initialValues.put(executionImputation.getIdentifier(), new Object[] {
 							executionImputation.getCreditManager(Boolean.TRUE).getHolder()
+							,executionImputation.getCreditManager(Boolean.TRUE).getAssistant()
+							
 							,executionImputation.getAuthorizingOfficer(Boolean.TRUE).getHolder()
+							,executionImputation.getAuthorizingOfficer(Boolean.TRUE).getAssistant()
+							
 							,executionImputation.getFinancialController(Boolean.TRUE).getHolder()
-							,executionImputation.getAccounting(Boolean.TRUE).getHolder()
+							,executionImputation.getFinancialController(Boolean.TRUE).getAssistant()
+							
+							,executionImputation.getAccounting(Boolean.TRUE).getHolder()						
+							,executionImputation.getAccounting(Boolean.TRUE).getAssistant()
 						});
 				});
 			return executionImputations;
@@ -232,37 +262,52 @@ public class ExecutionImputationsEditScopeFunctionsPage extends AbstractPageCont
 		Object[] initials = initialValues.get(executionImputation.getIdentifier());
 		if(initials == null)
 			return Boolean.FALSE;
-		if(isHasBeenEdited((ScopeFunction)initials[0], executionImputation.getCreditManager()))
+		if(isHasBeenEdited((ScopeFunction)initials[0], executionImputation.getCreditManager(),ExecutionImputationScopeFunction.FIELD_HOLDER))
 			return Boolean.TRUE;
-		if(isHasBeenEdited((ScopeFunction)initials[1], executionImputation.getAuthorizingOfficer()))
+		if(isHasBeenEdited((ScopeFunction)initials[1], executionImputation.getCreditManager(),ExecutionImputationScopeFunction.FIELD_ASSISTANT))
 			return Boolean.TRUE;
-		if(isHasBeenEdited((ScopeFunction)initials[2], executionImputation.getFinancialController()))
+		if(isHasBeenEdited((ScopeFunction)initials[2], executionImputation.getAuthorizingOfficer(),ExecutionImputationScopeFunction.FIELD_HOLDER))
 			return Boolean.TRUE;
-		if(isHasBeenEdited((ScopeFunction)initials[3], executionImputation.getAccounting()))
+		if(isHasBeenEdited((ScopeFunction)initials[3], executionImputation.getAuthorizingOfficer(),ExecutionImputationScopeFunction.FIELD_ASSISTANT))
+			return Boolean.TRUE;
+		if(isHasBeenEdited((ScopeFunction)initials[4], executionImputation.getFinancialController(),ExecutionImputationScopeFunction.FIELD_HOLDER))
+			return Boolean.TRUE;
+		if(isHasBeenEdited((ScopeFunction)initials[5], executionImputation.getFinancialController(),ExecutionImputationScopeFunction.FIELD_ASSISTANT))
+			return Boolean.TRUE;
+		if(isHasBeenEdited((ScopeFunction)initials[6], executionImputation.getAccounting(),ExecutionImputationScopeFunction.FIELD_HOLDER))
+			return Boolean.TRUE;
+		if(isHasBeenEdited((ScopeFunction)initials[7], executionImputation.getAccounting(),ExecutionImputationScopeFunction.FIELD_ASSISTANT))
 			return Boolean.TRUE;
 		return  Boolean.FALSE;
 	}
 
 	
 	
-	private Boolean isHasBeenEdited(ScopeFunction scopeFunction,ExecutionImputationScopeFunction executionImputationScopeFunction) {
-		setIdentifiers(scopeFunction, executionImputationScopeFunction);
-		
-		if(scopeFunction == null && (executionImputationScopeFunction == null || executionImputationScopeFunction.getHolder() == null))
-			return Boolean.FALSE;
-		if(scopeFunction == null && executionImputationScopeFunction != null && executionImputationScopeFunction.getHolder() != null)
-			return Boolean.TRUE;
-		if(scopeFunction != null && (executionImputationScopeFunction == null || executionImputationScopeFunction.getHolder() == null))
-			return Boolean.TRUE;		
-		if(!scopeFunction.getIdentifier().equals(executionImputationScopeFunction.getHolder().getIdentifier()))
-			return Boolean.TRUE;
+	private Boolean isHasBeenEdited(ScopeFunction inputtedScopeFunction,ExecutionImputationScopeFunction executionImputationScopeFunction,String systemScopeFunctionFieldName) {
+		ScopeFunction systemScopeFunction = executionImputationScopeFunction == null ? null : (ScopeFunction) FieldHelper.read(executionImputationScopeFunction
+				, systemScopeFunctionFieldName);
+		if(inputtedScopeFunction == null) {
+			if((executionImputationScopeFunction == null || systemScopeFunction == null))
+				return Boolean.FALSE;
+			if(executionImputationScopeFunction != null && systemScopeFunction != null)
+				return Boolean.TRUE;	
+		}else {
+			if(executionImputationScopeFunction == null || systemScopeFunction == null)
+				return Boolean.TRUE;		
+			if(!inputtedScopeFunction.getIdentifier().equals(systemScopeFunction.getIdentifier()))
+				return Boolean.TRUE;	
+		}		
 		return  Boolean.FALSE;
 	}
 	
 	/**/
 	
 	public static final String FIELD_CREDIT_MANAGER_HOLDER_AUTO_COMPLETE = "creditManagerHolderAutoComplete";
+	public static final String FIELD_CREDIT_MANAGER_ASSISTANT_AUTO_COMPLETE = "creditManagerAssistantAutoComplete";
 	public static final String FIELD_AUTHORIZING_OFFICER_HOLDER_AUTO_COMPLETE = "authorizingOfficerHolderAutoComplete";
+	public static final String FIELD_AUTHORIZING_OFFICER_ASSISTANT_AUTO_COMPLETE = "authorizingOfficerAssistantAutoComplete";
 	public static final String FIELD_FINANCIAL_CONTROLLER_HOLDER_AUTO_COMPLETE = "financialControllerHolderAutoComplete";
+	public static final String FIELD_FINANCIAL_CONTROLLER_ASSISTANT_AUTO_COMPLETE = "financialControllerAssistantAutoComplete";
 	public static final String FIELD_ACCOUNTING_HOLDER_AUTO_COMPLETE = "accountingHolderAutoComplete";
+	public static final String FIELD_ACCOUNTING_ASSISTANT_AUTO_COMPLETE = "accountingAssistantAutoComplete";
 }

@@ -41,14 +41,27 @@ public class ExecutionImputationsMassSetScopeFunctionsPage extends AbstractPageC
 
 	private Layout layout;
 	private DataTable executionImputationsDataTable;
+	
 	private AutoComplete creditManagerHolderAutoComplete;
 	private SelectBooleanButton overrideCreditManagerHolderSelectBooleanButton;
+	private AutoComplete creditManagerAssistantAutoComplete;
+	private SelectBooleanButton overrideCreditManagerAssistantSelectBooleanButton;
+	
 	private AutoComplete authorizingOfficerHolderAutoComplete;
 	private SelectBooleanButton overrideAuthorizingOfficerHolderSelectBooleanButton;
+	private AutoComplete authorizingOfficerAssistantAutoComplete;
+	private SelectBooleanButton overrideAuthorizingOfficerAssistantSelectBooleanButton;
+	
 	private AutoComplete financialControllerHolderAutoComplete;
 	private SelectBooleanButton overrideFinancialControllerHolderSelectBooleanButton;
+	private AutoComplete financialControllerAssistantAutoComplete;
+	private SelectBooleanButton overrideFinancialControllerAssistantSelectBooleanButton;
+	
 	private AutoComplete accountingHolderAutoComplete;
 	private SelectBooleanButton overrideAccountingHolderSelectBooleanButton;
+	private AutoComplete accountingAssistantAutoComplete;
+	private SelectBooleanButton overrideAccountingAssistantSelectBooleanButton;
+	
 	private CommandButton saveCommandButton;
 	
 	@Override
@@ -68,18 +81,36 @@ public class ExecutionImputationsMassSetScopeFunctionsPage extends AbstractPageC
 	private void buildFilters() {
 		creditManagerHolderAutoComplete = ExecutionImputationsEditScopeFunctionsPage.buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER
 				,FIELD_CREDIT_MANAGER_HOLDER_AUTO_COMPLETE,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER);
+		creditManagerAssistantAutoComplete = ExecutionImputationsEditScopeFunctionsPage.buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_ASSISTANT
+				,FIELD_CREDIT_MANAGER_ASSISTANT_AUTO_COMPLETE,ExecutionImputation.FIELD_CREDIT_MANAGER_ASSISTANT);
+		
 		authorizingOfficerHolderAutoComplete = ExecutionImputationsEditScopeFunctionsPage.buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_HOLDER
 				,FIELD_AUTHORIZING_OFFICER_HOLDER_AUTO_COMPLETE,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER);
+		authorizingOfficerAssistantAutoComplete = ExecutionImputationsEditScopeFunctionsPage.buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_ASSISTANT
+				,FIELD_AUTHORIZING_OFFICER_ASSISTANT_AUTO_COMPLETE,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_ASSISTANT);
+		
 		financialControllerHolderAutoComplete = ExecutionImputationsEditScopeFunctionsPage.buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_HOLDER
 				,FIELD_FINANCIAL_CONTROLLER_HOLDER_AUTO_COMPLETE,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER);
+		financialControllerAssistantAutoComplete = ExecutionImputationsEditScopeFunctionsPage.buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_ASSISTANT
+				,FIELD_FINANCIAL_CONTROLLER_ASSISTANT_AUTO_COMPLETE,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_ASSISTANT);
+		
 		accountingHolderAutoComplete = ExecutionImputationsEditScopeFunctionsPage.buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_HOLDER
 				,FIELD_ACCOUNTING_HOLDER_AUTO_COMPLETE,ExecutionImputation.FIELD_ACCOUNTING_HOLDER);
+		accountingAssistantAutoComplete = ExecutionImputationsEditScopeFunctionsPage.buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_ASSISTANT
+				,FIELD_ACCOUNTING_ASSISTANT_AUTO_COMPLETE,ExecutionImputation.FIELD_ACCOUNTING_ASSISTANT);
 		
 		String offLabel = "Non, ne pas écraser existant",onLabel = "Oui, écraser existant";
 		overrideCreditManagerHolderSelectBooleanButton = SelectBooleanButton.build(SelectBooleanButton.FIELD_OFF_LABEL,offLabel,SelectBooleanButton.FIELD_ON_LABEL,onLabel);
+		overrideCreditManagerAssistantSelectBooleanButton = SelectBooleanButton.build(SelectBooleanButton.FIELD_OFF_LABEL,offLabel,SelectBooleanButton.FIELD_ON_LABEL,onLabel);
+		
 		overrideAuthorizingOfficerHolderSelectBooleanButton = SelectBooleanButton.build(SelectBooleanButton.FIELD_OFF_LABEL,offLabel,SelectBooleanButton.FIELD_ON_LABEL,onLabel);
+		overrideAuthorizingOfficerAssistantSelectBooleanButton = SelectBooleanButton.build(SelectBooleanButton.FIELD_OFF_LABEL,offLabel,SelectBooleanButton.FIELD_ON_LABEL,onLabel);
+		
 		overrideFinancialControllerHolderSelectBooleanButton = SelectBooleanButton.build(SelectBooleanButton.FIELD_OFF_LABEL,offLabel,SelectBooleanButton.FIELD_ON_LABEL,onLabel);
+		overrideFinancialControllerAssistantSelectBooleanButton = SelectBooleanButton.build(SelectBooleanButton.FIELD_OFF_LABEL,offLabel,SelectBooleanButton.FIELD_ON_LABEL,onLabel);
+		
 		overrideAccountingHolderSelectBooleanButton = SelectBooleanButton.build(SelectBooleanButton.FIELD_OFF_LABEL,offLabel,SelectBooleanButton.FIELD_ON_LABEL,onLabel);
+		overrideAccountingAssistantSelectBooleanButton = SelectBooleanButton.build(SelectBooleanButton.FIELD_OFF_LABEL,offLabel,SelectBooleanButton.FIELD_ON_LABEL,onLabel);
 	}
 	
 	private void buildSaveCommandButton() {
@@ -97,12 +128,24 @@ public class ExecutionImputationsMassSetScopeFunctionsPage extends AbstractPageC
 						model.setFilter(((LazyDataModel<ExecutionImputation>)executionImputationsDataTable.getValue()).get__filter__());
 						model.getCreditManager(Boolean.TRUE).setHolderIdentifier((String) FieldHelper.readSystemIdentifier(creditManagerHolderAutoComplete.getValue()));
 						model.getCreditManager(Boolean.TRUE).setHolderOverridable(overrideCreditManagerHolderSelectBooleanButton.getValue());
+						model.getCreditManager(Boolean.TRUE).setAssistantIdentifier((String) FieldHelper.readSystemIdentifier(creditManagerAssistantAutoComplete.getValue()));
+						model.getCreditManager(Boolean.TRUE).setAssistantOverridable(overrideCreditManagerAssistantSelectBooleanButton.getValue());
+						
 						model.getAuthorizingOfficer(Boolean.TRUE).setHolderIdentifier((String) FieldHelper.readSystemIdentifier(authorizingOfficerHolderAutoComplete.getValue()));
 						model.getAuthorizingOfficer(Boolean.TRUE).setHolderOverridable(overrideAuthorizingOfficerHolderSelectBooleanButton.getValue());
+						model.getAuthorizingOfficer(Boolean.TRUE).setAssistantIdentifier((String) FieldHelper.readSystemIdentifier(authorizingOfficerAssistantAutoComplete.getValue()));
+						model.getAuthorizingOfficer(Boolean.TRUE).setAssistantOverridable(overrideAuthorizingOfficerAssistantSelectBooleanButton.getValue());
+						
 						model.getFinancialController(Boolean.TRUE).setHolderIdentifier((String) FieldHelper.readSystemIdentifier(financialControllerHolderAutoComplete.getValue()));
 						model.getFinancialController(Boolean.TRUE).setHolderOverridable(overrideFinancialControllerHolderSelectBooleanButton.getValue());
+						model.getFinancialController(Boolean.TRUE).setAssistantIdentifier((String) FieldHelper.readSystemIdentifier(financialControllerAssistantAutoComplete.getValue()));
+						model.getFinancialController(Boolean.TRUE).setAssistantOverridable(overrideFinancialControllerAssistantSelectBooleanButton.getValue());
+						
 						model.getAccounting(Boolean.TRUE).setHolderIdentifier((String) FieldHelper.readSystemIdentifier(accountingHolderAutoComplete.getValue()));
 						model.getAccounting(Boolean.TRUE).setHolderOverridable(overrideAccountingHolderSelectBooleanButton.getValue());
+						model.getAccounting(Boolean.TRUE).setAssistantIdentifier((String) FieldHelper.readSystemIdentifier(accountingAssistantAutoComplete.getValue()));
+						model.getAccounting(Boolean.TRUE).setAssistantOverridable(overrideAccountingAssistantSelectBooleanButton.getValue());
+						
 						EntitySaver.getInstance().save(ExecutionImputation.class, new Arguments<ExecutionImputation>()
 								.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
 								.setActionIdentifier(ExecutionImputationBusiness.DERIVE_SCOPE_FUNCTIONS_FROM_MODEL)).setUpdatables(List.of(model)));							
@@ -122,20 +165,28 @@ public class ExecutionImputationsMassSetScopeFunctionsPage extends AbstractPageC
 	private void buildLayout() {
 		Collection<Map<Object,Object>> cells = new ArrayList<>();
 		buildLayoutAddInput(cells, creditManagerHolderAutoComplete,overrideCreditManagerHolderSelectBooleanButton);
+		buildLayoutAddInput(cells, creditManagerAssistantAutoComplete,overrideCreditManagerAssistantSelectBooleanButton);
+		
 		buildLayoutAddInput(cells, authorizingOfficerHolderAutoComplete,overrideAuthorizingOfficerHolderSelectBooleanButton);
+		buildLayoutAddInput(cells, authorizingOfficerAssistantAutoComplete,overrideAuthorizingOfficerAssistantSelectBooleanButton);
+		
 		buildLayoutAddInput(cells, financialControllerHolderAutoComplete,overrideFinancialControllerHolderSelectBooleanButton);
+		buildLayoutAddInput(cells, financialControllerAssistantAutoComplete,overrideFinancialControllerAssistantSelectBooleanButton);
+		
 		buildLayoutAddInput(cells, accountingHolderAutoComplete,overrideAccountingHolderSelectBooleanButton);
+		buildLayoutAddInput(cells, accountingAssistantAutoComplete,overrideAccountingAssistantSelectBooleanButton);
+		
 		cells.add(MapHelper.instantiate(Cell.FIELD_CONTROL,saveCommandButton,Cell.FIELD_WIDTH,12));
 		cells.add(MapHelper.instantiate(Cell.FIELD_CONTROL,executionImputationsDataTable,Cell.FIELD_WIDTH,12));
 		
 		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cells);
 	}
 	
-	private void buildLayoutAddInput(Collection<Map<Object,Object>> cells,AutoComplete autoComplete,SelectBooleanButton overrideHolderSelectBooleanButton) {
+	private void buildLayoutAddInput(Collection<Map<Object,Object>> cells,AutoComplete autoComplete,SelectBooleanButton overrideSelectBooleanButton) {
 		cells.add(MapHelper.instantiate(Cell.FIELD_CONTROL,autoComplete.getOutputLabel(),Cell.FIELD_WIDTH,2));
 		cells.add(MapHelper.instantiate(Cell.FIELD_CONTROL,autoComplete,Cell.FIELD_WIDTH,7));
 		//cells.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Écraser ?"),Cell.FIELD_WIDTH,1));
-		cells.add(MapHelper.instantiate(Cell.FIELD_CONTROL,overrideHolderSelectBooleanButton,Cell.FIELD_WIDTH,3));
+		cells.add(MapHelper.instantiate(Cell.FIELD_CONTROL,overrideSelectBooleanButton,Cell.FIELD_WIDTH,3));
 	}
 		
 
@@ -149,11 +200,19 @@ public class ExecutionImputationsMassSetScopeFunctionsPage extends AbstractPageC
 			Map<Object, Object> map = super.getColumnArguments(dataTable, fieldName);
 			if(ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER.equals(fieldName)) {
 				map.put(Column.FIELD_INPUTABLE, Boolean.TRUE);
+			}else if(ExecutionImputation.FIELD_CREDIT_MANAGER_ASSISTANT.equals(fieldName)) {
+				map.put(Column.FIELD_INPUTABLE, Boolean.TRUE);
 			}else if(ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER.equals(fieldName)) {
+				map.put(Column.FIELD_INPUTABLE, Boolean.TRUE);
+			}else if(ExecutionImputation.FIELD_AUTHORIZING_OFFICER_ASSISTANT.equals(fieldName)) {
 				map.put(Column.FIELD_INPUTABLE, Boolean.TRUE);
 			}else if(ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER.equals(fieldName)) {
 				map.put(Column.FIELD_INPUTABLE, Boolean.TRUE);
+			}else if(ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_ASSISTANT.equals(fieldName)) {
+				map.put(Column.FIELD_INPUTABLE, Boolean.TRUE);
 			}else if(ExecutionImputation.FIELD_ACCOUNTING_HOLDER.equals(fieldName)) {
+				map.put(Column.FIELD_INPUTABLE, Boolean.TRUE);
+			}else if(ExecutionImputation.FIELD_ACCOUNTING_ASSISTANT.equals(fieldName)) {
 				map.put(Column.FIELD_INPUTABLE, Boolean.TRUE);
 			}
 			return map;
@@ -168,7 +227,14 @@ public class ExecutionImputationsMassSetScopeFunctionsPage extends AbstractPageC
 	/**/
 	
 	public static final String FIELD_CREDIT_MANAGER_HOLDER_AUTO_COMPLETE = "creditManagerHolderAutoComplete";
+	public static final String FIELD_CREDIT_MANAGER_ASSISTANT_AUTO_COMPLETE = "creditManagerAssistantAutoComplete";
+	
 	public static final String FIELD_AUTHORIZING_OFFICER_HOLDER_AUTO_COMPLETE = "authorizingOfficerHolderAutoComplete";
+	public static final String FIELD_AUTHORIZING_OFFICER_ASSISTANT_AUTO_COMPLETE = "authorizingOfficerAssistantAutoComplete";
+	
 	public static final String FIELD_FINANCIAL_CONTROLLER_HOLDER_AUTO_COMPLETE = "financialControllerHolderAutoComplete";
+	public static final String FIELD_FINANCIAL_CONTROLLER_ASSISTANT_AUTO_COMPLETE = "financialControllerAssistantAutoComplete";
+	
 	public static final String FIELD_ACCOUNTING_HOLDER_AUTO_COMPLETE = "accountingHolderAutoComplete";
+	public static final String FIELD_ACCOUNTING_ASSISTANT_AUTO_COMPLETE = "accountingAssistantAutoComplete";
 }
