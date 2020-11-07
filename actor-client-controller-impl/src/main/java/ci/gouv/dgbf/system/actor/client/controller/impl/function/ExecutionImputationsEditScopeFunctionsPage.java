@@ -245,16 +245,24 @@ public class ExecutionImputationsEditScopeFunctionsPage extends AbstractPageCont
 		Object[] initials = initialValues.get(executionImputation.getIdentifier());
 		if(initials == null)
 			return;		
-		setIdentifiers((ScopeFunction)initials[0], executionImputation.getCreditManager());			
-		setIdentifiers((ScopeFunction)initials[1], executionImputation.getAuthorizingOfficer());
-		setIdentifiers((ScopeFunction)initials[2], executionImputation.getFinancialController());
-		setIdentifiers((ScopeFunction)initials[3], executionImputation.getAccounting());
+		setIdentifiers(executionImputation.getCreditManager());			
+		setIdentifiers(executionImputation.getAuthorizingOfficer());
+		setIdentifiers(executionImputation.getFinancialController());
+		setIdentifiers(executionImputation.getAccounting());
 	}
 	
-	private void setIdentifiers(ScopeFunction scopeFunction,ExecutionImputationScopeFunction executionImputationScopeFunction) {
-		if(executionImputationScopeFunction != null && executionImputationScopeFunction.getHolder() != null)
+	private void setIdentifiers(ExecutionImputationScopeFunction executionImputationScopeFunction) {
+		if(executionImputationScopeFunction == null)
+			return;
+		
+		if(executionImputationScopeFunction.getHolder() == null)
+			executionImputationScopeFunction.setHolderIdentifier(null);
+		else
 			executionImputationScopeFunction.setHolderIdentifier(executionImputationScopeFunction.getHolder().getIdentifier());
-		if(executionImputationScopeFunction != null && executionImputationScopeFunction.getAssistant() != null)
+		
+		if(executionImputationScopeFunction.getAssistant() == null)
+			executionImputationScopeFunction.setAssistantIdentifier(null);
+		else
 			executionImputationScopeFunction.setAssistantIdentifier(executionImputationScopeFunction.getAssistant().getIdentifier());
 	}
 	
