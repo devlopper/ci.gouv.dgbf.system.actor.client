@@ -30,7 +30,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputT
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
-import ci.gouv.dgbf.system.actor.client.controller.impl.function.ExecutionImputationListPage;
+import ci.gouv.dgbf.system.actor.client.controller.impl.function.AssignmentsListPage;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import lombok.Getter;
 import lombok.Setter;
@@ -91,7 +91,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	}
 	
 	private void buildTabExecutionImputation(Collection<Map<Object,Object>> cellsMaps) {
-		DataTable dataTable = ExecutionImputationListPage.buildDataTable(ExecutionImputationListPage.class,Boolean.TRUE);
+		DataTable dataTable = AssignmentsListPage.buildDataTable(AssignmentsListPage.class,Boolean.TRUE);
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
 	}
 	
