@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"      
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:cyk="http://primefaces.jsf.web.utility.cyk.org">
+	
+    <cyk:page value="#{assignmentsCollectionEditScopeFunctionsPage}">
+    	<ui:define name="centerCenter">
+    		<ui:decorate template="#{primefacesHelper.getModelTemplate(assignmentsCollectionEditScopeFunctionsPage.layout)}">
+    			<ui:param name="layout" value="#{assignmentsCollectionEditScopeFunctionsPage.layout}"/>     			
+    			<ui:define name="cell0">
+  					<ui:decorate template="#{primefacesHelper.getModelTemplate(assignmentsCollectionEditScopeFunctionsPage.assignmentsDataTable)}">
+    					<ui:param name="dataTable" value="#{assignmentsCollectionEditScopeFunctionsPage.assignmentsDataTable}"/>
+    					<ui:define name="collectionColumnsAfterRowIndexBodies">
+							<ui:fragment rendered="#{column.inputable}">
+								<ui:fragment rendered="#{column.fieldName eq 'creditManagerHolderAsString'}">
+	    							<p:autoComplete binding="#{assignmentsCollectionEditScopeFunctionsPage.creditManagerHolderAutoComplete.binding}" />
+	    						</ui:fragment>   						
+	    						<ui:fragment rendered="#{column.fieldName eq 'creditManagerAssistantAsString'}">
+	    							<p:autoComplete binding="#{assignmentsCollectionEditScopeFunctionsPage.creditManagerAssistantAutoComplete.binding}" />
+	    						</ui:fragment>
+	    						
+	    						
+	    						<ui:fragment rendered="#{column.fieldName eq 'authorizingOfficerHolderAsString'}">
+	    							<p:autoComplete binding="#{assignmentsCollectionEditScopeFunctionsPage.authorizingOfficerHolderAutoComplete.binding}" />
+	    						</ui:fragment>	    						
+	    						<ui:fragment rendered="#{column.fieldName eq 'authorizingOfficerAssistantAsString'}">
+	    							<p:autoComplete binding="#{assignmentsCollectionEditScopeFunctionsPage.authorizingOfficerAssistantAutoComplete.binding}" />
+	    						</ui:fragment>
+	    						
+	    						
+	    						<ui:fragment rendered="#{column.fieldName eq 'financialControllerHolderAsString'}">
+	    							<p:autoComplete binding="#{assignmentsCollectionEditScopeFunctionsPage.financialControllerHolderAutoComplete.binding}" />
+	    						</ui:fragment>   						
+	    						<ui:fragment rendered="#{column.fieldName eq 'financialControllerAssistantAsString'}">
+	    							<p:autoComplete binding="#{assignmentsCollectionEditScopeFunctionsPage.financialControllerAssistantAutoComplete.binding}" />
+	    						</ui:fragment>
+	    						
+	    						
+	    						<ui:fragment rendered="#{column.fieldName eq 'accountingHolderAsString'}">
+	    							<p:autoComplete binding="#{assignmentsCollectionEditScopeFunctionsPage.accountingHolderAutoComplete.binding}" />
+	    						</ui:fragment>
+	    						<ui:fragment rendered="#{column.fieldName eq 'accountingAssistantAsString'}">
+	    							<p:autoComplete binding="#{assignmentsCollectionEditScopeFunctionsPage.accountingAssistantAutoComplete.binding}" />
+	    						</ui:fragment>
+							</ui:fragment>
+    						<ui:fragment rendered="#{not column.inputable}">
+    							<ui:decorate template="/collection/datatable/__columns__bodies.xhtml" />
+    						</ui:fragment>
+						</ui:define>
+					</ui:decorate>
+				</ui:define>				
+    		</ui:decorate>
+    	</ui:define>
+    </cyk:page>
+</html>

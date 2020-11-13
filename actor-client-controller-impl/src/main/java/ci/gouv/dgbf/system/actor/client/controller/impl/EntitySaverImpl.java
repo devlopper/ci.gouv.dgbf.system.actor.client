@@ -3,6 +3,7 @@ package ci.gouv.dgbf.system.actor.client.controller.impl;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.ws.rs.core.Response;
 
@@ -14,6 +15,7 @@ import ci.gouv.dgbf.system.actor.server.business.api.AccountRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.AssignmentsBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ExecutionImputationBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileFunctionBusiness;
@@ -26,6 +28,7 @@ import ci.gouv.dgbf.system.actor.server.representation.api.AccountRequestReprese
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorProfileRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorScopeRepresentation;
+import ci.gouv.dgbf.system.actor.server.representation.api.AssignmentsRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ExecutionImputationRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfileFunctionRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfilePrivilegeRepresentation;
@@ -38,6 +41,7 @@ import ci.gouv.dgbf.system.actor.server.representation.entities.AccountRequestDt
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorProfileDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorScopeDto;
+import ci.gouv.dgbf.system.actor.server.representation.entities.AssignmentsDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ExecutionImputationDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.FunctionDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ProfileDto;
@@ -137,6 +141,15 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				arguments.setRepresentation(ScopeFunctionExecutionImputationRepresentation.getProxy());
 			else if(ScopeFunctionExecutionImputationBusiness.DELETE_ALL.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ScopeFunctionExecutionImputationRepresentation.getProxy());
+			
+			else if(AssignmentsBusiness.INITIALIZE.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(AssignmentsRepresentation.getProxy());
+			else if(AssignmentsBusiness.APPLY_MODEL.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(AssignmentsRepresentation.getProxy());
+			else if(AssignmentsBusiness.SAVE_SCOPE_FUNCTIONS.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(AssignmentsRepresentation.getProxy());
+			else if(AssignmentsBusiness.DELETE_ALL.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(AssignmentsRepresentation.getProxy());
 		}
 		super.prepare(controllerEntityClass, arguments);
 	}
@@ -420,6 +433,25 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 		
 		if(arguments != null && ScopeFunctionExecutionImputationBusiness.DELETE_ALL.equals(arguments.getActionIdentifier()))
 			return ((ScopeFunctionExecutionImputationRepresentation)representation).deleteAll();
+		
+		if(arguments != null && AssignmentsBusiness.INITIALIZE.equals(arguments.getActionIdentifier()))
+			return ((AssignmentsRepresentation)representation).initialize();		
+		if(arguments != null && AssignmentsBusiness.APPLY_MODEL.equals(arguments.getActionIdentifier())) {
+			if(CollectionHelper.isEmpty(updatables))
+				throw new RuntimeException("Model obligatoire");
+			AssignmentsDto assignments = (AssignmentsDto) updatables.iterator().next();
+			return ((AssignmentsRepresentation)representation).applyModel(assignments);
+		}
+		if(arguments != null && AssignmentsBusiness.SAVE_SCOPE_FUNCTIONS.equals(arguments.getActionIdentifier())) {
+			if(CollectionHelper.isEmpty(updatables))
+				throw new RuntimeException("Affectations obligatoire");
+			Collection<AssignmentsDto> collection = CollectionHelper.cast(AssignmentsDto.class, updatables);
+			if(CollectionHelper.isEmpty(collection))
+				throw new RuntimeException("Affectations obligatoire");
+			return ((AssignmentsRepresentation)representation).saveScopeFunctions((List<AssignmentsDto>) collection);
+		}
+		if(arguments != null && AssignmentsBusiness.DELETE_ALL.equals(arguments.getActionIdentifier()))
+			return ((AssignmentsRepresentation)representation).deleteAll();
 		
 		return super.save(representation, creatables, updatables, deletables, arguments);
 	}

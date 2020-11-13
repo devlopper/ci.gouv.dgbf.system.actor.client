@@ -349,6 +349,30 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>assignmentsListView</from-outcome>
+			<to-view-id>/private/assignments/list.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>assignmentsEditView</from-outcome>
+			<to-view-id>/private/assignments/editscopefunctions.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>assignmentsEditManyView</from-outcome>
+			<to-view-id>/private/assignments/editmanyscopefunctions.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>assignmentsEditManyByModelView</from-outcome>
+			<to-view-id>/private/assignments/editscopefunctionsbymodel.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>scopeTypeFunctionEditView</from-outcome>
 			<to-view-id>/private/scopetypefunction/edit.jsf</to-view-id>
 			<redirect />
