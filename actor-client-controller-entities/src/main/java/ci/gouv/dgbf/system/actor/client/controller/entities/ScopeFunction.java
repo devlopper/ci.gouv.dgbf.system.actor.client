@@ -33,9 +33,10 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	private String functionAsString;
 	private Integer numberOfActor;
 	@Input @InputBoolean @InputBooleanButton private Boolean shared;
-	private String sharedAsString;
-	
+	private String sharedAsString;	
 	private Collection<String> functionsIdentifiers;
+	//private String parentIdentifier;
+	//@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceOneAutoComplete private ScopeFunction parent;
 	
 	@Override
 	public String toString() {
@@ -51,4 +52,5 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	public static final String FIELD_NUMBER_OF_ACTOR = "numberOfActor";
 	public static final String FIELD_SHARED = "shared";
 	public static final String FIELD_SHARED_AS_STRING = "sharedAsString";
+	public static final String FIELD_PARENT_IDENTIFIER = "parentIdentifier";
 }
