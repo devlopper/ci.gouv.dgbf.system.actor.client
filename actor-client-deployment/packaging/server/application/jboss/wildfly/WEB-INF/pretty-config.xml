@@ -43,6 +43,11 @@
 		<view-id value="/private/scopefunction/affectation.jsf" />
 	</url-mapping>
 	
+	<url-mapping id="domaine_administration">
+		<pattern value="/private/domaineadministration.jsf" />
+		<view-id value="/private/cluster/administrationdomains.jsf" />
+	</url-mapping>
+	
 	<!--  -->
 	
 	<url-mapping id="mon_compte">

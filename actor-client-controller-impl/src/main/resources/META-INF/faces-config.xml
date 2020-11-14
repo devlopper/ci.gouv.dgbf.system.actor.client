@@ -390,6 +390,26 @@
 			<redirect />
 		</navigation-case>
 		
+		<navigation-case>
+			<from-outcome>clusterListView</from-outcome>
+			<to-view-id>/private/cluster/list.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>clusterPrivilegesListView</from-outcome>
+			<to-view-id>/private/clusterprivileges/list.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>administrationDomainsView</from-outcome>
+			<to-view-id>/private/domaineadministration.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		
+		
 		<!--  -->
 		
 		<navigation-case>
