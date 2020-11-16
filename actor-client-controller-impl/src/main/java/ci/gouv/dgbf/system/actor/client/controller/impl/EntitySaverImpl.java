@@ -91,6 +91,8 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				arguments.setRepresentation(ActorScopeRepresentation.getProxy());
 			else if(ActorBusiness.DELETE_SCOPES.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ActorScopeRepresentation.getProxy());
+			else if(ActorBusiness.CREATE_FROM_PUBLIC.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ActorRepresentation.getProxy());
 			
 			else if(ServiceBusiness.DELETE_ALL_KEYCLOAK_AUTHORIZATION_POLICIES.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ServiceRepresentation.getProxy());
@@ -234,6 +236,8 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 		if(arguments != null && ActorBusiness.DELETE_SCOPES.equals(arguments.getActionIdentifier()))
 			return ((ActorScopeRepresentation)representation).deleteByActors(CollectionHelper.cast(ActorDto.class, deletables));
 		
+		if(arguments != null && ActorBusiness.CREATE_FROM_PUBLIC.equals(arguments.getActionIdentifier()))
+			return ((ActorRepresentation)representation).createByPublic((ActorDto)CollectionHelper.getFirst(creatables));
 		
 		if(arguments != null && AccountRequestBusiness.RECORD.equals(arguments.getActionIdentifier())) {
 			Collection<AccountRequestDto> accountRequests = new ArrayList<>();

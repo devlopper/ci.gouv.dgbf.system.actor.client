@@ -8,6 +8,11 @@
 		<view-id value="/public/identification/index.jsf" />
 	</url-mapping>
 
+	<url-mapping id="creation_compte">
+		<pattern value="/creation_compte" />
+		<view-id value="/public/actor/create.jsf" />
+	</url-mapping>
+
 	<url-mapping id="demande_compte">
 		<pattern value="/demande_compte" />
 		<view-id value="/public/accountrequest/edit.jsf" />

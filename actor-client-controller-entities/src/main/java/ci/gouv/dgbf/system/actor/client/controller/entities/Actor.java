@@ -2,10 +2,15 @@ package ci.gouv.dgbf.system.actor.client.controller.entities;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.constant.ConstantEmpty;
+import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.object.__static__.controller.AbstractDataIdentifiableSystemStringIdentifiableBusinessStringImpl;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Choices;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Choices.Count;
@@ -66,6 +71,7 @@ public class Actor extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 	private Boolean emailSendableAfterCreation;
 	
 	private String administrativeUnitAsString,sectionAsString;
+	private IdentificationForm form;
 	
 	public String getNames() {
 		if(names == null) {
@@ -82,6 +88,23 @@ public class Actor extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 				names = ConstantEmpty.STRING;
 		}
 		return names;
+	}
+	
+	public Map<String,IdentificationAttribut> computeFormFieldsNames() {
+		if(form == null || CollectionHelper.isEmpty(form.getAttributs()) || CollectionHelper.isEmpty(
+				ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribut.CODES_FIELDS_NAMES))
+			return null;
+		Map<String,IdentificationAttribut> fieldsNames = new LinkedHashMap<>();
+		form.getAttributs().forEach(attribut -> {
+			for(String codeFieldName : ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribut.CODES_FIELDS_NAMES) {
+				String code = (String) FieldHelper.readStatic(ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribut.class,codeFieldName);
+				if(code.equals(attribut.getCode()))
+					fieldsNames.put((String) FieldHelper.readStatic(Actor.class,"FIELD_"+StringUtils.substringAfter(codeFieldName, "CODE_")),attribut);
+			}
+			
+			
+		});
+		return fieldsNames;
 	}
 	
 	@Override

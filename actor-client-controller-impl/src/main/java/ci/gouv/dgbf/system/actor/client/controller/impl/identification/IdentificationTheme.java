@@ -26,9 +26,14 @@ public interface IdentificationTheme {
 					if(MENU_ITEM_IDENTIFICATION.equals(name)) {
 						arguments.put(Tab.FIELD_ICON, "fa fa-user");
 						MenuModel model = new DefaultMenuModel();
+						DefaultMenuItem item = new DefaultMenuItem("Créer mon compte");
+						item.setOutcome("actorCreateView");
+						model.addElement(item);
+						/*
 						DefaultMenuItem item = new DefaultMenuItem("Demander compte");
 						item.setOutcome("accountRequestEditView");
 						model.addElement(item);
+						*/
 						/*
 						item = new DefaultMenuItem("Ouvrir demande");
 						item.setOutcome("accountRequestOpenView");
