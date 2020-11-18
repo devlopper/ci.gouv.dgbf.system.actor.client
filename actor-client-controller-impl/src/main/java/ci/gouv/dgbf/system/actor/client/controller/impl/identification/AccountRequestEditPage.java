@@ -45,7 +45,6 @@ import ci.gouv.dgbf.system.actor.client.controller.api.ActorController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AccountRequest;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
-import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetaryFunction;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Civility;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentityGroup;
@@ -360,11 +359,6 @@ public class AccountRequestEditPage extends AbstractEntityEditPageContainerManag
 			}else if(AccountRequest.FIELD_ADMINISTRATIVE_UNIT.equals(fieldName)) {
 				map.put(AutoComplete.FIELD_ENTITY_CLASS, AdministrativeUnit.class);
 				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
-			}else if(AccountRequest.FIELD_BUDGETARY_FUNCTIONS.equals(fieldName)) {
-				map.put(AutoComplete.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Fonction(s) budgétaire(s)");
-				map.put(AutoComplete.FIELD_ENTITY_CLASS, BudgetaryFunction.class);
-				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
-				map.put(AutoComplete.FIELD_MULTIPLE, Boolean.TRUE);
 			}else if(AccountRequest.FIELD_FUNCTIONS.equals(fieldName)) {
 				map.put(AutoComplete.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Fonction(s) applicative(s)");
 				map.put(AutoComplete.FIELD_ENTITY_CLASS, Function.class);

@@ -10,7 +10,6 @@ import org.cyk.utility.__kernel__.constant.ConstantEmpty;
 import org.cyk.utility.__kernel__.object.__static__.controller.AbstractDataIdentifiableSystemStringImpl;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Choices;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Choices.Count;
-import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Input;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoice;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceMany;
@@ -19,6 +18,7 @@ import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputC
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceOneRadio;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputDate;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputTextarea;
+import org.cyk.utility.__kernel__.string.StringHelper;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -61,9 +61,6 @@ public class AccountRequest extends AbstractDataIdentifiableSystemStringImpl imp
 	
 	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceMany @InputChoiceManyAutoComplete 
 	private Collection<Function> functions;
-	
-	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceMany @InputChoiceManyAutoComplete 
-	private Collection<BudgetaryFunction> budgetaryFunctions;
 	
 	public String getElectronicMailAddress() {
 		if(electronicMailAddress == null && identity != null)
