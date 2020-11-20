@@ -45,7 +45,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Named @ViewScoped @Getter @Setter
-public class ActorCreateFromPublicPage extends AbstractEntityEditPageContainerManagedImpl<Actor> implements Serializable {
+public class ActorCreateFromPublicPage extends AbstractEntityEditPageContainerManagedImpl<Actor> implements IdentificationTheme,Serializable {
 
 	private Actor actor;
 	private Map<String,IdentificationAttribut> fieldsNames;
