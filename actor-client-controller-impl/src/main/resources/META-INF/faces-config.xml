@@ -21,6 +21,18 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>requestEditView</from-outcome>
+			<to-view-id>/private/request/edit.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>requestListView</from-outcome>
+			<to-view-id>/private/request/list.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>identificationIndexView</from-outcome>
 			<to-view-id>/public/identification/index.jsf</to-view-id>
 			<redirect />

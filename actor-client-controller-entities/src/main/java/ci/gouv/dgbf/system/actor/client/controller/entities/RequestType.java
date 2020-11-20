@@ -13,5 +13,6 @@ import lombok.experimental.Accessors;
 public class RequestType extends AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	private IdentificationForm form;
 	
 }

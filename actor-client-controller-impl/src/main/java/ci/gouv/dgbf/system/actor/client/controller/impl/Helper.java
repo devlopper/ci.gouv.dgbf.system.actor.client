@@ -36,7 +36,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileTypeQuerier;
 
 public interface Helper {
-
+	
 	static TabMenu buildProfileListPageTabMenu(ProfileType profileType) {
 		Collection<ProfileType> profileTypes = EntityReader.getInstance().readMany(ProfileType.class, new Arguments<ProfileType>()
 				.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
