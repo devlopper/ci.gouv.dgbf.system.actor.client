@@ -8,9 +8,11 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:cyk="http://primefaces.jsf.web.utility.cyk.org">
 	
-    <cyk:page value="#{forbiddenAccessPage}">
+    <cyk:page value="#{requestsAdministrationPage}">
     	<ui:define name="centerCenter">
-    		<h1><h:outputText value="Accès Interdit" /></h1>
+    		<ui:decorate template="#{primefacesHelper.getModelTemplate(requestsAdministrationPage.layout)}">
+    			<ui:param name="layout" value="#{requestsAdministrationPage.layout}"/>   			
+    		</ui:decorate>
     	</ui:define>
     </cyk:page>
 </html>

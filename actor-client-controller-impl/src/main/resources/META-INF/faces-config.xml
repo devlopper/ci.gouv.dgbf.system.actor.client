@@ -33,6 +33,18 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>myRequestsView</from-outcome>
+			<to-view-id>/private/mes_demandes.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>requestsAdministrationView</from-outcome>
+			<to-view-id>/private/demandes.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>identificationIndexView</from-outcome>
 			<to-view-id>/public/identification/index.jsf</to-view-id>
 			<redirect />

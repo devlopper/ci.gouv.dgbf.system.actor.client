@@ -19,6 +19,7 @@ import ci.gouv.dgbf.system.actor.server.business.api.AssignmentsBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeTypeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ServiceBusiness;
@@ -30,6 +31,7 @@ import ci.gouv.dgbf.system.actor.server.representation.api.AssignmentsRepresenta
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfileFunctionRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfilePrivilegeRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfileRepresentation;
+import ci.gouv.dgbf.system.actor.server.representation.api.RequestRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ScopeFunctionRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ScopeTypeFunctionRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ServiceRepresentation;
@@ -42,6 +44,7 @@ import ci.gouv.dgbf.system.actor.server.representation.entities.FunctionDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ProfileDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ProfileFunctionDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ProfilePrivilegeDto;
+import ci.gouv.dgbf.system.actor.server.representation.entities.RequestDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ScopeDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ScopeFunctionDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ScopeTypeFunctionDto;
@@ -136,6 +139,9 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				arguments.setRepresentation(AssignmentsRepresentation.getProxy());
 			else if(AssignmentsBusiness.DELETE_ALL.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(AssignmentsRepresentation.getProxy());
+			
+			else if(RequestBusiness.SAVE.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(RequestRepresentation.getProxy());
 		}
 		super.prepare(controllerEntityClass, arguments);
 	}
@@ -422,6 +428,11 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 		}
 		if(arguments != null && AssignmentsBusiness.DELETE_ALL.equals(arguments.getActionIdentifier()))
 			return ((AssignmentsRepresentation)representation).deleteAll();
+		
+		if(arguments != null && RequestBusiness.SAVE.equals(arguments.getActionIdentifier())) {
+			RequestDto request = (RequestDto) CollectionHelper.getFirst(creatables);
+			return ((RequestRepresentation)representation).save(request);
+		}
 		
 		return super.save(representation, creatables, updatables, deletables, arguments);
 	}
