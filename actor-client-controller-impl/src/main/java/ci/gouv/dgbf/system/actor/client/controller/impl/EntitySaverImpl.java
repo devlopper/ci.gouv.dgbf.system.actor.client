@@ -10,6 +10,8 @@ import javax.ws.rs.core.Response;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntitySaver;
+import org.cyk.utility.__kernel__.representation.RepresentationProxyGetter;
+import org.cyk.utility.__kernel__.string.StringHelper;
 
 import ci.gouv.dgbf.system.actor.server.business.api.AccountRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorBusiness;
@@ -139,10 +141,14 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				arguments.setRepresentation(AssignmentsRepresentation.getProxy());
 			else if(AssignmentsBusiness.DELETE_ALL.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(AssignmentsRepresentation.getProxy());
-			
-			else if(RequestBusiness.SAVE.equals(arguments.getRepresentationArguments().getActionIdentifier()))
-				arguments.setRepresentation(RequestRepresentation.getProxy());
 		}
+		
+		if(arguments.getRepresentation() == null && StringHelper.isNotBlank(arguments.getRepresentationArguments().getActionIdentifier())) {
+			Object proxy = RepresentationProxyGetter.getInstance().getByActionIdentifier(arguments.getRepresentationArguments().getActionIdentifier());
+			if(proxy != null)
+				arguments.setRepresentation(proxy);
+		}
+		
 		super.prepare(controllerEntityClass, arguments);
 	}
 	
@@ -429,9 +435,19 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 		if(arguments != null && AssignmentsBusiness.DELETE_ALL.equals(arguments.getActionIdentifier()))
 			return ((AssignmentsRepresentation)representation).deleteAll();
 		
-		if(arguments != null && RequestBusiness.SAVE.equals(arguments.getActionIdentifier())) {
+		if(arguments != null && RequestBusiness.INITIALIZE.equals(arguments.getActionIdentifier())) {
 			RequestDto request = (RequestDto) CollectionHelper.getFirst(creatables);
-			return ((RequestRepresentation)representation).save(request);
+			return ((RequestRepresentation)representation).initialize(request);
+		}
+		
+		if(arguments != null && RequestBusiness.ACCEPT.equals(arguments.getActionIdentifier())) {
+			RequestDto request = (RequestDto) CollectionHelper.getFirst(updatables);
+			return ((RequestRepresentation)representation).acceptByIdentifier(request.getIdentifier());
+		}
+		
+		if(arguments != null && RequestBusiness.REJECT.equals(arguments.getActionIdentifier())) {
+			RequestDto request = (RequestDto) CollectionHelper.getFirst(updatables);
+			return ((RequestRepresentation)representation).rejectByIdentifier(request.getIdentifier(), request.getRejectionReason());
 		}
 		
 		return super.save(representation, creatables, updatables, deletables, arguments);

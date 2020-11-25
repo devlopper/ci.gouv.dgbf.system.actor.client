@@ -4,18 +4,20 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 
+import javax.validation.constraints.NotNull;
+
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Choices;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Choices.Count;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Input;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoice;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceOneAutoComplete;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceOneCombo;
+import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceOneRadio;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputDate;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputText;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputTextarea;
 import org.cyk.utility.client.controller.data.AbstractDataIdentifiableSystemStringImpl;
 
-import ci.gouv.dgbf.system.actor.server.representation.entities.FunctionDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -42,11 +44,23 @@ public class Request extends AbstractDataIdentifiableSystemStringImpl implements
 	@Input @InputText private String certificatSignatory;
 	@Input @InputDate private Date certificatSignatureDate;
 	
-	private Collection<FunctionDto> functions;
+	private Collection<Function> functions;
 	
 	private Collection<String> functionsAsStrings;
-	private String typeAsString,actorAsString,actorCode,actorNames,creationDateAsString,processingDateAsString;
+	private String typeAsString;
+	private String actorAsString;
+	private String actorCode;
+	private String actorNames;
+	private String creationDateAsString;
+	private String processingDateAsString;
 	
+	private RequestStatus status;
+	private String statusAsString;
+	@Input @InputChoiceOneRadio @NotNull private String treatment;
+	@Input @InputTextarea private String rejectionReason;
+	
+	public static final String FIELD_STATUS = "status";
+	public static final String FIELD_STATUS_AS_STRING = "statusAsString";
 	public static final String FIELD_TYPE = "type";
 	public static final String FIELD_TYPE_AS_STRING = "typeAsString";
 	public static final String FIELD_ACTOR = "actor";
@@ -87,4 +101,7 @@ public class Request extends AbstractDataIdentifiableSystemStringImpl implements
 	public static final String FIELD_CERTIFICAT_REFERENCE = "certificatReference";
 	public static final String FIELD_CERTIFICAT_SIGNATORY = "certificatSignatory";
 	public static final String FIELD_CERTIFICAT_SIGNATURE_DATE = "certificatSignatureDate";
+	
+	public static final String FIELD_TREATMENT = "treatment";
+	public static final String FIELD_REJECTION_REASON = "rejectionReason";
 }

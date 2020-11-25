@@ -54,7 +54,7 @@ public class RequestsAdministrationPage extends AbstractPageContainerManagedImpl
 	
 	private void buildTabRequestsToProcess(Collection<Map<Object,Object>> cellsMaps) {
 		DataTable dataTable = RequestListPage.buildDataTable(
-				RequestListPage.RenderType.class,RequestListPage.RenderType.ADMINISTRATOR
+				RequestListPage.class,RequestsAdministrationPage.class
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new RequestListPage.LazyDataModelListenerImpl().setProcessingDateIsNullable(Boolean.TRUE)
 				);	
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
@@ -62,7 +62,7 @@ public class RequestsAdministrationPage extends AbstractPageContainerManagedImpl
 	
 	private void buildTaRequestsProcessed(Collection<Map<Object,Object>> cellsMaps) {
 		DataTable dataTable = RequestListPage.buildDataTable(
-				RequestListPage.RenderType.class,RequestListPage.RenderType.ADMINISTRATOR
+				RequestListPage.class,RequestsAdministrationPage.class
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new RequestListPage.LazyDataModelListenerImpl().setProcessingDateIsNotNullable(Boolean.TRUE)
 				);	
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));

@@ -14,13 +14,13 @@
 	</url-mapping>
 	
 	<url-mapping id="mes_demandes">
-		<pattern value="/private/mes_demandes.jsf" />
-		<view-id value="/private/actor/myrequests.jsf" />
+		<pattern value="/user/mes_demandes.jsf" />
+		<view-id value="/user/request/index.jsf" />
 	</url-mapping>
 	
 	<url-mapping id="demandes">
 		<pattern value="/private/demandes.jsf" />
-		<view-id value="/private/request/administration.jsf" />
+		<view-id value="/private/request/index.jsf" />
 	</url-mapping>
 	
 	<url-mapping id="demande_compte">

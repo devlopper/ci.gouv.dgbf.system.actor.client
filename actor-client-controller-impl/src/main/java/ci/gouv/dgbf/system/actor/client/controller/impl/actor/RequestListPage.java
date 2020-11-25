@@ -20,9 +20,11 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Dat
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.AbstractMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMenu;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
+import ci.gouv.dgbf.system.actor.client.controller.impl.user.UserRequestsPage;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import lombok.Getter;
 import lombok.Setter;
@@ -47,13 +49,14 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 	public static DataTable buildDataTable(Map<Object,Object> arguments) {
 		if(arguments == null)
 			arguments = new HashMap<>();
-		RenderType renderType = (RenderType) MapHelper.readByKey(arguments, RenderType.class);
+		Class<?> pageClass = (Class<?>) MapHelper.readByKey(arguments, RequestListPage.class);
 		List<String> columnsFieldsNames = new ArrayList<>();
 		columnsFieldsNames.addAll(List.of(Request.FIELD_TYPE_AS_STRING,Request.FIELD_CREATION_DATE_AS_STRING));
-		if(renderType == null || RenderType.USER.equals(renderType)) {
+		if(pageClass == null || UserRequestsPage.class.equals(pageClass)) {
 			
 		}else {
 			columnsFieldsNames.addAll(0, List.of(Request.FIELD_ACTOR_CODE,Request.FIELD_ACTOR_NAMES));
+			columnsFieldsNames.addAll(List.of(Request.FIELD_PROCESSING_DATE_AS_STRING));
 		}
 		
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
@@ -63,7 +66,12 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl());
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl());
 		DataTable dataTable = DataTable.build(arguments);
-		dataTable.addRecordMenuItemByArgumentsOpenViewInDialogRead();
+		if(pageClass == null || UserRequestsPage.class.equals(pageClass)) {
+			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("userRequestReadView", MenuItem.FIELD_VALUE,"Consulter",MenuItem.FIELD_ICON,"fa fa-eye");
+		}else {
+			dataTable.addRecordMenuItemByArgumentsOpenViewInDialogRead();
+			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("requestProcessView", MenuItem.FIELD_VALUE,"Traiter",MenuItem.FIELD_ICON,"fa fa-file");
+		}
 		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
 		return dataTable;
 	}
@@ -90,6 +98,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 				map.put(Column.FIELD_WIDTH, "130");
 			}else if(Request.FIELD_PROCESSING_DATE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Traité le");
+				map.put(Column.FIELD_WIDTH, "130");
 			}else if(Request.FIELD_TYPE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Type");
 			}else if(Request.FIELD_FUNCTIONS_AS_STRINGS.equals(fieldName)) {
@@ -138,10 +147,5 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			}
 			return filter;
 		}
-	}
-	
-	public static enum RenderType {
-		USER
-		,ADMINISTRATOR
 	}
 }

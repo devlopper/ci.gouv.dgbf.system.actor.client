@@ -1,4 +1,4 @@
-package ci.gouv.dgbf.system.actor.client.controller.impl.actor;
+package ci.gouv.dgbf.system.actor.client.controller.impl.user;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -20,11 +20,12 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.ActorController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
+import ci.gouv.dgbf.system.actor.client.controller.impl.actor.RequestListPage;
 import lombok.Getter;
 import lombok.Setter;
 
 @Named @ViewScoped @Getter @Setter
-public class MyRequestsPage extends AbstractPageContainerManagedImpl implements Serializable {
+public class UserRequestsPage extends AbstractPageContainerManagedImpl implements Serializable {
 
 	private Layout layout;
 	private TabMenu tabMenu;
@@ -59,12 +60,13 @@ public class MyRequestsPage extends AbstractPageContainerManagedImpl implements 
 		Actor actor = __inject__(ActorController.class).getLoggedIn();
 		DataTable dataTable = RequestListPage.buildDataTable(
 				DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new RequestListPage.LazyDataModelListenerImpl().setActorIdentifier(actor.getIdentifier())
+				,RequestListPage.class,UserRequestsPage.class
 				);	
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
 	}
 	
 	private void buildTabNewRequest(Collection<Map<Object,Object>> cellsMaps) {
-		Form form = RequestEditPage.buildForm(RequestEditPage.class,MyRequestsPage.class);
+		Form form = RequestInitializePage.buildForm();
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,form.getLayout(),Cell.FIELD_WIDTH,12));
 	}
 	
@@ -87,5 +89,5 @@ public class MyRequestsPage extends AbstractPageContainerManagedImpl implements 
 		,new TabMenu.Tab("Nouvelle demande",TAB_CREATE)
 	);
 	
-	public static final String OUTCOME = "myRequestsView";
+	public static final String OUTCOME = "userRequestsView";
 }

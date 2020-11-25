@@ -27,14 +27,38 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>requestReadView</from-outcome>
+			<to-view-id>/private/request/read.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>requestProcessView</from-outcome>
+			<to-view-id>/private/request/process.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>requestListView</from-outcome>
 			<to-view-id>/private/request/list.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		
 		<navigation-case>
-			<from-outcome>myRequestsView</from-outcome>
-			<to-view-id>/private/mes_demandes.jsf</to-view-id>
+			<from-outcome>userRequestsView</from-outcome>
+			<to-view-id>/user/mes_demandes.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>requestInitializeView</from-outcome>
+			<to-view-id>/user/request/initialize.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>userRequestReadView</from-outcome>
+			<to-view-id>/user/request/read.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		

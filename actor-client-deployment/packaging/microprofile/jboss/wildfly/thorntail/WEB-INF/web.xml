@@ -129,10 +129,20 @@
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>administrator</web-resource-name>
-			<url-pattern>${web-app.security-constraint.web-resource-collection.all.url-pattern}</url-pattern>
+			<url-pattern>${web-app.security-constraint.web-resource-collection.administrator.url-pattern}</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
 			<role-name>ADMINISTRATEUR</role-name>
+		</auth-constraint>
+	</security-constraint>
+	
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>user</web-resource-name>
+			<url-pattern>${web-app.security-constraint.web-resource-collection.user.url-pattern}</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>UTILISATEUR</role-name>
 		</auth-constraint>
 	</security-constraint>
 	
