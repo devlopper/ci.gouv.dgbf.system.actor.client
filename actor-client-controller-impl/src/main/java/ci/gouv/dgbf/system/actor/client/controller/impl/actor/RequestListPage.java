@@ -24,7 +24,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
-import ci.gouv.dgbf.system.actor.client.controller.impl.user.UserRequestsPage;
+import ci.gouv.dgbf.system.actor.client.controller.impl.myaccount.UserRequestsPage;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import lombok.Getter;
 import lombok.Setter;
@@ -49,14 +49,19 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 	public static DataTable buildDataTable(Map<Object,Object> arguments) {
 		if(arguments == null)
 			arguments = new HashMap<>();
+		LazyDataModelListenerImpl lazyDataModelListener = (LazyDataModelListenerImpl) MapHelper.readByKey(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER);
+		if(lazyDataModelListener == null)
+			lazyDataModelListener = new LazyDataModelListenerImpl();
 		Class<?> pageClass = (Class<?>) MapHelper.readByKey(arguments, RequestListPage.class);
 		List<String> columnsFieldsNames = new ArrayList<>();
-		columnsFieldsNames.addAll(List.of(Request.FIELD_TYPE_AS_STRING,Request.FIELD_CREATION_DATE_AS_STRING));
+		columnsFieldsNames.addAll(List.of(Request.FIELD_TYPE_AS_STRING,Request.FIELD_CREATION_DATE_AS_STRING,Request.FIELD_STATUS_AS_STRING
+				,Request.FIELD_PROCESSING_DATE_AS_STRING));
 		if(pageClass == null || UserRequestsPage.class.equals(pageClass)) {
 			
 		}else {
 			columnsFieldsNames.addAll(0, List.of(Request.FIELD_ACTOR_CODE,Request.FIELD_ACTOR_NAMES));
-			columnsFieldsNames.addAll(List.of(Request.FIELD_PROCESSING_DATE_AS_STRING));
+			//if(Boolean.TRUE.equals(lazyDataModelListener.getProcessingDateIsNotNullable()))
+			//	columnsFieldsNames.addAll(List.of(Request.FIELD_PROCESSING_DATE_AS_STRING));
 		}
 		
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
@@ -64,10 +69,10 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, columnsFieldsNames);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl());
-		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl());
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,lazyDataModelListener);
 		DataTable dataTable = DataTable.build(arguments);
 		if(pageClass == null || UserRequestsPage.class.equals(pageClass)) {
-			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("userRequestReadView", MenuItem.FIELD_VALUE,"Consulter",MenuItem.FIELD_ICON,"fa fa-eye");
+			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("myAccountRequestReadView", MenuItem.FIELD_VALUE,"Consulter",MenuItem.FIELD_ICON,"fa fa-eye");
 		}else {
 			dataTable.addRecordMenuItemByArgumentsOpenViewInDialogRead();
 			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("requestProcessView", MenuItem.FIELD_VALUE,"Traiter",MenuItem.FIELD_ICON,"fa fa-file");
@@ -103,6 +108,9 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 				map.put(Column.FIELD_HEADER_TEXT, "Type");
 			}else if(Request.FIELD_FUNCTIONS_AS_STRINGS.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Fonction(s)");
+				
+			}else if(Request.FIELD_STATUS_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Statut");
 				
 			}
 			return map;
@@ -147,5 +155,8 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			}
 			return filter;
 		}
+		
+		public static final String FIELD_PROCESSING_DATE_IS_NULLABLE = "processingDateIsNullable";
+		public static final String FIELD_PROCESSING_DATE_IS_NOT_NULLABLE = "processingDateIsNotNullable";
 	}
 }

@@ -1,4 +1,4 @@
-package ci.gouv.dgbf.system.actor.client.controller.impl.user;
+package ci.gouv.dgbf.system.actor.client.controller.impl.myaccount;
 
 import java.io.Serializable;
 
@@ -10,6 +10,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Named @ViewScoped @Getter @Setter
-public class UserRequestReadPage extends AbstractRequestReadPage implements Serializable {
+public class UserRequestReadPage extends AbstractRequestReadPage implements MyAccountTheme,Serializable {
 
 }

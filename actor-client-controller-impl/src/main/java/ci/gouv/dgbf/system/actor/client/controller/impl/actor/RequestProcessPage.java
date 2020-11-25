@@ -34,7 +34,7 @@ public class RequestProcessPage extends AbstractRequestEditPage implements Seria
 
 	@Override
 	protected void __listenPostConstruct__() {
-		request = RequestEditPage.getRequestFromParameter(Action.UPDATE);
+		request = AbstractRequestEditPage.getRequestFromParameter(Action.UPDATE);
 		super.__listenPostConstruct__();
 	}
 	
@@ -65,7 +65,7 @@ public class RequestProcessPage extends AbstractRequestEditPage implements Seria
 	public static class FormListener extends AbstractRequestEditPage.FormListener {
 		
 		public FormListener(Request request) {
-			super(request,null);
+			super(request);
 		}
 		
 		@Override
@@ -88,7 +88,7 @@ public class RequestProcessPage extends AbstractRequestEditPage implements Seria
 	public static class FormConfiguratorListener extends AbstractRequestEditPage.FormConfiguratorListener {
 		
 		public FormConfiguratorListener(Request request) {
-			super(request,null);
+			super(request);
 		}
 		
 		@Override

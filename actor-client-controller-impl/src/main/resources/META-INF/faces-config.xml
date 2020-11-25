@@ -45,24 +45,6 @@
 		</navigation-case>
 		
 		<navigation-case>
-			<from-outcome>userRequestsView</from-outcome>
-			<to-view-id>/user/mes_demandes.jsf</to-view-id>
-			<redirect />
-		</navigation-case>
-		
-		<navigation-case>
-			<from-outcome>requestInitializeView</from-outcome>
-			<to-view-id>/user/request/initialize.jsf</to-view-id>
-			<redirect />
-		</navigation-case>
-		
-		<navigation-case>
-			<from-outcome>userRequestReadView</from-outcome>
-			<to-view-id>/user/request/read.jsf</to-view-id>
-			<redirect />
-		</navigation-case>
-		
-		<navigation-case>
 			<from-outcome>requestsAdministrationView</from-outcome>
 			<to-view-id>/private/demandes.jsf</to-view-id>
 			<redirect />
@@ -470,17 +452,35 @@
 		
 		
 		
-		<!--  -->
+		<!-- My Account  -->
 		
 		<navigation-case>
 			<from-outcome>myAccountIndexView</from-outcome>
-			<to-view-id>/private/myaccount/index.jsf</to-view-id>
+			<to-view-id>/mon_compte</to-view-id>
 			<redirect />
 		</navigation-case>
 		
 		<navigation-case>
 			<from-outcome>myAccountNotifyAfterEditPassView</from-outcome>
-			<to-view-id>/private/myaccount/notifyaftereditpass.jsf</to-view-id>
+			<to-view-id>/myaccount/notifyaftereditpass.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>myAccountRequestsView</from-outcome>
+			<to-view-id>/mon_compte/demandes.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>myAccountRequestInitializeView</from-outcome>
+			<to-view-id>/mon_compte/demande/initier.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>myAccountRequestReadView</from-outcome>
+			<to-view-id>/mon_compte/demande/consulter.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 	</navigation-rule>

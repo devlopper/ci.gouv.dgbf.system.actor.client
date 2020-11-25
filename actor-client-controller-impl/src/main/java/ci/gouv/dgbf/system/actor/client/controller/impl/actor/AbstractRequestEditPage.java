@@ -14,7 +14,6 @@ import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
-import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
@@ -30,7 +29,6 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationForm;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
-import ci.gouv.dgbf.system.actor.client.controller.impl.user.RequestInitializePage;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestTypeQuerier;
 import lombok.Getter;
@@ -70,12 +68,11 @@ public abstract class AbstractRequestEditPage extends AbstractEntityEditPageCont
 		Request request = (Request) MapHelper.readByKey(arguments, Form.FIELD_ENTITY);
 		if(request == null)
 			request = getRequestFromParameter((Action) MapHelper.readByKey(arguments, Form.FIELD_ACTION));		
-		Class<?> pageClass = ValueHelper.defaultToIfBlank((Class<?>) MapHelper.readByKey(arguments, RequestInitializePage.class),RequestInitializePage.class);
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ENTITY_CLASS, Request.class);
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ENTITY, request);
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ACTION, Action.CREATE);
-		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_LISTENER, new FormConfiguratorListener(request,pageClass));		
-		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_LISTENER, new FormListener(request,pageClass));
+		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_LISTENER, new FormConfiguratorListener(request));		
+		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_LISTENER, new FormListener(request));
 		Form form = Form.build(arguments);
 		return form;
 	}
@@ -103,9 +100,8 @@ public abstract class AbstractRequestEditPage extends AbstractEntityEditPageCont
 	@Getter @Setter @Accessors(chain=true) @NoArgsConstructor
 	public static class FormListener extends Form.Listener.AbstractImpl {
 		protected Request request;
-		protected Class<?> pageClass;
 		
-		public FormListener(Request request,Class<?> pageClass) {
+		public FormListener(Request request) {
 			this.request = request;
 		}
 		
@@ -115,11 +111,9 @@ public abstract class AbstractRequestEditPage extends AbstractEntityEditPageCont
 	public static class FormConfiguratorListener extends Form.ConfiguratorImpl.Listener.AbstractImpl {
 		protected Request request;
 		protected Map<String,IdentificationAttribut> fieldsNames;
-		protected Class<?> pageClass;
 		
-		public FormConfiguratorListener(Request request,Class<?> pageClass) {
+		public FormConfiguratorListener(Request request) {
 			this.request = request;
-			this.pageClass = pageClass;
 			if(request != null && request.getType() != null && request.getType().getForm() != null) {
 				fieldsNames = IdentificationForm.computeFieldsNames(request.getType().getForm(), Request.class);
 			}

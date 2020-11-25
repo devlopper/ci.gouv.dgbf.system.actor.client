@@ -79,7 +79,7 @@
 			<id>keycloak</id>
 			<properties>
 				<web-app.security-constraint.web-resource-collection.administrator.url-pattern>/private/*</web-app.security-constraint.web-resource-collection.administrator.url-pattern>
-				<web-app.security-constraint.web-resource-collection.user.url-pattern>/user/*</web-app.security-constraint.web-resource-collection.user.url-pattern>
+				<web-app.security-constraint.web-resource-collection.user.url-pattern>/mon_compte/*</web-app.security-constraint.web-resource-collection.user.url-pattern>
 			</properties>
 		</profile>
 		

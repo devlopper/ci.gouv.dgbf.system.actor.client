@@ -1,4 +1,4 @@
-package ci.gouv.dgbf.system.actor.client.controller.impl.user;
+package ci.gouv.dgbf.system.actor.client.controller.impl.myaccount;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Named @ViewScoped @Getter @Setter
-public class UserRequestsPage extends AbstractPageContainerManagedImpl implements Serializable {
+public class UserRequestsPage extends AbstractPageContainerManagedImpl implements MyAccountTheme,Serializable {
 
 	private Layout layout;
 	private TabMenu tabMenu;
@@ -89,5 +89,5 @@ public class UserRequestsPage extends AbstractPageContainerManagedImpl implement
 		,new TabMenu.Tab("Nouvelle demande",TAB_CREATE)
 	);
 	
-	public static final String OUTCOME = "userRequestsView";
+	public static final String OUTCOME = "myAccountRequestsView";
 }

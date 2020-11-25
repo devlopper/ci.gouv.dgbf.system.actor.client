@@ -1,4 +1,4 @@
-package ci.gouv.dgbf.system.actor.client.controller.impl.user;
+package ci.gouv.dgbf.system.actor.client.controller.impl.myaccount;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Named @ViewScoped @Getter @Setter
-public class RequestInitializePage extends AbstractRequestEditPage implements Serializable {
+public class RequestInitializePage extends AbstractRequestEditPage implements MyAccountTheme,Serializable {
 
 	@Override
 	protected void setActionFromRequestParameter() {
@@ -78,7 +78,7 @@ public class RequestInitializePage extends AbstractRequestEditPage implements Se
 	public static class FormListener extends AbstractRequestEditPage.FormListener {
 		
 		public FormListener(Request request) {
-			super(request,null);
+			super(request);
 		}
 		
 		@Override
@@ -100,9 +100,8 @@ public class RequestInitializePage extends AbstractRequestEditPage implements Se
 				Map<String,List<String>> map = new LinkedHashMap<>();
 				map.put(ParameterName.ACTION_IDENTIFIER.getValue(),List.of(Action.CREATE.name()));
 				map.put(ParameterName.stringify(RequestType.class),List.of(type.getIdentifier()));
-				if(UserRequestsPage.class.equals(pageClass))
-					map.put(TabMenu.Tab.PARAMETER_NAME, List.of(UserRequestsPage.TAB_CREATE));
-				Redirector.getInstance().redirect(UserRequestsPage.class.equals(pageClass) ? UserRequestsPage.OUTCOME : OUTCOME, map);
+				map.put(TabMenu.Tab.PARAMETER_NAME, List.of(UserRequestsPage.TAB_CREATE));
+				Redirector.getInstance().redirect(UserRequestsPage.OUTCOME,map);
 			}else {
 				Redirector.getInstance().redirect(new Redirector.Arguments().setOutcome(UserRequestsPage.OUTCOME));
 			}
@@ -113,7 +112,7 @@ public class RequestInitializePage extends AbstractRequestEditPage implements Se
 	public static class FormConfiguratorListener extends AbstractRequestEditPage.FormConfiguratorListener {
 		
 		public FormConfiguratorListener(Request request) {
-			super(request,null);
+			super(request);
 		}
 		
 		@Override

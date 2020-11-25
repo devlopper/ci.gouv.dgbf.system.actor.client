@@ -13,11 +13,6 @@
 		<view-id value="/public/actor/create.jsf" />
 	</url-mapping>
 	
-	<url-mapping id="mes_demandes">
-		<pattern value="/user/mes_demandes.jsf" />
-		<view-id value="/user/request/index.jsf" />
-	</url-mapping>
-	
 	<url-mapping id="demandes">
 		<pattern value="/private/demandes.jsf" />
 		<view-id value="/private/request/index.jsf" />
@@ -67,27 +62,42 @@
 	
 	<url-mapping id="mon_compte">
 		<pattern value="/mon_compte" />
-		<view-id value="/private/myaccount/index.jsf" />
+		<view-id value="/myaccount/index.jsf" />
+	</url-mapping>
+	
+	<url-mapping id="mes_demandes">
+		<pattern value="/mon_compte/demandes.jsf" />
+		<view-id value="/myaccount/request/index.jsf" />
+	</url-mapping>
+	
+	<url-mapping id="initier_demande">
+		<pattern value="/mon_compte/demande/initier.jsf" />
+		<view-id value="/myaccount/request/initialize.jsf" />
+	</url-mapping>
+	
+	<url-mapping id="consulter_demande">
+		<pattern value="/mon_compte/demande/consulter.jsf" />
+		<view-id value="/myaccount/request/read.jsf" />
 	</url-mapping>
 	
 	<url-mapping id="mes_visibilites">
-		<pattern value="/mes_visibilites" />
+		<pattern value="/mon_compte/visibilites" />
 		<view-id value="/private/actor/loggedin/listscopes.jsf" />
 	</url-mapping>
 	
 	<url-mapping id="modifier_mot_passe">
-		<pattern value="/modifier_mot_passe" />
-		<view-id value="/private/myaccount/editpass.jsf" />
+		<pattern value="/mon_compte/modifier_mot_passe" />
+		<view-id value="/myaccount/editpass.jsf" />
 	</url-mapping>
 	
 	<url-mapping id="mes_preferences">
-		<pattern value="/mes_preferences" />
-		<view-id value="/private/myaccount/preferences.jsf" />
+		<pattern value="/mon_compte/preferences" />
+		<view-id value="/myaccount/preferences.jsf" />
 	</url-mapping>
 	
 	<url-mapping id="mon_profile">
-		<pattern value="/mon_profile" />
-		<view-id value="/private/myaccount/profile.jsf" />
+		<pattern value="/mon_compte/profile" />
+		<view-id value="/myaccount/profile.jsf" />
 	</url-mapping>
 	
 </pretty-config>
