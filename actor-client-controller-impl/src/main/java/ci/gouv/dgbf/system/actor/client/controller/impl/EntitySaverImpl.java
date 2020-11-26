@@ -450,6 +450,11 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 			return ((RequestRepresentation)representation).rejectByIdentifier(request.getIdentifier(), request.getRejectionReason());
 		}
 		
+		if(arguments != null && ActorBusiness.SAVE_PROFILE.equals(arguments.getActionIdentifier())) {
+			ActorDto actor = (ActorDto) CollectionHelper.getFirst(updatables);
+			return ((ActorRepresentation)representation).saveProfile(actor);
+		}
+		
 		return super.save(representation, creatables, updatables, deletables, arguments);
 	}
 }

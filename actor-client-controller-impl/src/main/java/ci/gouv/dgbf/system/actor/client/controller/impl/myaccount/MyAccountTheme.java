@@ -28,10 +28,19 @@ public interface MyAccountTheme {
 					Map<Object, Object> arguments = super.getTabArguments(name);
 					if(MENU_ITEM_MY_ACCOUNT.equals(name)) {
 						arguments.put(Tab.FIELD_ICON, "fa fa-user");						
-						arguments.put(Tab.FIELD_MENU, Menu.build(Menu.FIELD_MODEL,ThemeManager.getInstance().getTopMenuModel(page)));
+						MenuModel model = ThemeManager.getInstance().getTopMenuModel(page);
+						
+						/*
+						DefaultMenuItem item = new DefaultMenuItem("Profile");
+						item.setOutcome("myAccountProfileView");
+						model.addElement(item);
+						*/
+						
+						arguments.put(Tab.FIELD_MENU, Menu.build(Menu.FIELD_MODEL,model));
 					}else if(MENU_ITEM_REQUESTS.equals(name)) {
 						arguments.put(Tab.FIELD_ICON, "fa fa-file");
 						MenuModel model = new DefaultMenuModel();
+						
 						DefaultMenuItem item = new DefaultMenuItem("Demandes");
 						item.setOutcome("myAccountRequestsView");
 						model.addElement(item);

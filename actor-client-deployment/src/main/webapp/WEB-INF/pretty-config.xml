@@ -96,8 +96,8 @@
 	</url-mapping>
 	
 	<url-mapping id="mon_profile">
-		<pattern value="/mon_compte/profile" />
-		<view-id value="/myaccount/profile.jsf" />
+		<pattern value="/mon_compte/profile.jsf" />
+		<view-id value="/myaccount/profile/index.jsf" />
 	</url-mapping>
 	
 </pretty-config>

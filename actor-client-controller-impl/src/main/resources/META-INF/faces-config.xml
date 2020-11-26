@@ -8,6 +8,8 @@
 	<navigation-rule>
 		<from-view-id>*</from-view-id>
 		
+		<!-- Actor -->
+		
 		<navigation-case>
 			<from-outcome>actorCreateFromPublicView</from-outcome>
 			<to-view-id>/public/actor/create.jsf</to-view-id>
@@ -19,6 +21,20 @@
 			<to-view-id>/public/actor/notifyaftercreate.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>actorAccountProfileReadView</from-outcome>
+			<to-view-id>/private/actor/account/profile/read.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>actorAccountProfileEditView</from-outcome>
+			<to-view-id>/private/actor/account/profile/edit.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<!-- Request -->
 		
 		<navigation-case>
 			<from-outcome>requestEditView</from-outcome>
@@ -463,6 +479,12 @@
 		<navigation-case>
 			<from-outcome>myAccountNotifyAfterEditPassView</from-outcome>
 			<to-view-id>/myaccount/notifyaftereditpass.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>myAccountProfileView</from-outcome>
+			<to-view-id>/mon_compte/profile.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		

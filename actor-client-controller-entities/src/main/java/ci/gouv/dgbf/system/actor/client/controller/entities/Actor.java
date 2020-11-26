@@ -2,6 +2,7 @@ package ci.gouv.dgbf.system.actor.client.controller.entities;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -68,9 +69,15 @@ public class Actor extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 	private Collection<Scope> scopes;
 	private Collection<Scope> visibleSections;
 	private Collection<String> scopesIdentifiers;
+	private Collection<String> budgetaryFunctionsAsStrings;
 	private Boolean emailSendableAfterCreation;
 	
-	private String administrativeUnitAsString,sectionAsString;
+	private String administrativeUnitAsString,sectionAsString,civilityAsString;
+	private String actOfAppointmentReference;
+	private String actOfAppointmentSignatory;
+	private Date actOfAppointmentSignatureDate;
+	private String actOfAppointmentSignatureDateAsString;
+	private Long actOfAppointmentSignatureDateAsTimestamp;
 	private IdentificationForm form;
 	
 	public String getNames() {
@@ -127,6 +134,7 @@ public class Actor extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 	public static final String FIELD_ADMINISTRATIVE_FUNCTION = "administrativeFunction";
 	public static final String FIELD_SECTION_AS_STRING = "sectionAsString";
 	public static final String FIELD_CIVILITY = "civility";
+	public static final String FIELD_CIVILITY_AS_STRING = "civilityAsString";
 	public static final String FIELD_GROUP = "group";
 	public static final String FIELD_USER_NAME = "username";
 	public static final String FIELD_PASSWORD = "password";
@@ -135,4 +143,9 @@ public class Actor extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 	public static final String FIELD_PROFILES = "profiles";
 	public static final String FIELD_VISIBLE_MODULES = "visibleModules";
 	public static final String FIELD_VISIBLE_SECTIONS = "visibleSections";
+	public static final String FIELD_ACT_OF_APPOINTMENT_REFERENCE = "actOfAppointmentReference";
+	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATORY = "actOfAppointmentSignatory";
+	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE = "actOfAppointmentSignatureDate";	
+	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE_AS_STRING = "actOfAppointmentSignatureDateAsString";
+	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE_AS_TIMESTAMP = "actOfAppointmentSignatureDateAsTimestamp";
 }

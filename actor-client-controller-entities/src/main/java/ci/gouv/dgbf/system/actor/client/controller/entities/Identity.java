@@ -1,6 +1,7 @@
 package ci.gouv.dgbf.system.actor.client.controller.entities;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.validation.constraints.NotNull;
 
@@ -33,8 +34,9 @@ public class Identity extends AbstractDataIdentifiableSystemStringImpl implement
 	private IdentityGroup group;
 	private String actOfAppointmentReference;
 	private String actOfAppointmentSignatory;
+	private Date actOfAppointmentSignatureDate;
 	private String actOfAppointmentSignatureDateAsString;
-	private Long actOfAppointmentSignatureTimestamp;
+	private Long actOfAppointmentSignatureDateAsTimestamp;
 	
 	public String getNames() {
 		if(names == null) {
@@ -50,4 +52,10 @@ public class Identity extends AbstractDataIdentifiableSystemStringImpl implement
 		}
 		return names;
 	}
+	
+	public static final String FIELD_ACT_OF_APPOINTMENT_REFERENCE = "actOfAppointmentReference";
+	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATORY = "actOfAppointmentSignatory";
+	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE = "actOfAppointmentSignatureDate";	
+	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE_AS_STRING = "actOfAppointmentSignatureDateAsString";
+	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE_AS_TIMESTAMP = "actOfAppointmentSignatureDateAsTimestamp";
 }
