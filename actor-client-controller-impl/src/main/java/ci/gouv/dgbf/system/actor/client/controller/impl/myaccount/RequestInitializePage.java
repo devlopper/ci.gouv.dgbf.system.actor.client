@@ -1,7 +1,6 @@
 package ci.gouv.dgbf.system.actor.client.controller.impl.myaccount;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -10,9 +9,7 @@ import java.util.Map;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
-import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntityReader;
 import org.cyk.utility.__kernel__.controller.EntitySaver;
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
@@ -22,7 +19,6 @@ import org.cyk.utility.client.controller.web.jsf.Redirector;
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AutoComplete;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectBooleanButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
@@ -36,7 +32,6 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.RequestType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.client.controller.impl.actor.AbstractRequestEditPage;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestTypeQuerier;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -86,6 +81,10 @@ public class RequestInitializePage extends AbstractRequestEditPage implements My
 			if(request == null) {
 				
 			}else {
+				if(request.getActOfAppointmentSignatureDate() == null)
+					request.setActOfAppointmentSignatureDateAsTimestamp(null);
+				else
+					request.setActOfAppointmentSignatureDateAsTimestamp(request.getActOfAppointmentSignatureDate().getTime());
 				EntitySaver.getInstance().save(Request.class, new Arguments<Request>().setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
 						.setActionIdentifier(RequestBusiness.INITIALIZE)).addCreatablesOrUpdatables(request));
 			}		
@@ -116,15 +115,6 @@ public class RequestInitializePage extends AbstractRequestEditPage implements My
 		}
 		
 		@Override
-		public Collection<String> getFieldsNames(Form form) {
-			if(request == null)
-				return List.of(Request.FIELD_TYPE);
-			if(fieldsNames == null)
-				return null;
-			return fieldsNames.keySet();
-		}
-		
-		@Override
 		public Map<Object, Object> getInputArguments(Form form, String fieldName) {
 			Map<Object, Object> map = super.getInputArguments(form, fieldName);
 			IdentificationAttribut attribut = fieldsNames == null ? null : fieldsNames.get(fieldName);
@@ -143,14 +133,7 @@ public class RequestInitializePage extends AbstractRequestEditPage implements My
 			}else if(Request.FIELD_COMMENT.equals(fieldName)) {
 				
 			}else if(Request.FIELD_TYPE.equals(fieldName)) {
-				Collection<RequestType> choices = new ArrayList<>();
-				//RequestType type = new RequestType();
-				//type.setName("-- Aucune sélection --");
-				//choices.add(type);
-				Collection<RequestType> types = EntityReader.getInstance().readMany(RequestType.class,RequestTypeQuerier.QUERY_IDENTIFIER_READ_ALL);
-				if(CollectionHelper.isNotEmpty(types))
-					choices.addAll(types);				
-				map.put(AbstractInputChoice.FIELD_CHOICES,choices);
+				
 			}else if(Request.FIELD_ADMINISTRATIVE_UNIT.equals(fieldName)) {
 				map.put(AutoComplete.FIELD_ENTITY_CLASS, AdministrativeUnit.class);
 				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
@@ -167,6 +150,12 @@ public class RequestInitializePage extends AbstractRequestEditPage implements My
 				map.put(SelectBooleanButton.FIELD_ON_LABEL, "Accepter la demdande");
 			}else if(Request.FIELD_REJECTION_REASON.equals(fieldName)) {
 				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Motif de rejet");
+			}else if(Request.FIELD_ACT_OF_APPOINTMENT_REFERENCE.equals(fieldName)) {
+				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Référence de l'acte de nomination");
+			}else if(Request.FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE.equals(fieldName)) {
+				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Date de signature de l'acte de nomination");
+			}else if(Request.FIELD_ACT_OF_APPOINTMENT_SIGNATORY.equals(fieldName)) {
+				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Signataire de l'acte de nomination");
 			}
 			return map;
 		}

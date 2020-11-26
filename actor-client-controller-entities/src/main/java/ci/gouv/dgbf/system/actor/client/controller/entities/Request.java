@@ -36,13 +36,16 @@ public class Request extends AbstractDataIdentifiableSystemStringImpl implements
 	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceOneAutoComplete
 	private BudgetSpecializationUnit budgetSpecializationUnit;
 	
+	@Input @InputText private String actOfAppointmentReference;
+	@Input @InputText private String actOfAppointmentSignatory;
+	private Long actOfAppointmentSignatureDateAsTimestamp;
+	@Input @InputDate private Date actOfAppointmentSignatureDate;
+	private String actOfAppointmentSignatureDateAsString;
+	
 	private Actor actor;
 	
 	@Input @InputTextarea private String comment;	
 	@Input @InputText private String administrativeFunction;
-	@Input @InputText private String certificatReference;
-	@Input @InputText private String certificatSignatory;
-	@Input @InputDate private Date certificatSignatureDate;
 	
 	private Collection<Function> functions;
 	
@@ -98,9 +101,10 @@ public class Request extends AbstractDataIdentifiableSystemStringImpl implements
 	public static final String FIELD_FINANCIAL_CONTROLLER_HOLDER = "financialControllerHolder";
 	public static final String FIELD_ACCOUNTING_HOLDER = "accountingHolder";
 	
-	public static final String FIELD_CERTIFICAT_REFERENCE = "certificatReference";
-	public static final String FIELD_CERTIFICAT_SIGNATORY = "certificatSignatory";
-	public static final String FIELD_CERTIFICAT_SIGNATURE_DATE = "certificatSignatureDate";
+	public static final String FIELD_ACT_OF_APPOINTMENT_REFERENCE = "actOfAppointmentReference";
+	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATORY = "actOfAppointmentSignatory";
+	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE = "actOfAppointmentSignatureDate";
+	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE_AS_STRING = "actOfAppointmentSignatureDateAsString";
 	
 	public static final String FIELD_TREATMENT = "treatment";
 	public static final String FIELD_REJECTION_REASON = "rejectionReason";

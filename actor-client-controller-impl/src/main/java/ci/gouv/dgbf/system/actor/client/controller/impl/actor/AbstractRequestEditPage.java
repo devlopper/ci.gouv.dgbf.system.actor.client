@@ -3,12 +3,12 @@ package ci.gouv.dgbf.system.actor.client.controller.impl.actor;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
-import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.EntityReader;
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
@@ -90,9 +90,13 @@ public abstract class AbstractRequestEditPage extends AbstractEntityEditPageCont
 						, RequestQuerier.PARAMETER_NAME_TYPE_IDENTIFIER,requestTypeIdentifier);
 			request.setActor(__inject__(ActorController.class).getLoggedIn());
 			return request;
-		}else
-			return EntityReader.getInstance().readOne(Request.class, RequestQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI
+		}else {
+			Request request = EntityReader.getInstance().readOne(Request.class, RequestQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI
 					, RequestQuerier.PARAMETER_NAME_IDENTIFIER,WebController.getInstance().getRequestParameter(ParameterName.ENTITY_IDENTIFIER.getValue()));
+			if(request.getActOfAppointmentSignatureDateAsTimestamp() != null && request.getActOfAppointmentSignatureDate() == null)
+				request.setActOfAppointmentSignatureDate(new Date(request.getActOfAppointmentSignatureDateAsTimestamp()));
+			return request;
+		}
 	}
 	
 	/**/
@@ -125,7 +129,9 @@ public abstract class AbstractRequestEditPage extends AbstractEntityEditPageCont
 				return List.of(Request.FIELD_TYPE);
 			if(fieldsNames == null)
 				return null;
-			return fieldsNames.keySet();
+			List<String> collection = new ArrayList<>(fieldsNames.keySet());
+			collection.add(0, Request.FIELD_TYPE);
+			return collection;
 		}
 		
 		@Override
@@ -147,14 +153,8 @@ public abstract class AbstractRequestEditPage extends AbstractEntityEditPageCont
 			}else if(Request.FIELD_COMMENT.equals(fieldName)) {
 				
 			}else if(Request.FIELD_TYPE.equals(fieldName)) {
-				Collection<RequestType> choices = new ArrayList<>();
-				//RequestType type = new RequestType();
-				//type.setName("-- Aucune sélection --");
-				//choices.add(type);
-				Collection<RequestType> types = EntityReader.getInstance().readMany(RequestType.class,RequestTypeQuerier.QUERY_IDENTIFIER_READ_ALL);
-				if(CollectionHelper.isNotEmpty(types))
-					choices.addAll(types);				
-				map.put(AbstractInputChoice.FIELD_CHOICES,choices);
+				map.put(AbstractInputChoice.FIELD_CHOICES
+						,request == null ? EntityReader.getInstance().readMany(RequestType.class,RequestTypeQuerier.QUERY_IDENTIFIER_READ_ALL) : List.of(request.getType()));
 			}else if(Request.FIELD_ADMINISTRATIVE_UNIT.equals(fieldName)) {
 				map.put(AutoComplete.FIELD_ENTITY_CLASS, AdministrativeUnit.class);
 				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);

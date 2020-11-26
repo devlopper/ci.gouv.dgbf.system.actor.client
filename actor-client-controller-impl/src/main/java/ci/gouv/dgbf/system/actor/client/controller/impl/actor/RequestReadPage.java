@@ -48,9 +48,7 @@ public class RequestReadPage extends AbstractRequestReadPage implements Serializ
 			Collection<String> fieldNames = super.getFieldsNames(form);
 			if(CollectionHelper.isEmpty(fieldNames))
 				return null;
-			List<String> collection = new ArrayList<String>(fieldNames);
-			collection.addAll(0, List.of(Request.FIELD_ACTOR_CODE,Request.FIELD_ACTOR_NAMES,Request.FIELD_TYPE_AS_STRING));
-			return collection;
+			return getFieldsNames(fieldNames);
 		}
 		
 		/**/
@@ -59,7 +57,7 @@ public class RequestReadPage extends AbstractRequestReadPage implements Serializ
 			if(CollectionHelper.isEmpty(fieldNames))
 				return null;
 			List<String> collection = new ArrayList<String>(fieldNames);
-			collection.addAll(0, List.of(Request.FIELD_ACTOR_CODE,Request.FIELD_ACTOR_NAMES,Request.FIELD_TYPE_AS_STRING));
+			collection.addAll(1, List.of(Request.FIELD_ACTOR_CODE,Request.FIELD_ACTOR_NAMES));
 			return collection;
 		}
 	}

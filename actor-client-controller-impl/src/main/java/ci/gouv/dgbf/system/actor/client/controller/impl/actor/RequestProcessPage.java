@@ -19,6 +19,7 @@ import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.Calendar;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.InputTextarea;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneRadio;
 
@@ -112,6 +113,8 @@ public class RequestProcessPage extends AbstractRequestEditPage implements Seria
 						//throwValidatorExceptionIf(actor != null, "cette addresse est déja liée à un compte");
 					}
 				});
+			}else if(Request.FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE.equals(fieldName)) {
+				map.put(Calendar.FIELD_SHOW_ON, "");
 			}
 			return map;
 		}

@@ -75,7 +75,8 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("myAccountRequestReadView", MenuItem.FIELD_VALUE,"Consulter",MenuItem.FIELD_ICON,"fa fa-eye");
 		}else {
 			dataTable.addRecordMenuItemByArgumentsOpenViewInDialogRead();
-			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("requestProcessView", MenuItem.FIELD_VALUE,"Traiter",MenuItem.FIELD_ICON,"fa fa-file");
+			if(Boolean.TRUE.equals(lazyDataModelListener.getProcessingDateIsNullable()))
+				dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("requestProcessView", MenuItem.FIELD_VALUE,"Traiter",MenuItem.FIELD_ICON,"fa fa-file");
 		}
 		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
 		return dataTable;
@@ -94,6 +95,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			map.put(Column.ConfiguratorImpl.FIELD_EDITABLE, Boolean.FALSE);
 			if(Request.FIELD_ACTOR_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Compte");
+				map.put(Column.FIELD_WIDTH, "200");
 			}else if(Request.FIELD_ACTOR_NAMES.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Nom et prénom(s)");
 			}else if(Request.FIELD_COMMENT.equals(fieldName)) {
@@ -111,7 +113,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 				
 			}else if(Request.FIELD_STATUS_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Statut");
-				
+				map.put(Column.FIELD_WIDTH, "130");
 			}
 			return map;
 		}
