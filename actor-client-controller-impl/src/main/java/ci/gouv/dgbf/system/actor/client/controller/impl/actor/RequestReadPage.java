@@ -33,7 +33,7 @@ public class RequestReadPage extends AbstractRequestReadPage implements Serializ
 	}
 	
 	public static Form buildForm() {
-		return buildForm(AbstractRequestEditPage.getRequestFromParameter(Action.READ));
+		return buildForm(AbstractRequestEditPage.getRequestFromParameter(Action.READ,null));
 	}
 	
 	@Getter @Setter @Accessors(chain=true) @NoArgsConstructor

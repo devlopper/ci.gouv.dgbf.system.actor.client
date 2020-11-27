@@ -22,6 +22,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AutoComp
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityEditPageContainerManagedImpl;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.ActorController;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationAttribut;
@@ -45,7 +46,7 @@ public abstract class AbstractRequestEditPage extends AbstractEntityEditPageCont
 	protected void __listenPostConstruct__() {
 		if(action == null)
 			action = WebController.getInstance().computeActionFromRequestParameter();
-		request = getRequestFromParameter(action);
+		request = getRequestFromParameter(action,null);
 		super.__listenPostConstruct__();
 	}
 	
@@ -67,7 +68,7 @@ public abstract class AbstractRequestEditPage extends AbstractEntityEditPageCont
 			arguments = new HashMap<>();
 		Request request = (Request) MapHelper.readByKey(arguments, Form.FIELD_ENTITY);
 		if(request == null)
-			request = getRequestFromParameter((Action) MapHelper.readByKey(arguments, Form.FIELD_ACTION));		
+			request = getRequestFromParameter((Action) MapHelper.readByKey(arguments, Form.FIELD_ACTION),(String)MapHelper.readByKey(arguments, Actor.class));		
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ENTITY_CLASS, Request.class);
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ENTITY, request);
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ACTION, Action.CREATE);
@@ -81,14 +82,22 @@ public abstract class AbstractRequestEditPage extends AbstractEntityEditPageCont
 		return buildForm(ArrayHelper.isEmpty(objects) ? null : MapHelper.instantiate(objects));
 	}
 	
-	public static Request getRequestFromParameter(Action action) {
+	public static Request getRequestFromParameter(Action action,String actorIdentifier) {
 		if(Action.CREATE.equals(action)) {
 			String requestTypeIdentifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(RequestType.class));
 			if(StringHelper.isBlank(requestTypeIdentifier))
 				return null;			
-			Request request = EntityReader.getInstance().readOne(Request.class, RequestQuerier.QUERY_IDENTIFIER_INSTANTIATE_ONE_BY_TYPE_IDENTIFIER
+			Request request = null;
+			if(StringHelper.isBlank(actorIdentifier)) {
+				request = EntityReader.getInstance().readOne(Request.class, RequestQuerier.QUERY_IDENTIFIER_INSTANTIATE_ONE_BY_TYPE_IDENTIFIER
 						, RequestQuerier.PARAMETER_NAME_TYPE_IDENTIFIER,requestTypeIdentifier);
-			request.setActor(__inject__(ActorController.class).getLoggedIn());
+				request.setActor(__inject__(ActorController.class).getLoggedIn());
+			}else {
+				request = EntityReader.getInstance().readOne(Request.class, RequestQuerier.QUERY_IDENTIFIER_INSTANTIATE_ONE_BY_TYPE_IDENTIFIER_BY_ACTOR_IDENTIFIER
+						, RequestQuerier.PARAMETER_NAME_TYPE_IDENTIFIER,requestTypeIdentifier
+						, RequestQuerier.PARAMETER_NAME_ACTOR_IDENTIFIER,actorIdentifier
+						);
+			}
 			return request;
 		}else {
 			Request request = EntityReader.getInstance().readOne(Request.class, RequestQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI

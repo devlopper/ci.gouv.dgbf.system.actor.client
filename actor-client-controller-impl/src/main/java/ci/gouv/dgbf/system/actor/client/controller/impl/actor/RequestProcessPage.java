@@ -35,7 +35,7 @@ public class RequestProcessPage extends AbstractRequestEditPage implements Seria
 
 	@Override
 	protected void __listenPostConstruct__() {
-		request = AbstractRequestEditPage.getRequestFromParameter(Action.UPDATE);
+		request = AbstractRequestEditPage.getRequestFromParameter(Action.UPDATE,null);
 		super.__listenPostConstruct__();
 	}
 	

@@ -24,6 +24,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectBo
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu;
 
+import ci.gouv.dgbf.system.actor.client.controller.api.ActorController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationAttribut;
@@ -38,7 +39,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Named @ViewScoped @Getter @Setter
-public class RequestInitializePage extends AbstractRequestEditPage implements MyAccountTheme,Serializable {
+public class MyAccountRequestInitializePage extends AbstractRequestEditPage implements MyAccountTheme,Serializable {
 
 	@Override
 	protected void setActionFromRequestParameter() {
@@ -64,7 +65,7 @@ public class RequestInitializePage extends AbstractRequestEditPage implements My
 	}
 	
 	public static Form buildForm() {
-		return buildForm(getRequestFromParameter(Action.CREATE));
+		return buildForm(getRequestFromParameter(Action.CREATE,__inject__(ActorController.class).getLoggedIn().getIdentifier()));
 	}
 	
 	/**/

@@ -52,12 +52,9 @@ public class ActorAccountProfileEditPage extends AbstractEntityEditPageContainer
 	@Override
 	protected void __listenPostConstruct__() {
 		String identifier = WebController.getInstance().getRequestParameter(ParameterName.ENTITY_IDENTIFIER);
-		if(StringHelper.isNotBlank(identifier)) {
-			actor = EntityReader.getInstance().readOne(Actor.class, ActorQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT
-					, ActorQuerier.PARAMETER_NAME_IDENTIFIER,identifier);
-			if(actor != null) {
-				
-			}
+		actor = getActor(identifier);
+		if(actor != null) {
+			
 		}
 		super.__listenPostConstruct__();
 		form = buildForm(Form.FIELD_ENTITY,actor);
@@ -82,6 +79,12 @@ public class ActorAccountProfileEditPage extends AbstractEntityEditPageContainer
 	}
 	
 	/**/
+	
+	public static Actor getActor(String identifier) {
+		if(StringHelper.isBlank(identifier))
+			return null;
+		return EntityReader.getInstance().readOne(Actor.class, ActorQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT, ActorQuerier.PARAMETER_NAME_IDENTIFIER,identifier);
+	}
 	
 	public static Form buildForm(Map<Object, Object> arguments) {
 		if(arguments == null)
@@ -172,4 +175,6 @@ public class ActorAccountProfileEditPage extends AbstractEntityEditPageContainer
 			return map;
 		}
 	}
+
+	public static final String OUTCOME = "actorAccountProfileEditView";
 }

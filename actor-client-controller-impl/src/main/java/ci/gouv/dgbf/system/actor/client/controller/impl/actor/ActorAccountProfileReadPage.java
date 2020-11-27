@@ -10,14 +10,17 @@ import java.util.Map;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
+import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.EntityReader;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
+import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
+import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
@@ -42,7 +45,7 @@ public class ActorAccountProfileReadPage extends AbstractPageContainerManagedImp
 		if(StringHelper.isNotBlank(identifier))
 			actor = getActor(identifier);
 		if(actor != null)
-			layout = buildLayout(Actor.class,actor);
+			layout = buildLayout(Form.FIELD_ENTITY,actor);
 	}
 	
 	@Override
@@ -61,7 +64,7 @@ public class ActorAccountProfileReadPage extends AbstractPageContainerManagedImp
 		Collection<Map<Object,Object>> cellsMaps = (Collection<Map<Object, Object>>) MapHelper.readByKey(arguments, Layout.ConfiguratorImpl.FIELD_CELLS_MAPS);
 		CommandButton editProfileCommandButton = null;
 		if(cellsMaps == null) {
-			Actor actor = (Actor) MapHelper.readByKey(arguments, Actor.class);
+			Actor actor = (Actor) MapHelper.readByKey(arguments, Form.FIELD_ENTITY);
 			if(actor != null) {
 				cellsMaps = new ArrayList<>();
 				buildLayoutAddRow(cellsMaps, "Nom d'utilisateur", actor.getCode());
@@ -85,18 +88,20 @@ public class ActorAccountProfileReadPage extends AbstractPageContainerManagedImp
 				
 				buildLayoutAddRow(cellsMaps, "Fonction(s) budgétaire(s)", StringHelper.get(actor.getBudgetaryFunctionsAsStrings()));
 				
+				String editOutcome = ValueHelper.defaultToIfBlank((String) MapHelper.readByKey(arguments, FIELD_EDIT_OUTCOME),"actorAccountProfileEditView");
 				editProfileCommandButton = CommandButton.build(CommandButton.FIELD_VALUE,"Modifier",CommandButton.FIELD_ICON,"fa fa-edit"
-						,CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.OPEN_VIEW_IN_DIALOG
+						,CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.NAVIGATE_TO_VIEW
 						,CommandButton.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
 					@Override
 					protected String getOutcome(AbstractAction action) {
-						return "actorAccountProfileEditView";
+						return editOutcome;
 					}
 					
 					@Override
 					protected Map<String, List<String>> getViewParameters(AbstractAction action) {
 						Map<String, List<String>> map = new HashMap<>();
 						map.put(ParameterName.ENTITY_IDENTIFIER.getValue(),CollectionHelper.listOf(actor.getIdentifier()));
+						map.put(ParameterName.URL.getValue(),CollectionHelper.listOf(Helper.getRequestedUrl()));
 						return map;
 					}
 				});
@@ -108,7 +113,8 @@ public class ActorAccountProfileReadPage extends AbstractPageContainerManagedImp
 		MapHelper.writeByKeyDoNotOverride(arguments, Layout.FIELD_NUMBER_OF_COLUMNS,2);
 		MapHelper.writeByKeyDoNotOverride(arguments, Layout.FIELD_ROW_CELL_MODEL,Map.of(0,new Cell().setWidth(3),1,new Cell().setWidth(9)));
 		Layout layout = Layout.build(arguments);
-		editProfileCommandButton.addUpdates(":form:"+layout.getIdentifier());
+		if(editProfileCommandButton != null)
+			editProfileCommandButton.addUpdates(":form:"+layout.getIdentifier());
 		return layout;
 	}
 	
@@ -125,4 +131,8 @@ public class ActorAccountProfileReadPage extends AbstractPageContainerManagedImp
 		return EntityReader.getInstance().readOne(Actor.class, ActorQuerier.QUERY_IDENTIFIER_READ_PROFILE_INFORMATIONS_BY_IDENTIFIER_FOR_UI
 				, ActorQuerier.PARAMETER_NAME_IDENTIFIER,identifier);
 	}
+	
+	/**/
+	
+	public static final String FIELD_EDIT_OUTCOME = "editOutcome";
 }

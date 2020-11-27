@@ -7,7 +7,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityEditPageContainerManagedImpl;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
-import ci.gouv.dgbf.system.actor.client.controller.impl.myaccount.RequestInitializePage;
+import ci.gouv.dgbf.system.actor.client.controller.impl.myaccount.MyAccountRequestInitializePage;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,7 +20,7 @@ public abstract class AbstractRequestReadPage extends AbstractEntityEditPageCont
 	
 	@Override
 	protected void __listenPostConstruct__() {
-		request = RequestInitializePage.getRequestFromParameter(Action.READ);
+		request = MyAccountRequestInitializePage.getRequestFromParameter(Action.READ,null);
 		super.__listenPostConstruct__();
 	}
 	
@@ -41,7 +41,7 @@ public abstract class AbstractRequestReadPage extends AbstractEntityEditPageCont
 	}
 	
 	public static Form buildForm() {
-		return buildForm(AbstractRequestEditPage.getRequestFromParameter(Action.READ));
+		return buildForm(AbstractRequestEditPage.getRequestFromParameter(Action.READ,null));
 	}
 	
 	@Override

@@ -15,5 +15,5 @@ public abstract class ActorMapper extends AbstractMapperSourceDestinationImpl<Ac
 		super.__listenGetSourceAfter__(destination, source);
 		if(source.getActOfAppointmentSignatureDate() == null && destination.getActOfAppointmentSignatureDateAsTimestamp() != null)
 			source.setActOfAppointmentSignatureDate(new Date(destination.getActOfAppointmentSignatureDateAsTimestamp()));
-	}	
+	}
 }

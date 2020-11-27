@@ -45,6 +45,10 @@ public interface MyAccountTheme {
 						item.setOutcome("myAccountRequestsView");
 						model.addElement(item);
 						
+						item = new DefaultMenuItem("Profile");
+						item.setOutcome("myAccountProfileView");
+						model.addElement(item);
+						
 						arguments.put(Tab.FIELD_MENU, Menu.build(Menu.FIELD_MODEL,model));
 					}
 					return arguments;

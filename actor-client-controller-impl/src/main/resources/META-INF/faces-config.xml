@@ -489,6 +489,12 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>myAccountProfileEditView</from-outcome>
+			<to-view-id>/mon_compte/profile/modifier.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>myAccountRequestsView</from-outcome>
 			<to-view-id>/mon_compte/demandes.jsf</to-view-id>
 			<redirect />

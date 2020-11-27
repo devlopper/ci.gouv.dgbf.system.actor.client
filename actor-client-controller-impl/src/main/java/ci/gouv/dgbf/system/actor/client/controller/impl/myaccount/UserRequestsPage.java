@@ -66,7 +66,7 @@ public class UserRequestsPage extends AbstractPageContainerManagedImpl implement
 	}
 	
 	private void buildTabNewRequest(Collection<Map<Object,Object>> cellsMaps) {
-		Form form = RequestInitializePage.buildForm();
+		Form form = MyAccountRequestInitializePage.buildForm();
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,form.getLayout(),Cell.FIELD_WIDTH,12));
 	}
 	
