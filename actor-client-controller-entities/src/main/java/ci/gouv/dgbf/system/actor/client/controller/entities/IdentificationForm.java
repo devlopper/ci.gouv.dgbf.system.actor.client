@@ -1,7 +1,7 @@
 package ci.gouv.dgbf.system.actor.client.controller.entities;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -19,7 +19,7 @@ import lombok.experimental.Accessors;
 public class IdentificationForm extends AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	private ArrayList<IdentificationAttribut> attributs;
+	private Collection<IdentificationAttribut> attributs;
 	
 	/**/
 	

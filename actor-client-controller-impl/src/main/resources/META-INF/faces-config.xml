@@ -34,7 +34,38 @@
 			<redirect />
 		</navigation-case>
 		
+		<!-- Identification -->
+		
+		<navigation-case>
+			<from-outcome>identificationFormListView</from-outcome>
+			<to-view-id>/private/form/list.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>identificationFormEditView</from-outcome>
+			<to-view-id>/private/form/edit.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+				
 		<!-- Request -->
+		<navigation-case>
+			<from-outcome>requestTypeListView</from-outcome>
+			<to-view-id>/private/requesttype/list.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>requestTypeEditView</from-outcome>
+			<to-view-id>/private/requesttype/edit.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>requestListView</from-outcome>
+			<to-view-id>/private/request/list.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
 		
 		<navigation-case>
 			<from-outcome>requestEditView</from-outcome>
@@ -51,12 +82,6 @@
 		<navigation-case>
 			<from-outcome>requestProcessView</from-outcome>
 			<to-view-id>/private/request/process.jsf</to-view-id>
-			<redirect />
-		</navigation-case>
-		
-		<navigation-case>
-			<from-outcome>requestListView</from-outcome>
-			<to-view-id>/private/request/list.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		

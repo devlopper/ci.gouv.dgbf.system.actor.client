@@ -14,6 +14,10 @@ public class IdentificationAttribut extends AbstractDataIdentifiableSystemString
 	private static final long serialVersionUID = 1L;
 
 	private Boolean required;
+	private String requiredAsString;
 	private Integer orderNumber;
-	
+
+	public static final String FIELD_REQUIRED = "required";
+	public static final String FIELD_REQUIRED_AS_STRING = "requiredAsString";
+	public static final String FIELD_ORDER_NUMBER = "orderNumber";
 }
