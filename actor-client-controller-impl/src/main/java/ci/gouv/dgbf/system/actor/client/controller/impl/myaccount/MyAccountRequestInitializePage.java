@@ -27,7 +27,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu;
 import ci.gouv.dgbf.system.actor.client.controller.api.ActorController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
-import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationAttribut;
+import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationAttribute;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
@@ -118,7 +118,7 @@ public class MyAccountRequestInitializePage extends AbstractRequestEditPage impl
 		@Override
 		public Map<Object, Object> getInputArguments(Form form, String fieldName) {
 			Map<Object, Object> map = super.getInputArguments(form, fieldName);
-			IdentificationAttribut attribut = fieldsNames == null ? null : fieldsNames.get(fieldName);
+			IdentificationAttribute attribut = fieldsNames == null ? null : fieldsNames.get(fieldName);
 			if(attribut != null) {
 				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, attribut.getName());
 				map.put(AbstractInput.FIELD_REQUIRED, attribut.getRequired());

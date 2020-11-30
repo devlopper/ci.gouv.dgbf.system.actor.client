@@ -97,14 +97,14 @@ public class Actor extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 		return names;
 	}
 	
-	public Map<String,IdentificationAttribut> computeFormFieldsNames() {
+	public Map<String,IdentificationAttribute> computeFormFieldsNames() {
 		if(form == null || CollectionHelper.isEmpty(form.getAttributs()) || CollectionHelper.isEmpty(
-				ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribut.CODES_FIELDS_NAMES))
+				ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribute.CODES_FIELDS_NAMES))
 			return null;
-		Map<String,IdentificationAttribut> fieldsNames = new LinkedHashMap<>();
+		Map<String,IdentificationAttribute> fieldsNames = new LinkedHashMap<>();
 		form.getAttributs().forEach(attribut -> {
-			for(String codeFieldName : ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribut.CODES_FIELDS_NAMES) {
-				String code = (String) FieldHelper.readStatic(ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribut.class,codeFieldName);
+			for(String codeFieldName : ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribute.CODES_FIELDS_NAMES) {
+				String code = (String) FieldHelper.readStatic(ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribute.class,codeFieldName);
 				if(code.equals(attribut.getCode()))
 					fieldsNames.put((String) FieldHelper.readStatic(Actor.class,"FIELD_"+StringUtils.substringAfter(codeFieldName, "CODE_")),attribut);
 			}

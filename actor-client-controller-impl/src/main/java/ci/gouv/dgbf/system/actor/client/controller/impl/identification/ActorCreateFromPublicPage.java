@@ -34,7 +34,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Civility;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
-import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationAttribut;
+import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationAttribute;
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentityGroup;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.CivilityQuerier;
@@ -48,7 +48,7 @@ import lombok.experimental.Accessors;
 public class ActorCreateFromPublicPage extends AbstractEntityEditPageContainerManagedImpl<Actor> implements IdentificationTheme,Serializable {
 
 	private Actor actor;
-	private Map<String,IdentificationAttribut> fieldsNames;
+	private Map<String,IdentificationAttribute> fieldsNames;
 	
 	@Override
 	protected void __listenPostConstruct__() {
@@ -78,7 +78,7 @@ public class ActorCreateFromPublicPage extends AbstractEntityEditPageContainerMa
 			@Override
 			public Map<Object, Object> getInputArguments(Form form, String fieldName) {
 				Map<Object, Object> map = super.getInputArguments(form, fieldName);
-				IdentificationAttribut attribut = fieldsNames == null ? null : fieldsNames.get(fieldName);
+				IdentificationAttribute attribut = fieldsNames == null ? null : fieldsNames.get(fieldName);
 				if(attribut != null) {
 					map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, attribut.getName());
 					map.put(AbstractInput.FIELD_REQUIRED, attribut.getRequired());
@@ -195,7 +195,7 @@ public class ActorCreateFromPublicPage extends AbstractEntityEditPageContainerMa
 	
 	@Getter @Setter @Accessors(chain=true)
 	public static class FormConfiguratorListener extends Form.ConfiguratorImpl.Listener.AbstractImpl {
-		private Map<String,IdentificationAttribut> fieldsNames;
+		private Map<String,IdentificationAttribute> fieldsNames;
 		
 		@Override
 		public Collection<String> getFieldsNames(Form form) {
@@ -205,7 +205,7 @@ public class ActorCreateFromPublicPage extends AbstractEntityEditPageContainerMa
 		@Override
 		public Map<Object, Object> getInputArguments(Form form, String fieldName) {
 			Map<Object, Object> map = super.getInputArguments(form, fieldName);
-			IdentificationAttribut attribut = fieldsNames == null ? null : fieldsNames.get(fieldName);
+			IdentificationAttribute attribut = fieldsNames == null ? null : fieldsNames.get(fieldName);
 			if(attribut != null) {
 				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, attribut.getName());
 				map.put(AbstractInput.FIELD_REQUIRED, attribut.getRequired());

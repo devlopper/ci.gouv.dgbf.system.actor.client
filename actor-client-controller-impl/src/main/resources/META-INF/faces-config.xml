@@ -47,6 +47,36 @@
 			<to-view-id>/private/form/edit.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>identificationFormAttributeListView</from-outcome>
+			<to-view-id>/private/formattribute/list.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>identificationFormAttributeCreateView</from-outcome>
+			<to-view-id>/private/formattribute/create.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>identificationFormAttributeCreateManyView</from-outcome>
+			<to-view-id>/private/formattribute/createmany.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>identificationFormAttributeDeleteManyView</from-outcome>
+			<to-view-id>/private/formattribute/deletemany.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>identificationFormAttributeEditView</from-outcome>
+			<to-view-id>/private/formattribute/edit.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
 				
 		<!-- Request -->
 		<navigation-case>

@@ -4,11 +4,11 @@ import java.io.Serializable;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationAttribut;
+import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationAttribute;
 import org.cyk.utility.client.controller.AbstractControllerEntityImpl;
 
 @ApplicationScoped
-public class IdentificationAttributControllerImpl extends AbstractControllerEntityImpl<IdentificationAttribut> implements IdentificationAttributController,Serializable {
+public class IdentificationAttributeControllerImpl extends AbstractControllerEntityImpl<IdentificationAttribute> implements IdentificationAttributeController,Serializable {
 	private static final long serialVersionUID = 1L;
 	
 }

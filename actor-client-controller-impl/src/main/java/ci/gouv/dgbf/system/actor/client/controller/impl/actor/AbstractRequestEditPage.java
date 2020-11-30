@@ -25,7 +25,7 @@ import ci.gouv.dgbf.system.actor.client.controller.api.ActorController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
-import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationAttribut;
+import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationAttribute;
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationForm;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestType;
@@ -123,7 +123,7 @@ public abstract class AbstractRequestEditPage extends AbstractEntityEditPageCont
 	@Getter @Setter @Accessors(chain=true) @NoArgsConstructor
 	public static class FormConfiguratorListener extends Form.ConfiguratorImpl.Listener.AbstractImpl {
 		protected Request request;
-		protected Map<String,IdentificationAttribut> fieldsNames;
+		protected Map<String,IdentificationAttribute> fieldsNames;
 		
 		public FormConfiguratorListener(Request request) {
 			this.request = request;
@@ -146,7 +146,7 @@ public abstract class AbstractRequestEditPage extends AbstractEntityEditPageCont
 		@Override
 		public Map<Object, Object> getInputArguments(Form form, String fieldName) {
 			Map<Object, Object> map = super.getInputArguments(form, fieldName);
-			IdentificationAttribut attribut = fieldsNames == null ? null : fieldsNames.get(fieldName);
+			IdentificationAttribute attribut = fieldsNames == null ? null : fieldsNames.get(fieldName);
 			if(attribut != null) {
 				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, attribut.getName());
 				map.put(AbstractInput.FIELD_REQUIRED, attribut.getRequired());
