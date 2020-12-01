@@ -46,10 +46,13 @@ public abstract class AbstractIdentificationFormAttributeCreateOrUpdateOrDeleteM
 
 	protected Form form;
 	protected DataTable attributesDataTable;
+	protected IdentificationForm identificationForm;
 	
 	@Override
 	protected void __listenAfterPostConstruct__() {
-		IdentificationForm identificationForm = WebController.getInstance().getRequestParameterEntity(IdentificationForm.class);
+		identificationForm = WebController.getInstance().getRequestParameterEntity(IdentificationForm.class);
+		if(identificationForm == null)
+			identificationForm = WebController.getInstance().getRequestParameterEntityAsParent(IdentificationForm.class);
 		super.__listenAfterPostConstruct__();
 		Data data = new Data();
 		if(identificationForm != null) {
@@ -106,7 +109,8 @@ public abstract class AbstractIdentificationFormAttributeCreateOrUpdateOrDeleteM
 	}
 	
 	protected Form __buidForm__(Data data) {
-		return buildForm(Form.FIELD_ENTITY,data,Form.ConfiguratorImpl.FIELD_LISTENER,getFormConfiguratorListener(),Form.FIELD_LISTENER,getFormListener());
+		return buildForm(Form.FIELD_ENTITY,data,Form.ConfiguratorImpl.FIELD_LISTENER,getFormConfiguratorListener().setIdentificationForm(data.getForm())
+				,Form.FIELD_LISTENER,getFormListener());
 	}
 	
 	protected abstract AbstractFormConfiguratorListener getFormConfiguratorListener();

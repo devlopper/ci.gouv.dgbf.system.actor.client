@@ -17,6 +17,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Dat
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.AbstractMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMenu;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationForm;
@@ -30,10 +31,13 @@ public class IdentificationFormListPage extends AbstractEntityListPageContainerM
 
 	@Override
 	protected DataTable __buildDataTable__() {
-		DataTable dataTable = buildDataTable();		
+		DataTable dataTable = buildDataTable();
 		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();
 		dataTable.addRecordMenuItemByArgumentsOpenViewInDialogUpdate();
-		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();	
+		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
+		
+		dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("identificationFormAttributeListView", MenuItem.FIELD_VALUE,"Attributs",MenuItem.FIELD_ICON,"fa fa-file");
+		
 		return dataTable;
 	}
 	
