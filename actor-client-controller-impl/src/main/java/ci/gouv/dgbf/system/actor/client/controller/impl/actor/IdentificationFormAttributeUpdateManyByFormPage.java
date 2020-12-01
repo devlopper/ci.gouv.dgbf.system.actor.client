@@ -13,6 +13,7 @@ import javax.inject.Named;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntitySaver;
+import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
@@ -69,8 +70,8 @@ public class IdentificationFormAttributeUpdateManyByFormPage extends AbstractIde
 	}
 	
 	@Override
-	protected String __getWindowTitleValue__() {
-		return "Modification d'attribut";
+	protected Action getAction() {
+		return Action.UPDATE;
 	}
 	
 	@Override

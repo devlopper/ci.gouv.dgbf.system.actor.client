@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.constant.ConstantEmpty;
 import org.cyk.utility.__kernel__.controller.EntityReader;
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.map.MapHelper;
@@ -113,6 +114,13 @@ public abstract class AbstractIdentificationFormAttributeCreateOrUpdateOrDeleteM
 				,Form.FIELD_LISTENER,getFormListener());
 	}
 	
+	@Override
+	protected String __getWindowTitleValue__() {
+		return (Action.CREATE.equals(getAction()) ? "Ajout" : (Action.UPDATE.equals(getAction()) ? "Modification" : "Suppression"))
+				+" d'attributs"+(identificationForm == null ? ConstantEmpty.STRING : " du formulaire "+identificationForm.getName());
+	}
+	
+	protected abstract Action getAction();
 	protected abstract AbstractFormConfiguratorListener getFormConfiguratorListener();
 	protected abstract AbstractFormListener getFormListener();
 	

@@ -8,7 +8,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.constant.ConstantEmpty;
+import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
 
@@ -50,8 +50,8 @@ public class IdentificationFormAttributeCreateManyByFormPage extends AbstractIde
 	}
 			
 	@Override
-	protected String __getWindowTitleValue__() {
-		return "Ajout d'attributs"+(identificationForm == null ? ConstantEmpty.STRING : " du formulaire "+identificationForm.getName());
+	protected Action getAction() {
+		return Action.CREATE;
 	}
 	
 	@Override
