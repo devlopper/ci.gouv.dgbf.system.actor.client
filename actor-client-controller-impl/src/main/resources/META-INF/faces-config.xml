@@ -61,14 +61,20 @@
 		</navigation-case>
 		
 		<navigation-case>
-			<from-outcome>identificationFormAttributeCreateManyView</from-outcome>
-			<to-view-id>/private/formattribute/createmany.jsf</to-view-id>
+			<from-outcome>identificationFormAttributeCreateManyByFormView</from-outcome>
+			<to-view-id>/private/formattribute/createmanybyform.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		
 		<navigation-case>
-			<from-outcome>identificationFormAttributeDeleteManyView</from-outcome>
-			<to-view-id>/private/formattribute/deletemany.jsf</to-view-id>
+			<from-outcome>identificationFormAttributeUpdateManyByFormView</from-outcome>
+			<to-view-id>/private/formattribute/updatemanybyform.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>identificationFormAttributeDeleteManyByFormView</from-outcome>
+			<to-view-id>/private/formattribute/deletemanybyform.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		

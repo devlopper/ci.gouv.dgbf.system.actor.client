@@ -18,7 +18,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Named @ViewScoped @Getter @Setter
-public class IdentificationFormAttributeDeleteManyPage extends AbstractIdentificationFormAttributeCreateOrDeleteManyPage<IdentificationFormAttribute> implements Serializable {
+public class IdentificationFormAttributeDeleteManyByFormPage extends AbstractIdentificationFormAttributeCreateOrUpdateOrDeleteManyByFormPage<IdentificationFormAttribute> implements Serializable {
 
 	@Override
 	protected Class<IdentificationFormAttribute> getAttributeClass() {

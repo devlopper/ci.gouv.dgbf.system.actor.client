@@ -15,9 +15,8 @@ import org.cyk.utility.client.controller.data.AbstractDataIdentifiableSystemStri
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
-@Getter @Setter @NoArgsConstructor @Accessors(chain=true)
+@Getter @Setter @NoArgsConstructor
 public class IdentificationFormAttribute extends AbstractDataIdentifiableSystemStringImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
@@ -35,6 +34,13 @@ public class IdentificationFormAttribute extends AbstractDataIdentifiableSystemS
 	@Input @InputBooleanButton
 	private Boolean required;	
 	private String requiredAsString;
+	
+	/**/
+	
+	public IdentificationFormAttribute(IdentificationForm form,IdentificationAttribute attribute) {
+		this.form = form;
+		this.attribute = attribute;
+	}
 	
 	/**/
 	

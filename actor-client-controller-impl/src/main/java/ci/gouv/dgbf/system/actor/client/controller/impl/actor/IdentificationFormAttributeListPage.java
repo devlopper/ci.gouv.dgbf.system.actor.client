@@ -34,8 +34,11 @@ public class IdentificationFormAttributeListPage extends AbstractEntityListPageC
 	@Override
 	protected DataTable __buildDataTable__() {
 		DataTable dataTable = buildDataTable();
-		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog("identificationFormAttributeCreateManyView", MenuItem.FIELD_VALUE,"Ajouter",MenuItem.FIELD_ICON,"fa fa-plus");
-		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog("identificationFormAttributeDeleteManyView", MenuItem.FIELD_VALUE,"Retirer",MenuItem.FIELD_ICON,"fa fa-minus");
+		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog("identificationFormAttributeCreateManyByFormView", MenuItem.FIELD_VALUE,"Ajouter",MenuItem.FIELD_ICON,"fa fa-plus");
+		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog("identificationFormAttributeUpdateManyByFormView", MenuItem.FIELD_VALUE,"Modifier",MenuItem.FIELD_ICON,"fa fa-edit");
+		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog("identificationFormAttributeDeleteManyByFormView", MenuItem.FIELD_VALUE,"Retirer",MenuItem.FIELD_ICON,"fa fa-minus");
+		dataTable.addRecordMenuItemByArgumentsOpenViewInDialogUpdate();
+		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
 		return dataTable;
 	}
 	
@@ -61,8 +64,7 @@ public class IdentificationFormAttributeListPage extends AbstractEntityListPageC
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl());
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,lazyDataModelListener);
 		DataTable dataTable = DataTable.build(arguments);
-		dataTable.addRecordMenuItemByArgumentsOpenViewInDialogUpdate();
-		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
+		
 		return dataTable;
 	}
 	
@@ -82,12 +84,17 @@ public class IdentificationFormAttributeListPage extends AbstractEntityListPageC
 			}else if(IdentificationFormAttribute.FIELD_ATTRIBUTE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Attribut");
 			}else if(IdentificationFormAttribute.FIELD_REQUIRED_AS_STRING.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Obligatoire");
+				map.put(Column.FIELD_HEADER_TEXT, "Requis");
+				map.put(Column.FIELD_WIDTH, "150");
+			}else if(IdentificationFormAttribute.FIELD_REQUIRED.equals(fieldName)) {
+				map.put(Column.FIELD_WIDTH, "150");
+			}else if(IdentificationFormAttribute.FIELD_ORDER_NUMBER.equals(fieldName)) {
+				map.put(Column.FIELD_WIDTH, "150");
 			}
 			return map;
 		}
 		
-		public java.lang.Class<? extends AbstractMenu> getRecordMenuClass(AbstractCollection collection) {
+		public Class<? extends AbstractMenu> getRecordMenuClass(AbstractCollection collection) {
 			return ContextMenu.class;
 		}
 	}
@@ -109,6 +116,8 @@ public class IdentificationFormAttributeListPage extends AbstractEntityListPageC
 		@Override
 		public Filter.Dto instantiateFilter(LazyDataModel<IdentificationFormAttribute> lazyDataModel) {
 			Filter.Dto filter = super.instantiateFilter(lazyDataModel);
+			if(filter == null)
+				filter = new Filter.Dto();
 			if(StringHelper.isNotBlank(formIdentifier))
 				filter.addField(IdentificationFormAttributeQuerier.PARAMETER_NAME_FORM_IDENTIFIER, formIdentifier);
 			return filter;

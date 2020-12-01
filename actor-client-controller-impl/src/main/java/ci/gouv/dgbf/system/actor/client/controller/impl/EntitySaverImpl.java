@@ -18,6 +18,7 @@ import ci.gouv.dgbf.system.actor.server.business.api.ActorBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.AssignmentsBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.IdentificationFormAttributeBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
@@ -30,6 +31,7 @@ import ci.gouv.dgbf.system.actor.server.representation.api.ActorProfileRepresent
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorScopeRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.AssignmentsRepresentation;
+import ci.gouv.dgbf.system.actor.server.representation.api.IdentificationFormAttributeRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfileFunctionRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfilePrivilegeRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfileRepresentation;
@@ -43,6 +45,7 @@ import ci.gouv.dgbf.system.actor.server.representation.entities.ActorProfileDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorScopeDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.AssignmentsDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.FunctionDto;
+import ci.gouv.dgbf.system.actor.server.representation.entities.IdentificationFormAttributeDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ProfileDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ProfileFunctionDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ProfilePrivilegeDto;
@@ -453,6 +456,10 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 		if(arguments != null && ActorBusiness.SAVE_PROFILE.equals(arguments.getActionIdentifier())) {
 			ActorDto actor = (ActorDto) CollectionHelper.getFirst(updatables);
 			return ((ActorRepresentation)representation).saveProfile(actor);
+		}
+		
+		if(arguments != null && IdentificationFormAttributeBusiness.SAVE.equals(arguments.getActionIdentifier())) {
+			return ((IdentificationFormAttributeRepresentation)representation).save(CollectionHelper.cast(IdentificationFormAttributeDto.class, updatables));
 		}
 		
 		return super.save(representation, creatables, updatables, deletables, arguments);

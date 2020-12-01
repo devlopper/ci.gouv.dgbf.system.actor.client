@@ -7,9 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.view.ViewScoped;
-import javax.inject.Named;
-
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.EntityReader;
@@ -25,6 +22,8 @@ import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
@@ -32,84 +31,101 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.Abstract
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectManyCheckbox;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
 
-import ci.gouv.dgbf.system.actor.client.controller.api.IdentificationFormAttributeController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationAttribute;
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationForm;
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationFormAttribute;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentificationAttributeQuerier;
+import ci.gouv.dgbf.system.actor.client.controller.impl.actor.IdentificationFormAttributeListPage.LazyDataModelListenerImpl;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentificationFormQuerier;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Named @ViewScoped @Getter @Setter
-public class IdentificationFormAttributeCreateManyPage extends AbstractPageContainerManagedImpl implements Serializable {
+@Getter @Setter
+public abstract class AbstractIdentificationFormAttributeCreateOrUpdateOrDeleteManyByFormPage<ATTRIBUTE> extends AbstractPageContainerManagedImpl implements Serializable {
 
-	private IdentificationForm identificationForm;
-	private SelectManyCheckbox attributesSelectManyCheckbox;
-	private Form form;	
+	protected Form form;
+	protected DataTable attributesDataTable;
 	
 	@Override
 	protected void __listenAfterPostConstruct__() {
-		identificationForm = WebController.getInstance().getRequestParameterEntity(IdentificationForm.class);
+		IdentificationForm identificationForm = WebController.getInstance().getRequestParameterEntity(IdentificationForm.class);
 		super.__listenAfterPostConstruct__();
 		Data data = new Data();
 		if(identificationForm != null) {
 			data.form = identificationForm;
 			data.forms = CollectionHelper.listOf(identificationForm);
 		}
-		form = buildForm(Form.FIELD_ENTITY,data);
+		form = __buidForm__(data);
 		SelectOneCombo formSelectOneCombo = form.getInput(SelectOneCombo.class, Data.FIELD_FORM);
-		SelectManyCheckbox attributesSelectManyCheckbox = form.getInput(SelectManyCheckbox.class, Data.FIELD_ATTRIBUTES);
-		/*
-		formSelectOneCombo.setListener(new AbstractInputChoice.Listener.AbstractImpl<IdentificationForm>() {
-			@Override
-			public Collection<IdentificationForm> computeChoices(AbstractInputChoice<IdentificationForm> input) {
-				return EntityReader.getInstance().readMany(IdentificationForm.class, IdentificationFormQuerier.QUERY_IDENTIFIER_READ_FOR_UI);
-			}
-		});
-		*/
-		formSelectOneCombo.enableValueChangeListener(new AbstractInputChoiceOne.ValueChangeListener() {
-			@Override
-			protected void select(AbstractAction action, Object value) {
-				attributesSelectManyCheckbox.setChoices(null);
-				attributesSelectManyCheckbox.setChoicesInitialized(Boolean.FALSE);
-			}
-		},List.of(attributesSelectManyCheckbox));
-		
-		attributesSelectManyCheckbox.setListener(new AbstractInputChoice.Listener.AbstractImpl<IdentificationAttribute>() {
-			@Override
-			public Collection<IdentificationAttribute> computeChoices(AbstractInputChoice<IdentificationAttribute> input) {
-				if(formSelectOneCombo == null || formSelectOneCombo.getValue() == null)
-					return null;
-				IdentificationForm identificationForm = (IdentificationForm) formSelectOneCombo.getValue();
-				return EntityReader.getInstance().readMany(IdentificationAttribute.class, IdentificationAttributeQuerier.QUERY_IDENTIFIER_READ_WHERE_ASSOCIATION_DO_NOT_EXIST_BY_FORM_IDENTIFIER_FOR_UI
-						,IdentificationAttributeQuerier.PARAMETER_NAME_FORM_IDENTIFIER,identificationForm.getIdentifier());
-			}
-		});
-		
+		if(attributesDataTable == null) {
+			SelectManyCheckbox attributesSelectManyCheckbox = form.getInput(SelectManyCheckbox.class, getAttributesFieldName());
+			formSelectOneCombo.enableValueChangeListener(new AbstractInputChoiceOne.ValueChangeListener() {
+				@Override
+				protected void select(AbstractAction action, Object value) {
+					attributesSelectManyCheckbox.setChoices(null);
+					attributesSelectManyCheckbox.setChoicesInitialized(Boolean.FALSE);
+				}
+			},List.of(attributesSelectManyCheckbox));
+			
+			attributesSelectManyCheckbox.setListener(new AbstractInputChoice.Listener.AbstractImpl<ATTRIBUTE>() {
+				@Override
+				public Collection<ATTRIBUTE> computeChoices(AbstractInputChoice<ATTRIBUTE> input) {
+					if(formSelectOneCombo == null || formSelectOneCombo.getValue() == null)
+						return null;
+					IdentificationForm identificationForm = (IdentificationForm) formSelectOneCombo.getValue();
+					return EntityReader.getInstance().readMany(getAttributeClass(), getAttributesReadQueryIdentifier()
+							,getAttributesReadQueryParameterNameFormIdentifier(),identificationForm.getIdentifier());
+				}
+				
+				@Override
+				public Object getChoiceLabel(AbstractInputChoice<ATTRIBUTE> input, ATTRIBUTE choice) {
+					return getAttributeLabel(choice);
+				}
+			});
+		}else {
+			formSelectOneCombo.enableValueChangeListener(new AbstractInputChoiceOne.ValueChangeListener() {
+				@Override
+				protected void select(AbstractAction action, Object value) {
+					if(value == null)
+						return;
+					setAttributesDataTableFormIdentifier(attributesDataTable, (IdentificationForm)value);
+				}
+			},List.of(attributesDataTable));
+		}		
 		formSelectOneCombo.selectFirstChoice();
+		if(attributesDataTable != null)
+			setAttributesDataTableFormIdentifier(attributesDataTable, (IdentificationForm) formSelectOneCombo.getValue());
 	}
-		
-	@Override
-	protected String __getWindowTitleValue__() {
-		return "Ajout d'attribut";
+	
+	public static void setAttributesDataTableFormIdentifier(DataTable dataTable,IdentificationForm identificationForm) {
+		@SuppressWarnings("unchecked")
+		LazyDataModel<IdentificationFormAttribute> lazyDataModel = (LazyDataModel<IdentificationFormAttribute>)dataTable.getValue();
+		IdentificationFormAttributeListPage.LazyDataModelListenerImpl listener = (LazyDataModelListenerImpl) lazyDataModel.getListener();
+		listener.setFormIdentifier(identificationForm.getIdentifier());
 	}
+	
+	protected Form __buidForm__(Data data) {
+		return buildForm(Form.FIELD_ENTITY,data,Form.ConfiguratorImpl.FIELD_LISTENER,getFormConfiguratorListener(),Form.FIELD_LISTENER,getFormListener());
+	}
+	
+	protected abstract AbstractFormConfiguratorListener getFormConfiguratorListener();
+	protected abstract AbstractFormListener getFormListener();
+	
+	protected abstract Class<ATTRIBUTE> getAttributeClass();
+	protected abstract String getAttributeLabel(ATTRIBUTE choice);
+	
+	protected abstract String getAttributesFieldName();	
+	protected abstract String getAttributesReadQueryIdentifier();
+	protected abstract String getAttributesReadQueryParameterNameFormIdentifier();
 	
 	/**/
 	
 	public static Form buildForm(Map<Object, Object> arguments) {
 		if(arguments == null)
 			arguments = new HashMap<>();
-		Data data = (Data) MapHelper.readByKey(arguments, Form.FIELD_ENTITY);
-		Collection<String> inputFieldsNames = new ArrayList<>();
-		inputFieldsNames.addAll(List.of(Data.FIELD_FORM,Data.FIELD_ATTRIBUTES));
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ENTITY_CLASS, Data.class);
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ACTION, Action.CREATE);
-		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_INPUTS_FIELDS_NAMES, inputFieldsNames);
-		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_LISTENER, new FormConfiguratorListener().setIdentificationForm(data.getForm()));		
-		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_LISTENER, new FormListener());
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_CONTROLLER_ENTITY_INJECTABLE, Boolean.FALSE);		
 		Form form = Form.build(arguments);
 		return form;
@@ -120,7 +136,7 @@ public class IdentificationFormAttributeCreateManyPage extends AbstractPageConta
 	}
 	
 	@Getter @Setter @Accessors(chain=true) @NoArgsConstructor
-	public static class FormListener extends Form.Listener.AbstractImpl {
+	public static abstract class AbstractFormListener extends Form.Listener.AbstractImpl {
 		@Override
 		public void act(Form form) {
 			Data data = (Data) form.getEntity();
@@ -137,21 +153,28 @@ public class IdentificationFormAttributeCreateManyPage extends AbstractPageConta
 			}
 			if(CollectionHelper.isEmpty(forms))
 				throw new RuntimeException("Veuillez sélectionner au moins un formulaire");
-			if(CollectionHelper.isEmpty(data.attributes))
-				throw new RuntimeException("Veuillez sélectionner au moins un attribut");
-			Collection<IdentificationFormAttribute> formAttributes = new ArrayList<>();
-			forms.forEach(iForm -> {
-				data.attributes.forEach(attribute -> {
-					formAttributes.add(new IdentificationFormAttribute().setForm(iForm).setAttribute(attribute));
-				});
-			});
-			__inject__(IdentificationFormAttributeController.class).createMany(formAttributes);		
+			Collection<IdentificationFormAttribute> formAttributes = computeFormAttributes(form,data);
+			if(CollectionHelper.isEmpty(formAttributes))
+				throw new RuntimeException(getRequiredAttributeMessage());			
+			act(form,data, formAttributes);		
 		}
+		
+		protected abstract Collection<IdentificationFormAttribute> computeFormAttributes(Form form,Data data);
+		protected String getRequiredAttributeMessage() {
+			return "Veuillez sélectionner au moins un attribut";
+		}
+		protected abstract void act(Form form,Data data,Collection<IdentificationFormAttribute> formAttributes);
 	}
 	
 	@Getter @Setter @Accessors(chain=true) @NoArgsConstructor
-	public static class FormConfiguratorListener extends Form.ConfiguratorImpl.Listener.AbstractImpl {
+	public static abstract class AbstractFormConfiguratorListener extends Form.ConfiguratorImpl.Listener.AbstractImpl {
 		private IdentificationForm identificationForm;
+		
+		@Override
+		public Collection<String> getFieldsNames(Form form) {
+			return CollectionHelper.listOf(Data.FIELD_FORM);
+		}
+		
 		@Override
 		public Map<Object, Object> getInputArguments(Form form, String fieldName) {
 			Map<Object, Object> map = super.getInputArguments(form, fieldName);
@@ -167,6 +190,9 @@ public class IdentificationFormAttributeCreateManyPage extends AbstractPageConta
 			}else if(Data.FIELD_ATTRIBUTES.equals(fieldName)) {
 				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Attributs");
 				map.put(AbstractInputChoice.FIELD_CHOICE_CLASS, IdentificationAttribute.class);
+			}else if(Data.FIELD_FORM_ATTRIBUTES.equals(fieldName)) {
+				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Attributs");
+				map.put(AbstractInputChoice.FIELD_CHOICE_CLASS, IdentificationFormAttribute.class);
 			}
 			return map;
 		}
@@ -174,9 +200,11 @@ public class IdentificationFormAttributeCreateManyPage extends AbstractPageConta
 		@Override
 		public Map<Object, Object> getCommandButtonArguments(Form form, Collection<AbstractInput<?>> inputs) {
 			Map<Object, Object> map = super.getCommandButtonArguments(form, inputs);
-			map.put(CommandButton.FIELD_VALUE, "Ajouter");
+			map.put(CommandButton.FIELD_VALUE, getCommandButtonValue(form, inputs));
 			return map;
 		}
+		
+		protected abstract String getCommandButtonValue(Form form, Collection<AbstractInput<?>> inputs);
 	}
 	
 	/**/
@@ -193,8 +221,12 @@ public class IdentificationFormAttributeCreateManyPage extends AbstractPageConta
 		@Input @InputChoice @InputChoiceMany @InputChoiceManyCheck
 		private Collection<IdentificationAttribute> attributes;
 		
+		@Input @InputChoice @InputChoiceMany @InputChoiceManyCheck
+		private Collection<IdentificationFormAttribute> formAttributes;
+		
 		public static final String FIELD_FORM = "form";
 		public static final String FIELD_FORMS = "forms";
 		public static final String FIELD_ATTRIBUTES = "attributes";
+		public static final String FIELD_FORM_ATTRIBUTES = "formAttributes";
 	}
 }
