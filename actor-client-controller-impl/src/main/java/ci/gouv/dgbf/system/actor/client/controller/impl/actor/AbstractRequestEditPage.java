@@ -19,6 +19,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AutoComplete;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityEditPageContainerManagedImpl;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.ActorController;
@@ -183,19 +184,13 @@ public abstract class AbstractRequestEditPage extends AbstractEntityEditPageCont
 			return map;
 		}
 		
-		/*@Override
-		public Map<Object,Object> getCommandButtonArguments(Form form,Collection<AbstractInput<?>> inputs) {
-			Map<Object,Object> map = super.getCommandButtonArguments(form, inputs);
-			String value;
-			if(RequestProcessPage.class.equals(pageClass))
-				value = "Traiter";
-			else if(RequestInitializePage.class.equals(pageClass))
-				value = request == null ? "Choisir" : "Créer";
-			else
-				value = "Exécuter";
-			MapHelper.writeByKeyDoNotOverride(map,CommandButton.FIELD_VALUE, value);
+		@Override
+		protected Map<Integer, Cell> getLayoutArgumentsRowCellModel(Form form) {
+			Map<Integer, Cell> map = super.getLayoutArgumentsRowCellModel(form);
+			map.get(0).setWidth(3);
+			map.get(1).setWidth(9);
 			return map;
-		}*/
+		}
 	}
 	
 	/**/
