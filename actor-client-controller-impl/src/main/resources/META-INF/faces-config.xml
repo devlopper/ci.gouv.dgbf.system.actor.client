@@ -12,7 +12,7 @@
 		
 		<navigation-case>
 			<from-outcome>actorCreateFromPublicView</from-outcome>
-			<to-view-id>/public/actor/create.jsf</to-view-id>
+			<to-view-id>/creation_compte.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		

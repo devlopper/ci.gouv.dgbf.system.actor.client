@@ -9,7 +9,7 @@
 	</url-mapping>
 	
 	<url-mapping id="creation_compte">
-		<pattern value="/creation_compte" />
+		<pattern value="/creation_compte.jsf" />
 		<view-id value="/public/actor/create.jsf" />
 	</url-mapping>
 	

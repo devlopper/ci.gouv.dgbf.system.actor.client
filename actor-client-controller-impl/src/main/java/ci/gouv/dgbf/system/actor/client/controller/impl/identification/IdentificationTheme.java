@@ -27,7 +27,7 @@ public interface IdentificationTheme {
 						arguments.put(Tab.FIELD_ICON, "fa fa-user");
 						MenuModel model = new DefaultMenuModel();
 						DefaultMenuItem item = new DefaultMenuItem("Créer mon compte");
-						item.setOutcome("actorCreateView");
+						item.setOutcome("actorCreateFromPublicView");
 						model.addElement(item);
 						/*
 						DefaultMenuItem item = new DefaultMenuItem("Demander compte");

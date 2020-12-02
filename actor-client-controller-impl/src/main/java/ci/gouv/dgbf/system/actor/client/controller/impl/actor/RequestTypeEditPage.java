@@ -8,11 +8,15 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.controller.EntityReader;
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityEditPageContainerManagedImpl;
 
+import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationForm;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestType;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentificationFormQuerier;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -37,6 +41,7 @@ public class RequestTypeEditPage extends AbstractEntityEditPageContainerManagedI
 					map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Libellé");
 				}else if(RequestType.FIELD_FORM.equals(fieldName)) {
 					map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Formulaire");
+					map.put(AbstractInputChoice.FIELD_CHOICES,EntityReader.getInstance().readMany(IdentificationForm.class, IdentificationFormQuerier.QUERY_IDENTIFIER_READ_FOR_UI));
 				}
 				return map;
 			}

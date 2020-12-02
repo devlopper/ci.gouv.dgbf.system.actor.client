@@ -50,7 +50,7 @@ public class RequestTypeListPage extends AbstractEntityListPageContainerManagedI
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, RequestType.class);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES
-				, CollectionHelper.listOf(RequestType.FIELD_CODE,RequestType.FIELD_NAME));
+				, CollectionHelper.listOf(RequestType.FIELD_CODE,RequestType.FIELD_NAME,RequestType.FIELD_FORM_AS_STRING));
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl());
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl());
