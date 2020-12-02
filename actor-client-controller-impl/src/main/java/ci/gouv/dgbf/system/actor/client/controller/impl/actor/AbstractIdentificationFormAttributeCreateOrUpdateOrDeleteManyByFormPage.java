@@ -31,6 +31,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.Abstract
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoiceOne;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectManyCheckbox;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationAttribute;
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationForm;
@@ -49,6 +50,7 @@ public abstract class AbstractIdentificationFormAttributeCreateOrUpdateOrDeleteM
 	protected DataTable attributesDataTable;
 	protected IdentificationForm identificationForm;
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void __listenAfterPostConstruct__() {
 		identificationForm = WebController.getInstance().getRequestParameterEntity(IdentificationForm.class);
@@ -64,41 +66,62 @@ public abstract class AbstractIdentificationFormAttributeCreateOrUpdateOrDeleteM
 		SelectOneCombo formSelectOneCombo = form.getInput(SelectOneCombo.class, Data.FIELD_FORM);
 		if(attributesDataTable == null) {
 			SelectManyCheckbox attributesSelectManyCheckbox = form.getInput(SelectManyCheckbox.class, getAttributesFieldName());
-			formSelectOneCombo.enableValueChangeListener(new AbstractInputChoiceOne.ValueChangeListener() {
-				@Override
-				protected void select(AbstractAction action, Object value) {
-					attributesSelectManyCheckbox.setChoices(null);
-					attributesSelectManyCheckbox.setChoicesInitialized(Boolean.FALSE);
-				}
-			},List.of(attributesSelectManyCheckbox));
-			
-			attributesSelectManyCheckbox.setListener(new AbstractInputChoice.Listener.AbstractImpl<ATTRIBUTE>() {
-				@Override
-				public Collection<ATTRIBUTE> computeChoices(AbstractInputChoice<ATTRIBUTE> input) {
-					if(formSelectOneCombo == null || formSelectOneCombo.getValue() == null)
-						return null;
-					IdentificationForm identificationForm = (IdentificationForm) formSelectOneCombo.getValue();
-					return EntityReader.getInstance().readMany(getAttributeClass(), getAttributesReadQueryIdentifier()
-							,getAttributesReadQueryParameterNameFormIdentifier(),identificationForm.getIdentifier());
-				}
+			if(identificationForm == null) {
+				formSelectOneCombo.enableValueChangeListener(new AbstractInputChoiceOne.ValueChangeListener() {
+					@Override
+					protected void select(AbstractAction action, Object value) {
+						attributesSelectManyCheckbox.setChoices(null);
+						attributesSelectManyCheckbox.setChoicesInitialized(Boolean.FALSE);
+					}
+				},List.of(attributesSelectManyCheckbox));
 				
-				@Override
-				public Object getChoiceLabel(AbstractInputChoice<ATTRIBUTE> input, ATTRIBUTE choice) {
-					return getAttributeLabel(choice);
-				}
-			});
+				attributesSelectManyCheckbox.setListener(new AbstractInputChoice.Listener.AbstractImpl<ATTRIBUTE>() {
+					@Override
+					public Collection<ATTRIBUTE> computeChoices(AbstractInputChoice<ATTRIBUTE> input) {
+						if(formSelectOneCombo == null || formSelectOneCombo.getValue() == null)
+							return null;
+						IdentificationForm identificationForm = (IdentificationForm) formSelectOneCombo.getValue();
+						return EntityReader.getInstance().readMany(getAttributeClass(), getAttributesReadQueryIdentifier()
+								,getAttributesReadQueryParameterNameFormIdentifier(),identificationForm.getIdentifier());
+					}
+					
+					@Override
+					public Object getChoiceLabel(AbstractInputChoice<ATTRIBUTE> input, ATTRIBUTE choice) {
+						return getAttributeLabel(choice);
+					}
+				});
+			}else {
+				attributesSelectManyCheckbox.setChoices((Collection<Object>) EntityReader.getInstance().readMany(getAttributeClass(), getAttributesReadQueryIdentifier()
+						,getAttributesReadQueryParameterNameFormIdentifier(),identificationForm.getIdentifier()));
+				attributesSelectManyCheckbox.setChoicesInitialized(Boolean.TRUE);
+				
+				attributesSelectManyCheckbox.setListener(new AbstractInputChoice.Listener.AbstractImpl<ATTRIBUTE>() {
+					@Override
+					public Object getChoiceLabel(AbstractInputChoice<ATTRIBUTE> input, ATTRIBUTE choice) {
+						return getAttributeLabel(choice);
+					}
+				});
+			}			
 		}else {
-			formSelectOneCombo.enableValueChangeListener(new AbstractInputChoiceOne.ValueChangeListener() {
-				@Override
-				protected void select(AbstractAction action, Object value) {
-					if(value == null)
-						return;
-					setAttributesDataTableFormIdentifier(attributesDataTable, (IdentificationForm)value);
-				}
-			},List.of(attributesDataTable));
-		}		
-		formSelectOneCombo.selectFirstChoice();
-		if(attributesDataTable != null)
+			SelectManyCheckbox attributesSelectManyCheckbox = form.getInput(SelectManyCheckbox.class, getAttributesFieldName());
+			attributesSelectManyCheckbox.setChoicesInitialized(Boolean.TRUE);
+			
+			if(formSelectOneCombo == null) {
+				setAttributesDataTableFormIdentifier(attributesDataTable, identificationForm);
+			}else {
+				formSelectOneCombo.enableValueChangeListener(new AbstractInputChoiceOne.ValueChangeListener() {
+					@Override
+					protected void select(AbstractAction action, Object value) {
+						if(value == null)
+							return;
+						setAttributesDataTableFormIdentifier(attributesDataTable, (IdentificationForm)value);
+					}
+				},List.of(attributesDataTable));	
+			}			
+		}
+		if(formSelectOneCombo != null)
+			formSelectOneCombo.selectFirstChoice();
+		if(attributesDataTable != null && formSelectOneCombo != null)
 			setAttributesDataTableFormIdentifier(attributesDataTable, (IdentificationForm) formSelectOneCombo.getValue());
 	}
 	
@@ -110,7 +133,7 @@ public abstract class AbstractIdentificationFormAttributeCreateOrUpdateOrDeleteM
 	}
 	
 	protected Form __buidForm__(Data data) {
-		return buildForm(Form.FIELD_ENTITY,data,Form.ConfiguratorImpl.FIELD_LISTENER,getFormConfiguratorListener().setIdentificationForm(data.getForm())
+		return buildForm(Form.FIELD_ENTITY,data,Form.ConfiguratorImpl.FIELD_LISTENER,getFormConfiguratorListener().setAction(getAction()).setIdentificationForm(data.getForm())
 				,Form.FIELD_LISTENER,getFormListener());
 	}
 	
@@ -180,11 +203,26 @@ public abstract class AbstractIdentificationFormAttributeCreateOrUpdateOrDeleteM
 	
 	@Getter @Setter @Accessors(chain=true) @NoArgsConstructor
 	public static abstract class AbstractFormConfiguratorListener extends Form.ConfiguratorImpl.Listener.AbstractImpl {
-		private IdentificationForm identificationForm;
+		protected IdentificationForm identificationForm;
+		protected Action action;
 		
 		@Override
 		public Collection<String> getFieldsNames(Form form) {
-			return CollectionHelper.listOf(Data.FIELD_FORM);
+			Collection<String> fieldsNames = null;
+			if(identificationForm == null) {
+				if(fieldsNames == null)
+					fieldsNames = new ArrayList<>();
+				fieldsNames.add(Data.FIELD_FORM);
+			}
+			if(Action.CREATE.equals(action) || Action.UPDATE.equals(action) || Action.DELETE.equals(action)) {
+				if(fieldsNames == null)
+					fieldsNames = new ArrayList<>();
+				if(Action.CREATE.equals(action))
+					fieldsNames.add(Data.FIELD_ATTRIBUTES);
+				else
+					fieldsNames.add(Data.FIELD_FORM_ATTRIBUTES);
+			}
+			return fieldsNames;
 		}
 		
 		@Override
@@ -202,9 +240,11 @@ public abstract class AbstractIdentificationFormAttributeCreateOrUpdateOrDeleteM
 			}else if(Data.FIELD_ATTRIBUTES.equals(fieldName)) {
 				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Attributs");
 				map.put(AbstractInputChoice.FIELD_CHOICE_CLASS, IdentificationAttribute.class);
+				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_BUILDABLE, Boolean.FALSE);
 			}else if(Data.FIELD_FORM_ATTRIBUTES.equals(fieldName)) {
 				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Attributs");
 				map.put(AbstractInputChoice.FIELD_CHOICE_CLASS, IdentificationFormAttribute.class);
+				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_BUILDABLE, Boolean.FALSE);
 			}
 			return map;
 		}
@@ -216,7 +256,23 @@ public abstract class AbstractIdentificationFormAttributeCreateOrUpdateOrDeleteM
 			return map;
 		}
 		
-		protected abstract String getCommandButtonValue(Form form, Collection<AbstractInput<?>> inputs);
+		protected String getCommandButtonValue(Form form, Collection<AbstractInput<?>> inputs) {
+			if(Action.CREATE.equals(action))
+				return "Ajouter";
+			if(Action.UPDATE.equals(action))
+				return "Modifier";
+			if(Action.DELETE.equals(action))
+				return "Supprimer";
+			return "Exécuter";
+		}
+	
+		@Override
+		public Map<Object, Object> getInputCellArguments(Form form, AbstractInput<?> input) {
+			Map<Object, Object> map = super.getInputCellArguments(form, input);
+			if(!input.getField().getName().equals(Data.FIELD_FORM))
+				map.put(Cell.FIELD_WIDTH, 12);
+			return map;
+		}
 	}
 	
 	/**/

@@ -10,7 +10,6 @@ import javax.inject.Named;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.IdentificationFormAttributeController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationAttribute;
@@ -83,16 +82,6 @@ public class IdentificationFormAttributeCreateManyByFormPage extends AbstractIde
 	
 	@Getter @Setter @Accessors(chain=true) @NoArgsConstructor
 	public static class FormConfiguratorListener extends AbstractFormConfiguratorListener {		
-		@Override
-		public Collection<String> getFieldsNames(Form form) {
-			Collection<String> fieldsNames = super.getFieldsNames(form);
-			fieldsNames.add(Data.FIELD_ATTRIBUTES);
-			return fieldsNames;
-		}
 		
-		@Override
-		protected String getCommandButtonValue(Form form, Collection<AbstractInput<?>> inputs) {
-			return "Ajouter";
-		}
 	}
 }

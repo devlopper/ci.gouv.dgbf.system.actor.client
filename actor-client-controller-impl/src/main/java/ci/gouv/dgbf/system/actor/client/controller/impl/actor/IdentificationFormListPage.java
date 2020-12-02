@@ -34,10 +34,8 @@ public class IdentificationFormListPage extends AbstractEntityListPageContainerM
 		DataTable dataTable = buildDataTable();
 		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();
 		dataTable.addRecordMenuItemByArgumentsOpenViewInDialogUpdate();
-		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
-		
-		dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("identificationFormAttributeListView", MenuItem.FIELD_VALUE,"Attributs",MenuItem.FIELD_ICON,"fa fa-file");
-		
+		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();		
+		dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("identificationFormAttributeListView", MenuItem.FIELD_VALUE,"Champs",MenuItem.FIELD_ICON,"fa fa-list");		
 		return dataTable;
 	}
 	

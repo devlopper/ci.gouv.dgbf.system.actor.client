@@ -21,7 +21,6 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Abs
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.InputNumber;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectBooleanButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
@@ -49,7 +48,7 @@ public class IdentificationFormAttributeUpdateManyByFormPage extends AbstractIde
 	
 	@Override
 	protected String getAttributesFieldName() {
-		return null;
+		return Data.FIELD_FORM_ATTRIBUTES;
 	}
 	
 	@Override
@@ -126,13 +125,8 @@ public class IdentificationFormAttributeUpdateManyByFormPage extends AbstractIde
 		
 		@Override
 		public Map<Object, Object> getLayoutArguments(Form form, Collection<Map<Object, Object>> cellsArguments) {
-			CollectionHelper.addElementAt(cellsArguments, 2, MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
+			CollectionHelper.addElementAt(cellsArguments, identificationForm == null ? 2 : 0, MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
 			return super.getLayoutArguments(form, cellsArguments);
-		}
-		
-		@Override
-		protected String getCommandButtonValue(Form form, Collection<AbstractInput<?>> inputs) {
-			return "Enregistrer";
 		}
 	}
 	
