@@ -8,6 +8,12 @@
 	<navigation-rule>
 		<from-view-id>*</from-view-id>
 		
+		<navigation-case>
+			<from-outcome>privateIndex</from-outcome>
+			<to-view-id>/private/index.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
 		<!-- Actor -->
 		
 		<navigation-case>
@@ -241,7 +247,7 @@
 		
 		<navigation-case>
 			<from-outcome>actorLoggedInListScopesView</from-outcome>
-			<to-view-id>/private/actor/loggedin/listscopes.jsf</to-view-id>
+			<to-view-id>/myaccount/listscopes.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		

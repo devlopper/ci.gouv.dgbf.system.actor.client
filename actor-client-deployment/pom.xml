@@ -69,8 +69,13 @@
 		</dependency>
 		
 		<dependency>
+		    <groupId>org.keycloak</groupId>
+		    <artifactId>keycloak-servlet-filter-adapter</artifactId>
+		</dependency>
+		
+		<dependency>
 			<groupId>org.keycloak</groupId>
-			<artifactId>keycloak-admin-client</artifactId>
+			<artifactId>keycloak-authz-client</artifactId>
 		</dependency>
 	</dependencies>	
 	
@@ -123,10 +128,43 @@
 		<profile>
 			<id>docker.prod</id>
 			<properties>
-				<deployment.client.proxy.host>mic-${cyk.variable.system.identifier}-api</deployment.client.proxy.host>
+				<jboss-web.context-root>/acteur</jboss-web.context-root>
+				<deployment.client.proxy.host>mic-acteur-api</deployment.client.proxy.host>
 				<cyk.variable.user.interface.theme.menu.is.dynamic>true</cyk.variable.user.interface.theme.menu.is.dynamic>
 				<web-app.security-constraint.web-resource-collection.administrator.url-pattern>/private/*</web-app.security-constraint.web-resource-collection.administrator.url-pattern>
 				<web-app.security-constraint.web-resource-collection.user.url-pattern>/user/*</web-app.security-constraint.web-resource-collection.user.url-pattern>
+				<web-app.login-config.auth-method>KEYCLOAK</web-app.login-config.auth-method>
+			</properties>
+		</profile>
+		
+		<profile>
+			<id>dev</id>
+			<properties>
+				<project.build.file.name>acteur</project.build.file.name>
+				<jboss-web.context-root>/acteur</jboss-web.context-root>
+				<cyk.variable.system.proxy.uniform.resource.identifier>http://localhost:8180/api</cyk.variable.system.proxy.uniform.resource.identifier>
+				<cyk.variable.user.interface.theme.menu.is.dynamic>false</cyk.variable.user.interface.theme.menu.is.dynamic>
+				<web-app.security-constraint.web-resource-collection.administrator.url-pattern>/private/*</web-app.security-constraint.web-resource-collection.administrator.url-pattern>
+				<web-app.security-constraint.web-resource-collection.user.url-pattern>/mon_compte/*</web-app.security-constraint.web-resource-collection.user.url-pattern>
+				<web-app.login-config.auth-method>KEYCLOAK</web-app.login-config.auth-method>
+				
+				<scriptsFile>script/wildfly/bootablejar/dev/cli.txt</scriptsFile>
+				<propertiesFile>script/wildfly/bootablejar/dev/properties.txt</propertiesFile>
+				<wildfly.port>10190</wildfly.port>
+			</properties>
+		</profile>
+		
+		<profile>
+			<id>prod</id>
+			<properties>
+				<project.build.file.name>acteur</project.build.file.name>
+				<jboss-web.context-root>/acteur</jboss-web.context-root>
+				<deployment.client.proxy.host>mic-acteur-api</deployment.client.proxy.host>
+				<cyk.variable.system.proxy.uniform.resource.identifier>http://mic-acteur-api</cyk.variable.system.proxy.uniform.resource.identifier>
+				<cyk.variable.system.security.authentication.enable>true</cyk.variable.system.security.authentication.enable>
+				<cyk.variable.user.interface.theme.menu.is.dynamic>true</cyk.variable.user.interface.theme.menu.is.dynamic>
+				<web-app.security-constraint.web-resource-collection.administrator.url-pattern>/private/*</web-app.security-constraint.web-resource-collection.administrator.url-pattern>
+				<web-app.security-constraint.web-resource-collection.user.url-pattern>/mon_compte/*</web-app.security-constraint.web-resource-collection.user.url-pattern>
 				<web-app.login-config.auth-method>KEYCLOAK</web-app.login-config.auth-method>
 			</properties>
 		</profile>

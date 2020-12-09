@@ -82,7 +82,7 @@
 	
 	<url-mapping id="mes_visibilites">
 		<pattern value="/mon_compte/visibilites" />
-		<view-id value="/private/actor/loggedin/listscopes.jsf" />
+		<view-id value="/myaccount/listscopes.jsf" />
 	</url-mapping>
 	
 	<url-mapping id="modifier_mot_passe">

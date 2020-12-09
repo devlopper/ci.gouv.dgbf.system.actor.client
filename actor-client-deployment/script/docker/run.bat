@@ -1,1 +1,1 @@
-docker run -p 8080:8082 mic-acteur:latest
+docker run -e "cyk.variable.system.proxy.uniform.resource.identifier=http://192.168.43.105/api" -p 8081:8080 mic-acteur:latest

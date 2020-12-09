@@ -8,4 +8,9 @@
     "secret": "${env.keycloak.secret}"
   },
   "confidential-port": 0
+  ,"policy-enforcer": {
+  	"path-cache": {
+  		"lifespan":0
+  	}	
+  }
 }
