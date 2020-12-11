@@ -76,6 +76,8 @@ public class RequestTypeListPage extends AbstractEntityListPageContainerManagedI
 				map.put(Column.FIELD_HEADER_TEXT, "Libellé");
 			}else if(RequestType.FIELD_FORM_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Formulaire");
+			}else if(RequestType.FIELD_AUTHENTICATION_REQUIRED_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Authentification requise");
 			}
 			return map;
 		}

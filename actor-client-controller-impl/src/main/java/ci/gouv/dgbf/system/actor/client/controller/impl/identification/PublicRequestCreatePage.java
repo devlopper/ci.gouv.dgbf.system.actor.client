@@ -1,4 +1,4 @@
-package ci.gouv.dgbf.system.actor.client.controller.impl.myaccount;
+package ci.gouv.dgbf.system.actor.client.controller.impl.identification;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -24,7 +24,6 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectBo
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu;
 
-import ci.gouv.dgbf.system.actor.client.controller.api.ActorController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationAttribute;
@@ -32,6 +31,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.client.controller.impl.actor.AbstractRequestEditPage;
+import ci.gouv.dgbf.system.actor.client.controller.impl.myaccount.UserRequestsPage;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,24 +39,13 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Named @ViewScoped @Getter @Setter
-public class MyAccountRequestInitializePage extends AbstractRequestEditPage implements MyAccountTheme,Serializable {
+public class PublicRequestCreatePage extends AbstractRequestEditPage implements IdentificationTheme,Serializable {
 
-	@Override
-	protected void __listenPostConstruct__() {
-		action = Action.CREATE;
-		super.__listenPostConstruct__();		
-	}
-	
-	@Override
-	protected void setActionFromRequestParameter() {
-		action = Action.CREATE;
-	}
-	
 	@Override
 	protected String __getWindowTitleValue__() {
 		if(request == null)
-			return "Nouvelle demande";
-		return super.__getWindowTitleValue__();
+			return "Choix du type de demande";
+		return request.getType().getName();
 	}
 	
 	@Override
@@ -68,10 +57,6 @@ public class MyAccountRequestInitializePage extends AbstractRequestEditPage impl
 		Form form = buildForm(Form.FIELD_ACTION,Action.CREATE,Form.FIELD_ENTITY,request,Form.FIELD_LISTENER,new FormListener(request)
 				,Form.ConfiguratorImpl.FIELD_LISTENER,new FormConfiguratorListener(request));
 		return form;
-	}
-	
-	public static Form buildForm() {
-		return buildForm(getRequestFromParameter(Action.CREATE,__inject__(ActorController.class).getLoggedIn().getIdentifier()));
 	}
 	
 	/**/
@@ -175,5 +160,5 @@ public class MyAccountRequestInitializePage extends AbstractRequestEditPage impl
 		}
 	}
 	
-	public static final String OUTCOME = "requestInitializeView";
+	public static final String OUTCOME = "publicRequestCreateView";
 }

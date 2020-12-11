@@ -95,7 +95,7 @@ public class RequestProcessPage extends AbstractRequestEditPage implements Seria
 		@Override
 		public Collection<String> getFieldsNames(Form form) {
 			Collection<String> fieldsNames = super.getFieldsNames(form);
-			fieldsNames = RequestReadPage.FormConfiguratorListener.getFieldsNames(fieldsNames);
+			//fieldsNames = RequestReadPage.FormConfiguratorListener.getFieldsNames(fieldsNames);
 			if(CollectionHelper.isEmpty(fieldsNames))
 				return null;
 			fieldsNames.addAll(List.of(Request.FIELD_TREATMENT,Request.FIELD_REJECTION_REASON));

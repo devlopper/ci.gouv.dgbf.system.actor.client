@@ -111,13 +111,25 @@
 		
 		<navigation-case>
 			<from-outcome>requestEditView</from-outcome>
-			<to-view-id>/private/request/edit.jsf</to-view-id>
+			<to-view-id>/private/request/edit/index.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>requestEditSelectTypeView</from-outcome>
+			<to-view-id>/private/request/edit/selecttype.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		
 		<navigation-case>
 			<from-outcome>requestReadView</from-outcome>
 			<to-view-id>/private/request/read.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>publicRequestReadView</from-outcome>
+			<to-view-id>/public/request/read.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		

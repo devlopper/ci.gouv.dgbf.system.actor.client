@@ -6,6 +6,8 @@ import javax.validation.constraints.NotNull;
 
 import org.cyk.utility.__kernel__.object.__static__.controller.AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Input;
+import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputBoolean;
+import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputBooleanButton;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoice;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceOne;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceOneCombo;
@@ -22,10 +24,16 @@ public class RequestType extends AbstractDataIdentifiableSystemStringIdentifiabl
 	@Input @InputChoice @InputChoiceOne @InputChoiceOneCombo 
 	@NotNull 
 	private IdentificationForm form;
+	@Input @InputBoolean @InputBooleanButton
+	private Boolean authenticationRequired;
+	
 	private String formAsString;
+	private Boolean authenticationRequiredAsString;
 	
 	/**/
 	
 	public static final String FIELD_FORM = "form";
+	public static final String FIELD_AUTHENTICATION_REQUIRED = "authenticationRequired";
 	public static final String FIELD_FORM_AS_STRING = "formAsString";
+	public static final String FIELD_AUTHENTICATION_REQUIRED_AS_STRING = "authenticationRequiredAsString";
 }

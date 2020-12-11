@@ -8,14 +8,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
+
 import org.cyk.utility.__kernel__.array.ArrayHelper;
+import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntityReader;
+import org.cyk.utility.__kernel__.controller.EntitySaver;
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
+import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.WebController;
+import org.cyk.utility.client.controller.web.jsf.Redirector;
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AutoComplete;
@@ -26,11 +35,14 @@ import ci.gouv.dgbf.system.actor.client.controller.api.ActorController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationAttribute;
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationForm;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestType;
+import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
+import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestTypeQuerier;
 import lombok.Getter;
@@ -38,28 +50,31 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Getter @Setter
-public abstract class AbstractRequestEditPage extends AbstractEntityEditPageContainerManagedImpl<Request> implements Serializable {
+@Named @ViewScoped @Getter @Setter
+public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<Request> implements Serializable {
 
-	protected Request request;
-	
 	@Override
 	protected void __listenPostConstruct__() {
-		if(action == null)
-			action = WebController.getInstance().computeActionFromRequestParameter();
-		request = getRequestFromParameter(action,null);
 		super.__listenPostConstruct__();
+		if(form.getEntity() == null || ((Request)form.getEntity()).getType() == null)
+			Redirector.getInstance().redirect(RequestEditSelectTypePage.OUTCOME, null);
 	}
 	
 	@Override
-	protected Form __buildForm__() {		
-		Form form = buildForm(Form.FIELD_ACTION,action,Form.FIELD_ENTITY,request);
-		return form;
+	protected void setActionFromRequestParameter() {
+		action = ValueHelper.defaultToIfNull(action,Action.CREATE);
 	}
-		
+	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return request.getType().getForm().getName();
+		if(form.getEntity() == null || ((Request)form.getEntity()).getType() == null)
+			return super.__getWindowTitleValue__();
+		return "Saisie de demande";
+	}
+	
+	@Override
+	protected Form __buildForm__() {
+		return buildForm(Form.FIELD_ACTION,action);
 	}
 	
 	/**/
@@ -67,12 +82,12 @@ public abstract class AbstractRequestEditPage extends AbstractEntityEditPageCont
 	public static Form buildForm(Map<Object, Object> arguments) {
 		if(arguments == null)
 			arguments = new HashMap<>();
-		Request request = (Request) MapHelper.readByKey(arguments, Form.FIELD_ENTITY);
-		if(request == null)
-			request = getRequestFromParameter((Action) MapHelper.readByKey(arguments, Form.FIELD_ACTION),(String)MapHelper.readByKey(arguments, Actor.class));		
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ENTITY_CLASS, Request.class);
-		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ENTITY, request);
-		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ACTION, Action.CREATE);
+		Request request = (Request) MapHelper.readByKey(arguments, Form.FIELD_ENTITY);
+		if(request == null) {
+			request = getRequestFromParameter((Action) MapHelper.readByKey(arguments, Form.FIELD_ACTION),(String)MapHelper.readByKey(arguments, Actor.class));	
+			MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ENTITY, request);
+		}
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_LISTENER, new FormConfiguratorListener(request));		
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_LISTENER, new FormListener(request));
 		Form form = Form.build(arguments);
@@ -84,7 +99,6 @@ public abstract class AbstractRequestEditPage extends AbstractEntityEditPageCont
 	}
 	
 	public static Request getRequestFromParameter(Action action,String actorIdentifier) {
-		System.out.println("AbstractRequestEditPage.getRequestFromParameter() ---- Action : "+action);
 		if(Action.CREATE.equals(action)) {
 			String requestTypeIdentifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(RequestType.class));
 			if(StringHelper.isBlank(requestTypeIdentifier))
@@ -120,6 +134,19 @@ public abstract class AbstractRequestEditPage extends AbstractEntityEditPageCont
 			this.request = request;
 		}
 		
+		@Override
+		public void act(Form form) {
+			ThrowableHelper.throwIllegalArgumentExceptionIfNull("demande", request);
+			if(request.getActOfAppointmentSignatureDate() == null)
+				request.setActOfAppointmentSignatureDateAsTimestamp(null);
+			else
+				request.setActOfAppointmentSignatureDateAsTimestamp(request.getActOfAppointmentSignatureDate().getTime());
+			if(Action.CREATE.equals(form.getAction()))
+				EntitySaver.getInstance().save(Request.class, new Arguments<Request>().setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+					.setActionIdentifier(RequestBusiness.INITIALIZE)).addCreatablesOrUpdatables(request));
+			else
+				throw new RuntimeException("Action "+form.getAction()+" not yet handled");
+		}
 	}
 	
 	@Getter @Setter @Accessors(chain=true) @NoArgsConstructor
@@ -169,6 +196,15 @@ public abstract class AbstractRequestEditPage extends AbstractEntityEditPageCont
 			}else if(Request.FIELD_ADMINISTRATIVE_UNIT.equals(fieldName)) {
 				map.put(AutoComplete.FIELD_ENTITY_CLASS, AdministrativeUnit.class);
 				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
+			}else if(Request.FIELD_BUDGETARIES_FUNCTIONS.equals(fieldName)) {
+				map.put(AutoComplete.FIELD_ENTITY_CLASS, Function.class);
+				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
+				//map.put(AutoComplete.FIELD_READ_QUERY_IDENTIFIER, FunctionQuerier.QUERY_IDENTIFIER_);
+			}else if(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS.equals(fieldName)) {
+				map.put(AutoComplete.FIELD_ENTITY_CLASS, ScopeFunction.class);
+				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
+				map.put(AutoComplete.FIELD_MULTIPLE, Boolean.TRUE);
+				//map.put(AutoComplete.FIELD_READ_QUERY_IDENTIFIER, ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER);
 			}else if(Request.FIELD_BUDGET_SPECIALIZATION_UNIT.equals(fieldName)) {
 				map.put(AutoComplete.FIELD_ENTITY_CLASS, BudgetSpecializationUnit.class);
 				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
@@ -192,11 +228,18 @@ public abstract class AbstractRequestEditPage extends AbstractEntityEditPageCont
 			map.get(1).setWidth(9);
 			return map;
 		}
+		
+		@Override
+		public Map<Object, Object> getCommandButtonArguments(Form form, Collection<AbstractInput<?>> inputs) {
+			Map<Object, Object> map = super.getCommandButtonArguments(form, inputs);
+			MapHelper.writeByKeyDoNotOverride(map, CommandButton.FIELD_VALUE, "Enregistrer");
+			return map;
+		}
 	}
 	
 	/**/
 	
 	public static final String TREATMENT_CHOICE_ACCEPT = "Accepter la demande";
 	public static final String TREATMENT_CHOICE_REJECT = "Rejeter la demande";
-	public static final Collection<String> TREATMENT_CHOICES = List.of(TREATMENT_CHOICE_ACCEPT,TREATMENT_CHOICE_REJECT);
+	public static final Collection<String> TREATMENT_CHOICES = List.of(TREATMENT_CHOICE_ACCEPT,TREATMENT_CHOICE_REJECT);	
 }
