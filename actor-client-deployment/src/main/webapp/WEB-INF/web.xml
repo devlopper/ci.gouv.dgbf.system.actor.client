@@ -79,6 +79,11 @@
 		<param-value>${cyk.variable.system.security.authentication.enable}</param-value>
 	</context-param>
 	
+	<context-param>
+		<param-name>cyk.variable.keycloak.enabled</param-name>
+		<param-value>${cyk.variable.keycloak.enabled}</param-value>
+	</context-param>
+	
 	<!-- Static resources -->
 	
 	<!-- Favicon -->

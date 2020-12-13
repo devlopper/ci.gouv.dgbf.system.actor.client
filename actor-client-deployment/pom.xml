@@ -69,13 +69,9 @@
 		</dependency>
 		
 		<dependency>
-		    <groupId>org.keycloak</groupId>
-		    <artifactId>keycloak-servlet-filter-adapter</artifactId>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.keycloak</groupId>
-			<artifactId>keycloak-authz-client</artifactId>
+		    <groupId>org.cyk.jee.utility.security.keycloak.client</groupId>
+			<artifactId>jee-utility-security-keycloak-client</artifactId>
+			<version>0.1.0</version>
 		</dependency>
 	</dependencies>	
 	

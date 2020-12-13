@@ -10,6 +10,7 @@ import javax.servlet.annotation.WebListener;
 
 import org.cyk.user.interface_.theme.web.jsf.primefaces.atlantis.dgbf.DesktopDefault;
 import org.cyk.utility.__kernel__.configuration.ConfigurationHelper;
+import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.variable.VariableName;
 import org.cyk.utility.client.deployment.AbstractServletContextListener;
 import org.keycloak.adapters.servlet.KeycloakOIDCFilter;
@@ -29,6 +30,7 @@ public class ServletContextListener extends AbstractServletContextListener imple
 			FilterRegistration filterRegistration = context.addFilter("Keycloak Filter", KeycloakOIDCFilter.class);
 			filterRegistration.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD)
 					, Boolean.TRUE, "/keycloak/*","/private/*","/mon_compte/*");
+			LogHelper.logInfo("Keycloak Filter has been registered", getClass());
 		}
 	}
 }
