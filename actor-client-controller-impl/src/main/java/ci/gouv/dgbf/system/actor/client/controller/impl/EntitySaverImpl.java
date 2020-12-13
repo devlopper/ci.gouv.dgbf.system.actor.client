@@ -443,6 +443,16 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 			return ((RequestRepresentation)representation).initialize(request);
 		}
 		
+		if(arguments != null && RequestBusiness.RECORD.equals(arguments.getActionIdentifier())) {
+			RequestDto request = (RequestDto) CollectionHelper.getFirst(updatables);
+			return ((RequestRepresentation)representation).record(request);
+		}
+		
+		if(arguments != null && RequestBusiness.SUBMIT.equals(arguments.getActionIdentifier())) {
+			RequestDto request = (RequestDto) CollectionHelper.getFirst(updatables);
+			return ((RequestRepresentation)representation).submitByIdentifier(request.getIdentifier());
+		}
+		
 		if(arguments != null && RequestBusiness.ACCEPT.equals(arguments.getActionIdentifier())) {
 			RequestDto request = (RequestDto) CollectionHelper.getFirst(updatables);
 			return ((RequestRepresentation)representation).acceptByIdentifier(request.getIdentifier());

@@ -62,6 +62,7 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 	
 	@Override
 	protected void setActionFromRequestParameter() {
+		super.setActionFromRequestParameter();
 		action = ValueHelper.defaultToIfNull(action,Action.CREATE);
 	}
 	
@@ -69,7 +70,11 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 	protected String __getWindowTitleValue__() {
 		if(form.getEntity() == null || ((Request)form.getEntity()).getType() == null)
 			return super.__getWindowTitleValue__();
-		return "Saisie de demande";
+		if(Action.CREATE.equals(form.getAction()))
+			return "Saisie d'une nouvelle demande";
+		if(Action.UPDATE.equals(form.getAction()))
+			return "Modification de demande";
+		return super.__getWindowTitleValue__();
 	}
 	
 	@Override
@@ -116,10 +121,18 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 			}
 			return request;
 		}else {
-			Request request = EntityReader.getInstance().readOne(Request.class, RequestQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI
-					, RequestQuerier.PARAMETER_NAME_IDENTIFIER,WebController.getInstance().getRequestParameter(ParameterName.ENTITY_IDENTIFIER.getValue()));
-			if(request.getActOfAppointmentSignatureDateAsTimestamp() != null && request.getActOfAppointmentSignatureDate() == null)
-				request.setActOfAppointmentSignatureDate(new Date(request.getActOfAppointmentSignatureDateAsTimestamp()));
+			Request request = null;
+			if(Action.UPDATE.equals(action)) {
+				request = EntityReader.getInstance().readOne(Request.class, RequestQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT
+						, RequestQuerier.PARAMETER_NAME_IDENTIFIER,WebController.getInstance().getRequestParameter(ParameterName.ENTITY_IDENTIFIER.getValue()));
+			}else {
+				request = EntityReader.getInstance().readOne(Request.class, RequestQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI
+						, RequestQuerier.PARAMETER_NAME_IDENTIFIER,WebController.getInstance().getRequestParameter(ParameterName.ENTITY_IDENTIFIER.getValue()));				
+			}
+			if(request != null) {
+				if(request.getActOfAppointmentSignatureDateAsTimestamp() != null && request.getActOfAppointmentSignatureDate() == null)
+					request.setActOfAppointmentSignatureDate(new Date(request.getActOfAppointmentSignatureDateAsTimestamp()));
+			}
 			return request;
 		}
 	}
@@ -137,15 +150,20 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 		@Override
 		public void act(Form form) {
 			ThrowableHelper.throwIllegalArgumentExceptionIfNull("demande", request);
+			String actionIdentifier = null;
+			if(Action.CREATE.equals(form.getAction()))
+				actionIdentifier = RequestBusiness.INITIALIZE;
+			else if(Action.UPDATE.equals(form.getAction()))
+				actionIdentifier = RequestBusiness.RECORD;
+			else
+				throw new RuntimeException("Action "+form.getAction()+" not yet handled");
+			
 			if(request.getActOfAppointmentSignatureDate() == null)
 				request.setActOfAppointmentSignatureDateAsTimestamp(null);
 			else
 				request.setActOfAppointmentSignatureDateAsTimestamp(request.getActOfAppointmentSignatureDate().getTime());
-			if(Action.CREATE.equals(form.getAction()))
-				EntitySaver.getInstance().save(Request.class, new Arguments<Request>().setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
-					.setActionIdentifier(RequestBusiness.INITIALIZE)).addCreatablesOrUpdatables(request));
-			else
-				throw new RuntimeException("Action "+form.getAction()+" not yet handled");
+			EntitySaver.getInstance().save(Request.class, new Arguments<Request>().setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+				.setActionIdentifier(actionIdentifier)).addCreatablesOrUpdatables(request));
 		}
 	}
 	
