@@ -5,8 +5,6 @@ import java.io.Serializable;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
-import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
-import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 
 import lombok.Getter;
@@ -20,7 +18,8 @@ public class RequestPrintPage extends AbstractPageContainerManagedImpl implement
 	@Override
 	protected void __listenPostConstruct__() {
 		super.__listenPostConstruct__();
-		String identifier = WebController.getInstance().getRequestParameter(ParameterName.ENTITY_IDENTIFIER.getValue());
+		url = "http://localhost:8180/api/report/get?identifier=/reports/sigobe/Referentiel/ListeDesCUSB";
+		//String identifier = WebController.getInstance().getRequestParameter(ParameterName.ENTITY_IDENTIFIER.getValue());
 	}
 	
 	

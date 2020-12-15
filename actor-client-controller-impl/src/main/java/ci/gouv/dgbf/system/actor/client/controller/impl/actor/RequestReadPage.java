@@ -24,6 +24,7 @@ import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.Redirector;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.Event;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.Button;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
@@ -59,6 +60,7 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 		addToolBar(cellsMaps, "requestEditView");
 		Map<String,IdentificationAttribute> map = IdentificationForm.computeFieldsNames(request.getType().getForm(), Request.class);
 		add(cellsMaps, "Type", request.getType().getName());
+		add(cellsMaps, "Statut", request.getStatus().getName());
 		map.forEach( (fieldName,attribute) -> {
 			Object value = FieldHelper.read(request, fieldName);
 			if(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS.equals(fieldName)) {
@@ -77,36 +79,30 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 				,Button.build(Button.FIELD_VALUE,"Modifier",Button.FIELD_ICON,"fa fa-edit",Button.FIELD_OUTCOME,editOutcome
 				,Button.FIELD_PARAMETERS,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),request.getIdentifier()
 						,ParameterName.ACTION_IDENTIFIER.getValue(),Action.UPDATE.name())
+				,Button.FIELD_DISABLED,ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_SUBMITTED.equals(request.getStatus().getCode())
 				),Cell.FIELD_WIDTH,1));
+				
+		Button button = Button.build(Button.FIELD_VALUE,"Imprimer",Button.FIELD_ICON,"fa fa-print");
+		String scriptFormat = "var w = window.open('%s','%s','%s');w.document.title = '%s';";
+		button.setEventScript(Event.CLICK, String.format(scriptFormat, request.getReportUniformResourceIdentifier(),request.getIdentifier()
+				,"location=no,menubar=no,resizable=no,status=no,titlebar=no,toolbar=no","Fichier etat de "+request.getTypeAsString()));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,button,Cell.FIELD_WIDTH,1));
 		
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL
-				,CommandButton.build(CommandButton.FIELD_VALUE,"Imprimer",CommandButton.FIELD_ICON,"fa fa-print"
-						,CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.OPEN_VIEW_IN_DIALOG
-						//,CommandButton.FIELD___OUTCOME__,"requestPrintView"
-						//,CommandButton.FIELD___PARAMETERS__,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),request.getIdentifier())
-						,CommandButton.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
-							protected String getOutcome(AbstractAction action) {
-								return "requestPrintView";
-							}
-							
-							protected Map<String,List<String>> getViewParameters(AbstractAction action) {
-								return Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(request.getIdentifier()));
-							}
-						}
-				),Cell.FIELD_WIDTH,1));
-		
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL
-				,CommandButton.build(CommandButton.FIELD_VALUE,"Soumettre",CommandButton.FIELD_ICON,"fa fa-send"
-						,CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
-						,CommandButton.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
-					protected Object __runExecuteFunction__(AbstractAction action) {
-						EntitySaver.getInstance().save(Request.class, new Arguments<Request>().setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
-								.setActionIdentifier(RequestBusiness.SUBMIT)).addCreatablesOrUpdatables(request));		
-						Redirector.getInstance().redirect("requestReadView",Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(request.getIdentifier())));
-						return null;
-					}
+			,CommandButton.build(CommandButton.FIELD_VALUE,"Soumettre",CommandButton.FIELD_ICON,"fa fa-send"
+					,CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
+					,CommandButton.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE
+					,CommandButton.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+				protected Object __runExecuteFunction__(AbstractAction action) {
+					EntitySaver.getInstance().save(Request.class, new Arguments<Request>().setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+							.setActionIdentifier(RequestBusiness.SUBMIT)).addCreatablesOrUpdatables(request));		
+					Redirector.getInstance().redirect("requestReadView",Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(request.getIdentifier())));
+					return null;
 				}
-				),Cell.FIELD_WIDTH,10));
+			}
+			,CommandButton.FIELD_DISABLED,ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_SUBMITTED.equals(request.getStatus().getCode())
+			),Cell.FIELD_WIDTH,10));
+		
 	}
 	
 	private void add(Collection<Map<Object,Object>> cellsMaps,String label,String value) {

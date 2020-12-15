@@ -10,7 +10,9 @@
 	
     <cyk:page value="#{requestPrintPage}">
     	<ui:define name="centerCenter">
-    		<h1>PDF Reader</h1>
+    		<p:media player="pdf" value="#{requestPrintPage.url}" width="100%" height="300px">
+    			Votre navigateur ne peut afficher ce fichier, <h:outputLink value="#{requestPrintPage.url}">click</h:outputLink> to download pdf instead.
+			</p:media>
     	</ui:define>
     </cyk:page>
 </html>

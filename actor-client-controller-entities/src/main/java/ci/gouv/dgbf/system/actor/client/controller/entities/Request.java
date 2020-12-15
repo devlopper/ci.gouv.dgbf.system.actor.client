@@ -150,4 +150,8 @@ public class Request extends AbstractDataIdentifiableSystemStringImpl implements
 	public static final String FIELD_PROCESSING_DATE_AS_STRING = "processingDateAsString";
 	public static final String FIELD_TREATMENT = "treatment";
 	public static final String FIELD_REJECTION_REASON = "rejectionReason";
+	
+	/* Uniform Resource Identifier : URI*/
+	
+	private String reportUniformResourceIdentifier;
 }

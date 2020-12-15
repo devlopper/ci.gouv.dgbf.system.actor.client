@@ -37,7 +37,6 @@
 			<groupId>org.cyk.jee.utility.security.keycloak.client</groupId>
 			<artifactId>jee-utility-security-keycloak-client</artifactId>
 			<version>0.1.0</version>
-			<scope>provided</scope>
 		</dependency>
 		
 		<!--
