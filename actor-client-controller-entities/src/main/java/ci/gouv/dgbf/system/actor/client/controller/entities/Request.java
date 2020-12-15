@@ -6,6 +6,7 @@ import java.util.Date;
 
 import javax.validation.constraints.NotNull;
 
+import org.cyk.utility.__kernel__.object.__static__.controller.AbstractDataIdentifiableSystemStringIdentifiableBusinessStringImpl;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Choices;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Choices.Count;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Input;
@@ -19,7 +20,6 @@ import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputD
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputText;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputTextarea;
 import org.cyk.utility.client.controller.component.annotation.InputNumber;
-import org.cyk.utility.client.controller.data.AbstractDataIdentifiableSystemStringImpl;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ScopeFunctionDto;
@@ -29,7 +29,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter @Setter @NoArgsConstructor @Accessors(chain=true)
-public class Request extends AbstractDataIdentifiableSystemStringImpl implements Serializable {
+public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBusinessStringImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	/* Initialization */

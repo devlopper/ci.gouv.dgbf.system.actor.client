@@ -89,10 +89,9 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 			arguments = new HashMap<>();
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ENTITY_CLASS, Request.class);
 		Request request = (Request) MapHelper.readByKey(arguments, Form.FIELD_ENTITY);
-		if(request == null) {
-			request = getRequestFromParameter((Action) MapHelper.readByKey(arguments, Form.FIELD_ACTION),(String)MapHelper.readByKey(arguments, Actor.class));	
-			MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ENTITY, request);
-		}
+		if(request == null)
+			request = getRequestFromParameter((Action) MapHelper.readByKey(arguments, Form.FIELD_ACTION),(String)MapHelper.readByKey(arguments, Actor.class));			
+		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ENTITY, request);
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_LISTENER, new FormConfiguratorListener(request));		
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_LISTENER, new FormListener(request));
 		Form form = Form.build(arguments);
@@ -231,10 +230,6 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
 			}else if(Request.FIELD_ADMINISTRATIVE_FUNCTION.equals(fieldName)) {
 				
-			}else if(Request.FIELD_TREATMENT.equals(fieldName)) {
-				map.put(AbstractInputChoice.FIELD_CHOICES, TREATMENT_CHOICES);
-			}else if(Request.FIELD_REJECTION_REASON.equals(fieldName)) {
-				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Motif de rejet");
 			}
 			return map;
 		}
@@ -257,7 +252,5 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 	
 	/**/
 	
-	public static final String TREATMENT_CHOICE_ACCEPT = "Accepter la demande";
-	public static final String TREATMENT_CHOICE_REJECT = "Rejeter la demande";
-	public static final Collection<String> TREATMENT_CHOICES = List.of(TREATMENT_CHOICE_ACCEPT,TREATMENT_CHOICE_REJECT);	
+		
 }

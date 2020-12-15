@@ -24,7 +24,6 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
-import ci.gouv.dgbf.system.actor.client.controller.impl.myaccount.UserRequestsPage;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import lombok.Getter;
 import lombok.Setter;
@@ -52,33 +51,31 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 		LazyDataModelListenerImpl lazyDataModelListener = (LazyDataModelListenerImpl) MapHelper.readByKey(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER);
 		if(lazyDataModelListener == null)
 			lazyDataModelListener = new LazyDataModelListenerImpl();
-		Class<?> pageClass = (Class<?>) MapHelper.readByKey(arguments, RequestListPage.class);
+		//Class<?> pageClass = (Class<?>) MapHelper.readByKey(arguments, RequestListPage.class);
 		List<String> columnsFieldsNames = new ArrayList<>();
-		columnsFieldsNames.addAll(List.of(Request.FIELD_TYPE_AS_STRING,Request.FIELD_CREATION_DATE_AS_STRING,Request.FIELD_STATUS_AS_STRING
+		columnsFieldsNames.addAll(List.of(Request.FIELD_CODE,Request.FIELD_TYPE_AS_STRING,Request.FIELD_CREATION_DATE_AS_STRING,Request.FIELD_STATUS_AS_STRING
 				,Request.FIELD_PROCESSING_DATE_AS_STRING));
-		if(pageClass == null || UserRequestsPage.class.equals(pageClass)) {
-			
-		}else {
-			columnsFieldsNames.addAll(0, List.of(Request.FIELD_ACTOR_CODE,Request.FIELD_ACTOR_NAMES));
+		//columnsFieldsNames.addAll(0, List.of(Request.FIELD_NAMES));
 			//if(Boolean.TRUE.equals(lazyDataModelListener.getProcessingDateIsNotNullable()))
 			//	columnsFieldsNames.addAll(List.of(Request.FIELD_PROCESSING_DATE_AS_STRING));
-		}
-		
+			
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, Request.class);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, columnsFieldsNames);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl());
-		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl().setProcessingDateIsNullable(Boolean.TRUE));
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl());
 		DataTable dataTable = DataTable.build(arguments);
-		if(pageClass == null || UserRequestsPage.class.equals(pageClass)) {
+		/*if(pageClass == null || UserRequestsPage.class.equals(pageClass)) {
 			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("myAccountRequestReadView", MenuItem.FIELD_VALUE,"Consulter",MenuItem.FIELD_ICON,"fa fa-eye");
 		}else {
-			dataTable.addRecordMenuItemByArgumentsOpenViewInDialogRead();
-			if(Boolean.TRUE.equals(lazyDataModelListener.getProcessingDateIsNullable()))
-				dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("requestProcessView", MenuItem.FIELD_VALUE,"Traiter",MenuItem.FIELD_ICON,"fa fa-file");
+			
 		}
-		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
+		*/
+		dataTable.addRecordMenuItemByArgumentsOpenViewInDialogRead();
+		//if(Boolean.TRUE.equals(lazyDataModelListener.getProcessingDateIsNullable()))
+			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog(RequestProcessPage.OUTCOME, MenuItem.FIELD_VALUE,"Traiter",MenuItem.FIELD_ICON,"fa fa-file");
+		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();		
 		return dataTable;
 	}
 	
@@ -96,7 +93,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			if(Request.FIELD_ACTOR_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Compte");
 				map.put(Column.FIELD_WIDTH, "200");
-			}else if(Request.FIELD_ACTOR_NAMES.equals(fieldName)) {
+			}else if(Request.FIELD_NAMES.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Nom et prénom(s)");
 			}else if(Request.FIELD_COMMENT.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Commentaire");
