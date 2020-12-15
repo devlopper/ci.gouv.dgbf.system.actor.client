@@ -56,25 +56,37 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 	@Override
 	protected void __listenPostConstruct__() {
 		super.__listenPostConstruct__();
+		redirectIfTypeIsNull(form,RequestEditSelectTypePage.OUTCOME);
+	}
+	
+	public static void redirectIfTypeIsNull(Form form,String outcome) {
 		if(form.getEntity() == null || ((Request)form.getEntity()).getType() == null)
-			Redirector.getInstance().redirect(RequestEditSelectTypePage.OUTCOME, null);
+			Redirector.getInstance().redirect(outcome, null);
 	}
 	
 	@Override
 	protected void setActionFromRequestParameter() {
 		super.setActionFromRequestParameter();
-		action = ValueHelper.defaultToIfNull(action,Action.CREATE);
+		action = getAction(action);
+	}
+	
+	public static Action getAction(Action action) {
+		return ValueHelper.defaultToIfNull(action,Action.CREATE);
 	}
 	
 	@Override
 	protected String __getWindowTitleValue__() {
+		return getWindowTitleValue(form,super.__getWindowTitleValue__());
+	}
+	
+	public static String getWindowTitleValue(Form form,String default_) {
 		if(form.getEntity() == null || ((Request)form.getEntity()).getType() == null)
-			return super.__getWindowTitleValue__();
+			return default_;
 		if(Action.CREATE.equals(form.getAction()))
-			return "Saisie d'une nouvelle demande";
+			return "Saisie de nouvelle demande";
 		if(Action.UPDATE.equals(form.getAction()))
 			return "Modification de demande";
-		return super.__getWindowTitleValue__();
+		return default_;
 	}
 	
 	@Override

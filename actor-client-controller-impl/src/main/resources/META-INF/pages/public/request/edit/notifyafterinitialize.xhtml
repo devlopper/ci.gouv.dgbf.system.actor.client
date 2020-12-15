@@ -8,11 +8,11 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:cyk="http://primefaces.jsf.web.utility.cyk.org">
 	
-    <cyk:page value="#{requestEditSelectTypePage}">
+    <cyk:page value="#{requestNotifyAfterInitializePage}">
     	<ui:define name="centerCenter">
-    		<ui:include src="__selecttype__.xhtml">
-    			<ui:param name="outcome" value="requestEditView"/>
-    		</ui:include>
+    		<h4>
+    			<h:outputText value="#{requestNotifyAfterInitializePage.message}" escape="false"/>
+    		</h4>
     	</ui:define>
     </cyk:page>
 </html>

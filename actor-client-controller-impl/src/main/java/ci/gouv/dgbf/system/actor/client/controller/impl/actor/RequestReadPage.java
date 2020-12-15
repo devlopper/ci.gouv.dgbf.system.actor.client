@@ -47,17 +47,21 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 	
 	@Override
 	protected void __listenPostConstruct__() {
-		String identifier = WebController.getInstance().getRequestParameter(ParameterName.ENTITY_IDENTIFIER.getValue());
-		request = EntityReader.getInstance().readOne(Request.class, RequestQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI, RequestQuerier.PARAMETER_NAME_IDENTIFIER, identifier);
+		request = loadRequest();
 		super.__listenPostConstruct__();
-		buildLayout();
+		buildLayout(request,"requestEditView","requestReadView");
 	}
 	
-	private void buildLayout() {
+	public static Request loadRequest() {
+		String identifier = WebController.getInstance().getRequestParameter(ParameterName.ENTITY_IDENTIFIER.getValue());
+		return EntityReader.getInstance().readOne(Request.class, RequestQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI, RequestQuerier.PARAMETER_NAME_IDENTIFIER, identifier);
+	}
+	
+	public static Layout buildLayout(Request request,String editOutcome,String readOutcome) {
 		if(request == null || request.getType() == null)
-			return;
+			return null;
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
-		addToolBar(cellsMaps, "requestEditView");
+		addToolBar(request,cellsMaps, editOutcome,readOutcome);
 		Map<String,IdentificationAttribute> map = IdentificationForm.computeFieldsNames(request.getType().getForm(), Request.class);
 		add(cellsMaps, "Type", request.getType().getName());
 		add(cellsMaps, "Statut", request.getStatus().getName());
@@ -71,15 +75,15 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 			}
 			add(cellsMaps, attribute.getName(), value == null ? null : value.toString());
 		});
-		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
+		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
 	}
 	
-	private void addToolBar(Collection<Map<Object,Object>> cellsMaps,String editOutcome) {
+	public static void addToolBar(Request request,Collection<Map<Object,Object>> cellsMaps,String editOutcome,String readOutcome) {
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL
 				,Button.build(Button.FIELD_VALUE,"Modifier",Button.FIELD_ICON,"fa fa-edit",Button.FIELD_OUTCOME,editOutcome
 				,Button.FIELD_PARAMETERS,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),request.getIdentifier()
 						,ParameterName.ACTION_IDENTIFIER.getValue(),Action.UPDATE.name())
-				,Button.FIELD_DISABLED,ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_SUBMITTED.equals(request.getStatus().getCode())
+				,Button.FIELD_DISABLED,!ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_INITIALIZED.equals(request.getStatus().getCode())
 				),Cell.FIELD_WIDTH,1));
 				
 		Button button = Button.build(Button.FIELD_VALUE,"Imprimer",Button.FIELD_ICON,"fa fa-print");
@@ -96,16 +100,16 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 				protected Object __runExecuteFunction__(AbstractAction action) {
 					EntitySaver.getInstance().save(Request.class, new Arguments<Request>().setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
 							.setActionIdentifier(RequestBusiness.SUBMIT)).addCreatablesOrUpdatables(request));		
-					Redirector.getInstance().redirect("requestReadView",Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(request.getIdentifier())));
+					Redirector.getInstance().redirect(readOutcome,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(request.getIdentifier())));
 					return null;
 				}
 			}
-			,CommandButton.FIELD_DISABLED,ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_SUBMITTED.equals(request.getStatus().getCode())
+			,CommandButton.FIELD_DISABLED,!ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_INITIALIZED.equals(request.getStatus().getCode())
 			),Cell.FIELD_WIDTH,10));
 		
 	}
 	
-	private void add(Collection<Map<Object,Object>> cellsMaps,String label,String value) {
+	public static void add(Collection<Map<Object,Object>> cellsMaps,String label,String value) {
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue(label),Cell.FIELD_WIDTH,3));
 		OutputText valueOutputText = OutputText.buildFromValue(StringHelper.isBlank(value) ? "---" : value);
 		valueOutputText.setEscape(Boolean.FALSE);
@@ -114,8 +118,12 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 	
 	@Override
 	protected String __getWindowTitleValue__() {
+		return getWindowTitleValue(request, super.__getWindowTitleValue__());
+	}
+	
+	public static String getWindowTitleValue(Request request,String default_) {
 		if(request == null)
-			return super.__getWindowTitleValue__();
+			return default_;
 		return request.getTypeAsString();
 	}
 }

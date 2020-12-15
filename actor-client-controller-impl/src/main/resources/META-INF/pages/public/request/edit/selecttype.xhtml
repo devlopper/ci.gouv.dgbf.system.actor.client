@@ -8,10 +8,10 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:cyk="http://primefaces.jsf.web.utility.cyk.org">
 	
-    <cyk:page value="#{requestEditSelectTypePage}">
+    <cyk:page value="#{publicRequestEditSelectTypePage}">
     	<ui:define name="centerCenter">
-    		<ui:include src="__selecttype__.xhtml">
-    			<ui:param name="outcome" value="requestEditView"/>
+    		<ui:include src="/private/request/edit/__selecttype__.xhtml">
+    			<ui:param name="outcome" value="publicRequestEditView"/>
     		</ui:include>
     	</ui:define>
     </cyk:page>

@@ -15,6 +15,8 @@ import org.cyk.utility.__kernel__.controller.EntityReader;
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Input;
+import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputText;
 import org.cyk.utility.client.controller.web.jsf.Redirector;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
@@ -39,6 +41,11 @@ public class PublicRequestOpenPage extends AbstractPageContainerManagedImpl impl
 		form = buildForm();
 	}
 	
+	@Override
+	protected String __getWindowTitleValue__() {
+		return "Ouvrir une demande par un jeton d'accès";
+	}
+	
 	/**/
 	
 	public static Form buildForm(Map<Object, Object> arguments) {
@@ -47,7 +54,9 @@ public class PublicRequestOpenPage extends AbstractPageContainerManagedImpl impl
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ENTITY_CLASS, Data.class);
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ACTION, Action.CREATE);
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_INPUTS_FIELDS_NAMES, List.of(Data.FIELD_ACCESS_TOKEN));
-		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_CONTROLLER_ENTITY_INJECTABLE, Boolean.FALSE);		
+		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_CONTROLLER_ENTITY_INJECTABLE, Boolean.FALSE);
+		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_LISTENER, new FormListener());
+		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_LISTENER, new FormConfiguratorListener());
 		Form form = Form.build(arguments);
 		return form;
 	}
@@ -59,13 +68,13 @@ public class PublicRequestOpenPage extends AbstractPageContainerManagedImpl impl
 	@Getter @Setter @Accessors(chain=true) @NoArgsConstructor
 	public static class FormListener extends Form.Listener.AbstractImpl {
 		@Override
-		public void act(Form form) {
+		public void act(Form form) {			
 			Data data = (Data) form.getEntity();
 			Request request = EntityReader.getInstance().readOne(Request.class, RequestQuerier.QUERY_IDENTIFIER_READ_BY_ACCESS_TOKEN_FOR_UI
 					, RequestQuerier.PARAMETER_NAME_ACCESS_TOKEN,data.getAccessToken());
 			if(request == null)
-				throw new RuntimeException("Cet jeton d'accès est inconnu");			
-			Redirector.getInstance().redirect(PublicRequestReadPage.OUTCOME, Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(data.getAccessToken())));
+				throw new RuntimeException("Cet jeton d'accès est inconnu");
+			Redirector.getInstance().redirect(PublicRequestReadPage.OUTCOME, Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(request.getIdentifier())));			
 		}
 	}
 	
@@ -92,9 +101,12 @@ public class PublicRequestOpenPage extends AbstractPageContainerManagedImpl impl
 	@Getter @Setter
 	public static class Data implements Serializable {
 		
+		@Input @InputText
 		@NotNull
 		private String accessToken;
 		
 		public static final String FIELD_ACCESS_TOKEN = "accessToken";
 	}
+	
+	public static final String OUTCOME = "publicRequestOpenView";
 }

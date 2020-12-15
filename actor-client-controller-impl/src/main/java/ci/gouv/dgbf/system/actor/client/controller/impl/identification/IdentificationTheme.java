@@ -29,9 +29,17 @@ public interface IdentificationTheme {
 						DefaultMenuItem item = new DefaultMenuItem("Créer mon compte");
 						item.setOutcome("actorCreateFromPublicView");
 						model.addElement(item);
+						
+						item = new DefaultMenuItem("Saisir une demande");
+						item.setOutcome("publicRequestEditView");
+						model.addElement(item);
+						
+						item = new DefaultMenuItem("Ouvrir une demande");
+						item.setOutcome("publicRequestReadView");
+						model.addElement(item);
 						/*
-						DefaultMenuItem item = new DefaultMenuItem("Demander compte");
-						item.setOutcome("accountRequestEditView");
+						item = new DefaultMenuItem("Récupérer un jeton d'accès");
+						item.setOutcome("publicRequestEditView");
 						model.addElement(item);
 						*/
 						/*

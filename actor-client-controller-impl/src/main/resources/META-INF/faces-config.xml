@@ -134,6 +134,30 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>publicRequestEditView</from-outcome>
+			<to-view-id>/public/request/edit/index.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>publicRequestSelectTypeView</from-outcome>
+			<to-view-id>/public/request/edit/selecttype.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>publicRequestNotifyAfterInitializeView</from-outcome>
+			<to-view-id>/public/request/edit/notifyafterinitialize.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>publicRequestOpenView</from-outcome>
+			<to-view-id>/public/request/open.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>publicRequestReadView</from-outcome>
 			<to-view-id>/public/request/read.jsf</to-view-id>
 			<redirect />
