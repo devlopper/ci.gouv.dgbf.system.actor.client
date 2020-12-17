@@ -164,6 +164,12 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>publicRequestPrintView</from-outcome>
+			<to-view-id>/public/request/print.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>requestProcessView</from-outcome>
 			<to-view-id>/private/request/process.jsf</to-view-id>
 			<redirect />

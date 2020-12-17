@@ -43,7 +43,7 @@ public class PublicRequestOpenPage extends AbstractPageContainerManagedImpl impl
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Ouvrir une demande par un jeton d'accès";
+		return "Ouvrir une demande";
 	}
 	
 	/**/

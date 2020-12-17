@@ -88,6 +88,10 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	@Input @InputChoiceOneRadio @NotNull private String treatment;
 	@Input @InputTextarea private String rejectionReason;
 	
+	/* Uniform Resource Identifier : URI*/
+	
+	private String reportUniformResourceIdentifier;
+	
 	/*---------------------------------------------------------------------------------------------*/
 	
 	/* Initialization */
@@ -151,7 +155,7 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	public static final String FIELD_TREATMENT = "treatment";
 	public static final String FIELD_REJECTION_REASON = "rejectionReason";
 	
-	/* Uniform Resource Identifier : URI*/
+	/**/
 	
-	private String reportUniformResourceIdentifier;
+	private String readPageURL;
 }

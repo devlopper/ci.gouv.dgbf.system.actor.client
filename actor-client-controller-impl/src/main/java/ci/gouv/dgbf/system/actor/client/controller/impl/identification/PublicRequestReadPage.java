@@ -26,7 +26,7 @@ public class PublicRequestReadPage extends AbstractPageContainerManagedImpl impl
 		if(request == null || request.getType() == null)
 			Redirector.getInstance().redirect(PublicRequestOpenPage.OUTCOME, null);
 		super.__listenPostConstruct__();
-		layout = RequestReadPage.buildLayout(request,PublicRequestEditPage.OUTCOME,OUTCOME);
+		layout = RequestReadPage.buildLayout(request,PublicRequestEditPage.OUTCOME,OUTCOME,PublicRequestPrintPage.OUTCOME);
 	}
 	
 	@Override

@@ -28,7 +28,7 @@ public class RequestType extends AbstractDataIdentifiableSystemStringIdentifiabl
 	private Boolean authenticationRequired;
 	
 	private String formAsString;
-	private Boolean authenticationRequiredAsString;
+	private String authenticationRequiredAsString;
 	
 	/**/
 	

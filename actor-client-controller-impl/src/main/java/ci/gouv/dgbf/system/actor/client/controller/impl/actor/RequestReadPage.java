@@ -21,6 +21,7 @@ import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.client.controller.web.WebController;
+import org.cyk.utility.client.controller.web.jsf.JavaServerFacesHelper;
 import org.cyk.utility.client.controller.web.jsf.Redirector;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
@@ -49,7 +50,7 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 	protected void __listenPostConstruct__() {
 		request = loadRequest();
 		super.__listenPostConstruct__();
-		buildLayout(request,"requestEditView","requestReadView");
+		buildLayout(request,"requestEditView","requestReadView","requestPrintView");
 	}
 	
 	public static Request loadRequest() {
@@ -57,11 +58,11 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 		return EntityReader.getInstance().readOne(Request.class, RequestQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI, RequestQuerier.PARAMETER_NAME_IDENTIFIER, identifier);
 	}
 	
-	public static Layout buildLayout(Request request,String editOutcome,String readOutcome) {
+	public static Layout buildLayout(Request request,String editOutcome,String readOutcome,String printOutcome) {
 		if(request == null || request.getType() == null)
 			return null;
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
-		addToolBar(request,cellsMaps, editOutcome,readOutcome);
+		addToolBar(request,cellsMaps, editOutcome,readOutcome,printOutcome);
 		Map<String,IdentificationAttribute> map = IdentificationForm.computeFieldsNames(request.getType().getForm(), Request.class);
 		add(cellsMaps, "Type", request.getType().getName());
 		add(cellsMaps, "Statut", request.getStatus().getName());
@@ -78,7 +79,7 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
 	}
 	
-	public static void addToolBar(Request request,Collection<Map<Object,Object>> cellsMaps,String editOutcome,String readOutcome) {
+	public static void addToolBar(Request request,Collection<Map<Object,Object>> cellsMaps,String editOutcome,String readOutcome,String printOutcome) {
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL
 				,Button.build(Button.FIELD_VALUE,"Modifier",Button.FIELD_ICON,"fa fa-edit",Button.FIELD_OUTCOME,editOutcome
 				,Button.FIELD_PARAMETERS,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),request.getIdentifier()
@@ -88,7 +89,9 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 				
 		Button button = Button.build(Button.FIELD_VALUE,"Imprimer",Button.FIELD_ICON,"fa fa-print");
 		String scriptFormat = "var w = window.open('%s','%s','%s');w.document.title = '%s';";
-		button.setEventScript(Event.CLICK, String.format(scriptFormat, request.getReportUniformResourceIdentifier(),request.getIdentifier()
+		String url = JavaServerFacesHelper.buildUrlFromOutcome(printOutcome, List.of(ParameterName.ENTITY_IDENTIFIER.getValue()+"="+request.getIdentifier()
+				,"windowrendertype=windowrendertypedialog"));
+		button.setEventScript(Event.CLICK, String.format(scriptFormat, url,request.getIdentifier()
 				,"location=no,menubar=no,resizable=no,status=no,titlebar=no,toolbar=no","Fichier etat de "+request.getTypeAsString()));
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,button,Cell.FIELD_WIDTH,1));
 		
