@@ -1,1 +1,1 @@
-mvn -f ../.. clean package -Dwildfly.bootable.hollow=true -P package.war,package.wildfly.bootable.jsf,prod
+mvn -f ../.. clean package -Dwildfly.bootable.hollow=true -P package.war,package.wildfly.bootable.jsf,keycloak.enabled,prod

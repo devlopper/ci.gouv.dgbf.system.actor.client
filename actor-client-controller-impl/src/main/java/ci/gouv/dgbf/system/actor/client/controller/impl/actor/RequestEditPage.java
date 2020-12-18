@@ -7,11 +7,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntityReader;
 import org.cyk.utility.__kernel__.controller.EntitySaver;
@@ -164,6 +166,11 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 		@Override
 		public void act(Form form) {
 			ThrowableHelper.throwIllegalArgumentExceptionIfNull("demande", request);
+			if(CollectionHelper.isEmpty(request.getBudgetariesScopeFunctions()))
+				request.setBudgetariesScopeFunctionsAsStrings(null);
+			else
+				request.setBudgetariesScopeFunctionsAsStrings(request.getBudgetariesScopeFunctions().stream().map(x -> x.getIdentifier()).collect(Collectors.toList()));			
+			request.setBudgetariesScopeFunctions(null);
 			String actionIdentifier = null;
 			if(Action.CREATE.equals(form.getAction()))
 				actionIdentifier = RequestBusiness.INITIALIZE;

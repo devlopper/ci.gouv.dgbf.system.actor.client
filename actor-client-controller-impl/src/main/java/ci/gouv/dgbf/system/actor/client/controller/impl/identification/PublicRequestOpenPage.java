@@ -31,7 +31,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Named @ViewScoped @Getter @Setter
-public class PublicRequestOpenPage extends AbstractPageContainerManagedImpl implements Serializable {
+public class PublicRequestOpenPage extends AbstractPageContainerManagedImpl implements IdentificationTheme,Serializable {
 
 	private Form form;
 	

@@ -1,1 +1,1 @@
-mvn -f ../.. install -Dmaven.test.skip=true
+mvn -f ../.. clean install -Dmaven.test.skip=true

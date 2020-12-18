@@ -10,6 +10,17 @@
 		<welcome-file>/private/account/list.jsf</welcome-file>
 	</welcome-file-list>
 	-->
+	
+	<servlet>
+		<servlet-name>Faces Servlet</servlet-name>
+		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Faces Servlet</servlet-name>
+		<url-pattern>*.jsf</url-pattern>
+	</servlet-mapping>
+	
 	<!-- System -->
 	
 	<context-param>
@@ -41,6 +52,11 @@
 		<param-name>cyk.variable.system.proxy.uniform.resource.identifier</param-name>
 		<param-value>${cyk.variable.system.proxy.uniform.resource.identifier}</param-value>
 	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.system.web.context</param-name>
+		<param-value>${cyk.variable.system.web.context}</param-value>
+	</context-param>	
 	
 	<context-param>
 		<param-name>cyk.variable.user.interface.theme.class.name</param-name>

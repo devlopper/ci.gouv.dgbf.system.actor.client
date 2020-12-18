@@ -111,7 +111,7 @@
 			<id>docker.dev</id>
 			<properties>
 				<deployment.client.proxy.host>192.168.99.100</deployment.client.proxy.host>
-				<deployment.client.proxy.port>8081</deployment.client.proxy.port>
+				<deployment.client.proxy.port>8080</deployment.client.proxy.port>
 			</properties>
 		</profile>
 		
@@ -134,6 +134,7 @@
 				<jboss-web.context-root>/acteur</jboss-web.context-root>
 				<cyk.variable.system.proxy.uniform.resource.identifier>http://localhost:8180/api</cyk.variable.system.proxy.uniform.resource.identifier>
 				<cyk.variable.user.interface.theme.menu.is.dynamic>false</cyk.variable.user.interface.theme.menu.is.dynamic>
+				<cyk.variable.keycloak.enabled>false</cyk.variable.keycloak.enabled>
 				<web-app.security-constraint.web-resource-collection.administrator.url-pattern>/private/*</web-app.security-constraint.web-resource-collection.administrator.url-pattern>
 				<web-app.security-constraint.web-resource-collection.user.url-pattern>/mon_compte/*</web-app.security-constraint.web-resource-collection.user.url-pattern>
 				<web-app.login-config.auth-method>KEYCLOAK</web-app.login-config.auth-method>
@@ -149,8 +150,10 @@
 			<properties>
 				<project.build.file.name>acteur</project.build.file.name>
 				<jboss-web.context-root>/acteur</jboss-web.context-root>
+				<cyk.variable.system.web.context>/acteur</cyk.variable.system.web.context>
 				<deployment.client.proxy.host>mic-acteur-api</deployment.client.proxy.host>
-				<cyk.variable.system.proxy.uniform.resource.identifier>http://mic-acteur-api</cyk.variable.system.proxy.uniform.resource.identifier>
+				<cyk.variable.keycloak.enabled>true</cyk.variable.keycloak.enabled>
+				<cyk.variable.system.proxy.uniform.resource.identifier>http://mic-acteur-api/api</cyk.variable.system.proxy.uniform.resource.identifier>
 				<cyk.variable.system.security.authentication.enable>true</cyk.variable.system.security.authentication.enable>
 				<cyk.variable.user.interface.theme.menu.is.dynamic>true</cyk.variable.user.interface.theme.menu.is.dynamic>
 				<web-app.security-constraint.web-resource-collection.administrator.url-pattern>/private/*</web-app.security-constraint.web-resource-collection.administrator.url-pattern>

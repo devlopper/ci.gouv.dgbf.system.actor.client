@@ -29,7 +29,8 @@ public class RequestEditSelectTypePage extends AbstractPageContainerManagedImpl 
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Choix du type de la demande";
+		//return "Choix du type de la demande";
+		return "Quelle demande voulez-vous faire ?";
 	}
 	
 	public static final String OUTCOME = "requestEditSelectTypeView";

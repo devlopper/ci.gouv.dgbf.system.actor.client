@@ -39,11 +39,10 @@
 			<version>0.1.0</version>
 		</dependency>
 		
-		<!--
 		<dependency>
-			<groupId>org.keycloak</groupId>
-			<artifactId>keycloak-servlet-filter-adapter</artifactId>
+			<groupId>org.cyk.jee.utility.report.jasper.client</groupId>
+			<artifactId>jee-utility-report-jasper-client</artifactId>
+			<version>0.1.0</version>
 		</dependency>
-		-->
 	</dependencies>		
 </project>

@@ -1,9 +1,2 @@
-cd ..
-cd maven
-call install.bat
-call package.bat
-
-cd..
-cd docker
-call build.bat
-call push_and_deploy.bat
+REM -- Wildfly Bootable Jar --
+call source_to_deploy_wildfly_bootablejar.bat

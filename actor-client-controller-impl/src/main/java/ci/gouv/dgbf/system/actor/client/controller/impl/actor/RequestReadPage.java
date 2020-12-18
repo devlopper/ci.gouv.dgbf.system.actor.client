@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
@@ -17,6 +18,10 @@ import org.cyk.utility.__kernel__.controller.EntitySaver;
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
+import org.cyk.utility.__kernel__.identifier.resource.PathAsFunctionParameter;
+import org.cyk.utility.__kernel__.identifier.resource.QueryAsFunctionParameter;
+import org.cyk.utility.__kernel__.identifier.resource.UniformResourceIdentifierAsFunctionParameter;
+import org.cyk.utility.__kernel__.identifier.resource.UniformResourceIdentifierHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
@@ -31,6 +36,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.Comman
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputText;
+import org.cyk.utility.report.jasper.client.ReportServlet;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationAttribute;
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationForm;
@@ -89,8 +95,20 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 				
 		Button button = Button.build(Button.FIELD_VALUE,"Imprimer",Button.FIELD_ICON,"fa fa-print");
 		String scriptFormat = "var w = window.open('%s','%s','%s');w.document.title = '%s';";
-		String url = JavaServerFacesHelper.buildUrlFromOutcome(printOutcome, List.of(ParameterName.ENTITY_IDENTIFIER.getValue()+"="+request.getIdentifier()
-				,"windowrendertype=windowrendertypedialog"));
+		
+		// /cyk/utility/report?identifier=/reports/sigobe/acteur/FicheGestCredit&parametersNamesValuesAsJson=%7B"identifiant"%3A"2"%7D
+		
+		//String url = "/acteur"+ReportServlet.PATH+"?"+request.getReadReportURIQuery();
+		UniformResourceIdentifierAsFunctionParameter p = new UniformResourceIdentifierAsFunctionParameter();
+		p.setRequest(FacesContext.getCurrentInstance().getExternalContext().getRequest());
+		p.setPath(new PathAsFunctionParameter());
+		p.getPath().setValue("/acteur"+ReportServlet.PATH);
+		p.setQuery(new QueryAsFunctionParameter());
+		p.getQuery().setValue(request.getReadReportURIQuery());
+		String url = UniformResourceIdentifierHelper.build(p);
+		
+		//String url = JavaServerFacesHelper.buildUrlFromOutcome(printOutcome, List.of(ParameterName.ENTITY_IDENTIFIER.getValue()+"="+request.getIdentifier()
+		//		,"windowrendertype=windowrendertypedialog"));
 		button.setEventScript(Event.CLICK, String.format(scriptFormat, url,request.getIdentifier()
 				,"location=no,menubar=no,resizable=no,status=no,titlebar=no,toolbar=no","Fichier etat de "+request.getTypeAsString()));
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,button,Cell.FIELD_WIDTH,1));

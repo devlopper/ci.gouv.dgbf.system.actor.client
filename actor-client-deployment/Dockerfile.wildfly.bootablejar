@@ -19,5 +19,6 @@ ENV security.single.sign.on.system.keycloak.prod.credential.password mic-@cteur-
 # -- USER INTERFACE --
 ENV SIIBC_NAME SIGOBE
 ENV cyk.variable.system.web.home.url http://siibtest.dgbf.ci
+ENV cyk.variable.system.web.context /acteur
 
 ENTRYPOINT ["java", "-jar","-Djava.net.preferIPv4Stack=true","-Djava.net.preferIPv4Addresses=true","/opt/acteur-bootable.jar","--deployment=/opt/acteur.war"]

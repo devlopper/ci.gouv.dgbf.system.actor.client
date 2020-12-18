@@ -21,8 +21,6 @@ import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputT
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputTextarea;
 import org.cyk.utility.client.controller.component.annotation.InputNumber;
 
-import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
-import ci.gouv.dgbf.system.actor.server.representation.entities.ScopeFunctionDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -75,7 +73,7 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	private Collection<String> functionsAsStrings;
 	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceMany @InputChoiceManyAutoComplete private Collection<Function> budgetariesFunctions;
 	private Collection<String> budgetariesFunctionsAsStrings;
-	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceMany @InputChoiceManyAutoComplete private Collection<ScopeFunctionDto> budgetariesScopeFunctions;
+	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceMany @InputChoiceManyAutoComplete private Collection<ScopeFunction> budgetariesScopeFunctions;
 	private Collection<String> budgetariesScopeFunctionsAsStrings;
 	
 	/* Others */
@@ -88,9 +86,9 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	@Input @InputChoiceOneRadio @NotNull private String treatment;
 	@Input @InputTextarea private String rejectionReason;
 	
-	/* Uniform Resource Identifier : URI*/
+	/* Report identifier */
 	
-	private String reportUniformResourceIdentifier;
+	private String readReportURIQuery;
 	
 	/*---------------------------------------------------------------------------------------------*/
 	
