@@ -11,6 +11,7 @@ import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputB
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoice;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceOne;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceOneCombo;
+import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputText;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,16 +25,21 @@ public class RequestType extends AbstractDataIdentifiableSystemStringIdentifiabl
 	@Input @InputChoice @InputChoiceOne @InputChoiceOneCombo 
 	@NotNull 
 	private IdentificationForm form;
+	private String formAsString;
+	
+	@Input @InputText
+	@NotNull 
+	private String reportIdentifier;
+	
 	@Input @InputBoolean @InputBooleanButton
 	private Boolean authenticationRequired;
-	
-	private String formAsString;
 	private String authenticationRequiredAsString;
 	
 	/**/
 	
 	public static final String FIELD_FORM = "form";
-	public static final String FIELD_AUTHENTICATION_REQUIRED = "authenticationRequired";
 	public static final String FIELD_FORM_AS_STRING = "formAsString";
+	public static final String FIELD_REPORT_IDENTIFIER = "reportIdentifier";
+	public static final String FIELD_AUTHENTICATION_REQUIRED = "authenticationRequired";	
 	public static final String FIELD_AUTHENTICATION_REQUIRED_AS_STRING = "authenticationRequiredAsString";
 }

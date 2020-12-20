@@ -26,7 +26,6 @@ import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.client.controller.web.WebController;
-import org.cyk.utility.client.controller.web.jsf.JavaServerFacesHelper;
 import org.cyk.utility.client.controller.web.jsf.Redirector;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
@@ -96,19 +95,16 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 		Button button = Button.build(Button.FIELD_VALUE,"Imprimer",Button.FIELD_ICON,"fa fa-print");
 		String scriptFormat = "var w = window.open('%s','%s','%s');w.document.title = '%s';";
 		
-		// /cyk/utility/report?identifier=/reports/sigobe/acteur/FicheGestCredit&parametersNamesValuesAsJson=%7B"identifiant"%3A"2"%7D
-		
-		//String url = "/acteur"+ReportServlet.PATH+"?"+request.getReadReportURIQuery();
 		UniformResourceIdentifierAsFunctionParameter p = new UniformResourceIdentifierAsFunctionParameter();
 		p.setRequest(FacesContext.getCurrentInstance().getExternalContext().getRequest());
 		p.setPath(new PathAsFunctionParameter());
 		p.getPath().setValue("/acteur"+ReportServlet.PATH);
-		p.setQuery(new QueryAsFunctionParameter());
-		p.getQuery().setValue(request.getReadReportURIQuery());
+		if(StringHelper.isNotBlank(request.getReadReportURIQuery())) {
+			p.setQuery(new QueryAsFunctionParameter());
+			p.getQuery().setValue(request.getReadReportURIQuery());
+		}		
 		String url = UniformResourceIdentifierHelper.build(p);
 		
-		//String url = JavaServerFacesHelper.buildUrlFromOutcome(printOutcome, List.of(ParameterName.ENTITY_IDENTIFIER.getValue()+"="+request.getIdentifier()
-		//		,"windowrendertype=windowrendertypedialog"));
 		button.setEventScript(Event.CLICK, String.format(scriptFormat, url,request.getIdentifier()
 				,"location=no,menubar=no,resizable=no,status=no,titlebar=no,toolbar=no","Fichier etat de "+request.getTypeAsString()));
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,button,Cell.FIELD_WIDTH,1));
