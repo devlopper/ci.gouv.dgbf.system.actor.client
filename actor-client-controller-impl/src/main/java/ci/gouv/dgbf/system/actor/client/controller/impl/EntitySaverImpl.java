@@ -463,6 +463,11 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 			return ((RequestRepresentation)representation).rejectByIdentifier(request.getIdentifier(), request.getRejectionReason());
 		}
 		
+		if(arguments != null && RequestBusiness.NOTIFY_ACCESS_TOKENS.equals(arguments.getActionIdentifier())) {
+			RequestDto request = (RequestDto) CollectionHelper.getFirst(creatables);
+			return ((RequestRepresentation)representation).notifyAcessTokens(request.getElectronicMailAddress());
+		}
+		
 		if(arguments != null && ActorBusiness.SAVE_PROFILE.equals(arguments.getActionIdentifier())) {
 			ActorDto actor = (ActorDto) CollectionHelper.getFirst(updatables);
 			return ((ActorRepresentation)representation).saveProfile(actor);

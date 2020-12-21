@@ -30,18 +30,18 @@ public interface IdentificationTheme {
 						item.setOutcome("actorCreateFromPublicView");
 						model.addElement(item);
 						
-						item = new DefaultMenuItem("Saisir une demande");
+						item = new DefaultMenuItem("Nouvelle demande");
 						item.setOutcome("publicRequestEditView");
 						model.addElement(item);
 						
-						item = new DefaultMenuItem("Ouvrir une demande");
+						item = new DefaultMenuItem("Ouvrir demande");
 						item.setOutcome("publicRequestReadView");
 						model.addElement(item);
-						/*
-						item = new DefaultMenuItem("Récupérer un jeton d'accès");
-						item.setOutcome("publicRequestEditView");
+						
+						item = new DefaultMenuItem("Obtenir jeton");
+						item.setOutcome("publicRequestSendAccessTokenView");
 						model.addElement(item);
-						*/
+						
 						/*
 						item = new DefaultMenuItem("Ouvrir demande");
 						item.setOutcome("accountRequestOpenView");

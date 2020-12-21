@@ -158,6 +158,12 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>publicRequestSendAccessTokenView</from-outcome>
+			<to-view-id>/public/request/sendaccesstoken.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>publicRequestReadView</from-outcome>
 			<to-view-id>/public/request/read.jsf</to-view-id>
 			<redirect />

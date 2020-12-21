@@ -38,15 +38,19 @@ import ci.gouv.dgbf.system.actor.client.controller.api.ActorController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Civility;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationAttribute;
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationForm;
+import ci.gouv.dgbf.system.actor.client.controller.entities.IdentityGroup;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.client.controller.impl.identification.PublicRequestReadPage;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.CivilityQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentityGroupQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestTypeQuerier;
 import lombok.Getter;
@@ -232,6 +236,10 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 			}else if(Request.FIELD_TYPE.equals(fieldName)) {
 				map.put(AbstractInputChoice.FIELD_CHOICES
 						,request == null ? EntityReader.getInstance().readMany(RequestType.class,RequestTypeQuerier.QUERY_IDENTIFIER_READ_ALL) : List.of(request.getType()));
+			}else if(Request.FIELD_GROUP.equals(fieldName)) {
+				map.put(AbstractInputChoice.FIELD_CHOICES,EntityReader.getInstance().readMany(IdentityGroup.class,IdentityGroupQuerier.QUERY_IDENTIFIER_READ));
+			}else if(Request.FIELD_CIVILITY.equals(fieldName)) {
+				map.put(AbstractInputChoice.FIELD_CHOICES,EntityReader.getInstance().readMany(Civility.class,CivilityQuerier.QUERY_IDENTIFIER_READ));
 			}else if(Request.FIELD_ADMINISTRATIVE_UNIT.equals(fieldName)) {
 				map.put(AutoComplete.FIELD_ENTITY_CLASS, AdministrativeUnit.class);
 				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
