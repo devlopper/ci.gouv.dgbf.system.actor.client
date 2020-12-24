@@ -3,12 +3,14 @@ package ci.gouv.dgbf.system.actor.client.controller.impl.actor;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
@@ -25,6 +27,7 @@ import org.cyk.utility.__kernel__.identifier.resource.UniformResourceIdentifierH
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
+import org.cyk.utility.client.controller.web.FileServlet;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.Redirector;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
@@ -34,14 +37,18 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.Button
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.GraphicImage;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputText;
 import org.cyk.utility.report.jasper.client.ReportServlet;
 
+import ci.gouv.dgbf.system.actor.client.controller.api.RequestController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationAttribute;
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationForm;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
+import ci.gouv.dgbf.system.actor.client.controller.impl.FileServletListenerImpl;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
+import ci.gouv.dgbf.system.actor.server.representation.api.RequestRepresentation;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -81,6 +88,19 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 			}
 			add(cellsMaps, attribute.getName(), value == null ? null : value.toString());
 		});
+		
+		request.setPhoto(__inject__(RequestController.class).getPhotoByIdentifier(request.getIdentifier()));
+		addImage(cellsMaps, "Photo",FileServlet.buildRelativeURI(request, FileServletListenerImpl.REQUEST_FILE_TYPE_PHOTO),request.getIdentifier(),request.getPhoto() != null
+			,RequestUpdatePhotoPage.OUTCOME,new GraphicImage.Listener.AbstractImpl() {
+				@Override
+				public void listenDelete(GraphicImage graphicImage) {
+					super.listenDelete(graphicImage);
+					RequestRepresentation.getProxy().recordPhotoByIdentifier(request.getIdentifier(), null);		
+					Redirector.getInstance().redirect(readOutcome,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(request.getIdentifier())));
+				}
+			});
+		//addImage(cellsMaps, "Signature",FileServlet.buildRelativeURI(request, FileServletControllerImpl.REQUEST_FILE_TYPE_SIGNATURE));
+		
 		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
 	}
 	
@@ -133,6 +153,18 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,valueOutputText,Cell.FIELD_WIDTH,9));
 	}
 	
+	public static void addImage(Collection<Map<Object,Object>> cellsMaps,String label,String url,String identifier,Boolean deletable,String updateOutcome,GraphicImage.Listener listener) {
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue(label),Cell.FIELD_WIDTH,3));
+		/*GraphicImage image = GraphicImage.build(GraphicImage.FIELD_URL,url,GraphicImage.ConfiguratorImpl.FIELD_UPDATE_OUTCOME,updateOutcome
+				,GraphicImage.ConfiguratorImpl.FIELD_ENTITY_IDENTIFIER,identifier,GraphicImage.ConfiguratorImpl.FIELD_DELETABLE,Boolean.TRUE
+				,GraphicImage.FIELD_LISTENER,listener);
+		*/
+		GraphicImage image = GraphicImage.build(GraphicImage.FIELD_URL,url,GraphicImage.ConfiguratorImpl.FIELD_UPDATE_OUTCOME,updateOutcome
+				,GraphicImage.ConfiguratorImpl.FIELD_ENTITY_IDENTIFIER,identifier,GraphicImage.ConfiguratorImpl.FIELD_DELETABLE,deletable
+				,GraphicImage.FIELD_LISTENER,listener);
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,image,Cell.FIELD_WIDTH,9));
+	}
+	
 	@Override
 	protected String __getWindowTitleValue__() {
 		return getWindowTitleValue(request, super.__getWindowTitleValue__());
@@ -143,4 +175,18 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 			return default_;
 		return request.getTypeAsString();
 	}
+	
+	/**/
+	
+	/*
+	private static final String TAB_INFORMATIONS = "informations";
+	private static final String TAB_REPORT = "etat";
+	private static final String TAB_SIGNATURE = "signature";
+	private static final String TAB_ACT_OF_APPOINTMENT = "actenomination";
+	
+	private static final List<TabMenu.Tab> TABS = List.of(
+		new TabMenu.Tab("Profile",TAB_PROFILE)
+		,new TabMenu.Tab("Visibilité",TAB_SCOPE)
+		,new TabMenu.Tab("Poste",TAB_SCOPE_FUNCTION)
+	);*/
 }

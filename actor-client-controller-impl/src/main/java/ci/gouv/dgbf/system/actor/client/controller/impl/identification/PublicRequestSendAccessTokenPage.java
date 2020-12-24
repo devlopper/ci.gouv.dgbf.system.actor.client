@@ -1,11 +1,13 @@
 package ci.gouv.dgbf.system.actor.client.controller.impl.identification;
 
 import java.io.Serializable;
+import java.net.MalformedURLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
@@ -13,7 +15,9 @@ import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntitySaver;
 import org.cyk.utility.__kernel__.enumeration.Action;
+import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.client.controller.web.jsf.NavigationCaseGetter;
 import org.cyk.utility.client.controller.web.jsf.Redirector;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
@@ -49,6 +53,11 @@ public class PublicRequestSendAccessTokenPage extends AbstractPageContainerManag
 		if(arguments == null)
 			arguments = new HashMap<>();
 		Request request = new Request();
+		try {
+			request.setReadPageURL(NavigationCaseGetter.getInstance().get(PublicRequestReadPage.OUTCOME).getRedirectURL(FacesContext.getCurrentInstance()).toString());
+		} catch (MalformedURLException exception) {
+			LogHelper.log(exception,PublicRequestSendAccessTokenPage.class);
+		}
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ENTITY_CLASS, Request.class);
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ENTITY, request);
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ACTION, Action.CREATE);

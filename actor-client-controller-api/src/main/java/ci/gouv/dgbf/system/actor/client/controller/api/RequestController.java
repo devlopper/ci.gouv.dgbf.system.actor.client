@@ -18,4 +18,17 @@ public interface RequestController extends ControllerEntity<Request> {
 		return MappingHelper.getSource(response.readEntity(RequestDto.class), Request.class);
 	}
 	
+	default byte[] getPhotoByIdentifier(String identifier) {
+		Response response = RequestRepresentation.getProxy().getPhotoByIdentifier(identifier);
+		if(response == null)
+			return null;
+		return response.hasEntity() ? response.readEntity(byte[].class) : null;
+	}
+	
+	default byte[] getSignatureByIdentifier(String identifier) {
+		Response response = RequestRepresentation.getProxy().getSignatureByIdentifier(identifier);
+		if(response == null)
+			return null;
+		return response.hasEntity() ? response.readEntity(byte[].class) : null;
+	}
 }

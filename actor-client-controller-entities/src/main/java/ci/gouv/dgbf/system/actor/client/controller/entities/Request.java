@@ -56,6 +56,7 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	@Input @InputText private String mobilePhoneNumber;
 	@Input @InputText private String officePhoneNumber;
 	@Input @InputText private String officePhoneExtension;
+	private byte[] photo;
 	
 	/* Job */
 	

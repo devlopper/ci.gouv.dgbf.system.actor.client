@@ -448,6 +448,11 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 			return ((RequestRepresentation)representation).record(request);
 		}
 		
+		if(arguments != null && RequestBusiness.RECORD_PHOTO.equals(arguments.getActionIdentifier())) {
+			RequestDto request = (RequestDto) CollectionHelper.getFirst(updatables);
+			return ((RequestRepresentation)representation).recordPhoto(request);
+		}
+		
 		if(arguments != null && RequestBusiness.SUBMIT.equals(arguments.getActionIdentifier())) {
 			RequestDto request = (RequestDto) CollectionHelper.getFirst(updatables);
 			return ((RequestRepresentation)representation).submitByIdentifier(request.getIdentifier());
@@ -465,7 +470,7 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 		
 		if(arguments != null && RequestBusiness.NOTIFY_ACCESS_TOKENS.equals(arguments.getActionIdentifier())) {
 			RequestDto request = (RequestDto) CollectionHelper.getFirst(creatables);
-			return ((RequestRepresentation)representation).notifyAcessTokens(request.getElectronicMailAddress());
+			return ((RequestRepresentation)representation).notifyAcessTokens(request.getElectronicMailAddress(),request.getReadPageURL());
 		}
 		
 		if(arguments != null && ActorBusiness.SAVE_PROFILE.equals(arguments.getActionIdentifier())) {

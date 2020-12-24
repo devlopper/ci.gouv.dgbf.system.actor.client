@@ -10,6 +10,7 @@ import org.cyk.utility.__kernel__.controller.EntitySaver;
 import org.cyk.utility.__kernel__.representation.RepresentationClassNameGetter;
 import org.cyk.utility.__kernel__.security.UserBuilder;
 import org.cyk.utility.client.controller.component.menu.MenuBuilderMapInstantiator;
+import org.cyk.utility.client.controller.web.FileServlet;
 
 @ApplicationScoped
 public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeLifeCycleListener implements Serializable {
@@ -18,10 +19,12 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 	@Override
 	public void __initialize__(Object object) {
 		__inject__(ci.gouv.dgbf.system.actor.client.controller.api.ApplicationScopeLifeCycleListener.class).initialize(null);
-		org.cyk.utility.security.keycloak.client.Application.initialize();
+		__inject__(org.cyk.utility.security.keycloak.client.ApplicationScopeLifeCycleListener.class).initialize(null);
 		__setQualifierClassTo__(ci.gouv.dgbf.system.actor.server.annotation.System.class, MenuBuilderMapInstantiator.class,EntitySaver.class
 				,ThemeManager.class,UserBuilder.class);
 		RepresentationClassNameGetter.AbstractImpl.SYSTEM_PACKAGE_NAME = "ci.gouv.dgbf.system.actor";
+		
+		FileServlet.LISTENER = new FileServletListenerImpl();
 	}
 	
 	@Override
