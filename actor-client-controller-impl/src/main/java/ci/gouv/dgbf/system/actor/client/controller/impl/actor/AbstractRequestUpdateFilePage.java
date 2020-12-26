@@ -11,6 +11,7 @@ import javax.validation.constraints.NotNull;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.enumeration.Action;
+import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Input;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputFile;
@@ -22,16 +23,15 @@ import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
-import ci.gouv.dgbf.system.actor.server.representation.api.RequestRepresentation;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Named @ViewScoped @Getter @Setter
-public class RequestUpdatePhotoPage extends AbstractEntityEditPageContainerManagedImpl<Request> implements Serializable {
+public abstract class AbstractRequestUpdateFilePage extends AbstractEntityEditPageContainerManagedImpl<Request> implements Serializable {
 
-	private Data data;
+	protected Data data;
 	
 	@Override
 	protected void __listenPostConstruct__() {
@@ -43,16 +43,13 @@ public class RequestUpdatePhotoPage extends AbstractEntityEditPageContainerManag
 	protected void setActionFromRequestParameter() {
 		action = Action.UPDATE;
 	}
-	
-	@Override
-	protected Form __buildForm__() {		
-		return buildForm(Form.FIELD_ACTION,Action.UPDATE,Form.FIELD_ENTITY,data);
-	}
-	
+		
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Mise à jour de photo de "+data.getRequest().getFirstName();
+		return String.format("Mise à jour de %s de "+data.getRequest().getFirstName(),getFileType());
 	}
+	
+	protected abstract String getFileType();
 	
 	/**/
 	
@@ -62,10 +59,9 @@ public class RequestUpdatePhotoPage extends AbstractEntityEditPageContainerManag
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ENTITY_CLASS, Data.class);
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_CONTROLLER_ENTITY_INJECTABLE, Boolean.FALSE);
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_INPUTS_FIELDS_NAMES, List.of(Data.FIELD_FILE));
-		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_LISTENER, new FormConfiguratorListener());
-		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_LISTENER, new FormListener());
 		Form form = Form.build(arguments);
-		form.getInput(FileUpload.class, Data.FIELD_FILE).setListener(new FileUploadListenerImpl( ((Data)form.getEntity()).getRequest(),form.getSubmitCommandButton() ));
+		form.getInput(FileUpload.class, Data.FIELD_FILE).setListener(new FileUploadListenerImpl(((Data)form.getEntity()).getRequest(),(String)arguments.get(Data.FIELD_FILE)
+				,form.getSubmitCommandButton() ));
 		return form;
 	}
 	
@@ -76,17 +72,19 @@ public class RequestUpdatePhotoPage extends AbstractEntityEditPageContainerManag
 	/**/
 	
 	@Getter @Setter @Accessors(chain=true) @NoArgsConstructor
-	public static class FormListener extends Form.Listener.AbstractImpl {
+	public static abstract class AbstractFormListener extends Form.Listener.AbstractImpl {
 		
 		@Override
 		public void act(Form form) {
 			Data data = (Data) form.getEntity();
-			RequestRepresentation.getProxy().recordPhotoByIdentifier(data.getRequest().getIdentifier(), data.getRequest().getPhoto());	
+			act(form, data.getRequest());
 		}
+		
+		protected abstract void act(Form form,Request request);
 	}
 	
 	@Getter @Setter @Accessors(chain=true) @NoArgsConstructor
-	public static class FormConfiguratorListener extends Form.ConfiguratorImpl.Listener.AbstractImpl {
+	public static abstract class AbstractFormConfiguratorListener extends Form.ConfiguratorImpl.Listener.AbstractImpl {
 		
 	}
 	
@@ -108,10 +106,12 @@ public class RequestUpdatePhotoPage extends AbstractEntityEditPageContainerManag
 	
 	public static class FileUploadListenerImpl extends FileUpload.Listener.AbstractImpl implements Serializable {
 		private Request request;
+		private String fieldName;
 		private CommandButton commandButton;
 		
-		public FileUploadListenerImpl(Request request,CommandButton commandButton) {
+		public FileUploadListenerImpl(Request request,String fieldName,CommandButton commandButton) {
 			this.request = request;
+			this.fieldName = fieldName;
 			this.commandButton = commandButton;
 			if(this.commandButton != null)
 				this.commandButton.setRendered(Boolean.FALSE);
@@ -120,11 +120,10 @@ public class RequestUpdatePhotoPage extends AbstractEntityEditPageContainerManag
 		@Override
 		protected void listenFileUploadedNotEmpty(FileUploadEvent event, byte[] bytes) {
 			super.listenFileUploadedNotEmpty(event, bytes);
-			request.setPhoto(bytes);
+			FieldHelper.write(request, fieldName, bytes);
 			if(commandButton != null)
 				commandButton.act(null);
 		}		
 	}
 	
-	public static final String OUTCOME = "requestUpdatePhotoView";
 }

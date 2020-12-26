@@ -57,6 +57,8 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	@Input @InputText private String officePhoneNumber;
 	@Input @InputText private String officePhoneExtension;
 	private byte[] photo;
+	private byte[] actOfAppointment;
+	private byte[] signature;
 	
 	/* Job */
 	
@@ -132,6 +134,7 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	public static final String FIELD_SERVICE = "service";
 	public static final String FIELD_ADMINISTRATIVE_FUNCTION = "administrativeFunction";
 	public static final String FIELD_SECTION_AS_STRING = "sectionAsString";
+	public static final String FIELD_ACT_OF_APPOINTMENT = "actOfAppointment";
 	public static final String FIELD_ACT_OF_APPOINTMENT_REFERENCE = "actOfAppointmentReference";
 	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATORY = "actOfAppointmentSignatory";
 	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE = "actOfAppointmentSignatureDate";

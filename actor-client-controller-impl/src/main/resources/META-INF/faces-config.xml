@@ -123,13 +123,19 @@
 		
 		<navigation-case>
 			<from-outcome>requestReadView</from-outcome>
-			<to-view-id>/private/request/read.jsf</to-view-id>
+			<to-view-id>/private/request/read/index.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		
 		<navigation-case>
 			<from-outcome>requestUpdatePhotoView</from-outcome>
 			<to-view-id>/private/request/updatephoto.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>requestUpdateActOfAppointmentView</from-outcome>
+			<to-view-id>/private/request/updateactofappointment.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		

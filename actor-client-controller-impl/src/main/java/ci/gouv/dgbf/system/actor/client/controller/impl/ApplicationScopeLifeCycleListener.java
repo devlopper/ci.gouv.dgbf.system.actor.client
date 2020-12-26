@@ -10,7 +10,7 @@ import org.cyk.utility.__kernel__.controller.EntitySaver;
 import org.cyk.utility.__kernel__.representation.RepresentationClassNameGetter;
 import org.cyk.utility.__kernel__.security.UserBuilder;
 import org.cyk.utility.client.controller.component.menu.MenuBuilderMapInstantiator;
-import org.cyk.utility.client.controller.web.FileServlet;
+import org.cyk.utility.client.controller.web.jsf.FileServlet;
 
 @ApplicationScoped
 public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeLifeCycleListener implements Serializable {

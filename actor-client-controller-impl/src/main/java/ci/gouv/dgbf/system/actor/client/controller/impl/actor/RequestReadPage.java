@@ -26,8 +26,9 @@ import org.cyk.utility.__kernel__.identifier.resource.UniformResourceIdentifierA
 import org.cyk.utility.__kernel__.identifier.resource.UniformResourceIdentifierHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.uri.UniformResourceIdentifierBuilder;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
-import org.cyk.utility.client.controller.web.FileServlet;
+import org.cyk.utility.client.controller.web.jsf.FileServlet;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.Redirector;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
@@ -39,6 +40,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.GraphicImage;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputText;
+import org.cyk.utility.javascript.OpenWindowScriptBuilder;
 import org.cyk.utility.report.jasper.client.ReportServlet;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.RequestController;
@@ -70,14 +72,17 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 		return EntityReader.getInstance().readOne(Request.class, RequestQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI, RequestQuerier.PARAMETER_NAME_IDENTIFIER, identifier);
 	}
 	
-	public static Layout buildLayout(Request request,String editOutcome,String readOutcome,String printOutcome) {
+	public static Layout buildLeftLayout(Request request) {
 		if(request == null || request.getType() == null)
 			return null;
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
-		addToolBar(request,cellsMaps, editOutcome,readOutcome,printOutcome);
 		Map<String,IdentificationAttribute> map = IdentificationForm.computeFieldsNames(request.getType().getForm(), Request.class);
-		add(cellsMaps, "Type", request.getType().getName());
-		add(cellsMaps, "Statut", request.getStatus().getName());
+		addLabelValue(cellsMaps, "Type", request.getType().getName());
+		addLabelValue(cellsMaps, "Statut", request.getStatus().getName());
+		
+		request.setActOfAppointment(__inject__(RequestController.class).getActOfAppointmentByIdentifier(request.getIdentifier()));
+		request.setPhoto(__inject__(RequestController.class).getPhotoByIdentifier(request.getIdentifier()));
+		
 		map.forEach( (fieldName,attribute) -> {
 			Object value = FieldHelper.read(request, fieldName);
 			if(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS.equals(fieldName)) {
@@ -86,24 +91,149 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 			}else if(Request.FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE.equals(fieldName)) {
 				value = request.getActOfAppointmentSignatureDateAsString();
 			}
-			add(cellsMaps, attribute.getName(), value == null ? null : value.toString());
+			addLabelValue(cellsMaps, attribute.getName(), value == null ? null : value.toString());
 		});
-		
-		request.setPhoto(__inject__(RequestController.class).getPhotoByIdentifier(request.getIdentifier()));
-		addImage(cellsMaps, "Photo",FileServlet.buildRelativeURI(request, FileServletListenerImpl.REQUEST_FILE_TYPE_PHOTO),request.getIdentifier(),request.getPhoto() != null
-			,RequestUpdatePhotoPage.OUTCOME,new GraphicImage.Listener.AbstractImpl() {
-				@Override
-				public void listenDelete(GraphicImage graphicImage) {
-					super.listenDelete(graphicImage);
-					RequestRepresentation.getProxy().recordPhotoByIdentifier(request.getIdentifier(), null);		
-					Redirector.getInstance().redirect(readOutcome,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(request.getIdentifier())));
-				}
-			});
-		//addImage(cellsMaps, "Signature",FileServlet.buildRelativeURI(request, FileServletControllerImpl.REQUEST_FILE_TYPE_SIGNATURE));
-		
+	
 		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
 	}
 	
+	public static Layout buildRightLayout(Request request,String editOutcome,String readOutcome,String printOutcome) {
+		if(request == null || request.getType() == null)
+			return null;
+		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();		
+		request.setActOfAppointment(__inject__(RequestController.class).getActOfAppointmentByIdentifier(request.getIdentifier()));
+		request.setPhoto(__inject__(RequestController.class).getPhotoByIdentifier(request.getIdentifier()));
+		
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,GraphicImage.build(
+				GraphicImage.ConfiguratorImpl.FIELD_LABEL_OUTPUT_TEXT_VALUE,"Photo"
+				,GraphicImage.ConfiguratorImpl.FIELD_READ_URI
+				,request.getPhoto() == null ? null : UniformResourceIdentifierBuilder.getInstance().buildFromCurrentRequest(FileServlet.buildRelativeURI(request, FileServletListenerImpl.REQUEST_FILE_TYPE_PHOTO),null)
+				,GraphicImage.ConfiguratorImpl.FIELD_UPDATE_OUTCOME,RequestUpdatePhotoPage.OUTCOME
+				,GraphicImage.ConfiguratorImpl.FIELD_ENTITY_IDENTIFIER,request.getIdentifier(),GraphicImage.ConfiguratorImpl.FIELD_DELETABLE,request.getPhoto() != null
+				,GraphicImage.FIELD_LISTENER,new GraphicImage.Listener.AbstractImpl() {
+					@Override
+					public void listenDelete(GraphicImage graphicImage) {
+						super.listenDelete(graphicImage);
+						RequestRepresentation.getProxy().recordPhotoByIdentifier(request.getIdentifier(), null);		
+						Redirector.getInstance().redirect(readOutcome,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(request.getIdentifier())));
+					}
+				}),Cell.FIELD_WIDTH,12));
+		
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,GraphicImage.build(
+				GraphicImage.ConfiguratorImpl.FIELD_LABEL_OUTPUT_TEXT_VALUE,"Acte de nomination"
+				,GraphicImage.ConfiguratorImpl.FIELD_READ_URI
+				,request.getActOfAppointment() == null ? null : UniformResourceIdentifierBuilder.getInstance().buildFromCurrentRequest(FileServlet.buildRelativeURI(request, FileServletListenerImpl.REQUEST_FILE_TYPE_ACT_OF_APPOINTMENT),null)
+				,GraphicImage.FIELD_LIBRARY,"image",GraphicImage.FIELD_NAME,"icon/text.png"
+				,GraphicImage.ConfiguratorImpl.FIELD_UPDATE_OUTCOME,RequestUpdateActOfAppointmentPage.OUTCOME
+				,GraphicImage.ConfiguratorImpl.FIELD_ENTITY_IDENTIFIER,request.getIdentifier(),GraphicImage.ConfiguratorImpl.FIELD_DELETABLE,request.getActOfAppointment() != null
+				,GraphicImage.FIELD_LISTENER,new GraphicImage.Listener.AbstractImpl() {
+					@Override
+					public void listenDelete(GraphicImage graphicImage) {
+						super.listenDelete(graphicImage);
+						RequestRepresentation.getProxy().recordActOfAppointmentByIdentifier(request.getIdentifier(), null);		
+						Redirector.getInstance().redirect(readOutcome,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(request.getIdentifier())));
+					}
+				}),Cell.FIELD_WIDTH,12));
+		
+		/*
+		addLabelControl(cellsMaps, "Photo",  GraphicImage.build(
+				GraphicImage.ConfiguratorImpl.FIELD_READ_URI
+				,request.getPhoto() == null ? null : UniformResourceIdentifierBuilder.getInstance().buildFromCurrentRequest(FileServlet.buildRelativeURI(request, FileServletListenerImpl.REQUEST_FILE_TYPE_PHOTO),null)
+				,GraphicImage.ConfiguratorImpl.FIELD_UPDATE_OUTCOME,RequestUpdatePhotoPage.OUTCOME
+				,GraphicImage.ConfiguratorImpl.FIELD_ENTITY_IDENTIFIER,request.getIdentifier(),GraphicImage.ConfiguratorImpl.FIELD_DELETABLE,request.getPhoto() != null
+				,GraphicImage.FIELD_LISTENER,new GraphicImage.Listener.AbstractImpl() {
+					@Override
+					public void listenDelete(GraphicImage graphicImage) {
+						super.listenDelete(graphicImage);
+						RequestRepresentation.getProxy().recordPhotoByIdentifier(request.getIdentifier(), null);		
+						Redirector.getInstance().redirect(readOutcome,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(request.getIdentifier())));
+					}
+				}));
+		
+		addLabelControl(cellsMaps, "A.N.",  GraphicImage.build(
+				GraphicImage.ConfiguratorImpl.FIELD_READ_URI
+				,request.getActOfAppointment() == null ? null : UniformResourceIdentifierBuilder.getInstance().buildFromCurrentRequest(FileServlet.buildRelativeURI(request, FileServletListenerImpl.REQUEST_FILE_TYPE_ACT_OF_APPOINTMENT),null)
+				,GraphicImage.FIELD_LIBRARY,"image",GraphicImage.FIELD_NAME,"icon/text.png"
+				,GraphicImage.ConfiguratorImpl.FIELD_UPDATE_OUTCOME,RequestUpdateActOfAppointmentPage.OUTCOME
+				,GraphicImage.ConfiguratorImpl.FIELD_ENTITY_IDENTIFIER,request.getIdentifier(),GraphicImage.ConfiguratorImpl.FIELD_DELETABLE,request.getActOfAppointment() != null
+				,GraphicImage.FIELD_LISTENER,new GraphicImage.Listener.AbstractImpl() {
+					@Override
+					public void listenDelete(GraphicImage graphicImage) {
+						super.listenDelete(graphicImage);
+						RequestRepresentation.getProxy().recordActOfAppointmentByIdentifier(request.getIdentifier(), null);		
+						Redirector.getInstance().redirect(readOutcome,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(request.getIdentifier())));
+					}
+				}));
+		*/
+		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
+	}
+	
+	public static Layout buildLayout(Request request,String editOutcome,String readOutcome,String printOutcome) {
+		if(request == null || request.getType() == null)
+			return null;
+		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
+		addToolBar(request,cellsMaps, editOutcome,readOutcome,printOutcome);
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,buildLeftLayout(request),Cell.FIELD_WIDTH,8));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,buildRightLayout(request, editOutcome, readOutcome, printOutcome),Cell.FIELD_WIDTH,4));
+		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
+	}
+	
+	/*
+	public static Layout buildLayout(Request request,String editOutcome,String readOutcome,String printOutcome) {
+		if(request == null || request.getType() == null)
+			return null;
+		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
+		addToolBar(request,cellsMaps, editOutcome,readOutcome,printOutcome);
+		Map<String,IdentificationAttribute> map = IdentificationForm.computeFieldsNames(request.getType().getForm(), Request.class);
+		addLabelValue(cellsMaps, "Type", request.getType().getName());
+		addLabelValue(cellsMaps, "Statut", request.getStatus().getName());
+		
+		request.setActOfAppointment(__inject__(RequestController.class).getActOfAppointmentByIdentifier(request.getIdentifier()));
+		request.setPhoto(__inject__(RequestController.class).getPhotoByIdentifier(request.getIdentifier()));
+		
+		addLabelControl(cellsMaps, "Photo",  GraphicImage.build(
+				GraphicImage.ConfiguratorImpl.FIELD_READ_URI
+				,request.getPhoto() == null ? null : UniformResourceIdentifierBuilder.getInstance().buildFromCurrentRequest(FileServlet.buildRelativeURI(request, FileServletListenerImpl.REQUEST_FILE_TYPE_PHOTO),null)
+				,GraphicImage.ConfiguratorImpl.FIELD_UPDATE_OUTCOME,RequestUpdatePhotoPage.OUTCOME
+				,GraphicImage.ConfiguratorImpl.FIELD_ENTITY_IDENTIFIER,request.getIdentifier(),GraphicImage.ConfiguratorImpl.FIELD_DELETABLE,request.getPhoto() != null
+				,GraphicImage.FIELD_LISTENER,new GraphicImage.Listener.AbstractImpl() {
+					@Override
+					public void listenDelete(GraphicImage graphicImage) {
+						super.listenDelete(graphicImage);
+						RequestRepresentation.getProxy().recordPhotoByIdentifier(request.getIdentifier(), null);		
+						Redirector.getInstance().redirect(readOutcome,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(request.getIdentifier())));
+					}
+				}));
+		
+		addLabelControl(cellsMaps, "A.N.",  GraphicImage.build(
+				GraphicImage.ConfiguratorImpl.FIELD_READ_URI
+				,request.getActOfAppointment() == null ? null : UniformResourceIdentifierBuilder.getInstance().buildFromCurrentRequest(FileServlet.buildRelativeURI(request, FileServletListenerImpl.REQUEST_FILE_TYPE_ACT_OF_APPOINTMENT),null)
+				,GraphicImage.FIELD_LIBRARY,"image",GraphicImage.FIELD_NAME,"icon/text.png"
+				,GraphicImage.ConfiguratorImpl.FIELD_UPDATE_OUTCOME,RequestUpdateActOfAppointmentPage.OUTCOME
+				,GraphicImage.ConfiguratorImpl.FIELD_ENTITY_IDENTIFIER,request.getIdentifier(),GraphicImage.ConfiguratorImpl.FIELD_DELETABLE,request.getActOfAppointment() != null
+				,GraphicImage.FIELD_LISTENER,new GraphicImage.Listener.AbstractImpl() {
+					@Override
+					public void listenDelete(GraphicImage graphicImage) {
+						super.listenDelete(graphicImage);
+						RequestRepresentation.getProxy().recordActOfAppointmentByIdentifier(request.getIdentifier(), null);		
+						Redirector.getInstance().redirect(readOutcome,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(request.getIdentifier())));
+					}
+				}));
+		
+		map.forEach( (fieldName,attribute) -> {
+			Object value = FieldHelper.read(request, fieldName);
+			if(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS.equals(fieldName)) {
+				if(CollectionHelper.isNotEmpty(request.getBudgetariesScopeFunctionsAsStrings()))
+					value = StringUtils.join(request.getBudgetariesScopeFunctionsAsStrings(),"<br/>");
+			}else if(Request.FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE.equals(fieldName)) {
+				value = request.getActOfAppointmentSignatureDateAsString();
+			}
+			addLabelValue(cellsMaps, attribute.getName(), value == null ? null : value.toString());
+		});
+	
+		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
+	}
+	*/
 	public static void addToolBar(Request request,Collection<Map<Object,Object>> cellsMaps,String editOutcome,String readOutcome,String printOutcome) {
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL
 				,Button.build(Button.FIELD_VALUE,"Modifier",Button.FIELD_ICON,"fa fa-edit",Button.FIELD_OUTCOME,editOutcome
@@ -113,8 +243,8 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 				),Cell.FIELD_WIDTH,1));
 				
 		Button button = Button.build(Button.FIELD_VALUE,"Imprimer",Button.FIELD_ICON,"fa fa-print");
-		String scriptFormat = "var w = window.open('%s','%s','%s');w.document.title = '%s';";
-		
+		/*
+		String scriptFormat = "var w = window.open('%s','%s','%s');w.document.title = '%s';";		
 		UniformResourceIdentifierAsFunctionParameter p = new UniformResourceIdentifierAsFunctionParameter();
 		p.setRequest(FacesContext.getCurrentInstance().getExternalContext().getRequest());
 		p.setPath(new PathAsFunctionParameter());
@@ -124,9 +254,13 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 			p.getQuery().setValue(request.getReadReportURIQuery());
 		}		
 		String url = UniformResourceIdentifierHelper.build(p);
-		
+		*/
+		String url = UniformResourceIdentifierBuilder.getInstance().buildFromCurrentRequest(ReportServlet.PATH, request.getReadReportURIQuery()).toString();
+		button.setEventScript(Event.CLICK,OpenWindowScriptBuilder.getInstance().build(url, "Fichier etat de "+request.getTypeAsString()));
+		/*
 		button.setEventScript(Event.CLICK, String.format(scriptFormat, url,request.getIdentifier()
 				,"location=no,menubar=no,resizable=no,status=no,titlebar=no,toolbar=no","Fichier etat de "+request.getTypeAsString()));
+		*/
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,button,Cell.FIELD_WIDTH,1));
 		
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL
@@ -146,23 +280,15 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 		
 	}
 	
-	public static void add(Collection<Map<Object,Object>> cellsMaps,String label,String value) {
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue(label),Cell.FIELD_WIDTH,3));
+	public static void addLabelValue(Collection<Map<Object,Object>> cellsMaps,String label,String value) {
 		OutputText valueOutputText = OutputText.buildFromValue(StringHelper.isBlank(value) ? "---" : value);
 		valueOutputText.setEscape(Boolean.FALSE);
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,valueOutputText,Cell.FIELD_WIDTH,9));
+		addLabelControl(cellsMaps, label, valueOutputText);
 	}
 	
-	public static void addImage(Collection<Map<Object,Object>> cellsMaps,String label,String url,String identifier,Boolean deletable,String updateOutcome,GraphicImage.Listener listener) {
+	public static void addLabelControl(Collection<Map<Object,Object>> cellsMaps,String label,Object control) {
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue(label),Cell.FIELD_WIDTH,3));
-		/*GraphicImage image = GraphicImage.build(GraphicImage.FIELD_URL,url,GraphicImage.ConfiguratorImpl.FIELD_UPDATE_OUTCOME,updateOutcome
-				,GraphicImage.ConfiguratorImpl.FIELD_ENTITY_IDENTIFIER,identifier,GraphicImage.ConfiguratorImpl.FIELD_DELETABLE,Boolean.TRUE
-				,GraphicImage.FIELD_LISTENER,listener);
-		*/
-		GraphicImage image = GraphicImage.build(GraphicImage.FIELD_URL,url,GraphicImage.ConfiguratorImpl.FIELD_UPDATE_OUTCOME,updateOutcome
-				,GraphicImage.ConfiguratorImpl.FIELD_ENTITY_IDENTIFIER,identifier,GraphicImage.ConfiguratorImpl.FIELD_DELETABLE,deletable
-				,GraphicImage.FIELD_LISTENER,listener);
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,image,Cell.FIELD_WIDTH,9));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,control,Cell.FIELD_WIDTH,9));
 	}
 	
 	@Override
@@ -175,18 +301,4 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 			return default_;
 		return request.getTypeAsString();
 	}
-	
-	/**/
-	
-	/*
-	private static final String TAB_INFORMATIONS = "informations";
-	private static final String TAB_REPORT = "etat";
-	private static final String TAB_SIGNATURE = "signature";
-	private static final String TAB_ACT_OF_APPOINTMENT = "actenomination";
-	
-	private static final List<TabMenu.Tab> TABS = List.of(
-		new TabMenu.Tab("Profile",TAB_PROFILE)
-		,new TabMenu.Tab("Visibilité",TAB_SCOPE)
-		,new TabMenu.Tab("Poste",TAB_SCOPE_FUNCTION)
-	);*/
 }

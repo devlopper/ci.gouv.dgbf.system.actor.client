@@ -12,7 +12,7 @@ import org.primefaces.model.menu.MenuModel;
 
 public interface IdentificationTheme {
 
-	String APPLICATION_NAME = "Identification";
+	String APPLICATION_NAME = "Enrollement des acteurs";
 	String APPLICATION_OUTCOME = "identificationIndexView";
 	
 	String MENU_ITEM_IDENTIFICATION = "Enrollement";

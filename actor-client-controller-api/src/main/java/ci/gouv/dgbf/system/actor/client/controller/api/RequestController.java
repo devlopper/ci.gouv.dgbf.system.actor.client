@@ -25,6 +25,13 @@ public interface RequestController extends ControllerEntity<Request> {
 		return response.hasEntity() ? response.readEntity(byte[].class) : null;
 	}
 	
+	default byte[] getActOfAppointmentByIdentifier(String identifier) {
+		Response response = RequestRepresentation.getProxy().getActOfAppointmentByIdentifier(identifier);
+		if(response == null)
+			return null;
+		return response.hasEntity() ? response.readEntity(byte[].class) : null;
+	}
+	
 	default byte[] getSignatureByIdentifier(String identifier) {
 		Response response = RequestRepresentation.getProxy().getSignatureByIdentifier(identifier);
 		if(response == null)
