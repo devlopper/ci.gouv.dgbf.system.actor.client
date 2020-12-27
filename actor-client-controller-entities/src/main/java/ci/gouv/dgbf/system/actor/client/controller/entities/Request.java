@@ -19,6 +19,7 @@ import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputC
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputDate;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputText;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputTextarea;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.component.annotation.InputNumber;
 
 import lombok.Getter;
@@ -57,8 +58,13 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	@Input @InputText private String officePhoneNumber;
 	@Input @InputText private String officePhoneExtension;
 	private byte[] photo;
+	private String photoIdentifier;
 	private byte[] actOfAppointment;
+	private String actOfAppointmentIdentifier;
 	private byte[] signature;
+	private String signatureIdentifier;
+	private byte[] signedRequestSheet;
+	private String signedRequestSheetIdentifier;
 	
 	/* Job */
 	
@@ -93,6 +99,24 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	
 	private String readReportURIQuery;
 	
+	/**/
+	
+	public Boolean hasPhoto() {
+		return StringHelper.isNotBlank(photoIdentifier);
+	}
+	
+	public Boolean hasActOfAppointment() {
+		return StringHelper.isNotBlank(actOfAppointmentIdentifier);
+	}
+	
+	public Boolean hasSignature() {
+		return StringHelper.isNotBlank(signatureIdentifier);
+	}
+	
+	public Boolean hasSignedRequestSheet() {
+		return StringHelper.isNotBlank(signedRequestSheetIdentifier);
+	}
+	
 	/*---------------------------------------------------------------------------------------------*/
 	
 	/* Initialization */
@@ -119,9 +143,12 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	public static final String FIELD_MOBILE_PHONE_NUMBER = "mobilePhoneNumber";
 	public static final String FIELD_OFFICE_PHONE_NUMBER = "officePhoneNumber";
 	public static final String FIELD_OFFICE_PHONE_EXTENSION = "officePhoneExtension";
+	public static final String FIELD_SIGNATURE = "signature";
+	public static final String FIELD_PHOTO = "photo";
 	
 	/* Job */
 	
+	public static final String FIELD_SIGNED_REQUEST_SHEET = "signedRequestSheet";
 	public static final String FIELD_BUDGETARY_EXERCICE = "budgetaryExercice";
 	public static final String FIELD_CIVILITY = "civility";
 	public static final String FIELD_GROUP = "group";

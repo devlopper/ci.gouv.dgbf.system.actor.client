@@ -129,13 +129,25 @@
 		
 		<navigation-case>
 			<from-outcome>requestUpdatePhotoView</from-outcome>
-			<to-view-id>/private/request/updatephoto.jsf</to-view-id>
+			<to-view-id>/private/request/update/photo.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		
 		<navigation-case>
 			<from-outcome>requestUpdateActOfAppointmentView</from-outcome>
-			<to-view-id>/private/request/updateactofappointment.jsf</to-view-id>
+			<to-view-id>/private/request/update/actofappointment.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>requestUpdateSignatureView</from-outcome>
+			<to-view-id>/private/request/update/signature.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>requestUpdateSignedRequestSheetView</from-outcome>
+			<to-view-id>/private/request/update/signedrequestsheet.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		

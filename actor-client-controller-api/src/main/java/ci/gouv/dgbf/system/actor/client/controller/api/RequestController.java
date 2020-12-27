@@ -38,4 +38,11 @@ public interface RequestController extends ControllerEntity<Request> {
 			return null;
 		return response.hasEntity() ? response.readEntity(byte[].class) : null;
 	}
+	
+	default byte[] getSignedRequestSheetByIdentifier(String identifier) {
+		Response response = RequestRepresentation.getProxy().getSignedRequestSheetByIdentifier(identifier);
+		if(response == null)
+			return null;
+		return response.hasEntity() ? response.readEntity(byte[].class) : null;
+	}
 }

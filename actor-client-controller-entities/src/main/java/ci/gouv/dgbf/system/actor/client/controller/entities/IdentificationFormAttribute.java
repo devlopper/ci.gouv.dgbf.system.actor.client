@@ -9,6 +9,7 @@ import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputB
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoice;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceOne;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceOneCombo;
+import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputText;
 import org.cyk.utility.client.controller.component.annotation.InputNumber;
 import org.cyk.utility.client.controller.data.AbstractDataIdentifiableSystemStringImpl;
 
@@ -27,6 +28,9 @@ public class IdentificationFormAttribute extends AbstractDataIdentifiableSystemS
 	@Input @InputChoice @InputChoiceOne @InputChoiceOneCombo @NotNull
 	private IdentificationAttribute attribute;
 	private String attributeAsString;
+	
+	@Input @InputText
+	private String name;
 	
 	@Input @InputNumber
 	private Integer orderNumber;
@@ -48,6 +52,7 @@ public class IdentificationFormAttribute extends AbstractDataIdentifiableSystemS
 	public static final String FIELD_FORM_AS_STRING = "formAsString";
 	public static final String FIELD_ATTRIBUTE = "attribute";
 	public static final String FIELD_ATTRIBUTE_AS_STRING = "attributeAsString";
+	public static final String FIELD_NAME = "name";
 	public static final String FIELD_ORDER_NUMBER = "orderNumber";
 	public static final String FIELD_REQUIRED = "required";
 	public static final String FIELD_REQUIRED_AS_STRING = "requiredAsString";
