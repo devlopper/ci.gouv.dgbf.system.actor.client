@@ -49,19 +49,14 @@ import lombok.Setter;
 @Named @ViewScoped @Getter @Setter
 public class RequestReadPage extends AbstractPageContainerManagedImpl implements Serializable {
 	
+	private RequestReadController controller;
 	private Request request;
-	private Layout layout;
-	private Layout commandsLayout;
-	private Layout textsLayout;
-	private Layout filesLayout;
 	
 	@Override
 	protected void __listenPostConstruct__() {
 		request = loadRequest();
 		super.__listenPostConstruct__();
-		commandsLayout = buildCommandsLayout(request, "requestEditView","requestReadView");
-		textsLayout = buildTextsLayout(request);
-		filesLayout = buildFilesLayout(request,"requestReadView");
+		controller = new RequestReadController(Boolean.TRUE,RequestEditPage.OUTCOME,OUTCOME, request);
 	}
 	
 	public static Request loadRequest() {
@@ -99,8 +94,7 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 			}
 			,CommandButton.FIELD_DISABLED,!ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_INITIALIZED.equals(request.getStatus().getCode())
 			),Cell.FIELD_WIDTH,10));
-		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_CELLS_PADDING_0,Boolean.TRUE
-				,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
+		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
 	}
 	
 	public static Layout buildTextsLayout(Request request) {
@@ -109,7 +103,14 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
 		Map<String,IdentificationAttribute> map = IdentificationForm.computeFieldsNames(request.getType().getForm(), Request.class);
 		addLabelValue(cellsMaps, "Type", request.getType().getName());
+		addLabelValue(cellsMaps, "Jeton d'accès", request.getAccessToken());
+		addLabelValue(cellsMaps, "Date de création", request.getCreationDateAsString());
 		addLabelValue(cellsMaps, "Statut", request.getStatus().getName());
+		if(ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType.CODE_DEMANDE_POSTES_BUDGETAIRES.equals(request.getType().getCode())) {
+			if(ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_ACCEPTED.equals(request.getStatus().getCode()))
+				addLabelValue(cellsMaps, "Fonction(s) budgétaire(s) accordée(s)", StringUtils.join(request.getBudgetariesScopeFunctionsGrantedAsStrings(),"<br/>"));
+		}
+			
 		map.forEach( (fieldName,attribute) -> {
 			Object value = FieldHelper.read(request, fieldName);
 			if(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS.equals(fieldName)) {
@@ -180,8 +181,7 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 						Redirector.getInstance().redirect(readOutcome,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(request.getIdentifier())));
 					}
 				}),Cell.FIELD_WIDTH,12));
-		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps
-				,Layout.ConfiguratorImpl.FIELD_CELLS_PADDING_0,Boolean.TRUE);
+		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
 	}
 	
 	public static void addLabelValue(Collection<Map<Object,Object>> cellsMaps,String label,String value) {
@@ -191,7 +191,8 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 	}
 	
 	public static void addLabelControl(Collection<Map<Object,Object>> cellsMaps,String label,Object control) {
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue(label+" : "),Cell.FIELD_WIDTH));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue(label+StringUtils.repeat("&nbsp;",2)+":"+StringUtils.repeat("&nbsp;",2))
+				.setEscape(Boolean.FALSE),Cell.FIELD_WIDTH));
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,control,Cell.FIELD_WIDTH));
 	}
 	
@@ -205,4 +206,6 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 			return default_;
 		return request.getTypeAsString();
 	}
+	
+	public static final String OUTCOME = "requestReadView";
 }

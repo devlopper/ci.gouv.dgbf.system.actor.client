@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
@@ -32,6 +31,8 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.Abstract
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AutoComplete;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputLabel;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputText;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityEditPageContainerManagedImpl;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.ActorController;
@@ -91,9 +92,9 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 		if(form.getEntity() == null || ((Request)form.getEntity()).getType() == null)
 			return default_;
 		if(Action.CREATE.equals(form.getAction()))
-			return "Saisie de nouvelle demande";
+			return "Saisie de nouvelle demande : "+((Request)form.getEntity()).getType().getName();
 		if(Action.UPDATE.equals(form.getAction()))
-			return "Modification de demande";
+			return "Modification de demande : "+((Request)form.getEntity()).getType().getName();
 		return default_;
 	}
 	
@@ -170,11 +171,7 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 		@Override
 		public void act(Form form) {
 			ThrowableHelper.throwIllegalArgumentExceptionIfNull("demande", request);
-			if(CollectionHelper.isEmpty(request.getBudgetariesScopeFunctions()))
-				request.setBudgetariesScopeFunctionsAsStrings(null);
-			else
-				request.setBudgetariesScopeFunctionsAsStrings(request.getBudgetariesScopeFunctions().stream().map(x -> x.getIdentifier()).collect(Collectors.toList()));			
-			request.setBudgetariesScopeFunctions(null);
+			request.writeBudgetariesScopeFunctionsIdentifiers();
 			String actionIdentifier = null;
 			if(Action.CREATE.equals(form.getAction()))
 				actionIdentifier = RequestBusiness.INITIALIZE;
@@ -196,6 +193,8 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 	public static class FormConfiguratorListener extends Form.ConfiguratorImpl.Listener.AbstractImpl {
 		protected Request request;
 		protected Map<String,IdentificationAttribute> fieldsNames;
+		protected Integer identificationBlockStartIndex=0,requestBlockStartIndex,currentIndex;
+		protected Boolean blocksShowable = Boolean.TRUE;
 		
 		public FormConfiguratorListener(Request request) {
 			this.request = request;
@@ -211,13 +210,17 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 			if(fieldsNames == null)
 				return null;
 			List<String> collection = new ArrayList<>(fieldsNames.keySet());
-			collection.add(0, Request.FIELD_TYPE);
+			//collection.add(0, Request.FIELD_TYPE);
 			return collection;
 		}
 		
 		@Override
 		public Map<Object, Object> getInputArguments(Form form, String fieldName) {
 			Map<Object, Object> map = super.getInputArguments(form, fieldName);
+			if(currentIndex == null)
+				currentIndex = 0;
+			else
+				currentIndex++;
 			IdentificationAttribute attribut = fieldsNames == null ? null : fieldsNames.get(fieldName);
 			if(attribut != null) {
 				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, attribut.getName());
@@ -248,6 +251,7 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
 				//map.put(AutoComplete.FIELD_READ_QUERY_IDENTIFIER, FunctionQuerier.QUERY_IDENTIFIER_);
 			}else if(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS.equals(fieldName)) {
+				requestBlockStartIndex = currentIndex;
 				map.put(AutoComplete.FIELD_ENTITY_CLASS, ScopeFunction.class);
 				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
 				map.put(AutoComplete.FIELD_MULTIPLE, Boolean.TRUE);
@@ -265,11 +269,42 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 		}
 		
 		@Override
+		public Map<Object, Object> getInputLabelCellArguments(Form form, AbstractInput<?> input, OutputLabel label) {
+			Map<Object, Object> arguments = super.getInputLabelCellArguments(form, input, label);
+			arguments.put(Cell.FIELD_WIDTH, 3);
+			return arguments;
+		}
+		
+		@Override
+		public Map<Object, Object> getInputCellArguments(Form form, AbstractInput<?> input) {
+			Map<Object, Object> arguments = super.getInputCellArguments(form, input);
+			arguments.put(Cell.FIELD_WIDTH, 9);
+			return arguments;
+		}
+		/*
+		@Override
 		protected Map<Integer, Cell> getLayoutArgumentsRowCellModel(Form form) {
 			Map<Integer, Cell> map = super.getLayoutArgumentsRowCellModel(form);
 			map.get(0).setWidth(3);
 			map.get(1).setWidth(9);
 			return map;
+		}*/
+		
+		@Override
+		public Map<Object, Object> getLayoutArguments(Form form, Collection<Map<Object, Object>> cellsArguments) {
+			Map<Object, Object> arguments = super.getLayoutArguments(form, cellsArguments);
+			if(Boolean.TRUE.equals(blocksShowable) && ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType.CODE_DEMANDE_POSTES_BUDGETAIRES.equals(request.getType().getCode())) {
+				String styleClass = "ui-panel-titlebar ui-widget-header ui-helper-clearfix ui-corner-all";
+				identificationBlockStartIndex = identificationBlockStartIndex * 2;
+				CollectionHelper.addElementAt(cellsArguments, identificationBlockStartIndex
+						, MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Identification"),Cell.FIELD_WIDTH,12
+								,Cell.FIELD_STYLE_CLASS,styleClass));
+				requestBlockStartIndex = requestBlockStartIndex * 2 + 1;
+				CollectionHelper.addElementAt(cellsArguments, requestBlockStartIndex
+						, MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Demande de fonction"),Cell.FIELD_WIDTH,12
+								,Cell.FIELD_STYLE_CLASS,styleClass));
+			}
+			return arguments;
 		}
 		
 		@Override
@@ -282,5 +317,5 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 	
 	/**/
 	
-		
+	public static final String OUTCOME = "requestReadView";	
 }

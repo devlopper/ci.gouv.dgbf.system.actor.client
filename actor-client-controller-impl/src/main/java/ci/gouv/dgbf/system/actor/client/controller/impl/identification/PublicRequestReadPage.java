@@ -1,7 +1,6 @@
 package ci.gouv.dgbf.system.actor.client.controller.impl.identification;
 
 import java.io.Serializable;
-import java.util.Collection;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
@@ -9,9 +8,9 @@ import javax.inject.Named;
 import org.cyk.utility.client.controller.web.jsf.Redirector;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.GraphicImage;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
+import ci.gouv.dgbf.system.actor.client.controller.impl.actor.RequestReadController;
 import ci.gouv.dgbf.system.actor.client.controller.impl.actor.RequestReadPage;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,12 +18,9 @@ import lombok.Setter;
 @Named @ViewScoped @Getter @Setter
 public class PublicRequestReadPage extends AbstractPageContainerManagedImpl implements IdentificationTheme,Serializable {
 
+	private RequestReadController controller;
 	private Request request;
 	private Layout layout;
-	private Layout commandsLayout;
-	private Layout textsLayout;
-	private Layout filesLayout;
-	private Collection<GraphicImage> files;
 	
 	@Override
 	protected void __listenPostConstruct__() {
@@ -32,9 +28,7 @@ public class PublicRequestReadPage extends AbstractPageContainerManagedImpl impl
 		if(request == null || request.getType() == null)
 			Redirector.getInstance().redirect(PublicRequestOpenPage.OUTCOME, null);
 		super.__listenPostConstruct__();
-		commandsLayout = RequestReadPage.buildCommandsLayout(request, PublicRequestEditPage.OUTCOME,OUTCOME);
-		textsLayout = RequestReadPage.buildTextsLayout(request);
-		filesLayout = RequestReadPage.buildFilesLayout(request,OUTCOME);
+		controller = new RequestReadController(Boolean.TRUE,PublicRequestEditPage.OUTCOME,OUTCOME, request);
 	}
 	
 	@Override

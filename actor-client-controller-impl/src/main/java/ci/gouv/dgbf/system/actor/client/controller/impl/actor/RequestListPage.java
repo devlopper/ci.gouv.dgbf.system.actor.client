@@ -74,7 +74,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 		*/
 		dataTable.addRecordMenuItemByArgumentsOpenViewInDialogRead();
 		//if(Boolean.TRUE.equals(lazyDataModelListener.getProcessingDateIsNullable()))
-			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog(RequestProcessPage.OUTCOME, MenuItem.FIELD_VALUE,"Traiter",MenuItem.FIELD_ICON,"fa fa-file");
+			dataTable.addRecordMenuItemByArgumentsNavigateToView(null,RequestProcessPage.OUTCOME, MenuItem.FIELD_VALUE,"Traiter",MenuItem.FIELD_ICON,"fa fa-file");
 		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();		
 		return dataTable;
 	}
@@ -158,4 +158,6 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 		public static final String FIELD_PROCESSING_DATE_IS_NULLABLE = "processingDateIsNullable";
 		public static final String FIELD_PROCESSING_DATE_IS_NOT_NULLABLE = "processingDateIsNotNullable";
 	}
+	
+	public static final String OUTCOME = "requestListView";
 }

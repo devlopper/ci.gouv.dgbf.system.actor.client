@@ -11,8 +11,15 @@
     <cyk:page value="#{requestProcessPage}">
     	<ui:define name="centerCenter">
     		<ui:decorate template="#{primefacesHelper.getModelTemplate(requestProcessPage.form.layout)}">
-    			<ui:param name="layout" value="#{requestProcessPage.form.layout}"/> 		
+    			<ui:param name="layout" value="#{requestProcessPage.form.layout}"/>
+    			
     		</ui:decorate>
+    		
+    		<p:separator/>
+	    	
+	    	<ui:include src="/private/request/read/__read__.xhtml">
+				<ui:param name="controller" value="#{requestProcessPage.readController}"/>
+			</ui:include>
     	</ui:define>
     </cyk:page>
 </html>

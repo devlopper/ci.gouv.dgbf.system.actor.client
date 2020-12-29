@@ -8,7 +8,11 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:cyk="http://primefaces.jsf.web.utility.cyk.org">
 	
-	<ui:include src="/private/request/read/__read__.xhtml">
-		<ui:param name="requestReadPage" value="#{publicRequestReadPage}"/>
-	</ui:include>
+	<cyk:page value="#{publicRequestReadPage}">
+    	<ui:define name="centerCenter">
+    		<ui:include src="/private/request/read/__read__.xhtml">
+    			<ui:param name="controller" value="#{publicRequestReadPage.controller}"/>
+    		</ui:include>
+    	</ui:define>
+    </cyk:page>
 </html>

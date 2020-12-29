@@ -3,9 +3,11 @@ package ci.gouv.dgbf.system.actor.client.controller.entities;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.object.__static__.controller.AbstractDataIdentifiableSystemStringIdentifiableBusinessStringImpl;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Choices;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Choices.Count;
@@ -40,6 +42,7 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	private String creationDateAsString;
 	private RequestStatus status;
 	private String statusAsString;
+	private String accessToken;
 	
 	/* Identity */
 	
@@ -84,6 +87,7 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	private Collection<String> budgetariesFunctionsAsStrings;
 	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceMany @InputChoiceManyAutoComplete private Collection<ScopeFunction> budgetariesScopeFunctions;
 	private Collection<String> budgetariesScopeFunctionsAsStrings;
+	private Collection<String> budgetariesScopeFunctionsGrantedAsStrings;
 	
 	/* Others */
 	
@@ -93,7 +97,8 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 		
 	private String processingDateAsString;	
 	@Input @InputChoiceOneRadio @NotNull private String treatment;
-	@Input @InputTextarea private String rejectionReason;
+	@Input @InputTextarea private String acceptationComment;
+	@Input @InputTextarea @NotNull private String rejectionReason;
 	
 	/* Report identifier */
 	
@@ -115,6 +120,14 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	
 	public Boolean hasSignedRequestSheet() {
 		return StringHelper.isNotBlank(signedRequestSheetIdentifier);
+	}
+	
+	public void writeBudgetariesScopeFunctionsIdentifiers() {
+		if(CollectionHelper.isEmpty(budgetariesScopeFunctions))
+			budgetariesScopeFunctionsAsStrings = null;
+		else
+			budgetariesScopeFunctionsAsStrings = budgetariesScopeFunctions.stream().map(x -> x.getIdentifier()).collect(Collectors.toList());
+		budgetariesScopeFunctions = null;
 	}
 	
 	/*---------------------------------------------------------------------------------------------*/
@@ -172,6 +185,8 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	public static final String FIELD_ACCOUNTING_HOLDER = "accountingHolder";
 	public static final String FIELD_BUDGETARIES_FUNCTIONS = "budgetariesFunctions";
 	public static final String FIELD_BUDGETARIES_SCOPE_FUNCTIONS = "budgetariesScopeFunctions";
+	public static final String FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRING = "budgetariesScopeFunctionsAsString";
+	public static final String FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRING = "budgetariesScopeFunctionsGrantedAsString";
 	
 	/* Others */
 	
@@ -182,6 +197,7 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	public static final String FIELD_PROCESSING_DATE = "processingDate";
 	public static final String FIELD_PROCESSING_DATE_AS_STRING = "processingDateAsString";
 	public static final String FIELD_TREATMENT = "treatment";
+	public static final String FIELD_ACCEPTATION_COMMENT = "acceptationComment";
 	public static final String FIELD_REJECTION_REASON = "rejectionReason";
 	
 	/**/
