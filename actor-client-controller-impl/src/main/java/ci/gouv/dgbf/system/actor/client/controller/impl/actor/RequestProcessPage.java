@@ -45,7 +45,8 @@ public class RequestProcessPage extends AbstractEntityEditPageContainerManagedIm
 	protected void __listenPostConstruct__() {
 		treatmentChoice = WebController.getInstance().getRequestParameter(PARAMETER_NAME_CHOICE);
 		super.__listenPostConstruct__();
-		readController = new RequestReadController(Boolean.FALSE,RequestEditPage.OUTCOME, OUTCOME,null);		
+		readController = new RequestReadController(Boolean.FALSE,RequestEditPage.OUTCOME, OUTCOME,RequestUpdatePhotoPage.OUTCOME,RequestUpdateActOfAppointmentPage.OUTCOME
+				,RequestUpdateSignedRequestSheetPage.OUTCOME,null);		
 		SelectOneRadio treatmentChoiceSelectOneRadio = form.getInput(SelectOneRadio.class, Request.FIELD_TREATMENT);
 		treatmentChoiceSelectOneRadio.enableChangeListener(List.of());
 	}
@@ -106,7 +107,6 @@ public class RequestProcessPage extends AbstractEntityEditPageContainerManagedIm
 				request.writeBudgetariesScopeFunctionsIdentifiers();
 			}else
 				actionIdentifier = RequestBusiness.REJECT;
-			System.out.println("RequestProcessPage.FormListener.act() ::: "+request.getBudgetariesScopeFunctionsAsStrings());
 			EntitySaver.getInstance().save(Request.class, new Arguments<Request>().setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
 						.setActionIdentifier(actionIdentifier)).addCreatablesOrUpdatables(request));
 			Redirector.getInstance().redirect(RequestListPage.OUTCOME, null);
@@ -153,7 +153,8 @@ public class RequestProcessPage extends AbstractEntityEditPageContainerManagedIm
 		@Override
 		public Map<Object,Object> getCommandButtonArguments(Form form,Collection<AbstractInput<?>> inputs) {
 			Map<Object,Object> map = super.getCommandButtonArguments(form, inputs);
-			MapHelper.writeByKey(map,CommandButton.FIELD_VALUE, ((Request)form.getEntity()).getTreatment());
+			//MapHelper.writeByKey(map,CommandButton.FIELD_VALUE, ((Request)form.getEntity()).getTreatment());
+			MapHelper.writeByKey(map,CommandButton.FIELD_VALUE, "Enregistrer");
 			return map;
 		}
 	}

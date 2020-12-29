@@ -184,8 +184,11 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 				request.setActOfAppointmentSignatureDateAsTimestamp(null);
 			else
 				request.setActOfAppointmentSignatureDateAsTimestamp(request.getActOfAppointmentSignatureDate().getTime());
-			EntitySaver.getInstance().save(Request.class, new Arguments<Request>().setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
-				.setActionIdentifier(actionIdentifier)).addCreatablesOrUpdatables(request));
+			Arguments<Request> arguments = new Arguments<Request>().setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+					.setActionIdentifier(actionIdentifier)).addCreatablesOrUpdatables(request);
+			EntitySaver.getInstance().save(Request.class,arguments);
+			String identifier = (String) arguments.get__response__().getHeaders().get(Request.FIELD_IDENTIFIER).get(0);
+			request.setIdentifier(identifier);
 		}
 	}
 	
@@ -293,17 +296,19 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 		@Override
 		public Map<Object, Object> getLayoutArguments(Form form, Collection<Map<Object, Object>> cellsArguments) {
 			Map<Object, Object> arguments = super.getLayoutArguments(form, cellsArguments);
-			if(Boolean.TRUE.equals(blocksShowable) && ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType.CODE_DEMANDE_POSTES_BUDGETAIRES.equals(request.getType().getCode())) {
-				String styleClass = "ui-panel-titlebar ui-widget-header ui-helper-clearfix ui-corner-all";
-				identificationBlockStartIndex = identificationBlockStartIndex * 2;
-				CollectionHelper.addElementAt(cellsArguments, identificationBlockStartIndex
-						, MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Identification"),Cell.FIELD_WIDTH,12
-								,Cell.FIELD_STYLE_CLASS,styleClass));
-				requestBlockStartIndex = requestBlockStartIndex * 2 + 1;
-				CollectionHelper.addElementAt(cellsArguments, requestBlockStartIndex
-						, MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Demande de fonction"),Cell.FIELD_WIDTH,12
-								,Cell.FIELD_STYLE_CLASS,styleClass));
-			}
+			if(request != null && request.getType() != null) {
+				if(Boolean.TRUE.equals(blocksShowable) && ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType.CODE_DEMANDE_POSTES_BUDGETAIRES.equals(request.getType().getCode())) {
+					String styleClass = "ui-panel-titlebar ui-widget-header ui-helper-clearfix ui-corner-all";
+					identificationBlockStartIndex = identificationBlockStartIndex * 2;
+					CollectionHelper.addElementAt(cellsArguments, identificationBlockStartIndex
+							, MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Identification"),Cell.FIELD_WIDTH,12
+									,Cell.FIELD_STYLE_CLASS,styleClass));
+					requestBlockStartIndex = requestBlockStartIndex * 2 + 1;
+					CollectionHelper.addElementAt(cellsArguments, requestBlockStartIndex
+							, MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Demande de fonction"),Cell.FIELD_WIDTH,12
+									,Cell.FIELD_STYLE_CLASS,styleClass));
+				}
+			}			
 			return arguments;
 		}
 		

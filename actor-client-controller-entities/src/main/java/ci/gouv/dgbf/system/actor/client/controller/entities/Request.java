@@ -106,6 +106,10 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	
 	/**/
 	
+	private Boolean isAdministrator;
+	
+	/**/
+	
 	public Boolean hasPhoto() {
 		return StringHelper.isNotBlank(photoIdentifier);
 	}
@@ -128,6 +132,10 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 		else
 			budgetariesScopeFunctionsAsStrings = budgetariesScopeFunctions.stream().map(x -> x.getIdentifier()).collect(Collectors.toList());
 		budgetariesScopeFunctions = null;
+	}
+	
+	public Boolean hasStatusInitialized() {
+		return ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_INITIALIZED.equals(status.getCode());
 	}
 	
 	/*---------------------------------------------------------------------------------------------*/

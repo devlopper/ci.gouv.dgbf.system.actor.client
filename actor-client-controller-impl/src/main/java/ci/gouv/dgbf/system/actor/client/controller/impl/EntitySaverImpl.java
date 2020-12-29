@@ -461,7 +461,7 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 		if(arguments != null && RequestBusiness.ACCEPT.equals(arguments.getActionIdentifier())) {
 			RequestDto request = (RequestDto) CollectionHelper.getFirst(updatables);
 			return ((RequestRepresentation)representation).acceptByIdentifier(request.getIdentifier(),request.getBudgetariesScopeFunctionsAsStrings()
-					,null);
+					,request.getComment(),null);
 		}
 		
 		if(arguments != null && RequestBusiness.REJECT.equals(arguments.getActionIdentifier())) {

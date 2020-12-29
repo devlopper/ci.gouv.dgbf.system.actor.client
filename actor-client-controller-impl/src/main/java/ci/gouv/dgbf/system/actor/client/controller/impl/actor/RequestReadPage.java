@@ -40,6 +40,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationAttrib
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationForm;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
 import ci.gouv.dgbf.system.actor.client.controller.impl.FileServletListenerImpl;
+import ci.gouv.dgbf.system.actor.client.controller.impl.identification.PublicRequestUpdateSignedRequestSheetPage;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.representation.api.RequestRepresentation;
@@ -56,7 +57,8 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 	protected void __listenPostConstruct__() {
 		request = loadRequest();
 		super.__listenPostConstruct__();
-		controller = new RequestReadController(Boolean.TRUE,RequestEditPage.OUTCOME,OUTCOME, request);
+		controller = new RequestReadController(Boolean.TRUE,RequestEditPage.OUTCOME,OUTCOME,RequestUpdatePhotoPage.OUTCOME,RequestUpdateActOfAppointmentPage.OUTCOME
+				,RequestUpdateSignedRequestSheetPage.OUTCOME, request);
 	}
 	
 	public static Request loadRequest() {
@@ -102,7 +104,7 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 			return null;
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
 		Map<String,IdentificationAttribute> map = IdentificationForm.computeFieldsNames(request.getType().getForm(), Request.class);
-		addLabelValue(cellsMaps, "Type", request.getType().getName());
+		addLabelValue(cellsMaps, "Code", request.getCode());
 		addLabelValue(cellsMaps, "Jeton d'accès", request.getAccessToken());
 		addLabelValue(cellsMaps, "Date de création", request.getCreationDateAsString());
 		addLabelValue(cellsMaps, "Statut", request.getStatus().getName());
@@ -125,7 +127,7 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 				,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
 	}
 	
-	public static Layout buildFilesLayout(Request request,String readOutcome) {
+	public static Layout buildFilesLayout(Request request,String readOutcome,String updatePhotoOutcome,String updateActOfAppointmentOutcome,String updateSignedRequestSheetOutcome) {
 		if(request == null || request.getType() == null)
 			return null;
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();		
@@ -134,9 +136,9 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 				GraphicImage.ConfiguratorImpl.FIELD_LABEL_OUTPUT_TEXT_VALUE,"Photo"
 				,GraphicImage.ConfiguratorImpl.FIELD_READ_URI
 				,!request.hasPhoto() ? null : UniformResourceIdentifierBuilder.getInstance().buildFromCurrentRequest(FileServlet.buildRelativeURI(request, FileServletListenerImpl.REQUEST_FILE_TYPE_PHOTO),null)
-				,GraphicImage.ConfiguratorImpl.FIELD_UPDATE_OUTCOME,RequestUpdatePhotoPage.OUTCOME
+				,GraphicImage.ConfiguratorImpl.FIELD_UPDATE_OUTCOME,updatePhotoOutcome
 				,GraphicImage.ConfiguratorImpl.FIELD_MASTER_IDENTIFIER,request.getIdentifier()
-				,GraphicImage.ConfiguratorImpl.FIELD_ENTITY_IDENTIFIER,request.getPhotoIdentifier()//,GraphicImage.ConfiguratorImpl.FIELD_DELETABLE,request.hasPhoto()
+				,GraphicImage.ConfiguratorImpl.FIELD_ENTITY_IDENTIFIER,request.getPhotoIdentifier()
 				,GraphicImage.FIELD_LISTENER,new GraphicImage.Listener.AbstractImpl() {
 					@Override
 					public void listenDelete(GraphicImage graphicImage) {
@@ -153,8 +155,8 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 				,!request.hasActOfAppointment() ? null : UniformResourceIdentifierBuilder.getInstance().buildFromCurrentRequest(FileServlet.buildRelativeURI(request, FileServletListenerImpl.REQUEST_FILE_TYPE_ACT_OF_APPOINTMENT),null)
 				//,GraphicImage.FIELD_LIBRARY,"image",GraphicImage.FIELD_NAME,"icon/text.png"
 				,GraphicImage.ConfiguratorImpl.FIELD_MASTER_IDENTIFIER,request.getIdentifier()
-				,GraphicImage.ConfiguratorImpl.FIELD_UPDATE_OUTCOME,RequestUpdateActOfAppointmentPage.OUTCOME
-				,GraphicImage.ConfiguratorImpl.FIELD_ENTITY_IDENTIFIER,request.getActOfAppointmentIdentifier()//,GraphicImage.ConfiguratorImpl.FIELD_DELETABLE,request.hasActOfAppointment()
+				,GraphicImage.ConfiguratorImpl.FIELD_UPDATE_OUTCOME,updateActOfAppointmentOutcome
+				,GraphicImage.ConfiguratorImpl.FIELD_ENTITY_IDENTIFIER,request.getActOfAppointmentIdentifier()
 				,GraphicImage.FIELD_LISTENER,new GraphicImage.Listener.AbstractImpl() {
 					@Override
 					public void listenDelete(GraphicImage graphicImage) {
@@ -169,15 +171,17 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 				,GraphicImage.ConfiguratorImpl.FIELD_IS_IMAGE,Boolean.FALSE
 				,GraphicImage.ConfiguratorImpl.FIELD_READ_URI
 				,!request.hasSignedRequestSheet() ? null : UniformResourceIdentifierBuilder.getInstance().buildFromCurrentRequest(FileServlet.buildRelativeURI(request, FileServletListenerImpl.REQUEST_FILE_TYPE_SIGNED_REQUEST_SHEET),null)
-				//,GraphicImage.FIELD_LIBRARY,"image",GraphicImage.FIELD_NAME,"icon/text.png"
-				,GraphicImage.ConfiguratorImpl.FIELD_UPDATE_OUTCOME,RequestUpdateSignedRequestSheetPage.OUTCOME
+				,GraphicImage.ConfiguratorImpl.FIELD_UPDATE_OUTCOME,updateSignedRequestSheetOutcome
 				,GraphicImage.ConfiguratorImpl.FIELD_MASTER_IDENTIFIER,request.getIdentifier()
-				,GraphicImage.ConfiguratorImpl.FIELD_ENTITY_IDENTIFIER,request.getSignedRequestSheetIdentifier()//,GraphicImage.ConfiguratorImpl.FIELD_DELETABLE,request.hasSignedRequestSheet()
+				,GraphicImage.ConfiguratorImpl.FIELD_ENTITY_IDENTIFIER,request.getSignedRequestSheetIdentifier()
 				,GraphicImage.FIELD_LISTENER,new GraphicImage.Listener.AbstractImpl() {
 					@Override
 					public void listenDelete(GraphicImage graphicImage) {
 						super.listenDelete(graphicImage);
-						RequestRepresentation.getProxy().recordSignedRequestSheetByIdentifier(request.getIdentifier(), null);		
+						if(RequestUpdateSignedRequestSheetPage.OUTCOME.equals(updateSignedRequestSheetOutcome)) {
+							RequestRepresentation.getProxy().recordSignedRequestSheetByIdentifierForAdmin(request.getIdentifier(), null);
+						}else if(PublicRequestUpdateSignedRequestSheetPage.OUTCOME.equals(updateSignedRequestSheetOutcome))
+							RequestRepresentation.getProxy().recordSignedRequestSheetByIdentifier(request.getIdentifier(), null);						
 						Redirector.getInstance().redirect(readOutcome,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(request.getIdentifier())));
 					}
 				}),Cell.FIELD_WIDTH,12));

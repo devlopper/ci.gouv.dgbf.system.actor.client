@@ -28,7 +28,7 @@ public class RequestUpdateSignedRequestSheetPage extends AbstractRequestUpdateFi
 	}
 	
 	@Override
-	protected Form __buildForm__() {		
+	protected Form __buildForm__() {
 		return buildForm(Form.FIELD_ACTION,Action.UPDATE,Form.FIELD_ENTITY,data);
 	}
 	
@@ -55,7 +55,7 @@ public class RequestUpdateSignedRequestSheetPage extends AbstractRequestUpdateFi
 		
 		@Override
 		protected void act(Form form, Request request) {
-			RequestRepresentation.getProxy().recordSignedRequestSheetByIdentifier(request.getIdentifier(), request.getSignedRequestSheet());
+			RequestRepresentation.getProxy().recordSignedRequestSheetByIdentifierForAdmin(request.getIdentifier(), request.getSignedRequestSheet());
 		}
 	}
 	

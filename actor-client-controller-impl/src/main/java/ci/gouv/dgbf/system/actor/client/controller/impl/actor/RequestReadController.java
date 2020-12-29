@@ -22,17 +22,17 @@ public class RequestReadController extends AbstractObject implements Serializabl
 	private Layout textsLayout;
 	private Layout filesLayout;
 
-	public RequestReadController(Boolean commandable,String editOutcome,String readOutcome,Request request) {
+	public RequestReadController(Boolean commandable,String editOutcome,String readOutcome,String updatePhotoOutcome,String updateActOfAppointmentOutcome,String updateSignedRequestSheetOutcome,Request request) {
 		if(request == null)
 			request = loadRequest();
 		if(Boolean.TRUE.equals(commandable))
 			commandsLayout = RequestReadPage.buildCommandsLayout(request, editOutcome,readOutcome);
 		textsLayout = RequestReadPage.buildTextsLayout(request);
-		filesLayout = RequestReadPage.buildFilesLayout(request,readOutcome);
+		filesLayout = RequestReadPage.buildFilesLayout(request,readOutcome,updatePhotoOutcome,updateActOfAppointmentOutcome,updateSignedRequestSheetOutcome);
 	}
 	
-	public RequestReadController(String editOutcome,String readOutcome) {
-		this(Boolean.TRUE,editOutcome,readOutcome,null);
+	public RequestReadController(String editOutcome,String readOutcome,String updatePhotoOutcome,String updateActOfAppointmentOutcome,String updateSignedRequestSheetOutcome) {
+		this(Boolean.TRUE,editOutcome,readOutcome,updatePhotoOutcome,updateActOfAppointmentOutcome,updateSignedRequestSheetOutcome,null);
 	}
 	
 	public static Request loadRequest() {

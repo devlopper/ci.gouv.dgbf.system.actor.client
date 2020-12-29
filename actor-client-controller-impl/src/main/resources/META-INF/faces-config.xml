@@ -200,6 +200,30 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>publicRequestUpdatePhotoView</from-outcome>
+			<to-view-id>/public/request/update/photo.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>publicRequestUpdateActOfAppointmentView</from-outcome>
+			<to-view-id>/public/request/update/actofappointment.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>publicRequestUpdateSignatureView</from-outcome>
+			<to-view-id>/public/request/update/signature.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>publicRequestUpdateSignedRequestSheetView</from-outcome>
+			<to-view-id>/public/request/update/signedrequestsheet.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>requestProcessView</from-outcome>
 			<to-view-id>/private/request/process.jsf</to-view-id>
 			<redirect />
