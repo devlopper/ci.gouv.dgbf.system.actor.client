@@ -276,6 +276,9 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 		public Map<Object, Object> getInputLabelCellArguments(Form form, AbstractInput<?> input, OutputLabel label) {
 			Map<Object, Object> arguments = super.getInputLabelCellArguments(form, input, label);
 			arguments.put(Cell.FIELD_WIDTH, 3);
+			if(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS.equals(input.getField().getName())) {
+				//arguments.put(Cell.FIELD_CONTROL, OutputText.buildFromValue(label.getValue()));
+			}
 			return arguments;
 		}
 		
@@ -283,6 +286,9 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 		public Map<Object, Object> getInputCellArguments(Form form, AbstractInput<?> input) {
 			Map<Object, Object> arguments = super.getInputCellArguments(form, input);
 			arguments.put(Cell.FIELD_WIDTH, 9);
+			if(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS.equals(input.getField().getName())) {
+				//arguments.put(Cell.FIELD_CONTROL_TEMPLATE, "/private/request/edit/__budgetariesscopefunctions__.xhtml");
+			}
 			return arguments;
 		}
 		/*

@@ -35,7 +35,7 @@ public interface IdentificationTheme {
 						model.addElement(item);
 						
 						item = new DefaultMenuItem("Ouvrir demande");
-						item.setOutcome("publicRequestReadView");
+						item.setOutcome("publicRequestOpenView");
 						model.addElement(item);
 						
 						item = new DefaultMenuItem("Obtenir jeton");

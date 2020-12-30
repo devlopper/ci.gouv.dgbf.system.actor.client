@@ -28,12 +28,13 @@ public class PublicRequestReadPage extends AbstractPageContainerManagedImpl impl
 		if(request == null || request.getType() == null)
 			Redirector.getInstance().redirect(PublicRequestOpenPage.OUTCOME, null);
 		super.__listenPostConstruct__();
-		controller = new RequestReadController(Boolean.TRUE,PublicRequestEditPage.OUTCOME,OUTCOME
-			,request.hasStatusInitialized() ? PublicRequestUpdatePhotoPage.OUTCOME : null
-			,request.hasStatusInitialized() ? PublicRequestUpdateActOfAppointmentPage.OUTCOME : null
-			,request.hasStatusInitialized() ? PublicRequestUpdateSignedRequestSheetPage.OUTCOME : null
+		if(request != null)
+			controller = new RequestReadController(Boolean.TRUE,PublicRequestEditPage.OUTCOME,OUTCOME
+			,Boolean.TRUE.equals(request.hasStatusInitialized()) ? PublicRequestUpdatePhotoPage.OUTCOME : null
+			,Boolean.TRUE.equals(request.hasStatusInitialized()) ? PublicRequestUpdateActOfAppointmentPage.OUTCOME : null
+			,Boolean.TRUE.equals(request.hasStatusInitialized()) ? PublicRequestUpdateSignedRequestSheetPage.OUTCOME : null
 			,request
-		);
+			);
 	}
 	
 	@Override

@@ -11,7 +11,22 @@
     <cyk:page value="#{publicRequestEditPage}">
     	<ui:define name="centerCenter">
     		<ui:decorate template="#{primefacesHelper.getModelTemplate(publicRequestEditPage.form.layout)}">
-    			<ui:param name="layout" value="#{publicRequestEditPage.form.layout}"/> 		
+    			<ui:param name="layout" value="#{publicRequestEditPage.form.layout}"/>
+    			<!--
+    			<ui:define name="cells">
+    				<ui:decorate template="/layout/cells.xhtml">
+    					
+    				</ui:decorate>
+    			</ui:define>
+    			-->
+    			<!--
+    			<ui:define name="cell28">
+    				THIS IS MY LABEL
+    			</ui:define>
+    			<ui:define name="cell29">
+    				THIS IS MY CONTROL
+    			</ui:define>
+    			-->
     		</ui:decorate>
     	</ui:define>
     </cyk:page>
