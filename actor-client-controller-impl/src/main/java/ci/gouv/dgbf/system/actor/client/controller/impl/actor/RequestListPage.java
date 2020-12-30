@@ -53,7 +53,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			lazyDataModelListener = new LazyDataModelListenerImpl();
 		//Class<?> pageClass = (Class<?>) MapHelper.readByKey(arguments, RequestListPage.class);
 		List<String> columnsFieldsNames = new ArrayList<>();
-		columnsFieldsNames.addAll(List.of(Request.FIELD_CODE,Request.FIELD_TYPE_AS_STRING,Request.FIELD_CREATION_DATE_AS_STRING,Request.FIELD_STATUS_AS_STRING
+		columnsFieldsNames.addAll(List.of(Request.FIELD_CODE/*,Request.FIELD_TYPE_AS_STRING*/,Request.FIELD_CREATION_DATE_AS_STRING,Request.FIELD_STATUS_AS_STRING
 				,Request.FIELD_PROCESSING_DATE_AS_STRING));
 		//columnsFieldsNames.addAll(0, List.of(Request.FIELD_NAMES));
 			//if(Boolean.TRUE.equals(lazyDataModelListener.getProcessingDateIsNotNullable()))
@@ -73,6 +73,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 		}
 		*/
 		dataTable.addRecordMenuItemByArgumentsOpenViewInDialogRead();
+		//dataTable.addRecordMenuItemByArgumentsNavigateToViewRead();
 		//if(Boolean.TRUE.equals(lazyDataModelListener.getProcessingDateIsNullable()))
 			dataTable.addRecordMenuItemByArgumentsNavigateToView(null,RequestProcessPage.OUTCOME, MenuItem.FIELD_VALUE,"Traiter",MenuItem.FIELD_ICON,"fa fa-file");
 		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();		
@@ -111,6 +112,8 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			}else if(Request.FIELD_STATUS_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Statut");
 				map.put(Column.FIELD_WIDTH, "130");
+			}else if(Request.FIELD_CODE.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Numéro");
 			}
 			return map;
 		}

@@ -249,12 +249,13 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 			}else if(Request.FIELD_ADMINISTRATIVE_UNIT.equals(fieldName)) {
 				map.put(AutoComplete.FIELD_ENTITY_CLASS, AdministrativeUnit.class);
 				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
+				requestBlockStartIndex = currentIndex;
 			}else if(Request.FIELD_BUDGETARIES_FUNCTIONS.equals(fieldName)) {
 				map.put(AutoComplete.FIELD_ENTITY_CLASS, Function.class);
 				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
 				//map.put(AutoComplete.FIELD_READ_QUERY_IDENTIFIER, FunctionQuerier.QUERY_IDENTIFIER_);
 			}else if(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS.equals(fieldName)) {
-				requestBlockStartIndex = currentIndex;
+				//requestBlockStartIndex = currentIndex;
 				map.put(AutoComplete.FIELD_ENTITY_CLASS, ScopeFunction.class);
 				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
 				map.put(AutoComplete.FIELD_MULTIPLE, Boolean.TRUE);

@@ -104,7 +104,7 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 			return null;
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
 		Map<String,IdentificationAttribute> map = IdentificationForm.computeFieldsNames(request.getType().getForm(), Request.class);
-		addLabelValue(cellsMaps, "Code", request.getCode());
+		addLabelValue(cellsMaps, "Numéro", request.getCode());
 		addLabelValue(cellsMaps, "Jeton d'accès", request.getAccessToken());
 		addLabelValue(cellsMaps, "Date de création", request.getCreationDateAsString());
 		addLabelValue(cellsMaps, "Statut", request.getStatus().getName());
