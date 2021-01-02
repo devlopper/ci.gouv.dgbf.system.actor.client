@@ -71,7 +71,8 @@ public class FunctionEditPage extends AbstractEntityEditPageContainerManagedImpl
 	public static class FormConfiguratorListenerImpl extends Form.ConfiguratorImpl.Listener.AbstractImpl implements Serializable {
 		@Override
 		public Collection<String> getFieldsNames(Form form) {
-			return CollectionHelper.listOf(Function.FIELD_CODE,Function.FIELD_NAME,Function.FIELD_SHARED);
+			return CollectionHelper.listOf(Function.FIELD_CODE,Function.FIELD_NAME//,Function.FIELD_SCOPE_FUNCTION_CODE_SCRIPT,Function.FIELD_SCOPE_FUNCTION_NAME_SCRIPT
+					,Function.FIELD_SHARED);
 		}
 		
 		@Override
@@ -83,6 +84,10 @@ public class FunctionEditPage extends AbstractEntityEditPageContainerManagedImpl
 				map.put(AutoComplete.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Libellé");
 			}else if(Function.FIELD_SHARED.equals(fieldName)) {
 				map.put(AbstractInputChoice.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Les postes à créer sont partageable par plusieurs acteurs ?");
+			}else if(Function.FIELD_SCOPE_FUNCTION_CODE_SCRIPT.equals(fieldName)) {
+				map.put(AbstractInputChoice.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Script de génération du code du poste");
+			}else if(Function.FIELD_SCOPE_FUNCTION_NAME_SCRIPT.equals(fieldName)) {
+				map.put(AbstractInputChoice.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Script de génération du libellé du poste");
 			}
 			return map;
 		}

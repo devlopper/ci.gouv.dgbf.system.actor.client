@@ -31,6 +31,8 @@ public class Function extends AbstractDataIdentifiableSystemStringIdentifiableBu
 	private Collection<ScopeType> scopeTypes;
 	@Input @InputBoolean @InputBooleanButton private Boolean shared;
 	private String sharedAsString;
+	//@Input @InputTextarea private String scopeFunctionCodeScript;
+	//@Input @InputTextarea private String scopeFunctionNameScript;
 	
 	@Override
 	public String toString() {
@@ -46,4 +48,6 @@ public class Function extends AbstractDataIdentifiableSystemStringIdentifiableBu
 	public static final String FIELD_NUMBER_OF_ACTOR_PER_SCOPE = "numberOfActorPerScope";
 	public static final String FIELD_SHARED = "shared";
 	public static final String FIELD_SHARED_AS_STRING = "sharedAsString";
+	public static final String FIELD_SCOPE_FUNCTION_CODE_SCRIPT = "scopeFunctionCodeScript";
+	public static final String FIELD_SCOPE_FUNCTION_NAME_SCRIPT = "scopeFunctionNameScript";
 }

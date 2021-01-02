@@ -26,17 +26,21 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	private static final long serialVersionUID = 1L;
 	
 	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceOneAutoComplete private Scope scope;
-	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceManyAutoComplete private Collection<Scope> scopes;
-	@Input @InputChoice @InputChoiceOne @InputChoiceOneRadio private ScopeType scopeType;
 	private String scopeAsString;
+	@Input @InputChoice @InputChoiceOne @InputChoiceOneRadio private ScopeType scopeType;	
+	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceManyAutoComplete private Collection<Scope> scopes;
+	
 	@Input @InputChoice @InputChoiceOne @InputChoiceOneCombo private Function function;
 	private String functionAsString;
-	private Integer numberOfActor;
-	@Input @InputBoolean @InputBooleanButton private Boolean shared;
-	private String sharedAsString;	
 	private Collection<String> functionsIdentifiers;
-	//private String parentIdentifier;
-	//@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceOneAutoComplete private ScopeFunction parent;
+	
+	@Input @InputChoice @InputChoiceOne @InputChoiceOneCombo private Locality locality;
+	private String localityAsString;
+	
+	private Integer numberOfActor;
+	
+	@Input @InputBoolean @InputBooleanButton private Boolean shared;	
+	private String sharedAsString;	
 	
 	@Override
 	public String toString() {
@@ -45,12 +49,19 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	
 	public static final String FIELD_SCOPE = "scope";
 	public static final String FIELD_SCOPES = "scopes";
-	public static final String FIELD_FUNCTION = "function";
 	public static final String FIELD_SCOPE_TYPE = "scopeType";
 	public static final String FIELD_SCOPE_AS_STRING = "scopeAsString";
+	
+	public static final String FIELD_FUNCTION = "function";
 	public static final String FIELD_FUNCTION_AS_STRING = "functionAsString";
+	
+	public static final String FIELD_LOCALITY = "locality";
+	public static final String FIELD_LOCALITY_AS_STRING = "localityAsString";
+	
 	public static final String FIELD_NUMBER_OF_ACTOR = "numberOfActor";
+	
 	public static final String FIELD_SHARED = "shared";
 	public static final String FIELD_SHARED_AS_STRING = "sharedAsString";
+	
 	public static final String FIELD_PARENT_IDENTIFIER = "parentIdentifier";
 }
