@@ -1,9 +1,12 @@
 package ci.gouv.dgbf.system.actor.client.controller.impl.scope;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
@@ -11,6 +14,7 @@ import javax.inject.Named;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.Arguments;
+import org.cyk.utility.__kernel__.controller.EntityReader;
 import org.cyk.utility.__kernel__.controller.EntitySaver;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
@@ -33,9 +37,11 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityL
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
+import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeTypeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.impl.Helper;
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeFunctionQuerier;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -73,13 +79,20 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 			arguments = new HashMap<>();
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, ScopeFunction.class);
-		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, CollectionHelper.listOf(
-				ScopeFunction.FIELD_SCOPE_AS_STRING,ScopeFunction.FIELD_FUNCTION_AS_STRING,ScopeFunction.FIELD_CODE
-				,ScopeFunction.FIELD_NAME,ScopeFunction.FIELD_SHARED_AS_STRING));
+		String functionIdentifier = (String) MapHelper.readByKey(arguments, FieldHelper.join(ScopeFunction.FIELD_FUNCTION,Function.FIELD_IDENTIFIER));
+		Collection<String> columnsNames = new ArrayList<>();
+		columnsNames.addAll(List.of(ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME,ScopeFunction.FIELD_SCOPE_AS_STRING));
+		if(StringHelper.isBlank(functionIdentifier))
+			columnsNames.addAll(List.of(ScopeFunction.FIELD_FUNCTION_AS_STRING));
+		columnsNames.addAll(List.of(ScopeFunction.FIELD_SHARED_AS_STRING));
+		
+		
+		//Function function = StringHelper.isBlank(functionIdentifier) ? null : __inject__(FunctionController.class).readBySystemIdentifier(functionIdentifier);
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, columnsNames);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
-		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl());
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl().setFunctionIdentifier(functionIdentifier));
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl()
-				.setFunctionIdentifier((String) MapHelper.readByKey(arguments, FieldHelper.join(ScopeFunction.FIELD_FUNCTION,Function.FIELD_IDENTIFIER))));
+				.setFunctionIdentifier(functionIdentifier));
 		DataTable dataTable = DataTable.build(arguments);
 		if(Boolean.TRUE.equals(MapHelper.readByKey(arguments, ScopeFunctionListPage.class))) {
 			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();
@@ -149,6 +162,7 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 	
 	@Getter @Setter @Accessors(chain=true)
 	public static class DataTableListenerImpl extends DataTable.Listener.AbstractImpl implements Serializable {
+		private String functionIdentifier;
 		
 		@Override
 		public Map<Object, Object> getColumnArguments(AbstractDataTable dataTable, String fieldName) {
@@ -156,7 +170,7 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 			map.put(Column.ConfiguratorImpl.FIELD_EDITABLE, Boolean.FALSE);
 			if(ScopeFunction.FIELD_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Code");
-				map.put(Column.FIELD_WIDTH, "150");
+				map.put(Column.FIELD_WIDTH, "75");
 				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
 			}else if(ScopeFunction.FIELD_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Libellé");
@@ -164,9 +178,19 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 			}else if(ScopeFunction.FIELD_SHARED_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Partagé");
 				map.put(Column.FIELD_WIDTH, "100");
-			}else if(ScopeFunction.FIELD_SCOPE_AS_STRING.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Domaine");
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
+			}else if(ScopeFunction.FIELD_SCOPE_AS_STRING.equals(fieldName)) {
+				Collection<ScopeTypeFunction> scopeTypeFunctions = EntityReader.getInstance().readMany(ScopeTypeFunction.class, ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_READ_BY_FUNCTIONS_IDENTIFIERS
+						,ScopeTypeFunctionQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS, List.of(functionIdentifier));
+				String name;
+				if(CollectionHelper.isEmpty(scopeTypeFunctions))
+					name = "Domaine";
+				else
+					name = scopeTypeFunctions.stream().map(x -> x.getScopeType().getName()).collect(Collectors.joining(" / "));
+				map.put(Column.FIELD_HEADER_TEXT, name);
+				map.put(Column.FIELD_VISIBLE, Boolean.TRUE);
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, ScopeFunctionQuerier.PARAMETER_NAME_SCOPE_CODE_NAME);
 			}else if(ScopeFunction.FIELD_FUNCTION_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Fonction");
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
@@ -198,6 +222,8 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 			Filter.Dto filter =  super.instantiateFilter(lazyDataModel);
 			if(filter == null)
 				filter = new Filter.Dto();
+			//filter.addField(ScopeFunctionQuerier.PARAMETER_NAME_SCOPE_CODE_NAME, lazyDataModel.get__filters__().get("scope"));
+			//filter.addField(ScopeFunctionQuerier.PARAMETER_NAME_SCOPE_NAME, lazyDataModel.get__filters__().get("scope"));
 			if(StringHelper.isNotBlank(functionIdentifier))
 				filter.addField(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER, functionIdentifier);
 			return filter;

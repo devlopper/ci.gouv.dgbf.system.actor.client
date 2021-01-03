@@ -17,16 +17,11 @@ import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoiceOne;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputText;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
@@ -40,6 +35,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 
 	private Layout layout;
 	private TabMenu tabMenu;
+	private String functionIdentifier;
 	
 	@Override
 	protected void __listenPostConstruct__() {		
@@ -55,7 +51,34 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		Collection<MenuItem> tabMenuItems = new ArrayList<>();
 		for(TabMenu.Tab tab : TABS)
 			tabMenuItems.add(new MenuItem().setValue(tab.getName()).addParameter(TabMenu.Tab.PARAMETER_NAME, tab.getParameterValue()));	
-		tabMenu = TabMenu.build(TabMenu.ConfiguratorImpl.FIELD_ITEMS_OUTCOME,"affectationView",TabMenu.FIELD_ACTIVE_INDEX,TabMenu.Tab.getIndexOf(TABS, selectedTab)
+		tabMenu = TabMenu.build(TabMenu.ConfiguratorImpl.FIELD_ITEMS_OUTCOME,OUTCOME,TabMenu.FIELD_ACTIVE_INDEX,TabMenu.Tab.getIndexOf(TABS, selectedTab)
+				,TabMenu.ConfiguratorImpl.FIELD_ITEMS,tabMenuItems);
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,tabMenu,Cell.FIELD_WIDTH,12));
+		
+		buildFunctionsTabMenu(cellsMaps);
+	}
+	
+	private void buildFunctionsTabMenu(Collection<Map<Object,Object>> cellsMaps) {		
+		Collection<Function> functions = EntityReader.getInstance().readMany(Function.class, FunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE_FOR_UI);
+		if(CollectionHelper.isEmpty(functions))
+			return;
+		functionIdentifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(Function.class));
+		if(StringHelper.isBlank(functionIdentifier))
+			functionIdentifier = CollectionHelper.getFirst(functions).getIdentifier();		
+		Collection<MenuItem> tabMenuItems = new ArrayList<>();
+		Integer tabActiveIndex = null,index = 0;
+		for(Function function : functions) {
+			tabMenuItems.add(new MenuItem().setValue(function.toString())
+				.addParameter(TabMenu.Tab.PARAMETER_NAME, TabMenu.Tab.getByParameterValue(TABS, TAB_SCOPE_FUNCTION).getParameterValue())
+				.addParameter(ParameterName.stringify(Function.class), function.getIdentifier())
+			);
+			if(function.getIdentifier().equals(functionIdentifier))
+				tabActiveIndex = index;
+			else
+				index++;
+		}
+		
+		TabMenu tabMenu = TabMenu.build(TabMenu.ConfiguratorImpl.FIELD_ITEMS_OUTCOME,OUTCOME,TabMenu.FIELD_ACTIVE_INDEX,tabActiveIndex
 				,TabMenu.ConfiguratorImpl.FIELD_ITEMS,tabMenuItems);
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,tabMenu,Cell.FIELD_WIDTH,12));
 	}
@@ -68,14 +91,15 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	}
 	
 	private void buildTabScopeFunction(Collection<Map<Object,Object>> cellsMaps) {
-		String functionIdentifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(Function.class));
+		/*String functionIdentifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(Function.class));
 		Collection<Function> functions = EntityReader.getInstance().readMany(Function.class, FunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE_FOR_UI);
 		if(StringHelper.isBlank(functionIdentifier) && CollectionHelper.isNotEmpty(functions))
 			functionIdentifier = CollectionHelper.getFirst(functions).getIdentifier();
-		DataTable dataTable = ScopeFunctionListPage.buildDataTable(ScopeFunctionListPage.class,Boolean.TRUE,FieldHelper.join(ScopeFunction.FIELD_FUNCTION,Function.FIELD_IDENTIFIER)
-				,functionIdentifier);
-		dataTable.setTitle(OutputText.buildFromValue("Liste des postes"));
-		SelectOneCombo functionSelectOneCombo = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,Function.class,SelectOneCombo.FIELD_CHOICES,functions);
+		*/
+		DataTable dataTable = ScopeFunctionListPage.buildDataTable(ScopeFunctionListPage.class,Boolean.TRUE
+				,FieldHelper.join(ScopeFunction.FIELD_FUNCTION,Function.FIELD_IDENTIFIER),functionIdentifier);
+		//dataTable.setTitle(OutputText.buildFromValue("Liste des postes"));
+		/*SelectOneCombo functionSelectOneCombo = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,Function.class,SelectOneCombo.FIELD_CHOICES,functions);
 		functionSelectOneCombo.selectBySystemIdentifier(functionIdentifier);
 		functionSelectOneCombo.enableValueChangeListener(new AbstractInputChoiceOne.ValueChangeListener() {
 			@SuppressWarnings("unchecked")
@@ -86,7 +110,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 			}
 		}, List.of(dataTable));		
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Fonction"),Cell.FIELD_WIDTH,1));	
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,functionSelectOneCombo,Cell.FIELD_WIDTH,11));	
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,functionSelectOneCombo,Cell.FIELD_WIDTH,11));*/
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
 	}
 	
@@ -113,4 +137,6 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		new TabMenu.Tab("Poste",TAB_SCOPE_FUNCTION)
 		,new TabMenu.Tab("Ligne budgétaire",TAB_EXECUTION_IMPUTATION)
 	);
+	
+	public static final String OUTCOME = "affectationView";
 }
