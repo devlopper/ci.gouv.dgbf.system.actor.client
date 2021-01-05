@@ -187,7 +187,7 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 					name = "Domaine";
 				else
 					name = scopeTypeFunctions.stream().map(x -> x.getScopeType().getName()).collect(Collectors.joining(" / "));
-				map.put(Column.FIELD_HEADER_TEXT, name);
+				map.put(Column.FIELD_HEADER_TEXT, String.format("Champ d'action (%s)",name));
 				map.put(Column.FIELD_VISIBLE, Boolean.TRUE);
 				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
 				map.put(Column.FIELD_FILTER_BY, ScopeFunctionQuerier.PARAMETER_NAME_SCOPE_CODE_NAME);

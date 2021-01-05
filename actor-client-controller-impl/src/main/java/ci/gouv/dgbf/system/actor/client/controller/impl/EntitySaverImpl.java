@@ -129,6 +129,12 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				arguments.setRepresentation(ScopeFunctionRepresentation.getProxy());
 			else if(ScopeFunctionBusiness.DELETE_BY_FUNCTIONS_IDENTIFIERS.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ScopeFunctionRepresentation.getProxy());
+			else if(ScopeFunctionBusiness.DERIVE_HOLDERS_AND_ASSISTANTS_BY_HOLDERS_FUNCTIONS_IDENTIFIERS.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ScopeFunctionRepresentation.getProxy());
+			else if(ScopeFunctionBusiness.CODIFY_HOLDERS_AND_ASSISTANTS_BY_HOLDERS_FUNCTIONS_IDENTIFIERS.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ScopeFunctionRepresentation.getProxy());
+			else if(ScopeFunctionBusiness.DELETE_HOLDERS_AND_ASSISTANTS_BY_HOLDERS_FUNCTIONS_IDENTIFIERS.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ScopeFunctionRepresentation.getProxy());
 			
 			else if(ScopeFunctionBusiness.SAVE.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ScopeFunctionRepresentation.getProxy());
@@ -407,6 +413,15 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 		
 		if(arguments != null && ScopeFunctionBusiness.DELETE_BY_FUNCTIONS_IDENTIFIERS.equals(arguments.getActionIdentifier()))
 			return ((ScopeFunctionRepresentation)representation).deleteByFunctionsIdentifiers(((ScopeFunctionDto) CollectionHelper.getFirst(creatables)).getFunctionsIdentifiers());
+		
+		if(arguments != null && ScopeFunctionBusiness.DERIVE_HOLDERS_AND_ASSISTANTS_BY_HOLDERS_FUNCTIONS_IDENTIFIERS.equals(arguments.getActionIdentifier()))
+			return ((ScopeFunctionRepresentation)representation).deriveHoldersAndAssistantsByHoldersFunctionsIdentifiers(((ScopeFunctionDto) CollectionHelper.getFirst(creatables)).getFunctionsIdentifiers());
+		
+		if(arguments != null && ScopeFunctionBusiness.CODIFY_HOLDERS_AND_ASSISTANTS_BY_HOLDERS_FUNCTIONS_IDENTIFIERS.equals(arguments.getActionIdentifier()))
+			return ((ScopeFunctionRepresentation)representation).codifyHoldersAndAssistantsByHoldersFunctionsIdentifiers(((ScopeFunctionDto) CollectionHelper.getFirst(creatables)).getFunctionsIdentifiers());
+		
+		if(arguments != null && ScopeFunctionBusiness.DELETE_HOLDERS_AND_ASSISTANTS_BY_HOLDERS_FUNCTIONS_IDENTIFIERS.equals(arguments.getActionIdentifier()))
+			return ((ScopeFunctionRepresentation)representation).deleteHoldersAndAssistantsByHoldersFunctionsIdentifiers(((ScopeFunctionDto) CollectionHelper.getFirst(creatables)).getFunctionsIdentifiers());
 		
 		if(arguments != null && ScopeFunctionBusiness.SAVE.equals(arguments.getActionIdentifier())) {
 			if(CollectionHelper.isEmpty(creatables) && CollectionHelper.isEmpty(updatables))

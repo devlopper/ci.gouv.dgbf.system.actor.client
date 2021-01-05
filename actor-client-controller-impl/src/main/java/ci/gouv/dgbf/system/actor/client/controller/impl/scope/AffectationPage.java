@@ -55,7 +55,8 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 				,TabMenu.ConfiguratorImpl.FIELD_ITEMS,tabMenuItems);
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,tabMenu,Cell.FIELD_WIDTH,12));
 		
-		buildFunctionsTabMenu(cellsMaps);
+		if(selectedTab != null && selectedTab.getParameterValue().equals(TAB_SCOPE_FUNCTION))
+			buildFunctionsTabMenu(cellsMaps);
 	}
 	
 	private void buildFunctionsTabMenu(Collection<Map<Object,Object>> cellsMaps) {		

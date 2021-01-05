@@ -58,6 +58,13 @@
 		<view-id value="/private/cluster/administrationdomains.jsf" />
 	</url-mapping>
 	
+	<!-- Request -->
+	
+	<url-mapping id="demande_fonctions_budgetaires">
+		<pattern value="/public/demande_fonctions_budgetaires.jsf" />
+		<view-id value="/public/request/edit/index.jsf" />
+	</url-mapping>
+	
 	<!--  -->
 	
 	<url-mapping id="mon_compte">
