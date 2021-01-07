@@ -51,6 +51,7 @@ public class Assignments extends AbstractDataIdentifiableSystemStringImpl implem
 	private Filter.Dto filter;
 	private Collection<String> overridablesFieldsNames;
 	private Collection<Function> functions;
+	private Boolean overridable;
 	
 	/**/
 	

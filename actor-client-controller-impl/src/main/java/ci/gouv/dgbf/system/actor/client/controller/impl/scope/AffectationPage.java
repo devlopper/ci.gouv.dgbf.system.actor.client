@@ -3,6 +3,8 @@ package ci.gouv.dgbf.system.actor.client.controller.impl.scope;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -61,6 +63,12 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	
 	private void buildFunctionsTabMenu(Collection<Map<Object,Object>> cellsMaps) {		
 		Collection<Function> functions = EntityReader.getInstance().readMany(Function.class, FunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE_FOR_UI);
+		Collections.sort((List<Function>)functions, new Comparator<Function>() {
+			@Override
+			public int compare(Function f1, Function f2) {
+				return FUNCTIONS_ORDERS_INDEXES.get(f1.getCode()).compareTo(FUNCTIONS_ORDERS_INDEXES.get(f2.getCode()));
+			}
+		});
 		if(CollectionHelper.isEmpty(functions))
 			return;
 		functionIdentifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(Function.class));
@@ -69,7 +77,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		Collection<MenuItem> tabMenuItems = new ArrayList<>();
 		Integer tabActiveIndex = null,index = 0;
 		for(Function function : functions) {
-			tabMenuItems.add(new MenuItem().setValue(function.toString())
+			tabMenuItems.add(new MenuItem().setValue(function.getName())
 				.addParameter(TabMenu.Tab.PARAMETER_NAME, TabMenu.Tab.getByParameterValue(TABS, TAB_SCOPE_FUNCTION).getParameterValue())
 				.addParameter(ParameterName.stringify(Function.class), function.getIdentifier())
 			);
@@ -140,4 +148,14 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	);
 	
 	public static final String OUTCOME = "affectationView";
+	public static Map<String,Integer> FUNCTIONS_ORDERS_INDEXES = Map.of(
+		ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER,0
+		,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_ASSISTANT,1
+		,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_HOLDER,2
+		,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_ASSISTANT,3
+		,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_HOLDER,4
+		,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_ASSISTANT,5
+		,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_HOLDER,6
+		,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_ASSISTANT,7
+	);
 }

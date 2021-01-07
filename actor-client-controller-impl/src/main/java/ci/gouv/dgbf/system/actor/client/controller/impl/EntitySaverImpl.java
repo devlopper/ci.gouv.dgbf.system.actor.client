@@ -18,6 +18,7 @@ import ci.gouv.dgbf.system.actor.server.business.api.ActorBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.AssignmentsBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.ExecutionImputationBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.IdentificationFormAttributeBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileFunctionBusiness;
@@ -31,6 +32,7 @@ import ci.gouv.dgbf.system.actor.server.representation.api.ActorProfileRepresent
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorScopeRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.AssignmentsRepresentation;
+import ci.gouv.dgbf.system.actor.server.representation.api.ExecutionImputationRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.IdentificationFormAttributeRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfileFunctionRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfilePrivilegeRepresentation;
@@ -150,6 +152,12 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				arguments.setRepresentation(AssignmentsRepresentation.getProxy());
 			else if(AssignmentsBusiness.DELETE_ALL.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(AssignmentsRepresentation.getProxy());
+			else if(AssignmentsBusiness.DERIVE_ALL_VALUES.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(AssignmentsRepresentation.getProxy());
+			
+			else if(ExecutionImputationBusiness.REFRESH_MATERIALIZED_VIEW.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ExecutionImputationRepresentation.getProxy());
+			
 		}
 		
 		if(arguments.getRepresentation() == null && StringHelper.isNotBlank(arguments.getRepresentationArguments().getActionIdentifier())) {
@@ -449,6 +457,11 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 			if(CollectionHelper.isEmpty(collection))
 				throw new RuntimeException("Affectations obligatoire");
 			return ((AssignmentsRepresentation)representation).saveScopeFunctions((List<AssignmentsDto>) collection);
+		}
+		if(arguments != null && AssignmentsBusiness.DERIVE_ALL_VALUES.equals(arguments.getActionIdentifier())) {
+			AssignmentsDto assignments = (AssignmentsDto) CollectionHelper.getFirst(creatables);
+			Boolean overridable = assignments == null ? null : assignments.getOverridable();
+			return ((AssignmentsRepresentation)representation).deriveAllValues(overridable);
 		}
 		if(arguments != null && AssignmentsBusiness.DELETE_ALL.equals(arguments.getActionIdentifier()))
 			return ((AssignmentsRepresentation)representation).deleteAll();

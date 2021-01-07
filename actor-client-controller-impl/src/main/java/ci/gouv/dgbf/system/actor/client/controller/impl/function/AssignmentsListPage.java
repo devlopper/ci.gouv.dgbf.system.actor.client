@@ -123,7 +123,22 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 							return null;
 						}
 					});
-			
+			dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Dériver les valeurs par défaut",MenuItem.FIELD_USER_INTERFACE_ACTION
+					,UserInterfaceAction.EXECUTE_FUNCTION,MenuItem.FIELD_ICON,"fa fa-gear"
+					,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
+					,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+						@Override
+						protected Object __runExecuteFunction__(AbstractAction action) {
+							Assignments assignments = new Assignments();
+							assignments.setOverridable(Boolean.FALSE);
+							Arguments<Assignments> arguments = new Arguments<Assignments>().addCreatablesOrUpdatables(assignments);
+							arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+									.setActionIdentifier(AssignmentsBusiness.DERIVE_ALL_VALUES));					
+							EntitySaver.getInstance().save(Assignments.class, arguments);
+							return null;
+						}
+					});
+			/*
 			dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Éffacer",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
 					,MenuItem.FIELD_ICON,"fa fa-trash"
 					,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
@@ -137,7 +152,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 							return null;
 						}
 					});
-			
+			*/
 			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("assignmentsEditView", CommandButton.FIELD_VALUE,"Modifier"
 					,CommandButton.FIELD_ICON,"fa fa-pencil");
 		}
