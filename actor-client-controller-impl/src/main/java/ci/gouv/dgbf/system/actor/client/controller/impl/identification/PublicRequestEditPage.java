@@ -80,11 +80,10 @@ public class PublicRequestEditPage extends AbstractEntityEditPageContainerManage
 		@Override
 		public void redirect(Form form, Object request) {
 			if(Action.CREATE.equals(form.getAction())) {
-				/*Redirector.getInstance().redirect("publicRequestNotifyAfterInitializeView"
-						,Map.of(Request.FIELD_ELECTRONIC_MAIL_ADDRESS,List.of( ((Request)form.getEntity()).getElectronicMailAddress())));
-				*/
-				Redirector.getInstance().redirect(PublicRequestReadPage.OUTCOME
-						,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of( ((Request)form.getEntity()).getIdentifier())));
+				Redirector.getInstance().redirect(RequestNotifyAfterInitializePage.OUTCOME
+						,Map.of(Request.FIELD_ELECTRONIC_MAIL_ADDRESS,List.of( ((Request)form.getEntity()).getElectronicMailAddress())));				
+				//Redirector.getInstance().redirect(PublicRequestReadPage.OUTCOME
+				//		,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of( ((Request)form.getEntity()).getIdentifier())));
 			}else if(Action.UPDATE.equals(form.getAction()))
 				Redirector.getInstance().redirect(PublicRequestReadPage.OUTCOME
 						,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of( ((Request)form.getEntity()).getIdentifier())));

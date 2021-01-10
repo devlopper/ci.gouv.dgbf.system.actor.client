@@ -28,7 +28,10 @@ public class RequestReadController extends AbstractObject implements Serializabl
 		if(Boolean.TRUE.equals(commandable))
 			commandsLayout = RequestReadPage.buildCommandsLayout(request, editOutcome,readOutcome);
 		textsLayout = RequestReadPage.buildTextsLayout(request);
-		filesLayout = RequestReadPage.buildFilesLayout(request,readOutcome,updatePhotoOutcome,updateActOfAppointmentOutcome,updateSignedRequestSheetOutcome);
+		
+		Boolean isHasNotInitializedStatus = !ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_INITIALIZED.equals(request.getStatus().getCode());
+		filesLayout = RequestReadPage.buildFilesLayout(request,readOutcome,isHasNotInitializedStatus ? null : updatePhotoOutcome
+				,isHasNotInitializedStatus ? null : updateActOfAppointmentOutcome,isHasNotInitializedStatus ? null : updateSignedRequestSheetOutcome);
 	}
 	
 	public RequestReadController(String editOutcome,String readOutcome,String updatePhotoOutcome,String updateActOfAppointmentOutcome,String updateSignedRequestSheetOutcome) {

@@ -25,7 +25,7 @@ public class RequestNotifyAfterInitializePage extends AbstractPageContainerManag
 		message = String.format(StringUtils.join(List.of(
 				"Votre demande a été initiée."
 				,"Une notification, contenant un jeton d'accès, vous a été envoyée à l'adresse mail %s"
-				,"Veuillez accéder à votre demande afin de l'imprimer, la mettre à jour si besoin et la soumettre."
+				,"Veuillez accéder à votre demande afin de la mettre à jour si besoin,de l'imprimer et la soumettre."
 				,"Nous vous remercions pour l'intérèt porté au SIGOBE."), "<br/>")
 				,WebController.getInstance().getRequestParameter(Actor.FIELD_ELECTRONIC_MAIL_ADDRESS)
 			);
@@ -35,4 +35,6 @@ public class RequestNotifyAfterInitializePage extends AbstractPageContainerManag
 	protected String __getWindowTitleValue__() {
 		return "Saisie de demande";
 	}
+	
+	public static final String OUTCOME = "publicRequestNotifyAfterInitializeView";
 }

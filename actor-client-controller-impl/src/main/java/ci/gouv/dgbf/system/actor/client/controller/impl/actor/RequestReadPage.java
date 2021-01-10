@@ -78,9 +78,9 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 				
 		Button button = Button.build(Button.FIELD_VALUE,"Imprimer fiche d'identification",Button.FIELD_ICON,"fa fa-print"
 				,Button.FIELD_DISABLED,ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_ACCEPTED.equals(request.getStatus().getCode()));
-		button.setEventScript(Event.CLICK,OpenWindowScriptBuilder.getInstance().build(
-				UniformResourceIdentifierBuilder.getInstance().buildFromCurrentRequest(ReportServlet.PATH, request.getReadReportURIQuery()).toString()
-				, "Fiche d'identification de "+request.getCode()));
+		
+		button.setEventScript(Event.CLICK,OpenWindowScriptBuilder.getInstance().build(UniformResourceIdentifierBuilder.getInstance().buildFromCurrentRequest(ReportServlet.PATH
+				, request.getReadReportURIQuery()).toString(), "Identification de "+request.getCode()));
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,button,Cell.FIELD_WIDTH,2));
 		
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL
