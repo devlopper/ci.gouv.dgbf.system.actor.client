@@ -40,7 +40,6 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationAttrib
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationForm;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
 import ci.gouv.dgbf.system.actor.client.controller.impl.FileServletListenerImpl;
-import ci.gouv.dgbf.system.actor.client.controller.impl.identification.PublicRequestUpdateSignedRequestSheetPage;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.representation.api.RequestRepresentation;
@@ -77,10 +76,12 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 				,Button.FIELD_DISABLED,!ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_INITIALIZED.equals(request.getStatus().getCode())
 				),Cell.FIELD_WIDTH,1));
 				
-		Button button = Button.build(Button.FIELD_VALUE,"Imprimer",Button.FIELD_ICON,"fa fa-print");
-		String url = UniformResourceIdentifierBuilder.getInstance().buildFromCurrentRequest(ReportServlet.PATH, request.getReadReportURIQuery()).toString();
-		button.setEventScript(Event.CLICK,OpenWindowScriptBuilder.getInstance().build(url, "Fichier etat de "+request.getTypeAsString()));
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,button,Cell.FIELD_WIDTH,1));
+		Button button = Button.build(Button.FIELD_VALUE,"Imprimer fiche d'identification",Button.FIELD_ICON,"fa fa-print"
+				,Button.FIELD_DISABLED,ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_ACCEPTED.equals(request.getStatus().getCode()));
+		button.setEventScript(Event.CLICK,OpenWindowScriptBuilder.getInstance().build(
+				UniformResourceIdentifierBuilder.getInstance().buildFromCurrentRequest(ReportServlet.PATH, request.getReadReportURIQuery()).toString()
+				, "Fiche d'identification de "+request.getCode()));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,button,Cell.FIELD_WIDTH,2));
 		
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL
 			,CommandButton.build(CommandButton.FIELD_VALUE,"Soumettre",CommandButton.FIELD_ICON,"fa fa-send"
@@ -95,7 +96,15 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 				}
 			}
 			,CommandButton.FIELD_DISABLED,!ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_INITIALIZED.equals(request.getStatus().getCode())
-			),Cell.FIELD_WIDTH,10));
+			),Cell.FIELD_WIDTH,1));
+		
+		button = Button.build(Button.FIELD_VALUE,"Imprimer spécimen de signature",Button.FIELD_ICON,"fa fa-print"
+				,Button.FIELD_DISABLED,!ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_ACCEPTED.equals(request.getStatus().getCode()));
+		button.setEventScript(Event.CLICK,OpenWindowScriptBuilder.getInstance().build(
+				UniformResourceIdentifierBuilder.getInstance().buildFromCurrentRequest(ReportServlet.PATH, request.getSignatureSpecimenReadReportURIQuery()).toString()
+				, "Spécimen de signature de "+request.getCode()));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,button,Cell.FIELD_WIDTH,8));
+		
 		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
 	}
 	
@@ -165,7 +174,7 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 						Redirector.getInstance().redirect(readOutcome,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(request.getIdentifier())));
 					}
 				}),Cell.FIELD_WIDTH,6));
-		
+		/*
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,GraphicImage.build(
 				GraphicImage.ConfiguratorImpl.FIELD_LABEL_OUTPUT_TEXT_VALUE,"Spécimen de signature"
 				,GraphicImage.ConfiguratorImpl.FIELD_IS_IMAGE,Boolean.FALSE
@@ -185,6 +194,7 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 						Redirector.getInstance().redirect(readOutcome,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(request.getIdentifier())));
 					}
 				}),Cell.FIELD_WIDTH,12));
+		*/
 		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
 	}
 	

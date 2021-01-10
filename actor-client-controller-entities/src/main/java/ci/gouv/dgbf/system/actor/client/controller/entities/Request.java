@@ -103,6 +103,7 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	/* Report identifier */
 	
 	private String readReportURIQuery;
+	private String signatureSpecimenReadReportURIQuery;
 	
 	/**/
 	
@@ -211,4 +212,5 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	/**/
 	
 	private String readPageURL;
+	private String signatureSpecimenReadPageURL;
 }

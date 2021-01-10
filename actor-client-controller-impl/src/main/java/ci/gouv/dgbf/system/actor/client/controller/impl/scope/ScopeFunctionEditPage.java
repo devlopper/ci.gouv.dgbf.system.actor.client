@@ -95,12 +95,12 @@ public class ScopeFunctionEditPage extends AbstractEntityEditPageContainerManage
 		scopeAutocomplete.setListener(new AutoComplete.Listener.AbstractImpl<Scope>() {
 			@Override
 			public Filter.Dto instantiateFilter(AutoComplete autoComplete) {
-				Function function = (Function) functionSelectOneCombo.getValue();
+				//Function function = (Function) functionSelectOneCombo.getValue();
 				ScopeType scopeType = (ScopeType) scopeTypeSelectOneRadio.getValue();
 				return new Filter.Dto()
 						.addField(ScopeQuerier.PARAMETER_NAME_CODE, autoComplete.get__queryString__())
 						.addField(ScopeQuerier.PARAMETER_NAME_NAME, autoComplete.get__queryString__())
-						.addField(ScopeQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER, function == null ? "" : function.getIdentifier())
+						//.addField(ScopeQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER, function == null ? "" : function.getIdentifier())
 						.addField(ScopeQuerier.PARAMETER_NAME_TYPE_IDENTIFIER, scopeType == null ? "" : scopeType.getIdentifier())
 						;
 			}
@@ -176,7 +176,8 @@ public class ScopeFunctionEditPage extends AbstractEntityEditPageContainerManage
 				map.put(AutoComplete.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Domaine");
 				map.put(AutoComplete.FIELD_ENTITY_CLASS, Scope.class);
 				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
-				map.put(AutoComplete.FIELD_READ_QUERY_IDENTIFIER, ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_AND_NOT_ASSOCIATED_TO_FUNCTION_BY_TYPE_IDENTIFIER);
+				//map.put(AutoComplete.FIELD_READ_QUERY_IDENTIFIER, ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_AND_NOT_ASSOCIATED_TO_FUNCTION_BY_TYPE_IDENTIFIER);
+				map.put(AutoComplete.FIELD_READ_QUERY_IDENTIFIER, ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_TYPE_IDENTIFIER);
 				map.put(AutoComplete.FIELD_MULTIPLE, Action.CREATE.equals(form.getAction()));
 			}else if(ScopeFunction.FIELD_SHARED.equals(fieldName)) {
 				map.put(AbstractInputChoice.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Partageable par plusieurs acteurs ?");

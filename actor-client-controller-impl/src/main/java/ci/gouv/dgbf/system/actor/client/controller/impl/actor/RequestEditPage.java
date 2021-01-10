@@ -187,8 +187,11 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 			Arguments<Request> arguments = new Arguments<Request>().setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
 					.setActionIdentifier(actionIdentifier)).addCreatablesOrUpdatables(request);
 			EntitySaver.getInstance().save(Request.class,arguments);
-			String identifier = (String) arguments.get__response__().getHeaders().get(Request.FIELD_IDENTIFIER).get(0);
-			request.setIdentifier(identifier);
+			List<Object> v = arguments.get__response__().getHeaders().get(Request.FIELD_IDENTIFIER);
+			if(CollectionHelper.isNotEmpty(v)) {
+				String identifier = (String) v.get(0);
+				request.setIdentifier(identifier);
+			}
 		}
 	}
 	

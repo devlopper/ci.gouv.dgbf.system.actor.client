@@ -1,12 +1,14 @@
 package ci.gouv.dgbf.system.actor.client.controller.impl.actor;
 
 import java.io.Serializable;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
@@ -15,9 +17,11 @@ import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntitySaver;
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
+import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.web.WebController;
+import org.cyk.utility.client.controller.web.jsf.NavigationCaseGetter;
 import org.cyk.utility.client.controller.web.jsf.Redirector;
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
@@ -29,6 +33,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOn
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityEditPageContainerManagedImpl;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
+import ci.gouv.dgbf.system.actor.client.controller.impl.identification.PublicRequestReadPage;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,8 +50,7 @@ public class RequestProcessPage extends AbstractEntityEditPageContainerManagedIm
 	protected void __listenPostConstruct__() {
 		treatmentChoice = WebController.getInstance().getRequestParameter(PARAMETER_NAME_CHOICE);
 		super.__listenPostConstruct__();
-		readController = new RequestReadController(Boolean.FALSE,RequestEditPage.OUTCOME, OUTCOME,RequestUpdatePhotoPage.OUTCOME,RequestUpdateActOfAppointmentPage.OUTCOME
-				,RequestUpdateSignedRequestSheetPage.OUTCOME,null);		
+		readController = new RequestReadController(Boolean.FALSE,RequestEditPage.OUTCOME, OUTCOME,null,null,null,null);		
 		SelectOneRadio treatmentChoiceSelectOneRadio = form.getInput(SelectOneRadio.class, Request.FIELD_TREATMENT);
 		treatmentChoiceSelectOneRadio.enableChangeListener(List.of());
 	}
@@ -105,6 +109,13 @@ public class RequestProcessPage extends AbstractEntityEditPageContainerManagedIm
 			if(TREATMENT_CHOICE_ACCEPT.equals(form.getInput(SelectOneRadio.class, Request.FIELD_TREATMENT).getValue())) {
 				actionIdentifier = RequestBusiness.ACCEPT;
 				request.writeBudgetariesScopeFunctionsIdentifiers();
+				
+				try {
+					request.setSignatureSpecimenReadPageURL(NavigationCaseGetter.getInstance().get(PublicRequestReadPage.OUTCOME)
+							.getRedirectURL(FacesContext.getCurrentInstance()).toString());
+				} catch (MalformedURLException exception) {
+					LogHelper.log(exception,RequestProcessPage.class);
+				}
 			}else
 				actionIdentifier = RequestBusiness.REJECT;
 			EntitySaver.getInstance().save(Request.class, new Arguments<Request>().setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
