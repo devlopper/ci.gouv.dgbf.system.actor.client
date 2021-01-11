@@ -1,6 +1,7 @@
 package ci.gouv.dgbf.system.actor.client.controller.impl.scope;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -160,9 +161,15 @@ public class ScopeFunctionEditPage extends AbstractEntityEditPageContainerManage
 	public static class FormConfiguratorListenerImpl extends Form.ConfiguratorImpl.Listener.AbstractImpl implements Serializable {
 		@Override
 		public Collection<String> getFieldsNames(Form form) {
-			return CollectionHelper.listOf(ScopeFunction.FIELD_FUNCTION,ScopeFunction.FIELD_SCOPE_TYPE
+			Collection<String> collection = new ArrayList<>();
+			if(Action.UPDATE.equals(form.getAction())) {
+				collection.add(ScopeFunction.FIELD_CODE);
+				collection.add(ScopeFunction.FIELD_NAME);
+			}
+			collection.addAll(CollectionHelper.listOf(ScopeFunction.FIELD_FUNCTION,ScopeFunction.FIELD_SCOPE_TYPE
 					,Action.UPDATE.equals(form.getAction()) ? ScopeFunction.FIELD_SCOPE : ScopeFunction.FIELD_SCOPES
-					,ScopeFunction.FIELD_SHARED);
+					,ScopeFunction.FIELD_SHARED));
+			return collection;
 		}
 		
 		@Override
