@@ -95,8 +95,8 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	private void buildTab(Collection<Map<Object,Object>> cellsMaps,TabMenu.Tab tab) {
 		if(tab.getParameterValue().equals(TAB_SCOPE_FUNCTION))
 			buildTabScopeFunction(cellsMaps);
-		else if(tab.getParameterValue().equals(TAB_EXECUTION_IMPUTATION))
-			buildTabExecutionImputation(cellsMaps);
+		else if(tab.getParameterValue().equals(TAB_ASSIGNMENTS))
+			buildTabAssignments(cellsMaps);
 	}
 	
 	private void buildTabScopeFunction(Collection<Map<Object,Object>> cellsMaps) {
@@ -123,8 +123,29 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
 	}
 	
-	private void buildTabExecutionImputation(Collection<Map<Object,Object>> cellsMaps) {
-		DataTable dataTable = AssignmentsListPage.buildDataTable(AssignmentsListPage.class,Boolean.TRUE);
+	private void buildTabAssignments(Collection<Map<Object,Object>> cellsMaps) {
+		Collection<MenuItem> tabMenuItems = new ArrayList<>();
+		Integer tabActiveIndex = null;
+		String tabAssignmentsParameterValue = WebController.getInstance().getRequestParameter(TAB_ASSIGNMENTS_PARAMETER_NAME);
+		for(Integer index = 0; index < ASSIGNMENTS_TABS.size(); index = index + 1) {
+			tabMenuItems.add(new MenuItem().setValue(ASSIGNMENTS_TABS.get(index).getName())
+				.addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_ASSIGNMENTS)
+				.addParameter(TAB_ASSIGNMENTS_PARAMETER_NAME, ASSIGNMENTS_TABS.get(index).getParameterValue())
+			);
+			if(ASSIGNMENTS_TABS.get(index).getParameterValue().equals(tabAssignmentsParameterValue))
+				tabActiveIndex = index;
+		}
+		if(tabActiveIndex == null)
+			tabActiveIndex = 0;
+		
+		TabMenu tabMenu = TabMenu.build(TabMenu.ConfiguratorImpl.FIELD_ITEMS_OUTCOME,OUTCOME,TabMenu.FIELD_ACTIVE_INDEX,tabActiveIndex
+				,TabMenu.ConfiguratorImpl.FIELD_ITEMS,tabMenuItems);
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,tabMenu,Cell.FIELD_WIDTH,12));
+		
+		DataTable dataTable = AssignmentsListPage.buildDataTable(AssignmentsListPage.class,Boolean.TRUE
+				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new AssignmentsListPage.LazyDataModelListenerImpl()
+				.setFullyAssigned(ASSIGNMENTS_TABS.get(tabActiveIndex).getParameterValue().equals(TAB_ASSIGNMENTS_ALL) ? null
+						: ASSIGNMENTS_TABS.get(tabActiveIndex).getParameterValue().equals(TAB_ASSIGNMENTS_FULLY_ASSIGNED) ? Boolean.TRUE : Boolean.FALSE));
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
 	}
 	
@@ -140,11 +161,20 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	/**/
 	
 	private static final String TAB_SCOPE_FUNCTION = "poste";
-	private static final String TAB_EXECUTION_IMPUTATION = "lignebudgetaire";
-	
+	private static final String TAB_ASSIGNMENTS = "lignebudgetaire";
 	private static final List<TabMenu.Tab> TABS = List.of(
 		new TabMenu.Tab("Poste",TAB_SCOPE_FUNCTION)
-		,new TabMenu.Tab("Ligne budgétaire",TAB_EXECUTION_IMPUTATION)
+		,new TabMenu.Tab("Ligne budgétaire",TAB_ASSIGNMENTS)
+	);
+	
+	private static final String TAB_ASSIGNMENTS_PARAMETER_NAME = "a";
+	private static final String TAB_ASSIGNMENTS_ALL = "tout";
+	private static final String TAB_ASSIGNMENTS_FULLY_ASSIGNED = "complet";
+	private static final String TAB_ASSIGNMENTS_NOT_FULLY_ASSIGNED = "noncomplet";
+	private static final List<TabMenu.Tab> ASSIGNMENTS_TABS = List.of(		
+		new TabMenu.Tab("Affectées",TAB_ASSIGNMENTS_FULLY_ASSIGNED)
+		,new TabMenu.Tab("Non affectées",TAB_ASSIGNMENTS_NOT_FULLY_ASSIGNED)
+		,new TabMenu.Tab("Toutes les lignes",TAB_ASSIGNMENTS_ALL)
 	);
 	
 	public static final String OUTCOME = "affectationView";

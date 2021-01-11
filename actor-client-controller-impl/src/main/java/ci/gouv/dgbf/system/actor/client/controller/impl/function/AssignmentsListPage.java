@@ -316,6 +316,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 	
 	@Getter @Setter @Accessors(chain=true)
 	public static class LazyDataModelListenerImpl extends LazyDataModel.Listener.AbstractImpl<Assignments> implements Serializable {		
+		private Boolean fullyAssigned;
 		
 		@Override
 		public Boolean getReaderUsable(LazyDataModel<Assignments> lazyDataModel) {
@@ -324,7 +325,11 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		
 		@Override
 		public String getReadQueryIdentifier(LazyDataModel<Assignments> lazyDataModel) {
-			return AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI;
+			if(fullyAssigned == null)
+				return AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI;
+			if(fullyAssigned)
+				return AssignmentsQuerier.QUERY_IDENTIFIER_READ_FULLY_ASSIGNED_WHERE_FILTER_FOR_UI;
+			return AssignmentsQuerier.QUERY_IDENTIFIER_READ_NOT_FULLY_ASSIGNED_WHERE_FILTER_FOR_UI;
 		}
 		
 		@Override
