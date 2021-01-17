@@ -62,6 +62,8 @@ import lombok.experimental.Accessors;
 @Named @ViewScoped @Getter @Setter
 public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<Request> implements Serializable {
 
+	private ScopeFunctionSelectionController budgetaryScopeFunctionSelectionController;
+		
 	@Override
 	protected void __listenPostConstruct__() {
 		super.__listenPostConstruct__();
@@ -100,7 +102,8 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 	
 	@Override
 	protected Form __buildForm__() {
-		return buildForm(Form.FIELD_ACTION,action);
+		budgetaryScopeFunctionSelectionController = new ScopeFunctionSelectionController();
+		return buildForm(Form.FIELD_ACTION,action,ScopeFunctionSelectionController.class,budgetaryScopeFunctionSelectionController);
 	}
 	
 	/**/
@@ -112,9 +115,12 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 		Request request = (Request) MapHelper.readByKey(arguments, Form.FIELD_ENTITY);
 		if(request == null)
 			request = getRequestFromParameter((Action) MapHelper.readByKey(arguments, Form.FIELD_ACTION),(String)MapHelper.readByKey(arguments, Actor.class));			
+		ScopeFunctionSelectionController budgetaryScopeFunctionSelectionController = (ScopeFunctionSelectionController) MapHelper.readByKey(arguments, ScopeFunctionSelectionController.class);
+		if(budgetaryScopeFunctionSelectionController != null)
+			budgetaryScopeFunctionSelectionController.setSelected(request.getBudgetariesScopeFunctions());
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ENTITY, request);
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_LISTENER, new FormConfiguratorListener(request));		
-		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_LISTENER, new FormListener(request));
+		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_LISTENER, new FormListener(request,budgetaryScopeFunctionSelectionController));
 		Form form = Form.build(arguments);
 		return form;
 	}
@@ -163,15 +169,18 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 	@Getter @Setter @Accessors(chain=true) @NoArgsConstructor
 	public static class FormListener extends Form.Listener.AbstractImpl {
 		protected Request request;
+		protected ScopeFunctionSelectionController budgetaryScopeFunctionSelectionController;
 		
-		public FormListener(Request request) {
+		public FormListener(Request request,ScopeFunctionSelectionController budgetaryScopeFunctionSelectionController) {
 			this.request = request;
+			this.budgetaryScopeFunctionSelectionController = budgetaryScopeFunctionSelectionController;
 		}
 		
 		@Override
 		public void act(Form form) {
 			ThrowableHelper.throwIllegalArgumentExceptionIfNull("demande", request);
-			request.writeBudgetariesScopeFunctionsIdentifiers();
+			writeBudgetariesScopeFunctionsIdentifiers();
+			
 			String actionIdentifier = null;
 			if(Action.CREATE.equals(form.getAction()))
 				actionIdentifier = RequestBusiness.INITIALIZE;
@@ -192,6 +201,15 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 				String identifier = (String) v.get(0);
 				request.setIdentifier(identifier);
 			}
+		}
+		
+		protected void writeBudgetariesScopeFunctionsIdentifiers() {
+			if(budgetaryScopeFunctionSelectionController != null)
+				request.setBudgetariesScopeFunctions(budgetaryScopeFunctionSelectionController.getSelected());
+			if(ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType.CODE_DEMANDE_POSTES_BUDGETAIRES.equals(request.getType().getCode()) 
+					&& CollectionHelper.isEmpty(request.getBudgetariesScopeFunctions()))
+				throw new RuntimeException("Veuillez sélectionner au minimum une fonction budgétaire");			
+			request.writeBudgetariesScopeFunctionsIdentifiers();
 		}
 	}
 	
@@ -252,6 +270,7 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 			}else if(Request.FIELD_ADMINISTRATIVE_UNIT.equals(fieldName)) {
 				map.put(AutoComplete.FIELD_ENTITY_CLASS, AdministrativeUnit.class);
 				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
+				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_DESCRIPTION_OUTPUT_TEXT_VALUE, "L'unité administrative où vous êtes en fonction");
 				requestBlockStartIndex = currentIndex;
 			}else if(Request.FIELD_BUDGETARIES_FUNCTIONS.equals(fieldName)) {
 				map.put(AutoComplete.FIELD_ENTITY_CLASS, Function.class);
@@ -263,6 +282,7 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
 				map.put(AutoComplete.FIELD_MULTIPLE, Boolean.TRUE);
 				//map.put(AutoComplete.FIELD_READ_QUERY_IDENTIFIER, ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER);
+				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_DESCRIPTION_OUTPUT_TEXT_VALUE, "La ou les fonctions budgétaires que vous avez");
 			}else if(Request.FIELD_BUDGET_SPECIALIZATION_UNIT.equals(fieldName)) {
 				map.put(AutoComplete.FIELD_ENTITY_CLASS, BudgetSpecializationUnit.class);
 				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
@@ -270,7 +290,9 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 				map.put(AutoComplete.FIELD_ENTITY_CLASS, Section.class);
 				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
 			}else if(Request.FIELD_ADMINISTRATIVE_FUNCTION.equals(fieldName)) {
-				
+				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_DESCRIPTION_OUTPUT_TEXT_VALUE, "La fonction que vous exercez dans l'unité administrative spécifiée");
+			}else if(Request.FIELD_ELECTRONIC_MAIL_ADDRESS.equals(fieldName)) {
+				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_DESCRIPTION_OUTPUT_TEXT_VALUE, "L'adresse email avec laquelle vous allez vous connecter au système");
 			}
 			return map;
 		}
@@ -280,7 +302,7 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 			Map<Object, Object> arguments = super.getInputLabelCellArguments(form, input, label);
 			arguments.put(Cell.FIELD_WIDTH, 3);
 			if(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS.equals(input.getField().getName())) {
-				//arguments.put(Cell.FIELD_CONTROL, OutputText.buildFromValue(label.getValue()));
+				arguments.put(Cell.FIELD_CONTROL, OutputText.buildFromValue(label.getValue()));
 			}
 			return arguments;
 		}
@@ -290,7 +312,7 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 			Map<Object, Object> arguments = super.getInputCellArguments(form, input);
 			arguments.put(Cell.FIELD_WIDTH, 9);
 			if(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS.equals(input.getField().getName())) {
-				//arguments.put(Cell.FIELD_CONTROL_TEMPLATE, "/private/request/edit/__budgetariesscopefunctions__.xhtml");
+				arguments.put(Cell.FIELD_CONTROL_TEMPLATE, "/private/request/edit/__budgetariesscopefunctions__.xhtml");
 			}
 			return arguments;
 		}

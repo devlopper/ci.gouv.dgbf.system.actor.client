@@ -10,9 +10,15 @@
 	
     <cyk:page value="#{requestListPage}">
     	<ui:define name="centerCenter">
+    		<ui:include src="__css__.xhtml"/>
+    		
     		<ui:decorate template="#{primefacesHelper.getModelTemplate(requestListPage.dataTable)}">
     			<ui:param name="dataTable" value="#{requestListPage.dataTable}"/>   			
     		</ui:decorate>
+    		
+    		<ui:include src="__legend__.xhtml">
+    			<ui:param name="requestListController" value="#{requestListPage}"/>
+    		</ui:include>
     	</ui:define>
     </cyk:page>
 </html>

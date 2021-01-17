@@ -18,6 +18,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityE
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
 import ci.gouv.dgbf.system.actor.client.controller.impl.actor.RequestEditPage;
+import ci.gouv.dgbf.system.actor.client.controller.impl.actor.ScopeFunctionSelectionController;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,6 +27,8 @@ import lombok.experimental.Accessors;
 @Named @ViewScoped @Getter @Setter
 public class PublicRequestEditPage extends AbstractEntityEditPageContainerManagedImpl<Request> implements IdentificationTheme,Serializable {
 
+	private ScopeFunctionSelectionController budgetaryScopeFunctionSelectionController;
+	
 	@Override
 	protected void __listenPostConstruct__() {
 		super.__listenPostConstruct__();
@@ -45,7 +48,8 @@ public class PublicRequestEditPage extends AbstractEntityEditPageContainerManage
 	
 	@Override
 	protected Form __buildForm__() {
-		return buildForm(Form.FIELD_ACTION,action);
+		budgetaryScopeFunctionSelectionController = new ScopeFunctionSelectionController();
+		return buildForm(Form.FIELD_ACTION,action,ScopeFunctionSelectionController.class,budgetaryScopeFunctionSelectionController);
 	}
 	
 	public static Form buildForm(Map<Object, Object> arguments) {
@@ -58,7 +62,7 @@ public class PublicRequestEditPage extends AbstractEntityEditPageContainerManage
 			request = RequestEditPage.getRequestFromParameter((Action) MapHelper.readByKey(arguments, Form.FIELD_ACTION),null);			
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ENTITY, request);
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_LISTENER, new FormConfiguratorListener(request));		
-		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_LISTENER, new FormListener(request));
+		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_LISTENER, new FormListener(request,(ScopeFunctionSelectionController) MapHelper.readByKey(arguments, ScopeFunctionSelectionController.class)));
 		
 		Form form = RequestEditPage.buildForm(arguments);
 		return form;
@@ -73,8 +77,8 @@ public class PublicRequestEditPage extends AbstractEntityEditPageContainerManage
 	@Getter @Setter @Accessors(chain=true) @NoArgsConstructor
 	public static class FormListener extends RequestEditPage.FormListener {
 		
-		public FormListener(Request request) {
-			super(request);
+		public FormListener(Request request,ScopeFunctionSelectionController scopeFunctionSelectionController) {
+			super(request,scopeFunctionSelectionController);
 		}
 		
 		@Override

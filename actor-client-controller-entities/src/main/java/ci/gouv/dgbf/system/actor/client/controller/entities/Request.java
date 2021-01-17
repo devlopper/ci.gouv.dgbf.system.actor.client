@@ -73,6 +73,7 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	
 	@Input @InputNumber private Integer budgetaryExercice;	
 	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceOneAutoComplete private AdministrativeUnit administrativeUnit;
+	private String administrativeUnitAsString;
 	@Input @InputText private String administrativeFunction;
 	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceOneAutoComplete private Section section;
 	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceOneAutoComplete private BudgetSpecializationUnit budgetSpecializationUnit;
@@ -88,6 +89,11 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceMany @InputChoiceManyAutoComplete private Collection<ScopeFunction> budgetariesScopeFunctions;
 	private Collection<String> budgetariesScopeFunctionsAsStrings;
 	private Collection<String> budgetariesScopeFunctionsGrantedAsStrings;
+	private Boolean hasBudgetaryScopeFunctionWhereFunctionCodeBelongsToExecutionAssistantsCodes;
+	private Boolean hasBudgetaryScopeFunctionWhereFunctionCodeIsCreditManagerHolder;
+	private Boolean hasBudgetaryScopeFunctionWhereFunctionCodeIsAuthorizingOfficerHolder;
+	private Boolean hasBudgetaryScopeFunctionWhereFunctionCodeIsFinancialControllerHolder;
+	private Boolean hasBudgetaryScopeFunctionWhereFunctionCodeIsAccountingHolder;
 	
 	/* Others */
 	
@@ -104,6 +110,8 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	
 	private String readReportURIQuery;
 	private String signatureSpecimenReadReportURIQuery;
+	private String creditManagerSignatureSpecimenReadReportURIQuery;
+	private String authorizingOfficerSignatureSpecimenReadReportURIQuery;
 	
 	/**/
 	
@@ -137,6 +145,14 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	
 	public Boolean hasStatusInitialized() {
 		return ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_INITIALIZED.equals(status.getCode());
+	}
+	
+	public Boolean isAccepted() {
+		return status != null && ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_ACCEPTED.equals(status.getCode());
+	}
+	
+	public Boolean isNotAccepted() {
+		return !Boolean.TRUE.equals(isAccepted());
 	}
 	
 	/*---------------------------------------------------------------------------------------------*/
@@ -194,8 +210,8 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	public static final String FIELD_ACCOUNTING_HOLDER = "accountingHolder";
 	public static final String FIELD_BUDGETARIES_FUNCTIONS = "budgetariesFunctions";
 	public static final String FIELD_BUDGETARIES_SCOPE_FUNCTIONS = "budgetariesScopeFunctions";
-	public static final String FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRING = "budgetariesScopeFunctionsAsString";
-	public static final String FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRING = "budgetariesScopeFunctionsGrantedAsString";
+	public static final String FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS = "budgetariesScopeFunctionsAsStrings";
+	public static final String FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRINGS = "budgetariesScopeFunctionsGrantedAsStrings";
 	
 	/* Others */
 	

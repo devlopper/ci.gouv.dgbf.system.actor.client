@@ -139,6 +139,7 @@ public class ScopeFunctionEditPage extends AbstractEntityEditPageContainerManage
 		@Override
 		public void act(Form form) {
 			ScopeFunction scopeFunction = (ScopeFunction) form.getEntity();
+			//scopeFunction.set__auditWho__(SessionHelper.getUserName());
 			//scopeFunction.setShared(AbstractInputChoice.equalsChoiceYes(scopeFunction.getSharedAsString()));
 			if(Action.CREATE.equals(form.getAction()) || Action.UPDATE.equals(form.getAction())) {
 				Collection<ScopeFunction> scopeFunctions = Action.CREATE.equals(form.getAction()) 

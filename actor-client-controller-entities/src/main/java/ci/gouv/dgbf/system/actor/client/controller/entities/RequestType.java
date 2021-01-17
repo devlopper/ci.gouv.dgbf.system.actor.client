@@ -27,9 +27,14 @@ public class RequestType extends AbstractDataIdentifiableSystemStringIdentifiabl
 	private IdentificationForm form;
 	private String formAsString;
 	
-	@Input @InputText
-	@NotNull 
+	@Input @InputText 
 	private String reportIdentifier;
+	
+	@Input @InputText 
+	private String creditManagerSignatureSpecimenReportIdentifier;
+	
+	@Input @InputText 
+	private String authorizingOfficerSignatureSpecimenReportIdentifier;
 	
 	@Input @InputBoolean @InputBooleanButton
 	private Boolean authenticationRequired;

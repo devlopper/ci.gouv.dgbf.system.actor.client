@@ -2,14 +2,19 @@ package ci.gouv.dgbf.system.actor.client.controller.impl.actor;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.string.StringHelper;
@@ -32,6 +37,18 @@ import lombok.experimental.Accessors;
 @Named @ViewScoped @Getter @Setter
 public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<Request> implements Serializable {
 
+	private LinkedHashMap<String, String> legends = new LinkedHashMap<>();
+	
+	@Override
+	protected void __listenPostConstruct__() {
+		super.__listenPostConstruct__();
+		legends.put("Gestionnaire", "#F1EEF6");
+		legends.put("Ordonnateur", "#BDC9E1");
+		legends.put("Contrôleur Financier", "#74A9CF");
+		legends.put("Comptable", "#2B8CBE");
+		legends.put("Assistant", "#EDCADD");
+	}
+	
 	@Override
 	protected DataTable __buildDataTable__() {
 		DataTable dataTable = buildDataTable();
@@ -53,8 +70,10 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			lazyDataModelListener = new LazyDataModelListenerImpl();
 		//Class<?> pageClass = (Class<?>) MapHelper.readByKey(arguments, RequestListPage.class);
 		List<String> columnsFieldsNames = new ArrayList<>();
-		columnsFieldsNames.addAll(List.of(Request.FIELD_CODE/*,Request.FIELD_TYPE_AS_STRING*/,Request.FIELD_CREATION_DATE_AS_STRING,Request.FIELD_STATUS_AS_STRING
-				,Request.FIELD_PROCESSING_DATE_AS_STRING));
+		columnsFieldsNames.addAll(List.of(Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_ELECTRONIC_MAIL_ADDRESS
+				,Request.FIELD_MOBILE_PHONE_NUMBER,Request.FIELD_ADMINISTRATIVE_UNIT_AS_STRING
+				,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS
+				,Request.FIELD_CREATION_DATE_AS_STRING,Request.FIELD_STATUS_AS_STRING,Request.FIELD_PROCESSING_DATE_AS_STRING));
 		//columnsFieldsNames.addAll(0, List.of(Request.FIELD_NAMES));
 			//if(Boolean.TRUE.equals(lazyDataModelListener.getProcessingDateIsNotNullable()))
 			//	columnsFieldsNames.addAll(List.of(Request.FIELD_PROCESSING_DATE_AS_STRING));
@@ -94,7 +113,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			if(Request.FIELD_ACTOR_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Compte");
 				map.put(Column.FIELD_WIDTH, "200");
-			}else if(Request.FIELD_NAMES.equals(fieldName)) {
+			}else if(Request.FIELD_ACTOR_NAMES.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Nom et prénom(s)");
 			}else if(Request.FIELD_COMMENT.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Commentaire");
@@ -114,13 +133,105 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 				map.put(Column.FIELD_WIDTH, "130");
 			}else if(Request.FIELD_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Numéro");
+				map.put(Column.FIELD_WIDTH, "120");
+			}else if(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Fonction(s) budgétaire(s)");
+			}else if(Request.FIELD_ELECTRONIC_MAIL_ADDRESS.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Email");
+				map.put(Column.FIELD_WIDTH, "200");
+			}else if(Request.FIELD_MOBILE_PHONE_NUMBER.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Tel. Mobile");
+				map.put(Column.FIELD_WIDTH, "100");
+			}else if(Request.FIELD_ADMINISTRATIVE_UNIT_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "UA");
+				map.put(Column.FIELD_WIDTH, "100");
 			}
 			return map;
+		}
+		/*
+		@Override
+		public String getStyleClassByRecord(Object record, Integer recordIndex) {
+			if(record instanceof Request) {
+				Request request = (Request) record;
+				if(Boolean.TRUE.equals(request.getHasBudgetaryScopeFunctionWhereFunctionCodeIsAccountingHolder()))
+					return "cyk-scope-function-cpt";
+				if(Boolean.TRUE.equals(request.getHasBudgetaryScopeFunctionWhereFunctionCodeIsFinancialControllerHolder()))
+					return "cyk-scope-function-cf";
+				if(Boolean.TRUE.equals(request.getHasBudgetaryScopeFunctionWhereFunctionCodeIsAuthorizingOfficerHolder()))
+					return "cyk-scope-function-ord";
+				if(Boolean.TRUE.equals(request.getHasBudgetaryScopeFunctionWhereFunctionCodeIsCreditManagerHolder()))
+					return "cyk-scope-function-gc";
+				return "cyk-scope-function-assistant";
+			}
+			return super.getStyleClassByRecord(record, recordIndex);
+		}
+		*/
+		@Override
+		public String getStyleClassByRecordByColumn(Object record, Integer recordIndex, Column column,Integer columnIndex) {
+			if(record instanceof Request) {
+				Request request = (Request) record;
+				if(columnIndex != null && columnIndex == 0) {					
+					if(Boolean.TRUE.equals(request.getHasBudgetaryScopeFunctionWhereFunctionCodeIsAccountingHolder()))
+						return "cyk-scope-function-cpt";
+					if(Boolean.TRUE.equals(request.getHasBudgetaryScopeFunctionWhereFunctionCodeIsFinancialControllerHolder()))
+						return "cyk-scope-function-cf";
+					if(Boolean.TRUE.equals(request.getHasBudgetaryScopeFunctionWhereFunctionCodeIsAuthorizingOfficerHolder()))
+						return "cyk-scope-function-ord";
+					if(Boolean.TRUE.equals(request.getHasBudgetaryScopeFunctionWhereFunctionCodeIsCreditManagerHolder()))
+						return "cyk-scope-function-gc";
+					return "cyk-scope-function-assistant";
+				}
+			}
+			return super.getStyleClassByRecordByColumn(record, recordIndex, column, columnIndex);
+		}
+		
+		@Override
+		public Object getCellValueByRecordByColumn(Object record, Integer recordIndex, Column column,Integer columnIndex) {
+			if(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS.equals(column.getFieldName())) {
+				Request request = (Request)record;
+				Collection<String> strings = null;
+				if(request.getStatus().getCode().equals(ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_ACCEPTED)
+						&& CollectionHelper.isNotEmpty(request.getBudgetariesScopeFunctionsGrantedAsStrings())) {
+					strings =  ((Request)record).getBudgetariesScopeFunctionsGrantedAsStrings();
+				}else if(CollectionHelper.isNotEmpty(request.getBudgetariesScopeFunctionsAsStrings())){
+					strings =  ((Request)record).getBudgetariesScopeFunctionsAsStrings();
+				}
+				if(CollectionHelper.isNotEmpty(strings))
+					return strings.stream().map(x -> StringUtils.substringBefore(x, " ")).collect(Collectors.joining(","));
+			}else if(Request.FIELD_ADMINISTRATIVE_UNIT_AS_STRING.equals(column.getFieldName())) {
+				return StringUtils.substringBefore(((Request)record).getAdministrativeUnitAsString()," ");
+			}
+			return super.getCellValueByRecordByColumn(record, recordIndex, column, columnIndex);
+		}
+		
+		@Override
+		public String getTooltipByRecord(Object record, Integer recordIndex) {
+			if(record instanceof Request) {
+				Request request = (Request)record;
+				if(request.getStatus() != null) {
+					List<String> strings = null;
+					if(request.getStatus().getCode().equals(ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_ACCEPTED)
+							&& CollectionHelper.isNotEmpty(request.getBudgetariesScopeFunctionsGrantedAsStrings())) {
+						strings = ((Request)record).getBudgetariesScopeFunctionsGrantedAsStrings().stream().map(x -> x.toString()).collect(Collectors.toList());
+					}else if(CollectionHelper.isNotEmpty(request.getBudgetariesScopeFunctionsAsStrings())){
+						strings = ((Request)record).getBudgetariesScopeFunctionsAsStrings().stream().map(x -> x.toString()).collect(Collectors.toList());
+					}
+					if(CollectionHelper.isNotEmpty(strings))
+						if(strings.size() == 1)
+							return String.format(TOOLTIP_FORMAT, request.getAdministrativeUnitAsString(),strings.get(0));
+						else
+							return String.format(TOOLTIP_FORMAT, request.getAdministrativeUnitAsString(),SEPARATOR+StringUtils.join(strings,SEPARATOR));
+				}
+			}
+			return super.getTooltipByRecord(record, recordIndex);
 		}
 		
 		public java.lang.Class<? extends AbstractMenu> getRecordMenuClass(AbstractCollection collection) {
 			return ContextMenu.class;
 		}
+		
+		private static final String SEPARATOR = "<br/>"+StringUtils.repeat("&nbsp;", 10);
+		private static final String TOOLTIP_FORMAT = "Unité administrative : %s<br/>Fonction(s) budgétaire(s) :%s";
 	}
 	
 	@Getter @Setter @Accessors(chain=true)

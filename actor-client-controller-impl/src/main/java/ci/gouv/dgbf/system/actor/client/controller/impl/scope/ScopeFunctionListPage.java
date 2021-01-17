@@ -85,8 +85,7 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 		if(StringHelper.isBlank(functionIdentifier))
 			columnsNames.addAll(List.of(ScopeFunction.FIELD_FUNCTION_AS_STRING));
 		columnsNames.addAll(List.of(ScopeFunction.FIELD_SHARED_AS_STRING));
-		
-		
+				
 		//Function function = StringHelper.isBlank(functionIdentifier) ? null : __inject__(FunctionController.class).readBySystemIdentifier(functionIdentifier);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, columnsNames);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
@@ -180,7 +179,8 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 				map.put(Column.FIELD_WIDTH, "100");
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}else if(ScopeFunction.FIELD_SCOPE_AS_STRING.equals(fieldName)) {
-				Collection<ScopeTypeFunction> scopeTypeFunctions = EntityReader.getInstance().readMany(ScopeTypeFunction.class, ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_READ_BY_FUNCTIONS_IDENTIFIERS
+				Collection<ScopeTypeFunction> scopeTypeFunctions = StringHelper.isBlank(functionIdentifier) ? null
+						: EntityReader.getInstance().readMany(ScopeTypeFunction.class, ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_READ_BY_FUNCTIONS_IDENTIFIERS
 						,ScopeTypeFunctionQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS, List.of(functionIdentifier));
 				String name;
 				if(CollectionHelper.isEmpty(scopeTypeFunctions))

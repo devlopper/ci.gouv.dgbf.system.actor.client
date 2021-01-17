@@ -483,18 +483,18 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 		
 		if(arguments != null && RequestBusiness.SUBMIT.equals(arguments.getActionIdentifier())) {
 			RequestDto request = (RequestDto) CollectionHelper.getFirst(updatables);
-			return ((RequestRepresentation)representation).submitByIdentifier(request.getIdentifier());
+			return ((RequestRepresentation)representation).submitByIdentifier(request.getIdentifier(),request.getReadPageURL());
 		}
 		
 		if(arguments != null && RequestBusiness.ACCEPT.equals(arguments.getActionIdentifier())) {
 			RequestDto request = (RequestDto) CollectionHelper.getFirst(updatables);
 			return ((RequestRepresentation)representation).acceptByIdentifier(request.getIdentifier(),request.getBudgetariesScopeFunctionsAsStrings()
-					,request.getComment(),null);
+					,request.getComment(),request.getReadPageURL());
 		}
 		
 		if(arguments != null && RequestBusiness.REJECT.equals(arguments.getActionIdentifier())) {
 			RequestDto request = (RequestDto) CollectionHelper.getFirst(updatables);
-			return ((RequestRepresentation)representation).rejectByIdentifier(request.getIdentifier(), request.getRejectionReason());
+			return ((RequestRepresentation)representation).rejectByIdentifier(request.getIdentifier(), request.getRejectionReason(),request.getReadPageURL());
 		}
 		
 		if(arguments != null && RequestBusiness.NOTIFY_ACCESS_TOKENS.equals(arguments.getActionIdentifier())) {

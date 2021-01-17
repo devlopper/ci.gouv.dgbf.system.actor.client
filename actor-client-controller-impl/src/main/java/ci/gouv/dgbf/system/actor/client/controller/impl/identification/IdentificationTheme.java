@@ -12,10 +12,10 @@ import org.primefaces.model.menu.MenuModel;
 
 public interface IdentificationTheme {
 
-	String APPLICATION_NAME = "Enrollement des acteurs";
+	String APPLICATION_NAME = "Enrôlement des acteurs";
 	String APPLICATION_OUTCOME = "identificationIndexView";
 	
-	String MENU_ITEM_IDENTIFICATION = "Enrollement";
+	String MENU_ITEM_IDENTIFICATION = "Enrôlement";
 	
 	static TabMenu instantiateTabMenu() {
 		return TabMenu.build(TabMenu.ConfiguratorImpl.FIELD_TABS_NAMES,List.of(MENU_ITEM_IDENTIFICATION)

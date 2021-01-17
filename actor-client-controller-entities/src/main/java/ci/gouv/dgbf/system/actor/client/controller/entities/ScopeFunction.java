@@ -3,7 +3,7 @@ package ci.gouv.dgbf.system.actor.client.controller.entities;
 import java.io.Serializable;
 import java.util.Collection;
 
-import org.cyk.utility.__kernel__.object.__static__.controller.AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl;
+import org.cyk.utility.__kernel__.object.__static__.controller.AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableAuditedImpl;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Choices;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Choices.Count;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Input;
@@ -22,7 +22,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter @Setter @NoArgsConstructor @Accessors(chain=true)
-public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl implements Serializable {
+public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableAuditedImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceOneAutoComplete private Scope scope;

@@ -23,6 +23,7 @@ import org.cyk.utility.__kernel__.uri.UniformResourceIdentifierBuilder;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.FileServlet;
+import org.cyk.utility.client.controller.web.jsf.JavaServerFacesHelper;
 import org.cyk.utility.client.controller.web.jsf.Redirector;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
@@ -40,6 +41,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationAttrib
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationForm;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
 import ci.gouv.dgbf.system.actor.client.controller.impl.FileServletListenerImpl;
+import ci.gouv.dgbf.system.actor.client.controller.impl.identification.PublicRequestReadPage;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.representation.api.RequestRepresentation;
@@ -68,6 +70,7 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 	public static Layout buildCommandsLayout(Request request,String editOutcome,String readOutcome) {
 		if(request == null || request.getType() == null)
 			return null;
+		request.setReadPageURL(JavaServerFacesHelper.buildUrlFromOutcome(PublicRequestReadPage.OUTCOME));
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL
 				,Button.build(Button.FIELD_VALUE,"Modifier",Button.FIELD_ICON,"fa fa-edit",Button.FIELD_OUTCOME,editOutcome
@@ -98,12 +101,21 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 			,CommandButton.FIELD_DISABLED,!ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_INITIALIZED.equals(request.getStatus().getCode())
 			),Cell.FIELD_WIDTH,1));
 		
-		button = Button.build(Button.FIELD_VALUE,"Imprimer spécimen de signature",Button.FIELD_ICON,"fa fa-print"
-				,Button.FIELD_DISABLED,!ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_ACCEPTED.equals(request.getStatus().getCode()));
+		button = Button.build(Button.FIELD_VALUE,"Imprimer spécimen de signature ordonnateur",Button.FIELD_ICON,"fa fa-print"
+				,Button.FIELD_DISABLED,!(ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_ACCEPTED.equals(request.getStatus().getCode())
+				&& Boolean.TRUE.equals(request.getHasBudgetaryScopeFunctionWhereFunctionCodeIsAuthorizingOfficerHolder())));
 		button.setEventScript(Event.CLICK,OpenWindowScriptBuilder.getInstance().build(
-				UniformResourceIdentifierBuilder.getInstance().buildFromCurrentRequest(ReportServlet.PATH, request.getSignatureSpecimenReadReportURIQuery()).toString()
-				, "Spécimen de signature de "+request.getCode()));
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,button,Cell.FIELD_WIDTH,8));
+				UniformResourceIdentifierBuilder.getInstance().buildFromCurrentRequest(ReportServlet.PATH, request.getAuthorizingOfficerSignatureSpecimenReadReportURIQuery()).toString()
+				, "Spécimen de signature GC de "+request.getCode()));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,button,Cell.FIELD_WIDTH,3));
+		
+		button = Button.build(Button.FIELD_VALUE,"Imprimer spécimen de signature gestionnaire de crédits",Button.FIELD_ICON,"fa fa-print"
+				,Button.FIELD_DISABLED,!(ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_ACCEPTED.equals(request.getStatus().getCode())
+				&& Boolean.TRUE.equals(request.getHasBudgetaryScopeFunctionWhereFunctionCodeIsCreditManagerHolder())));
+		button.setEventScript(Event.CLICK,OpenWindowScriptBuilder.getInstance().build(
+				UniformResourceIdentifierBuilder.getInstance().buildFromCurrentRequest(ReportServlet.PATH, request.getCreditManagerSignatureSpecimenReadReportURIQuery()).toString()
+				, "Spécimen de signature ORD de "+request.getCode()));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,button,Cell.FIELD_WIDTH,5));
 		
 		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
 	}

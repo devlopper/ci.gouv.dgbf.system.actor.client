@@ -43,6 +43,7 @@ import lombok.experimental.Accessors;
 @Named @ViewScoped @Getter @Setter
 public class RequestProcessPage extends AbstractEntityEditPageContainerManagedImpl<Request> implements Serializable {
 
+	private ScopeFunctionSelectionController budgetaryScopeFunctionSelectionController;
 	private RequestReadController readController;
 	private String treatmentChoice;
 	
@@ -61,8 +62,9 @@ public class RequestProcessPage extends AbstractEntityEditPageContainerManagedIm
 	}
 	
 	@Override
-	protected Form __buildForm__() {		
-		return buildForm(Form.FIELD_ACTION,action,PARAMETER_NAME_CHOICE,treatmentChoice);
+	protected Form __buildForm__() {
+		budgetaryScopeFunctionSelectionController = new ScopeFunctionSelectionController();
+		return buildForm(Form.FIELD_ACTION,action,PARAMETER_NAME_CHOICE,treatmentChoice,ScopeFunctionSelectionController.class,budgetaryScopeFunctionSelectionController);
 	}
 	
 	public static Form buildForm(Map<Object, Object> arguments) {
@@ -80,7 +82,7 @@ public class RequestProcessPage extends AbstractEntityEditPageContainerManagedIm
 		MapHelper.writeByKeyDoNotOverride(arguments, Form.FIELD_ENTITY, request);
 		MapHelper.writeByKeyDoNotOverride(arguments, Form.ConfiguratorImpl.FIELD_INPUTS_FIELDS_NAMES, fieldsNames);
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_LISTENER, new FormConfiguratorListener(request));		
-		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_LISTENER, new FormListener(request));
+		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_LISTENER, new FormListener(request,(ScopeFunctionSelectionController) MapHelper.readByKey(arguments, ScopeFunctionSelectionController.class)));
 		Form form = RequestEditPage.buildForm(arguments);
 		return form;
 	}
@@ -99,17 +101,16 @@ public class RequestProcessPage extends AbstractEntityEditPageContainerManagedIm
 	@Getter @Setter @Accessors(chain=true) @NoArgsConstructor
 	public static class FormListener extends RequestEditPage.FormListener {
 		
-		public FormListener(Request request) {
-			super(request);
+		public FormListener(Request request,ScopeFunctionSelectionController scopeFunctionSelectionController) {
+			super(request,scopeFunctionSelectionController);
 		}
 		
 		@Override
 		public void act(Form form) {
 			String actionIdentifier;
 			if(TREATMENT_CHOICE_ACCEPT.equals(form.getInput(SelectOneRadio.class, Request.FIELD_TREATMENT).getValue())) {
-				actionIdentifier = RequestBusiness.ACCEPT;
-				request.writeBudgetariesScopeFunctionsIdentifiers();
-				
+				actionIdentifier = RequestBusiness.ACCEPT;				
+				writeBudgetariesScopeFunctionsIdentifiers();
 				try {
 					request.setSignatureSpecimenReadPageURL(NavigationCaseGetter.getInstance().get(PublicRequestReadPage.OUTCOME)
 							.getRedirectURL(FacesContext.getCurrentInstance()).toString());
@@ -120,7 +121,7 @@ public class RequestProcessPage extends AbstractEntityEditPageContainerManagedIm
 				actionIdentifier = RequestBusiness.REJECT;
 			EntitySaver.getInstance().save(Request.class, new Arguments<Request>().setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
 						.setActionIdentifier(actionIdentifier)).addCreatablesOrUpdatables(request));
-			Redirector.getInstance().redirect(RequestListPage.OUTCOME, null);
+			Redirector.getInstance().redirect(RequestsAdministrationPage.OUTCOME, null);
 		}
 		
 		public Boolean isSubmitButtonShowable(Form form) {

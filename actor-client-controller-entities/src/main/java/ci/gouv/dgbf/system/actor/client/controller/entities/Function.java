@@ -34,6 +34,26 @@ public class Function extends AbstractDataIdentifiableSystemStringIdentifiableBu
 	//@Input @InputTextarea private String scopeFunctionCodeScript;
 	//@Input @InputTextarea private String scopeFunctionNameScript;
 	
+	public Boolean isCreditManager() {
+		return ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER.equals(code)
+				|| ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_ASSISTANT.equals(code);
+	}
+	
+	public Boolean isAuthorizingOfficer() {
+		return ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_HOLDER.equals(code)
+				|| ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_ASSISTANT.equals(code);
+	}
+	
+	public Boolean isFinancialController() {
+		return ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_HOLDER.equals(code)
+				|| ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_ASSISTANT.equals(code);
+	}
+	
+	public Boolean isAccounting() {
+		return ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_HOLDER.equals(code)
+				|| ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_ASSISTANT.equals(code);
+	}
+	
 	@Override
 	public String toString() {
 		return code+" "+name;
