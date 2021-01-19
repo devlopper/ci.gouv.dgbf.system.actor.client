@@ -11,6 +11,7 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntitySaver;
 import org.cyk.utility.__kernel__.representation.RepresentationProxyGetter;
+import org.cyk.utility.__kernel__.session.SessionHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 
 import ci.gouv.dgbf.system.actor.server.business.api.AccountRequestBusiness;
@@ -153,6 +154,12 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 			else if(AssignmentsBusiness.DELETE_ALL.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(AssignmentsRepresentation.getProxy());
 			else if(AssignmentsBusiness.DERIVE_ALL_VALUES.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(AssignmentsRepresentation.getProxy());
+			else if(AssignmentsBusiness.CLEAN.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(AssignmentsRepresentation.getProxy());
+			else if(AssignmentsBusiness.IMPORT.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(AssignmentsRepresentation.getProxy());
+			else if(AssignmentsBusiness.EXPORT.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(AssignmentsRepresentation.getProxy());
 			
 			else if(ExecutionImputationBusiness.REFRESH_MATERIALIZED_VIEW.equals(arguments.getRepresentationArguments().getActionIdentifier()))
@@ -465,6 +472,15 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 		}
 		if(arguments != null && AssignmentsBusiness.DELETE_ALL.equals(arguments.getActionIdentifier()))
 			return ((AssignmentsRepresentation)representation).deleteAll();
+		
+		if(arguments != null && AssignmentsBusiness.CLEAN.equals(arguments.getActionIdentifier())) {
+			//AssignmentsDto assignments = (AssignmentsDto) CollectionHelper.getFirst(creatables);
+			return ((AssignmentsRepresentation)representation).clean(SessionHelper.getUserName());
+		}
+		if(arguments != null && AssignmentsBusiness.IMPORT.equals(arguments.getActionIdentifier()))
+			return ((AssignmentsRepresentation)representation).import_(SessionHelper.getUserName());
+		if(arguments != null && AssignmentsBusiness.EXPORT.equals(arguments.getActionIdentifier()))
+			return ((AssignmentsRepresentation)representation).export(SessionHelper.getUserName());
 		
 		if(arguments != null && RequestBusiness.INITIALIZE.equals(arguments.getActionIdentifier())) {
 			RequestDto request = (RequestDto) CollectionHelper.getFirst(creatables);

@@ -8,6 +8,12 @@
 	xmlns:pe="http://primefaces.org/ui/extensions"
 	xmlns:cyk="http://primefaces.jsf.web.utility.cyk.org">
 	
+	<style>
+		.ui-selectonemenu-panel{
+			width: auto !important;
+		}
+	</style>
+	
 	<p:dataTable
 		id="#{__page__.budgetaryScopeFunctionSelectionController.scopeFunctionsListIdentifier}"
 		value="#{__page__.budgetaryScopeFunctionSelectionController.selected}" 
@@ -15,17 +21,20 @@
 		emptyMessage="-- Aucun élément trouvé --"
 		rowIndexVar="rowIndex"
 	>
-		<p:column headerText="#" width="40">
+		<p:column headerText="#" width="90">
 			<h:outputText value="#{rowIndex+1}"/>
 			<f:facet name="footer">
-				<p:commandButton icon="fa fa-plus" title="Ajouter" type="button" onclick="PF('scopeFunctionSelectorDialog').show();" />
+				<p:commandButton value="Ajouter" icon="fa fa-plus" title="Ajouter" type="button" onclick="PF('scopeFunctionSelectorDialog').show();" />
 			</f:facet>
 		</p:column>
-		<p:column headerText="Fonction budgétaire">
-			<h:outputText value="#{scopeFunction}"/>
+		<p:column headerText="Code" width="70">
+			<h:outputText value="#{scopeFunction.code}"/>
 		</p:column>
-		<p:column headerText="*" width="40">
-			<p:commandButton icon="fa fa-minus" title="Retirer" action="#{__page__.budgetaryScopeFunctionSelectionController.remove(scopeFunction)}" 
+		<p:column headerText="Libellé">
+			<h:outputText value="#{scopeFunction.name}"/>
+		</p:column>
+		<p:column headerText="-" width="80">
+			<p:commandButton value="Retirer" icon="fa fa-minus" title="Retirer" action="#{__page__.budgetaryScopeFunctionSelectionController.remove(scopeFunction)}" 
 			process="@this" update="#{__page__.budgetaryScopeFunctionSelectionController.scopeFunctionsListIdentifier}"/>		
 		</p:column>
 	</p:dataTable>
