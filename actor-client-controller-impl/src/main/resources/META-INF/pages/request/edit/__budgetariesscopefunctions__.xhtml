@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:cc="http://xmlns.jcp.org/jsf/composite"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:cyk="http://primefaces.jsf.web.utility.cyk.org">
+	
+	<style>
+		.ui-selectonemenu-panel{
+			width: auto !important;
+		}
+	</style>
+	
+	<p:dataTable
+		id="#{__page__.budgetaryScopeFunctionSelectionController.scopeFunctionsListIdentifier}"
+		value="#{__page__.budgetaryScopeFunctionSelectionController.selected}" 
+		var="scopeFunction"
+		emptyMessage="-- Aucun élément trouvé --"
+		rowIndexVar="rowIndex"
+	>
+		<p:column headerText="#" width="90">
+			<h:outputText value="#{rowIndex+1}"/>
+			<f:facet name="footer">
+				<p:commandButton value="Ajouter" icon="fa fa-plus" title="Ajouter" type="button" onclick="PF('scopeFunctionSelectorDialog').show();" />
+			</f:facet>
+		</p:column>
+		<p:column headerText="Code" width="70">
+			<h:outputText value="#{scopeFunction.code}"/>
+		</p:column>
+		<p:column headerText="Libellé">
+			<h:outputText value="#{scopeFunction.name}"/>
+		</p:column>
+		<p:column headerText="-" width="80">
+			<p:commandButton value="Retirer" icon="fa fa-minus" title="Retirer" action="#{__page__.budgetaryScopeFunctionSelectionController.remove(scopeFunction)}" 
+			process="@this" update="#{__page__.budgetaryScopeFunctionSelectionController.scopeFunctionsListIdentifier}"/>		
+		</p:column>
+	</p:dataTable>
+		
+	<p:dialog header="Ajout de fonction budgétaire" widgetVar="scopeFunctionSelectorDialog" modal="true" closable="true" closeOnEscape="true" width="1000" height="250">
+		<ui:decorate template="#{primefacesHelper.getModelTemplate(__page__.budgetaryScopeFunctionSelectionController.layout)}">
+	    	<ui:param name="layout" value="#{__page__.budgetaryScopeFunctionSelectionController.layout}"/>
+	    </ui:decorate>	
+	</p:dialog>
+</ui:composition>

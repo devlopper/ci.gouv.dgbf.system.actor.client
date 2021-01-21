@@ -19,6 +19,15 @@ public class ServletContextListener extends AbstractServletContextListener imple
 		super.__initialize__(context);
 		__inject__(ApplicationScopeLifeCycleListener.class).initialize(null);
 		DesktopDefault.initialize(ci.gouv.dgbf.system.actor.server.annotation.System.class,null);
-		org.cyk.utility.security.keycloak.client.ApplicationScopeLifeCycleListener.enable(context, "/keycloak/*","/private/*","/mon_compte/*");
+		org.cyk.utility.security.keycloak.client.ApplicationScopeLifeCycleListener.enable(context
+				, "/keycloak/*"
+				,"/private/*"
+				,"/mon_compte/*"
+				,"/profile/*"
+				,"/request/*"
+				,"/mea/*"
+		);
+		//MenuGeneratorPortailApiService.HOST = "10.3.4.17";
+		//MenuGeneratorPortailApiService.PORT = 31551;
 	}
 }

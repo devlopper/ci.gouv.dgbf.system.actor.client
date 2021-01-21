@@ -134,7 +134,7 @@
 				<jboss-web.context-root>/acteur</jboss-web.context-root>
 				<cyk.variable.system.proxy.uniform.resource.identifier>http://localhost:8180/api</cyk.variable.system.proxy.uniform.resource.identifier>
 				<cyk.variable.user.interface.theme.menu.is.dynamic>false</cyk.variable.user.interface.theme.menu.is.dynamic>
-				<cyk.variable.keycloak.enabled>false</cyk.variable.keycloak.enabled>
+				<cyk.variable.keycloak.enabled>true</cyk.variable.keycloak.enabled>
 				<cyk.variable.system.security.authentication.enable>${cyk.variable.keycloak.enabled}</cyk.variable.system.security.authentication.enable>
 				<web-app.security-constraint.web-resource-collection.administrator.url-pattern>/private/*</web-app.security-constraint.web-resource-collection.administrator.url-pattern>
 				<web-app.security-constraint.web-resource-collection.user.url-pattern>/mon_compte/*</web-app.security-constraint.web-resource-collection.user.url-pattern>

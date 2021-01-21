@@ -19,6 +19,7 @@ import org.cyk.utility.__kernel__.controller.EntitySaver;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.__kernel__.session.SessionManager;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
@@ -42,6 +43,7 @@ import ci.gouv.dgbf.system.actor.client.controller.impl.Helper;
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeFunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -93,65 +95,66 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl()
 				.setFunctionIdentifier(functionIdentifier));
 		DataTable dataTable = DataTable.build(arguments);
-		if(Boolean.TRUE.equals(MapHelper.readByKey(arguments, ScopeFunctionListPage.class))) {
-			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();
-			
-			dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Initialiser",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
-					,MenuItem.FIELD_ICON,"fa fa-database"
-					,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
-					,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
-						@Override
-						protected Object __runExecuteFunction__(AbstractAction action) {
-							@SuppressWarnings("unchecked")
-							LazyDataModelListenerImpl listener = (LazyDataModelListenerImpl) ((LazyDataModel<ScopeFunction>)dataTable.getValue()).getListener();
-							Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>().addCreatablesOrUpdatables(new ScopeFunction()
-									.setFunctionsIdentifiers(List.of(listener.getFunctionIdentifier())));
-							arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
-									.setActionIdentifier(ScopeFunctionBusiness.DERIVE_BY_FUNCTIONS_IDENTIFIERS));					
-							EntitySaver.getInstance().save(ScopeFunction.class, arguments);
-							return null;
-						}
-					});
-			
-			dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Recodifier",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
-					,MenuItem.FIELD_ICON,"fa fa-cubes"
-					,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
-					,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
-						@Override
-						protected Object __runExecuteFunction__(AbstractAction action) {
-							@SuppressWarnings("unchecked")
-							LazyDataModelListenerImpl listener = (LazyDataModelListenerImpl) ((LazyDataModel<ScopeFunction>)dataTable.getValue()).getListener();
-							Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>().addCreatablesOrUpdatables(new ScopeFunction()
-									.setFunctionsIdentifiers(List.of(listener.getFunctionIdentifier())));
-							arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
-									.setActionIdentifier(ScopeFunctionBusiness.CODIFY_BY_FUNCTIONS_IDENTIFIERS));					
-							EntitySaver.getInstance().save(ScopeFunction.class, arguments);
-							return null;
-						}
-					});
-			
-			dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Supprimer",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
-					,MenuItem.FIELD_ICON,"fa fa-trash"
-					,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
-					,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
-						@Override
-						protected Object __runExecuteFunction__(AbstractAction action) {
-							@SuppressWarnings("unchecked")
-							LazyDataModelListenerImpl listener = (LazyDataModelListenerImpl) ((LazyDataModel<ScopeFunction>)dataTable.getValue()).getListener();
-							Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>().addCreatablesOrUpdatables(new ScopeFunction()
-									.setFunctionsIdentifiers(List.of(listener.getFunctionIdentifier())));
-							arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
-									.setActionIdentifier(ScopeFunctionBusiness.DELETE_BY_FUNCTIONS_IDENTIFIERS));					
-							EntitySaver.getInstance().save(ScopeFunction.class, arguments);
-							return null;
-						}
-					});
-			
-			dataTable.addRecordMenuItemByArgumentsOpenViewInDialogUpdate();
-			dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
-					
+		if(Boolean.TRUE.equals(SessionManager.getInstance().isUserHasRole(Profile.CODE_ADMINISTRATEUR))) {
+			if(Boolean.TRUE.equals(MapHelper.readByKey(arguments, ScopeFunctionListPage.class))) {
+				dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();
+				
+				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Initialiser",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
+						,MenuItem.FIELD_ICON,"fa fa-database"
+						,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
+						,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+							@Override
+							protected Object __runExecuteFunction__(AbstractAction action) {
+								@SuppressWarnings("unchecked")
+								LazyDataModelListenerImpl listener = (LazyDataModelListenerImpl) ((LazyDataModel<ScopeFunction>)dataTable.getValue()).getListener();
+								Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>().addCreatablesOrUpdatables(new ScopeFunction()
+										.setFunctionsIdentifiers(List.of(listener.getFunctionIdentifier())));
+								arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+										.setActionIdentifier(ScopeFunctionBusiness.DERIVE_BY_FUNCTIONS_IDENTIFIERS));					
+								EntitySaver.getInstance().save(ScopeFunction.class, arguments);
+								return null;
+							}
+						});
+				
+				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Recodifier",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
+						,MenuItem.FIELD_ICON,"fa fa-cubes"
+						,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
+						,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+							@Override
+							protected Object __runExecuteFunction__(AbstractAction action) {
+								@SuppressWarnings("unchecked")
+								LazyDataModelListenerImpl listener = (LazyDataModelListenerImpl) ((LazyDataModel<ScopeFunction>)dataTable.getValue()).getListener();
+								Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>().addCreatablesOrUpdatables(new ScopeFunction()
+										.setFunctionsIdentifiers(List.of(listener.getFunctionIdentifier())));
+								arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+										.setActionIdentifier(ScopeFunctionBusiness.CODIFY_BY_FUNCTIONS_IDENTIFIERS));					
+								EntitySaver.getInstance().save(ScopeFunction.class, arguments);
+								return null;
+							}
+						});
+				
+				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Supprimer",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
+						,MenuItem.FIELD_ICON,"fa fa-trash"
+						,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
+						,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+							@Override
+							protected Object __runExecuteFunction__(AbstractAction action) {
+								@SuppressWarnings("unchecked")
+								LazyDataModelListenerImpl listener = (LazyDataModelListenerImpl) ((LazyDataModel<ScopeFunction>)dataTable.getValue()).getListener();
+								Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>().addCreatablesOrUpdatables(new ScopeFunction()
+										.setFunctionsIdentifiers(List.of(listener.getFunctionIdentifier())));
+								arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+										.setActionIdentifier(ScopeFunctionBusiness.DELETE_BY_FUNCTIONS_IDENTIFIERS));					
+								EntitySaver.getInstance().save(ScopeFunction.class, arguments);
+								return null;
+							}
+						});
+				
+				dataTable.addRecordMenuItemByArgumentsOpenViewInDialogUpdate();
+				dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
+			}
 			dataTable.setAreColumnsChoosable(Boolean.TRUE);
-		}
+		}		
 		return dataTable;
 	}
 	

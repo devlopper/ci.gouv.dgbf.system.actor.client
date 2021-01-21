@@ -6,12 +6,13 @@ import org.cyk.user.interface_.theme.web.jsf.primefaces.atlantis.model.TabMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 
 import ci.gouv.dgbf.system.actor.client.controller.impl.identification.IdentificationTheme;
+import ci.gouv.dgbf.system.actor.client.controller.impl.mea.MeaTheme;
 import ci.gouv.dgbf.system.actor.client.controller.impl.myaccount.MyAccountTheme;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
 public class ThemeManagerImpl extends org.cyk.user.interface_.theme.web.jsf.primefaces.atlantis.dgbf.ThemeManagerImpl implements Serializable {
 
-	private TabMenu identificationTabMenu,myAccountTabMenu;
+	private TabMenu identificationTabMenu,myAccountTabMenu,meaTabMenu;
 	
 	@Override
 	public TabMenu getLeftTabMenu(AbstractPageContainerManagedImpl page) {
@@ -25,6 +26,11 @@ public class ThemeManagerImpl extends org.cyk.user.interface_.theme.web.jsf.prim
 				myAccountTabMenu = MyAccountTheme.instantiateTabMenu(page);
 			return myAccountTabMenu;
 		}
+		if(page instanceof MeaTheme) {
+			if(meaTabMenu == null)
+				meaTabMenu = MeaTheme.instantiateTabMenu();
+			return meaTabMenu;
+		}
 		return super.getLeftTabMenu(page);
 	}
 	
@@ -34,6 +40,8 @@ public class ThemeManagerImpl extends org.cyk.user.interface_.theme.web.jsf.prim
 			return IdentificationTheme.APPLICATION_NAME;
 		if(page instanceof MyAccountTheme)
 			return MyAccountTheme.APPLICATION_NAME;
+		if(page instanceof MeaTheme)
+			return MeaTheme.APPLICATION_NAME;
 		return super.getApplicationName(page);
 	}
 	
@@ -43,6 +51,8 @@ public class ThemeManagerImpl extends org.cyk.user.interface_.theme.web.jsf.prim
 			return IdentificationTheme.APPLICATION_OUTCOME;
 		if(page instanceof MyAccountTheme)
 			return MyAccountTheme.APPLICATION_OUTCOME;
+		if(page instanceof MeaTheme)
+			return MeaTheme.APPLICATION_OUTCOME;
 		return super.getApplicationOutcome(page);
 	}
 }

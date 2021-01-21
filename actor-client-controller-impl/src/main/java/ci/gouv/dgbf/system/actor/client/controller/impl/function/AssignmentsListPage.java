@@ -17,6 +17,7 @@ import org.cyk.utility.__kernel__.controller.EntitySaver;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.__kernel__.session.SessionManager;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
@@ -38,10 +39,10 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityL
 import ci.gouv.dgbf.system.actor.client.controller.api.FunctionController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Assignments;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
-import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.impl.Helper;
 import ci.gouv.dgbf.system.actor.server.business.api.AssignmentsBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -95,38 +96,40 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		DataTable dataTable = DataTable.build(arguments);
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);
 		if(Boolean.TRUE.equals(MapHelper.readByKey(arguments, AssignmentsListPage.class))) {
-			dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Initialiser",MenuItem.FIELD_USER_INTERFACE_ACTION
-					,UserInterfaceAction.EXECUTE_FUNCTION,MenuItem.FIELD_ICON,"fa fa-download"
-					,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
-					,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
-						@Override
-						protected Object __runExecuteFunction__(AbstractAction action) {
-							Assignments assignments = new Assignments();
-							assignments.setOverridable(Boolean.FALSE);
-							Arguments<Assignments> arguments = new Arguments<Assignments>().addCreatablesOrUpdatables(assignments);
-							arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
-									.setActionIdentifier(AssignmentsBusiness.IMPORT));
-							EntitySaver.getInstance().save(Assignments.class, arguments);
-							return null;
-						}
-					});
-			
-			dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Dériver les valeurs",MenuItem.FIELD_USER_INTERFACE_ACTION
-					,UserInterfaceAction.EXECUTE_FUNCTION,MenuItem.FIELD_ICON,"fa fa-gear"
-					,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
-					,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
-						@Override
-						protected Object __runExecuteFunction__(AbstractAction action) {
-							Assignments assignments = new Assignments();
-							assignments.setOverridable(Boolean.FALSE);
-							Arguments<Assignments> arguments = new Arguments<Assignments>().addCreatablesOrUpdatables(assignments);
-							arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
-									.setActionIdentifier(AssignmentsBusiness.DERIVE_ALL_VALUES));					
-							EntitySaver.getInstance().save(Assignments.class, arguments);
-							return null;
-						}
-					});
-			
+			if(Boolean.TRUE.equals(SessionManager.getInstance().isUserHasRole(Profile.CODE_ADMINISTRATEUR))) {
+				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Initialiser",MenuItem.FIELD_USER_INTERFACE_ACTION
+						,UserInterfaceAction.EXECUTE_FUNCTION,MenuItem.FIELD_ICON,"fa fa-download"
+						,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
+						,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+							@Override
+							protected Object __runExecuteFunction__(AbstractAction action) {
+								Assignments assignments = new Assignments();
+								assignments.setOverridable(Boolean.FALSE);
+								Arguments<Assignments> arguments = new Arguments<Assignments>().addCreatablesOrUpdatables(assignments);
+								arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+										.setActionIdentifier(AssignmentsBusiness.IMPORT));
+								EntitySaver.getInstance().save(Assignments.class, arguments);
+								return null;
+							}
+						});
+				
+				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Dériver les valeurs",MenuItem.FIELD_USER_INTERFACE_ACTION
+						,UserInterfaceAction.EXECUTE_FUNCTION,MenuItem.FIELD_ICON,"fa fa-gear"
+						,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
+						,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+							@Override
+							protected Object __runExecuteFunction__(AbstractAction action) {
+								Assignments assignments = new Assignments();
+								assignments.setOverridable(Boolean.FALSE);
+								Arguments<Assignments> arguments = new Arguments<Assignments>().addCreatablesOrUpdatables(assignments);
+								arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+										.setActionIdentifier(AssignmentsBusiness.DERIVE_ALL_VALUES));					
+								EntitySaver.getInstance().save(Assignments.class, arguments);
+								return null;
+							}
+						});	
+			}
+				
 			/*
 			dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Modifier",MenuItem.FIELD_ICON,"fa fa-pencil",MenuItem.FIELD_USER_INTERFACE_ACTION
 					,UserInterfaceAction.NAVIGATE_TO_VIEW,MenuItem.FIELD_LISTENER,new MenuItem.Listener.AbstractImpl() {
@@ -174,22 +177,24 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 						}
 					});
 			*/
-			dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Appliquer",MenuItem.FIELD_USER_INTERFACE_ACTION
-					,UserInterfaceAction.EXECUTE_FUNCTION,MenuItem.FIELD_ICON,"fa fa-upload"
-					,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
-					,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
-						@Override
-						protected Object __runExecuteFunction__(AbstractAction action) {
-							Assignments assignments = new Assignments();
-							assignments.setOverridable(Boolean.FALSE);
-							Arguments<Assignments> arguments = new Arguments<Assignments>().addCreatablesOrUpdatables(assignments);
-							arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
-									.setActionIdentifier(AssignmentsBusiness.EXPORT));
-							EntitySaver.getInstance().save(Assignments.class, arguments);
-							return null;
-						}
-					});
-			
+			if(Boolean.TRUE.equals(SessionManager.getInstance().isUserHasRole(Profile.CODE_ADMINISTRATEUR))) {
+				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Appliquer",MenuItem.FIELD_USER_INTERFACE_ACTION
+						,UserInterfaceAction.EXECUTE_FUNCTION,MenuItem.FIELD_ICON,"fa fa-upload"
+						,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
+						,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+							@Override
+							protected Object __runExecuteFunction__(AbstractAction action) {
+								Assignments assignments = new Assignments();
+								assignments.setOverridable(Boolean.FALSE);
+								Arguments<Assignments> arguments = new Arguments<Assignments>().addCreatablesOrUpdatables(assignments);
+								arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+										.setActionIdentifier(AssignmentsBusiness.EXPORT));
+								EntitySaver.getInstance().save(Assignments.class, arguments);
+								return null;
+							}
+						});
+			}
+					
 			/*
 			dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Éffacer",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
 					,MenuItem.FIELD_ICON,"fa fa-trash"

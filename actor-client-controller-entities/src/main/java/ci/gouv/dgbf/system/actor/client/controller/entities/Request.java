@@ -111,7 +111,9 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	private String readReportURIQuery;
 	private String signatureSpecimenReadReportURIQuery;
 	private String creditManagerSignatureSpecimenReadReportURIQuery;
+	private Collection<String> creditManagerSignatureSpecimenReadReportURIsQueries;
 	private String authorizingOfficerSignatureSpecimenReadReportURIQuery;
+	private Collection<String> authorizingOfficerSignatureSpecimenReadReportURIsQueries;
 	
 	/**/
 	

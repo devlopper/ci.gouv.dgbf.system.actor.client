@@ -18,6 +18,7 @@ import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.uri.UniformResourceIdentifierBuilder;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
@@ -32,14 +33,20 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.Button
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuBar;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.GraphicImage;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputText;
 import org.cyk.utility.javascript.OpenWindowScriptBuilder;
 import org.cyk.utility.report.jasper.client.ReportServlet;
+import org.primefaces.model.menu.DefaultMenuItem;
+import org.primefaces.model.menu.DefaultMenuModel;
+import org.primefaces.model.menu.DefaultSubMenu;
+import org.primefaces.model.menu.MenuModel;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationAttribute;
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationForm;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
+import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.impl.FileServletListenerImpl;
 import ci.gouv.dgbf.system.actor.client.controller.impl.identification.PublicRequestReadPage;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
@@ -72,50 +79,63 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 			return null;
 		request.setReadPageURL(JavaServerFacesHelper.buildUrlFromOutcome(PublicRequestReadPage.OUTCOME));
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL
-				,Button.build(Button.FIELD_VALUE,"Modifier",Button.FIELD_ICON,"fa fa-edit",Button.FIELD_OUTCOME,editOutcome
-				,Button.FIELD_PARAMETERS,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),request.getIdentifier()
-						,ParameterName.ACTION_IDENTIFIER.getValue(),Action.UPDATE.name())
-				,Button.FIELD_DISABLED,!ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_INITIALIZED.equals(request.getStatus().getCode())
-				),Cell.FIELD_WIDTH,1));
-				
-		Button button = Button.build(Button.FIELD_VALUE,"Imprimer fiche d'identification",Button.FIELD_ICON,"fa fa-print"
-				,Button.FIELD_DISABLED,ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_ACCEPTED.equals(request.getStatus().getCode()));
-		
-		button.setEventScript(Event.CLICK,OpenWindowScriptBuilder.getInstance().build(UniformResourceIdentifierBuilder.getInstance().buildFromCurrentRequest(ReportServlet.PATH
-				, request.getReadReportURIQuery()).toString(), "Identification de "+request.getCode()));
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,button,Cell.FIELD_WIDTH,2));
-		
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL
-			,CommandButton.build(CommandButton.FIELD_VALUE,"Soumettre",CommandButton.FIELD_ICON,"fa fa-send"
-					,CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
-					,CommandButton.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE
-					,CommandButton.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
-				protected Object __runExecuteFunction__(AbstractAction action) {
-					EntitySaver.getInstance().save(Request.class, new Arguments<Request>().setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
-							.setActionIdentifier(RequestBusiness.SUBMIT)).addCreatablesOrUpdatables(request));		
-					Redirector.getInstance().redirect(readOutcome,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(request.getIdentifier())));
-					return null;
+		if(ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_ACCEPTED.equals(request.getStatus().getCode())) {
+			if(CollectionHelper.isNotEmpty(request.getBudgetariesScopeFunctions())) {
+				for(ScopeFunction scopeFunction : request.getBudgetariesScopeFunctions()) {
+					Button button = Button.build(Button.FIELD_VALUE,"Imprimer spécimen de signature - "+scopeFunction.getCode(),Button.FIELD_ICON,"fa fa-print");
+					button.setEventScript(Event.CLICK,OpenWindowScriptBuilder.getInstance().build(
+							UniformResourceIdentifierBuilder.getInstance().buildFromCurrentRequest(ReportServlet.PATH, scopeFunction.getSignatureSpecimenReadReportURIQuery()).toString()
+							, "Spécimen de signature de "+scopeFunction.getCode()));
+					cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,button,Cell.FIELD_WIDTH,12));
 				}
 			}
-			,CommandButton.FIELD_DISABLED,!ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_INITIALIZED.equals(request.getStatus().getCode())
-			),Cell.FIELD_WIDTH,1));
-		
-		button = Button.build(Button.FIELD_VALUE,"Imprimer spécimen de signature ordonnateur",Button.FIELD_ICON,"fa fa-print"
-				,Button.FIELD_DISABLED,!(ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_ACCEPTED.equals(request.getStatus().getCode())
-				&& Boolean.TRUE.equals(request.getHasBudgetaryScopeFunctionWhereFunctionCodeIsAuthorizingOfficerHolder())));
-		button.setEventScript(Event.CLICK,OpenWindowScriptBuilder.getInstance().build(
-				UniformResourceIdentifierBuilder.getInstance().buildFromCurrentRequest(ReportServlet.PATH, request.getAuthorizingOfficerSignatureSpecimenReadReportURIQuery()).toString()
-				, "Spécimen de signature GC de "+request.getCode()));
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,button,Cell.FIELD_WIDTH,3));
-		
-		button = Button.build(Button.FIELD_VALUE,"Imprimer spécimen de signature gestionnaire de crédits",Button.FIELD_ICON,"fa fa-print"
-				,Button.FIELD_DISABLED,!(ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_ACCEPTED.equals(request.getStatus().getCode())
-				&& Boolean.TRUE.equals(request.getHasBudgetaryScopeFunctionWhereFunctionCodeIsCreditManagerHolder())));
-		button.setEventScript(Event.CLICK,OpenWindowScriptBuilder.getInstance().build(
-				UniformResourceIdentifierBuilder.getInstance().buildFromCurrentRequest(ReportServlet.PATH, request.getCreditManagerSignatureSpecimenReadReportURIQuery()).toString()
-				, "Spécimen de signature ORD de "+request.getCode()));
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,button,Cell.FIELD_WIDTH,5));
+		}else {
+			Integer width = 0;
+			if(ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_INITIALIZED.equals(request.getStatus().getCode())) {
+				cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL
+						,Button.build(Button.FIELD_VALUE,"Modifier",Button.FIELD_ICON,"fa fa-edit",Button.FIELD_OUTCOME,editOutcome
+						,Button.FIELD_PARAMETERS,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),request.getIdentifier()
+								,ParameterName.ACTION_IDENTIFIER.getValue(),Action.UPDATE.name())
+						,Button.FIELD_DISABLED,!ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_INITIALIZED.equals(request.getStatus().getCode())
+						),Cell.FIELD_WIDTH,1));
+				width += 1;
+			}
+			
+			if(!ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_ACCEPTED.equals(request.getStatus().getCode())
+					&& !ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_REJECTED.equals(request.getStatus().getCode())) {
+				Button button = Button.build(Button.FIELD_VALUE,"Imprimer fiche d'identification",Button.FIELD_ICON,"fa fa-print"
+						,Button.FIELD_DISABLED,ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_ACCEPTED.equals(request.getStatus().getCode()));		
+				button.setEventScript(Event.CLICK,OpenWindowScriptBuilder.getInstance().build(UniformResourceIdentifierBuilder.getInstance().buildFromCurrentRequest(ReportServlet.PATH
+						, request.getReadReportURIQuery()).toString(), "Identification de "+request.getCode()));
+				cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,button,Cell.FIELD_WIDTH,2));
+				width += 2;
+			}
+			
+			if(ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_INITIALIZED.equals(request.getStatus().getCode())) {
+				cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL
+						,CommandButton.build(CommandButton.FIELD_VALUE,"Soumettre",CommandButton.FIELD_ICON,"fa fa-send"
+								,CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
+								,CommandButton.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE
+								,CommandButton.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+							protected Object __runExecuteFunction__(AbstractAction action) {
+								EntitySaver.getInstance().save(Request.class, new Arguments<Request>().setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+										.setActionIdentifier(RequestBusiness.SUBMIT)).addCreatablesOrUpdatables(request));		
+								Redirector.getInstance().redirect(readOutcome,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(request.getIdentifier())));
+								return null;
+							}
+						}
+						,CommandButton.FIELD_DISABLED,!ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_INITIALIZED.equals(request.getStatus().getCode())
+						),Cell.FIELD_WIDTH,1));
+				width += 1;
+			}
+			
+			Integer remainingWidth = 12-width;
+			if(remainingWidth>0) {
+				Map<Object,Object> map = CollectionHelper.getLast(cellsMaps);
+				if(map != null)
+					map.put(Cell.FIELD_WIDTH, NumberHelper.getInteger(map.get(Cell.FIELD_WIDTH))+remainingWidth);
+			}		
+		}
 		
 		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
 	}

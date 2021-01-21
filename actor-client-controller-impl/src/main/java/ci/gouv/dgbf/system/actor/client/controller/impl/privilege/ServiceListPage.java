@@ -95,20 +95,32 @@ public class ServiceListPage extends AbstractEntityListPageContainerManagedImpl<
 					}
 				});
 		
-		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Dériver les autorisations","fa fa-database",new AbstractAction.Listener.AbstractImpl() {
+		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Dériver les autorisations","fa fa-cubes",new AbstractAction.Listener.AbstractImpl() {
 			@Override
 			protected Object __runExecuteFunction__(AbstractAction action) {
 				Arguments<Service> arguments = new Arguments<Service>().addCreatablesOrUpdatables((Service)action.readArgument());
-				arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(ServiceBusiness.DERIVE_KEYCLOAK_AUTHORIZATIONS));					
+				arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+						.setActionIdentifier(ServiceBusiness.DERIVE_KEYCLOAK_AUTHORIZATIONS));					
 				EntitySaver.getInstance().save(Service.class, arguments);
 				return null;
 			}
-		});		
+		});
+		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Dériver les autorisations à partir de zéro","fa fa-database",new AbstractAction.Listener.AbstractImpl() {
+			@Override
+			protected Object __runExecuteFunction__(AbstractAction action) {
+				Arguments<Service> arguments = new Arguments<Service>().addCreatablesOrUpdatables((Service)action.readArgument());
+				arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+						.setActionIdentifier(ServiceBusiness.DERIVE_KEYCLOAK_AUTHORIZATIONS_FROM_SCRATCH));					
+				EntitySaver.getInstance().save(Service.class, arguments);
+				return null;
+			}
+		});
 		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Supprimer les autorisations","fa fa-trash",new AbstractAction.Listener.AbstractImpl() {
 			@Override
 			protected Object __runExecuteFunction__(AbstractAction action) {
 				Arguments<Service> arguments = new Arguments<Service>().addCreatablesOrUpdatables((Service)action.readArgument());
-				arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(ServiceBusiness.DELETE_KEYCLOAK_AUTHORIZATIONS));					
+				arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+						.setActionIdentifier(ServiceBusiness.DELETE_KEYCLOAK_AUTHORIZATIONS));					
 				EntitySaver.getInstance().save(Service.class, arguments);
 				return null;
 			}

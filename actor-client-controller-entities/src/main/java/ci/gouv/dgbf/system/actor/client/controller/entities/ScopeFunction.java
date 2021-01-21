@@ -42,6 +42,10 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	@Input @InputBoolean @InputBooleanButton private Boolean shared;	
 	private String sharedAsString;	
 	
+	/**/
+	
+	private String signatureSpecimenReadReportURIQuery;
+	
 	@Override
 	public String toString() {
 		return code+" "+name;

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:cc="http://xmlns.jcp.org/jsf/composite"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:cyk="http://primefaces.jsf.web.utility.cyk.org">
+	
+	<cyk:page value="#{requestReadPage}">
+    	<ui:define name="centerCenter">
+    		<div class="p-grid">
+    			<div class="p-col-12 cyk-padding-1">
+    				<ui:decorate template="#{primefacesHelper.getModelTemplate(requestReadPage.commandsLayout)}">
+    					<ui:param name="layout" value="#{requestReadPage.commandsLayout}"/> 		
+    				</ui:decorate>
+    			</div>
+    			<div class="p-col-8 cyk-padding-1">
+    				<p:panel header="Informations">
+		    			<ui:decorate template="#{primefacesHelper.getModelTemplate(requestReadPage.textsLayout)}">
+    						<ui:param name="layout" value="#{requestReadPage.textsLayout}"/> 		
+    					</ui:decorate>
+		    		</p:panel>
+    			</div>
+    			<div class="p-col-4 cyk-padding-1">
+    				<p:panel header="Fichier(s)">
+		    			<ui:decorate template="#{primefacesHelper.getModelTemplate(requestReadPage.filesLayout)}">
+    						<ui:param name="layout" value="#{requestReadPage.filesLayout}"/> 		
+    					</ui:decorate>
+		    		</p:panel>
+    			</div>
+    		</div>		
+    	</ui:define>
+    </cyk:page>
+</ui:composition>
