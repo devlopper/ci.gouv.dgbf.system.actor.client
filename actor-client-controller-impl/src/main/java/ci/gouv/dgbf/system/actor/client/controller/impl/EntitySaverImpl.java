@@ -450,12 +450,12 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 		}
 		
 		if(arguments != null && AssignmentsBusiness.INITIALIZE.equals(arguments.getActionIdentifier()))
-			return ((AssignmentsRepresentation)representation).initialize();		
+			return ((AssignmentsRepresentation)representation).initialize(SessionHelper.getUserName());
 		if(arguments != null && AssignmentsBusiness.APPLY_MODEL.equals(arguments.getActionIdentifier())) {
 			if(CollectionHelper.isEmpty(updatables))
 				throw new RuntimeException("Model obligatoire");
 			AssignmentsDto assignments = (AssignmentsDto) updatables.iterator().next();
-			return ((AssignmentsRepresentation)representation).applyModel(assignments);
+			return ((AssignmentsRepresentation)representation).applyModel(assignments,SessionHelper.getUserName());
 		}
 		if(arguments != null && AssignmentsBusiness.SAVE_SCOPE_FUNCTIONS.equals(arguments.getActionIdentifier())) {
 			if(CollectionHelper.isEmpty(updatables))
@@ -468,7 +468,7 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 		if(arguments != null && AssignmentsBusiness.DERIVE_ALL_VALUES.equals(arguments.getActionIdentifier())) {
 			AssignmentsDto assignments = (AssignmentsDto) CollectionHelper.getFirst(creatables);
 			Boolean overridable = assignments == null ? null : assignments.getOverridable();
-			return ((AssignmentsRepresentation)representation).deriveAllValues(overridable);
+			return ((AssignmentsRepresentation)representation).deriveAllValues(overridable,SessionHelper.getUserName());
 		}
 		if(arguments != null && AssignmentsBusiness.DELETE_ALL.equals(arguments.getActionIdentifier()))
 			return ((AssignmentsRepresentation)representation).deleteAll();
@@ -504,13 +504,15 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 		
 		if(arguments != null && RequestBusiness.ACCEPT.equals(arguments.getActionIdentifier())) {
 			RequestDto request = (RequestDto) CollectionHelper.getFirst(updatables);
+			//request.set__auditWho__(SessionHelper.getUserName());
 			return ((RequestRepresentation)representation).acceptByIdentifier(request.getIdentifier(),request.getBudgetariesScopeFunctionsAsStrings()
-					,request.getComment(),request.getReadPageURL());
+					,request.getComment(),request.getReadPageURL(),SessionHelper.getUserName());
 		}
 		
 		if(arguments != null && RequestBusiness.REJECT.equals(arguments.getActionIdentifier())) {
 			RequestDto request = (RequestDto) CollectionHelper.getFirst(updatables);
-			return ((RequestRepresentation)representation).rejectByIdentifier(request.getIdentifier(), request.getRejectionReason(),request.getReadPageURL());
+			return ((RequestRepresentation)representation).rejectByIdentifier(request.getIdentifier(), request.getRejectionReason(),request.getReadPageURL()
+					,SessionHelper.getUserName());
 		}
 		
 		if(arguments != null && RequestBusiness.NOTIFY_ACCESS_TOKENS.equals(arguments.getActionIdentifier())) {

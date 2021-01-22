@@ -39,6 +39,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityL
 import ci.gouv.dgbf.system.actor.client.controller.api.FunctionController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Assignments;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
+import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.impl.Helper;
 import ci.gouv.dgbf.system.actor.server.business.api.AssignmentsBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
@@ -96,7 +97,8 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		DataTable dataTable = DataTable.build(arguments);
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);
 		if(Boolean.TRUE.equals(MapHelper.readByKey(arguments, AssignmentsListPage.class))) {
-			if(Boolean.TRUE.equals(SessionManager.getInstance().isUserHasRole(Profile.CODE_ADMINISTRATEUR))) {
+			Boolean isAdministrationActionsVisible = !Boolean.TRUE.equals(SessionManager.getInstance().isUserLogged()) || Boolean.TRUE.equals(SessionManager.getInstance().isUserHasRole(Profile.CODE_ADMINISTRATEUR));
+			if(isAdministrationActionsVisible) {
 				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Initialiser",MenuItem.FIELD_USER_INTERFACE_ACTION
 						,UserInterfaceAction.EXECUTE_FUNCTION,MenuItem.FIELD_ICON,"fa fa-download"
 						,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
@@ -159,25 +161,24 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 						}
 					});
 			*/
-			
-			/*
-			dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Éffacer les valeurs",MenuItem.FIELD_USER_INTERFACE_ACTION
-					,UserInterfaceAction.EXECUTE_FUNCTION,MenuItem.FIELD_ICON,"fa fa-trash"
-					,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
-					,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
-						@Override
-						protected Object __runExecuteFunction__(AbstractAction action) {
-							Assignments assignments = new Assignments();
-							assignments.setOverridable(Boolean.FALSE);
-							Arguments<Assignments> arguments = new Arguments<Assignments>().addCreatablesOrUpdatables(assignments);
-							arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
-									.setActionIdentifier(AssignmentsBusiness.CLEAN));
-							EntitySaver.getInstance().save(Assignments.class, arguments);
-							return null;
-						}
-					});
-			*/
-			if(Boolean.TRUE.equals(SessionManager.getInstance().isUserHasRole(Profile.CODE_ADMINISTRATEUR))) {
+					
+			if(isAdministrationActionsVisible) {
+				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Éffacer les fonctions",MenuItem.FIELD_USER_INTERFACE_ACTION
+						,UserInterfaceAction.EXECUTE_FUNCTION,MenuItem.FIELD_ICON,"fa fa-trash"
+						,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
+						,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+							@Override
+							protected Object __runExecuteFunction__(AbstractAction action) {
+								Assignments assignments = new Assignments();
+								assignments.setOverridable(Boolean.FALSE);
+								Arguments<Assignments> arguments = new Arguments<Assignments>().addCreatablesOrUpdatables(assignments);
+								arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+										.setActionIdentifier(AssignmentsBusiness.CLEAN));
+								EntitySaver.getInstance().save(Assignments.class, arguments);
+								return null;
+							}
+						});
+				
 				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Appliquer",MenuItem.FIELD_USER_INTERFACE_ACTION
 						,UserInterfaceAction.EXECUTE_FUNCTION,MenuItem.FIELD_ICON,"fa fa-upload"
 						,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
@@ -193,23 +194,22 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 								return null;
 							}
 						});
+				
+				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Supprimer toutes les lignes",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
+						,MenuItem.FIELD_ICON,"fa fa-trash"
+						,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
+						,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+							@Override
+							protected Object __runExecuteFunction__(AbstractAction action) {
+								Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>();
+								arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+										.setActionIdentifier(AssignmentsBusiness.DELETE_ALL));					
+								EntitySaver.getInstance().save(ScopeFunction.class, arguments);
+								return null;
+							}
+						});
 			}
-					
-			/*
-			dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Éffacer",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
-					,MenuItem.FIELD_ICON,"fa fa-trash"
-					,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
-					,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
-						@Override
-						protected Object __runExecuteFunction__(AbstractAction action) {
-							Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>();
-							arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
-									.setActionIdentifier(AssignmentsBusiness.DELETE_ALL));					
-							EntitySaver.getInstance().save(ScopeFunction.class, arguments);
-							return null;
-						}
-					});
-			*/
+
 			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("assignmentsEditView", CommandButton.FIELD_VALUE,"Modifier"
 					,CommandButton.FIELD_ICON,"fa fa-pencil");
 		}

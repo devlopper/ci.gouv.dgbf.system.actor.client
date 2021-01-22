@@ -21,11 +21,9 @@ public interface MeaTheme {
 	
 	static TabMenu instantiateTabMenu() {
 		Tabs tabs = DesktopDefault.buildMenuTabsByIdentifier("APP", MeaTheme.class);
-		System.out.println("MeaTheme.instantiateTabMenu() ::: "+tabs);
 		if(tabs == null || CollectionHelper.isEmpty(tabs.get()))
 			return null;
 		Collection<String> tabsNames = tabs.get().stream().map(x -> x.getProperty(Properties.NAME).toString()).collect(Collectors.toList());
-		System.out.println("MeaTheme.instantiateTabMenu() ::: "+tabsNames);
 		return TabMenu.build(TabMenu.ConfiguratorImpl.FIELD_TABS_NAMES,tabsNames
 				,TabMenu.FIELD_LISTENER,new TabMenu.Listener.AbstractImpl() {
 				@Override

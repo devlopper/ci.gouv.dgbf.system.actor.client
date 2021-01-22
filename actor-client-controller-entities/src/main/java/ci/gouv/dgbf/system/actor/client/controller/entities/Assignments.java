@@ -4,15 +4,15 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.cyk.utility.__kernel__.object.__static__.controller.AbstractDataIdentifiableSystemStringAuditedImpl;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
-import org.cyk.utility.client.controller.data.AbstractDataIdentifiableSystemStringImpl;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter @Setter @NoArgsConstructor //@Accessors(chain=true)
-public class Assignments extends AbstractDataIdentifiableSystemStringImpl implements Serializable {
+public class Assignments extends AbstractDataIdentifiableSystemStringAuditedImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/* Imputation */

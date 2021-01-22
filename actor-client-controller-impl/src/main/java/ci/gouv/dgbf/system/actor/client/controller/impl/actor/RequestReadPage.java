@@ -33,15 +33,10 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.Button
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuBar;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.GraphicImage;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputText;
 import org.cyk.utility.javascript.OpenWindowScriptBuilder;
 import org.cyk.utility.report.jasper.client.ReportServlet;
-import org.primefaces.model.menu.DefaultMenuItem;
-import org.primefaces.model.menu.DefaultMenuModel;
-import org.primefaces.model.menu.DefaultSubMenu;
-import org.primefaces.model.menu.MenuModel;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationAttribute;
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationForm;

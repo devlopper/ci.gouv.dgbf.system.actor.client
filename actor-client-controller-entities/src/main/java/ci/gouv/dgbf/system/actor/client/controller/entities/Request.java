@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.object.__static__.controller.AbstractDataIdentifiableSystemStringIdentifiableBusinessStringImpl;
+import org.cyk.utility.__kernel__.object.__static__.controller.AbstractDataIdentifiableSystemStringIdentifiableBusinessStringAuditedImpl;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Choices;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Choices.Count;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Input;
@@ -30,7 +30,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter @Setter @NoArgsConstructor @Accessors(chain=true)
-public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBusinessStringImpl implements Serializable {
+public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBusinessStringAuditedImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	/* Initialization */
