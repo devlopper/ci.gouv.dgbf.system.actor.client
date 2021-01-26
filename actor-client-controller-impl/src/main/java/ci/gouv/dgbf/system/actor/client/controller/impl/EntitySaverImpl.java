@@ -25,6 +25,7 @@ import ci.gouv.dgbf.system.actor.server.business.api.ProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.RequestDispatchSlipBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeTypeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ServiceBusiness;
@@ -38,6 +39,7 @@ import ci.gouv.dgbf.system.actor.server.representation.api.IdentificationFormAtt
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfileFunctionRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfilePrivilegeRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfileRepresentation;
+import ci.gouv.dgbf.system.actor.server.representation.api.RequestDispatchSlipRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.RequestRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ScopeFunctionRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ScopeTypeFunctionRepresentation;
@@ -52,6 +54,7 @@ import ci.gouv.dgbf.system.actor.server.representation.entities.IdentificationFo
 import ci.gouv.dgbf.system.actor.server.representation.entities.ProfileDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ProfileFunctionDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ProfilePrivilegeDto;
+import ci.gouv.dgbf.system.actor.server.representation.entities.RequestDispatchSlipDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.RequestDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ScopeDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ScopeFunctionDto;
@@ -518,6 +521,23 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 		if(arguments != null && RequestBusiness.NOTIFY_ACCESS_TOKENS.equals(arguments.getActionIdentifier())) {
 			RequestDto request = (RequestDto) CollectionHelper.getFirst(creatables);
 			return ((RequestRepresentation)representation).notifyAcessTokens(request.getElectronicMailAddress(),request.getReadPageURL());
+		}
+		
+		if(arguments != null && RequestDispatchSlipBusiness.RECORD.equals(arguments.getActionIdentifier())) {
+			RequestDispatchSlipDto requestDispatchSlipDto = (RequestDispatchSlipDto) CollectionHelper.getFirst(updatables);
+			if(requestDispatchSlipDto == null)
+				requestDispatchSlipDto = (RequestDispatchSlipDto) CollectionHelper.getFirst(creatables);
+			return ((RequestDispatchSlipRepresentation)representation).record(requestDispatchSlipDto);
+		}
+		
+		if(arguments != null && RequestDispatchSlipBusiness.SEND.equals(arguments.getActionIdentifier())) {
+			RequestDispatchSlipDto requestDispatchSlipDto = (RequestDispatchSlipDto) CollectionHelper.getFirst(updatables);
+			return ((RequestDispatchSlipRepresentation)representation).send(requestDispatchSlipDto);
+		}
+		
+		if(arguments != null && RequestDispatchSlipBusiness.PROCESS.equals(arguments.getActionIdentifier())) {
+			RequestDispatchSlipDto requestDispatchSlipDto = (RequestDispatchSlipDto) CollectionHelper.getFirst(updatables);
+			return ((RequestDispatchSlipRepresentation)representation).process(requestDispatchSlipDto);
 		}
 		
 		if(arguments != null && ActorBusiness.SAVE_PROFILE.equals(arguments.getActionIdentifier())) {

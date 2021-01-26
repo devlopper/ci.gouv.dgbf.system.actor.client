@@ -65,6 +65,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 	public static DataTable buildDataTable(Map<Object,Object> arguments) {
 		if(arguments == null)
 			arguments = new HashMap<>();
+		Class<?> pageClass = (Class<?>) MapHelper.readByKey(arguments, RequestListPage.class);
 		LazyDataModelListenerImpl lazyDataModelListener = (LazyDataModelListenerImpl) MapHelper.readByKey(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER);
 		if(lazyDataModelListener == null)
 			lazyDataModelListener = new LazyDataModelListenerImpl();
@@ -85,17 +86,24 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl());
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl());
 		DataTable dataTable = DataTable.build(arguments);
+		
+		if(pageClass == null || RequestListPage.class.equals(pageClass)) {
+			//dataTable.addRecordMenuItemByArgumentsOpenViewInDialogRead();
+			//dataTable.addRecordMenuItemByArgumentsNavigateToViewRead();
+			dataTable.addRecordMenuItemByArgumentsNavigateToView(null,RequestReadPage.OUTCOME, MenuItem.FIELD_VALUE,"Consulter",MenuItem.FIELD_ICON,"fa fa-eye");
+			dataTable.addRecordMenuItemByArgumentsNavigateToView(null,RequestProcessPage.OUTCOME, MenuItem.FIELD_VALUE,"Traiter",MenuItem.FIELD_ICON,"fa fa-file");
+		}
 		/*if(pageClass == null || UserRequestsPage.class.equals(pageClass)) {
 			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("myAccountRequestReadView", MenuItem.FIELD_VALUE,"Consulter",MenuItem.FIELD_ICON,"fa fa-eye");
 		}else {
 			
 		}
 		*/
-		dataTable.addRecordMenuItemByArgumentsOpenViewInDialogRead();
+		
 		//dataTable.addRecordMenuItemByArgumentsNavigateToViewRead();
 		//if(Boolean.TRUE.equals(lazyDataModelListener.getProcessingDateIsNullable()))
-			dataTable.addRecordMenuItemByArgumentsNavigateToView(null,RequestProcessPage.OUTCOME, MenuItem.FIELD_VALUE,"Traiter",MenuItem.FIELD_ICON,"fa fa-file");
-		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();		
+			
+		//dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();		
 		return dataTable;
 	}
 	
@@ -236,7 +244,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 	
 	@Getter @Setter @Accessors(chain=true)
 	public static class LazyDataModelListenerImpl extends LazyDataModel.Listener.AbstractImpl<Request> implements Serializable {
-		private String actorIdentifier;
+		private String actorIdentifier,functionIdentifier,dispatchSlipIdentifier,statusIdentifier;
 		private Boolean processingDateIsNullable,processingDateIsNotNullable;
 		
 		@Override
@@ -266,6 +274,13 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 					filter = new Filter.Dto();
 				filter.addField(RequestQuerier.PARAMETER_NAME_PROCESSING_DATE_IS_NOT_NULL, processingDateIsNotNullable);
 			}
+			if(dispatchSlipIdentifier != null) {
+				if(filter == null)
+					filter = new Filter.Dto();
+				filter.addField(RequestQuerier.PARAMETER_NAME_DISPATCH_SLIP_IDENTIFIER, dispatchSlipIdentifier);
+			}
+			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER, functionIdentifier, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_STATUS_IDENTIFIER, statusIdentifier, filter);
 			return filter;
 		}
 		

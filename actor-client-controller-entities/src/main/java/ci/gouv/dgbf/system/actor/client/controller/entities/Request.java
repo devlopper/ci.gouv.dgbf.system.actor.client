@@ -27,9 +27,8 @@ import org.cyk.utility.client.controller.component.annotation.InputNumber;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
-@Getter @Setter @NoArgsConstructor @Accessors(chain=true)
+@Getter @Setter @NoArgsConstructor //@Accessors(chain=true)
 public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBusinessStringAuditedImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
@@ -51,7 +50,8 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	private String actorCode;
 	private String actorNames;
 	@Input @InputText private String firstName;
-	@Input @InputText private String lastNames;	
+	@Input @InputText private String lastNames;
+	private String firstNameAndLastNames;
 	@Input @InputText private String registrationNumber;
 	@Input @InputChoice(choices = @Choices(count = Count.ALL)) @InputChoiceOneRadio private IdentityGroup group;
 	@Input @InputChoice(choices = @Choices(count = Count.ALL)) @InputChoiceOneRadio private Civility civility;
@@ -105,6 +105,8 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	@Input @InputChoiceOneRadio @NotNull private String treatment;
 	@Input @InputTextarea private String acceptationComment;
 	@Input @InputTextarea @NotNull private String rejectionReason;
+	private String treatmentComment;
+	private Boolean accepted;
 	
 	/* Report identifier */
 	

@@ -238,6 +238,30 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>requestDispatchSlipListView</from-outcome>
+			<to-view-id>/private/requestdispatchslip/list/index.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>requestDispatchSlipEditView</from-outcome>
+			<to-view-id>/private/requestdispatchslip/edit/index.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>requestDispatchSlipReadView</from-outcome>
+			<to-view-id>/private/requestdispatchslip/read/index.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>requestDispatchSlipProcessView</from-outcome>
+			<to-view-id>/private/requestdispatchslip/process/index.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>identificationIndexView</from-outcome>
 			<to-view-id>/public/identification/index.jsf</to-view-id>
 			<redirect />

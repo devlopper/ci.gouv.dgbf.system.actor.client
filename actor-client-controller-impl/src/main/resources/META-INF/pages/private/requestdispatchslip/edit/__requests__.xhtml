@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:cc="http://xmlns.jcp.org/jsf/composite"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:cyk="http://primefaces.jsf.web.utility.cyk.org">
+		
+	<p:dataTable
+		id="#{__page__.requestsSelectionController.listIdentifier}"
+		value="#{__page__.requestsSelectionController.selected}" 
+		var="r"
+		emptyMessage="-- Aucun élément trouvé --"
+		rowIndexVar="rowIndex"
+	>
+		<p:column headerText="#" width="130">
+			<h:outputText value="#{rowIndex+1}"/>
+			<f:facet name="footer">
+				<p:commandButton value="Sélectionner" icon="fa fa-plus" title="Sélectionner des demandes à porter sur le bordereau" 
+					action="#{__page__.requestsSelectionController.showDialog(__page__.functionSelectOne.value)}" update=":form:requestSelectorDialogPanel" oncomplete="PF('requestSelectorDialog').show();" />
+			</f:facet>
+		</p:column>
+		<p:column headerText="Numéro" width="100">
+			<h:outputText value="#{r.code}"/>
+		</p:column>
+		<p:column headerText="Nom" width="140">
+			<h:outputText value="#{r.firstName}"/>
+		</p:column>
+		<p:column headerText="Prénoms">
+			<h:outputText value="#{r.lastNames}"/>
+		</p:column>
+		<p:column headerText="Email" width="250">
+			<h:outputText value="#{r.electronicMailAddress}"/>
+		</p:column>
+		<p:column headerText="Action" width="80">
+			<p:commandButton value="Retirer" icon="fa fa-minus" title="Retirer cette demande du bordereau" action="#{__page__.requestsSelectionController.remove(r)}" 
+			process="@this" update="#{__page__.requestsSelectionController.listIdentifier}"/>
+		</p:column>
+	</p:dataTable>
+	
+	<p:outputPanel id="requestSelectorDialogPanel">
+		<p:dialog header="#{__page__.requestsSelectionController.dialogTitle}" widgetVar="requestSelectorDialog" modal="true" closable="true" closeOnEscape="true" width="1100" height="350">
+			<ui:decorate template="#{primefacesHelper.getModelTemplate(__page__.requestsSelectionController.layout)}">
+		    	<ui:param name="layout" value="#{__page__.requestsSelectionController.layout}"/>
+		    </ui:decorate>	
+		</p:dialog>
+	</p:outputPanel>	
+		
+</ui:composition>

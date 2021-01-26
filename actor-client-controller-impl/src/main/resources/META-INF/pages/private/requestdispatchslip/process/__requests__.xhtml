@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:cc="http://xmlns.jcp.org/jsf/composite"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:cyk="http://primefaces.jsf.web.utility.cyk.org">
+		
+	<p:dataTable
+		value="#{__page__.form.entity.requests}" 
+		var="r"
+		emptyMessage="-- Aucun élément trouvé --"
+		rowIndexVar="rowIndex"
+	>
+		<p:column headerText="#" width="25">
+			<h:outputText value="#{rowIndex+1}"/>
+			<p:rowToggler/>
+		</p:column>
+		<p:column headerText="Numéro" width="100">
+			<h:outputText value="#{r.code}"/>
+		</p:column>
+		<p:column headerText="Nom et prénoms" width="200">
+			<h:outputText value="#{r.firstNameAndLastNames}"/>
+		</p:column>
+		<p:column headerText="Email">
+			<h:outputText value="#{r.electronicMailAddress}"/>
+		</p:column>
+		<p:column headerText="Fonction(s)">
+			<h:outputText value="#{r.budgetariesScopeFunctionsAsStrings}"/>
+		</p:column>
+		<p:column headerText="Action" width="300">
+			<p:selectOneRadio value="#{r.treatment}" requiredMessage="true">
+				<f:selectItems value="#{__page__.actions}" />
+			</p:selectOneRadio>
+		</p:column>		
+		<p:column headerText="Commentaire / Motif de rejet">
+			<p:inputTextarea value="#{r.treatmentComment}"/>
+		</p:column>
+		<p:rowExpansion>
+			<p:dataList var="scopeFunctionAsString" value="#{r.budgetariesScopeFunctionsAsStrings}" >
+				<h:outputText value="#{scopeFunctionAsString}"/>
+			</p:dataList>
+		</p:rowExpansion>
+	</p:dataTable>
+</ui:composition>
