@@ -9,11 +9,11 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.object.__static__.controller.AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableAuditedImpl;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Choices;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Choices.Count;
-import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Input;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoice;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceOne;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceOneCombo;
+import org.cyk.utility.__kernel__.string.StringHelper;
 
 import ci.gouv.dgbf.system.actor.server.business.api.RequestDispatchSlipBusiness;
 import ci.gouv.dgbf.system.actor.server.representation.entities.RequestDto;
@@ -27,9 +27,15 @@ public class RequestDispatchSlip extends AbstractDataIdentifiableSystemStringIde
 	private static final long serialVersionUID = 1L;
 	
 	@Input @InputChoice(choices = @Choices(count = Count.ALL)) @InputChoiceOne @InputChoiceOneCombo
+	private Section section;
+	private String sectionIdentifier;
+	private String sectionAsString;
+	
+	@Input @InputChoice(choices = @Choices(count = Count.ALL)) @InputChoiceOne @InputChoiceOneCombo
 	private Function function;
 	private String functionIdentifier;
 	private String functionAsString;
+	
 	private String creationDateAsString,sendingDateAsString,processingDateAsString,comment;
 	
 	private Collection<Request> requests;
@@ -39,6 +45,13 @@ public class RequestDispatchSlip extends AbstractDataIdentifiableSystemStringIde
 	private Collection<RequestDto.Rejection> requestsRejections;
 	
 	public void writeIdentifiers(String actionIdentifier) {
+		if(section == null)
+			sectionIdentifier = null;
+		else
+			sectionIdentifier = section.getIdentifier();		
+		if(StringHelper.isBlank(sectionIdentifier))
+			throw new RuntimeException("Veuillez sélectionner une section");
+		
 		if(function == null)
 			functionIdentifier = null;
 		else
@@ -96,6 +109,8 @@ public class RequestDispatchSlip extends AbstractDataIdentifiableSystemStringIde
 	
 	/**/
 	
+	public static final String FIELD_SECTION = "section";
+	public static final String FIELD_SECTION_AS_STRING = "sectionAsString";
 	public static final String FIELD_FUNCTION = "function";
 	public static final String FIELD_FUNCTION_AS_STRING = "functionAsString";
 	public static final String FIELD_REQUESTS = "requests";

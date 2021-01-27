@@ -86,22 +86,36 @@ public class RequestDispatchSlipReadPage extends AbstractPageContainerManagedImp
 	}
 	
 	private void buildTexts(Collection<Map<Object,Object>> cellsMaps) {
-		buildTexts(cellsMaps, "Catégorie de fonction budgétaire", requestDispatchSlip.getFunctionAsString());
+		//buildTexts(cellsMaps, "Catégorie de fonction budgétaire", requestDispatchSlip.getFunctionAsString());
+		
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Catégorie de fonction budgétaire : "
+				+requestDispatchSlip.getFunctionAsString()),Cell.FIELD_WIDTH,4));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Section : "+requestDispatchSlip.getSection()),Cell.FIELD_WIDTH,8));
+		
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Code : "+requestDispatchSlip.getCode()),Cell.FIELD_WIDTH,3));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Date de création : "+requestDispatchSlip.getCreationDateAsString()),Cell.FIELD_WIDTH,3));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Date de transmission : "
+				+ValueHelper.defaultToIfBlank(requestDispatchSlip.getSendingDateAsString(),"-")),Cell.FIELD_WIDTH,3));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Date de traitement : "
+				+ValueHelper.defaultToIfBlank(requestDispatchSlip.getProcessingDateAsString(),"-")),Cell.FIELD_WIDTH,3));
+		/*
 		buildTexts(cellsMaps, "Code", requestDispatchSlip.getCode());
 		buildTexts(cellsMaps, "Date de création", requestDispatchSlip.getCreationDateAsString());
 		buildTexts(cellsMaps, "Date de transmission", requestDispatchSlip.getSendingDateAsString());
 		buildTexts(cellsMaps, "Date de traitement", requestDispatchSlip.getProcessingDateAsString());
+		*/
 	}
-	
+	/*
 	private void buildTexts(Collection<Map<Object,Object>> cellsMaps,String label,String value) {
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue(label),Cell.FIELD_WIDTH,2));
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue(ValueHelper.defaultToIfBlank(value,"---")),Cell.FIELD_WIDTH,10));
-	}
+	}*/
 	
 	private void buildRequestsDataTable(Collection<Map<Object,Object>> cellsMaps) {
 		DataTable dataTable = RequestListPage.buildDataTable(DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER
 				,new RequestListPage.LazyDataModelListenerImpl().setDispatchSlipIdentifier(requestDispatchSlip.getIdentifier())
-				,DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-header-visibility-hidden cyk-ui-datatable-footer-visibility-hidden");		
+				,DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-header-visibility-hidden cyk-ui-datatable-footer-visibility-hidden"
+				,RequestListPage.class,RequestDispatchSlipReadPage.class);		
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
 	}
 	

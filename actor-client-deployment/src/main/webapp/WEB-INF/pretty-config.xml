@@ -15,7 +15,7 @@
 	
 	<url-mapping id="demandes">
 		<pattern value="/private/demandes.jsf" />
-		<view-id value="/request/index.jsf" />
+		<view-id value="/private/request/index.jsf" />
 	</url-mapping>
 	
 	<url-mapping id="demande_compte">

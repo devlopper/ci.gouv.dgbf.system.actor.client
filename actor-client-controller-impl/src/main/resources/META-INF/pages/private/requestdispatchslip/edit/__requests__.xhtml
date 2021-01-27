@@ -19,7 +19,8 @@
 			<h:outputText value="#{rowIndex+1}"/>
 			<f:facet name="footer">
 				<p:commandButton value="Sélectionner" icon="fa fa-plus" title="Sélectionner des demandes à porter sur le bordereau" 
-					action="#{__page__.requestsSelectionController.showDialog(__page__.functionSelectOne.value)}" update=":form:requestSelectorDialogPanel" oncomplete="PF('requestSelectorDialog').show();" />
+					action="#{__page__.requestsSelectionController.showDialog(__page__.sectionSelectOne.value,__page__.functionSelectOne.value)}" 
+					update=":form:requestSelectorDialogPanel" oncomplete="PF('#{__page__.requestsSelectionController.dialogWidgetVar}').show();"/>
 			</f:facet>
 		</p:column>
 		<p:column headerText="Numéro" width="100">

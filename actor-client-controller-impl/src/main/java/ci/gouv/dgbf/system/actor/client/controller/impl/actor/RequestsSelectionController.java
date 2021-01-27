@@ -1,8 +1,9 @@
 package ci.gouv.dgbf.system.actor.client.controller.impl.actor;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
@@ -15,10 +16,12 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Laz
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
+import org.primefaces.PrimeFaces;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestStatus;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -30,6 +33,8 @@ public class RequestsSelectionController implements Serializable {
 	private DataTable requestsDataTable;
 	private Collection<Request> selected;	
 	private CommandButton addCommandButton;
+	
+	private String dialogWidgetVar = "requestSelectorDialog";
 	private String dialogTitle;
 	
 	private Layout layout;
@@ -64,10 +69,13 @@ public class RequestsSelectionController implements Serializable {
 					if(requestsDataTable == null || CollectionHelper.isEmpty(requestsDataTable.getSelectionAsCollection()))
 						return null;
 					if(selected == null)
-						selected = new ArrayList<>();
+						selected = new LinkedHashSet<>();
 					requestsDataTable.getSelectionAsCollection().forEach(x -> {
 						selected.add((Request) x);
 					});
+					requestsDataTable.setSelection(null);
+					requestsDataTable.setSelectionAsCollection(null);
+					PrimeFaces.current().executeScript(String.format("PF('%s').hide();",dialogWidgetVar));
 					return null;
 				}
 			});
@@ -85,12 +93,19 @@ public class RequestsSelectionController implements Serializable {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void showDialog(Function function) {
-		if(function == null) {
+	public void showDialog(Section section,Function function) {
+		if(section == null || function == null) {
 			dialogTitle = "TITRE";
 		}else {
-			dialogTitle = String.format("Sélection de demandes de %s à porter sur le bordereau",function.getName());
+			dialogTitle = String.format("Sélection de demandes de la section %s de %s à porter sur le bordereau",section.getCode(),function.getName());
 			((RequestListPage.LazyDataModelListenerImpl) ((LazyDataModel<Request>)requestsDataTable.getValue()).getListener()).setFunctionIdentifier(function.getIdentifier());
-		}		
+			((RequestListPage.LazyDataModelListenerImpl) ((LazyDataModel<Request>)requestsDataTable.getValue()).getListener()).setSectionIdentifier(section.getIdentifier());
+			if(CollectionHelper.isEmpty(selected))
+				((RequestListPage.LazyDataModelListenerImpl) ((LazyDataModel<Request>)requestsDataTable.getValue()).getListener()).setExcludedIdentifiers(null);
+			else
+				((RequestListPage.LazyDataModelListenerImpl) ((LazyDataModel<Request>)requestsDataTable.getValue()).getListener())
+				.setExcludedIdentifiers(selected.stream().map(x -> x.getIdentifier()).collect(Collectors.toList()));
+			//PrimeFaces.current().executeScript(String.format("PF('%s').show();",dialogWidgetVar));
+		}
 	}
 }

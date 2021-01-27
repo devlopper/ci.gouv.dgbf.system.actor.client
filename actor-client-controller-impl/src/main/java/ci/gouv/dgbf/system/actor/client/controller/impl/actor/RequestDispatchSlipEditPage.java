@@ -32,9 +32,12 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputT
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityEditPageContainerManagedImpl;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.FunctionController;
+import ci.gouv.dgbf.system.actor.client.controller.api.SectionController;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestDispatchSlip;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestStatus;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestDispatchSlipBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestDispatchSlipQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestStatusQuerier;
@@ -48,13 +51,17 @@ public class RequestDispatchSlipEditPage extends AbstractEntityEditPageContainer
 	
 	private RequestsSelectionController requestsSelectionController;
 	private String requestsListIdentifier = RandomHelper.getAlphabetic(4);
-	private SelectOneCombo functionSelectOne;
+	private SelectOneCombo sectionSelectOne,functionSelectOne;
 	
 	@Override
 	protected void __listenPostConstruct__() {
 		super.__listenPostConstruct__();
-		functionSelectOne = form.getInput(SelectOneCombo.class, RequestDispatchSlip.FIELD_FUNCTION);
-		functionSelectOne.enableValueChangeListener(List.of());
+		sectionSelectOne = form.getInput(SelectOneCombo.class, RequestDispatchSlip.FIELD_SECTION).enableValueChangeListener(List.of());
+		if(CollectionHelper.getSize(sectionSelectOne.getChoices()) == 1)
+			sectionSelectOne.selectFirstChoice();
+		functionSelectOne = form.getInput(SelectOneCombo.class, RequestDispatchSlip.FIELD_FUNCTION).enableValueChangeListener(List.of());
+		if(CollectionHelper.getSize(functionSelectOne.getChoices()) == 1)
+			functionSelectOne.selectFirstChoice();
 	}
 	
 	@Override
@@ -107,8 +114,8 @@ public class RequestDispatchSlipEditPage extends AbstractEntityEditPageContainer
 			}
 			requestsSelectionController.setSelected(requestDispatchSlip.getRequests());
 		}
-		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_INPUTS_FIELDS_NAMES, List.of(RequestDispatchSlip.FIELD_FUNCTION
-				,RequestDispatchSlip.FIELD_REQUESTS));
+		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_INPUTS_FIELDS_NAMES, List.of(RequestDispatchSlip.FIELD_SECTION
+				,RequestDispatchSlip.FIELD_FUNCTION,RequestDispatchSlip.FIELD_REQUESTS));
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_LISTENER, new FormConfiguratorListener());		
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_LISTENER, new FormListener().setRequestsSelectionController(requestsSelectionController));
 		Form form = Form.build(arguments);
@@ -165,9 +172,22 @@ public class RequestDispatchSlipEditPage extends AbstractEntityEditPageContainer
 				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Libellé");
 			}else if(RequestDispatchSlip.FIELD_REQUESTS.equals(fieldName)) {
 				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Demandes");
+			}else if(RequestDispatchSlip.FIELD_SECTION.equals(fieldName)) {
+				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Section");
+				List<Section> sections = (List<Section>) __inject__(SectionController.class).readVisiblesByLoggedInActorCodeForUI();
+				if(CollectionHelper.getSize(sections) > 1) {
+					sections.add(0, null);
+				}
+				map.put(AbstractInputChoice.FIELD_CHOICES,sections);
+				map.put(AbstractInputChoice.FIELD_CHOICE_CLASS,Section.class);
 			}else if(RequestDispatchSlip.FIELD_FUNCTION.equals(fieldName)) {
+				List<Function> functions = (List<Function>) __inject__(FunctionController.class).readCreditManagersAuthorizingOfficers();
+				if(CollectionHelper.getSize(functions) > 1) {
+					functions.add(0, null);
+				}
 				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Catégorie fonction budgétaire");
-				map.put(AbstractInputChoice.FIELD_CHOICES,__inject__(FunctionController.class).readCreditManagersAuthorizingOfficersFinancialControllersAssistants());
+				map.put(AbstractInputChoice.FIELD_CHOICES,functions);
+				map.put(AbstractInputChoice.FIELD_CHOICE_CLASS,Function.class);
 			}
 			return map;
 		}

@@ -17,7 +17,6 @@ import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
-import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
@@ -71,8 +70,8 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			lazyDataModelListener = new LazyDataModelListenerImpl();
 		//Class<?> pageClass = (Class<?>) MapHelper.readByKey(arguments, RequestListPage.class);
 		List<String> columnsFieldsNames = new ArrayList<>();
-		columnsFieldsNames.addAll(List.of(Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_ELECTRONIC_MAIL_ADDRESS
-				,Request.FIELD_MOBILE_PHONE_NUMBER,Request.FIELD_ADMINISTRATIVE_UNIT_AS_STRING
+		columnsFieldsNames.addAll(List.of(Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
+				,Request.FIELD_ELECTRONIC_MAIL_ADDRESS,Request.FIELD_MOBILE_PHONE_NUMBER,Request.FIELD_ADMINISTRATIVE_UNIT_AS_STRING
 				,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS
 				,Request.FIELD_CREATION_DATE_AS_STRING,Request.FIELD_STATUS_AS_STRING,Request.FIELD_PROCESSING_DATE_AS_STRING));
 		//columnsFieldsNames.addAll(0, List.of(Request.FIELD_NAMES));
@@ -86,13 +85,18 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl());
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl());
 		DataTable dataTable = DataTable.build(arguments);
+		dataTable.setAreColumnsChoosable(Boolean.TRUE);
 		
-		if(pageClass == null || RequestListPage.class.equals(pageClass)) {
+		if(pageClass == null || RequestListPage.class.equals(pageClass) || RequestsAdministrationPage.class.equals(pageClass) 
+				|| RequestDispatchSlipReadPage.class.equals(pageClass)) {
 			//dataTable.addRecordMenuItemByArgumentsOpenViewInDialogRead();
 			//dataTable.addRecordMenuItemByArgumentsNavigateToViewRead();
 			dataTable.addRecordMenuItemByArgumentsNavigateToView(null,RequestReadPage.OUTCOME, MenuItem.FIELD_VALUE,"Consulter",MenuItem.FIELD_ICON,"fa fa-eye");
-			dataTable.addRecordMenuItemByArgumentsNavigateToView(null,RequestProcessPage.OUTCOME, MenuItem.FIELD_VALUE,"Traiter",MenuItem.FIELD_ICON,"fa fa-file");
+			if(pageClass == null || RequestListPage.class.equals(pageClass) || RequestsAdministrationPage.class.equals(pageClass)) {
+				dataTable.addRecordMenuItemByArgumentsNavigateToView(null,RequestProcessPage.OUTCOME, MenuItem.FIELD_VALUE,"Traiter",MenuItem.FIELD_ICON,"fa fa-file");
+			}
 		}
+		
 		/*if(pageClass == null || UserRequestsPage.class.equals(pageClass)) {
 			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("myAccountRequestReadView", MenuItem.FIELD_VALUE,"Consulter",MenuItem.FIELD_ICON,"fa fa-eye");
 		}else {
@@ -103,7 +107,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 		//dataTable.addRecordMenuItemByArgumentsNavigateToViewRead();
 		//if(Boolean.TRUE.equals(lazyDataModelListener.getProcessingDateIsNullable()))
 			
-		//dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();		
+		//dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();	
 		return dataTable;
 	}
 	
@@ -128,9 +132,11 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			}else if(Request.FIELD_CREATION_DATE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Créé le");
 				map.put(Column.FIELD_WIDTH, "130");
+				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}else if(Request.FIELD_PROCESSING_DATE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Traité le");
 				map.put(Column.FIELD_WIDTH, "130");
+				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}else if(Request.FIELD_TYPE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Type");
 			}else if(Request.FIELD_FUNCTIONS_AS_STRINGS.equals(fieldName)) {
@@ -139,20 +145,41 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			}else if(Request.FIELD_STATUS_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Statut");
 				map.put(Column.FIELD_WIDTH, "130");
+				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}else if(Request.FIELD_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Numéro");
 				map.put(Column.FIELD_WIDTH, "120");
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, RequestQuerier.PARAMETER_NAME_CODE);
 			}else if(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Fonction(s) budgétaire(s)");
 			}else if(Request.FIELD_ELECTRONIC_MAIL_ADDRESS.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Email");
 				map.put(Column.FIELD_WIDTH, "200");
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, RequestQuerier.PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS);
 			}else if(Request.FIELD_MOBILE_PHONE_NUMBER.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Tel. Mobile");
 				map.put(Column.FIELD_WIDTH, "100");
+				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}else if(Request.FIELD_ADMINISTRATIVE_UNIT_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "UA");
 				map.put(Column.FIELD_WIDTH, "100");
+				//map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
+				//map.put(Column.FIELD_FILTER_BY, RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT);
+			}else if(Request.FIELD_FIRST_NAME.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Nom");
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, RequestQuerier.PARAMETER_NAME_FIRST_NAME);
+			}else if(Request.FIELD_LAST_NAMES.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Prénoms");
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, RequestQuerier.PARAMETER_NAME_LAST_NAMES);
+			}else if(Request.FIELD_REGISTRATION_NUMBER.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Matricule");
+				map.put(Column.FIELD_WIDTH, "110");
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, RequestQuerier.PARAMETER_NAME_REGISTRATION_NUMBER);
 			}
 			return map;
 		}
@@ -234,7 +261,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			return super.getTooltipByRecord(record, recordIndex);
 		}
 		
-		public java.lang.Class<? extends AbstractMenu> getRecordMenuClass(AbstractCollection collection) {
+		public Class<? extends AbstractMenu> getRecordMenuClass(AbstractCollection collection) {
 			return ContextMenu.class;
 		}
 		
@@ -244,8 +271,9 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 	
 	@Getter @Setter @Accessors(chain=true)
 	public static class LazyDataModelListenerImpl extends LazyDataModel.Listener.AbstractImpl<Request> implements Serializable {
-		private String actorIdentifier,functionIdentifier,dispatchSlipIdentifier,statusIdentifier;
+		private String actorIdentifier,sectionIdentifier,functionIdentifier,dispatchSlipIdentifier,statusIdentifier;
 		private Boolean processingDateIsNullable,processingDateIsNotNullable;
+		private Collection<String> excludedIdentifiers;
 		
 		@Override
 		public Boolean getReaderUsable(LazyDataModel<Request> lazyDataModel) {
@@ -259,29 +287,26 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 		
 		public Filter.Dto instantiateFilter(LazyDataModel<Request> lazyDataModel) {
 			Filter.Dto filter = super.instantiateFilter(lazyDataModel);
-			if(StringHelper.isNotBlank(actorIdentifier)) {
-				if(filter == null)
-					filter = new Filter.Dto();
-				filter.addField(RequestQuerier.PARAMETER_NAME_ACTOR_IDENTIFIER, actorIdentifier);
-			}
-			if(processingDateIsNullable != null) {
-				if(filter == null)
-					filter = new Filter.Dto();
-				filter.addField(RequestQuerier.PARAMETER_NAME_PROCESSING_DATE_IS_NULL, processingDateIsNullable);
-			}
-			if(processingDateIsNotNullable != null) {
-				if(filter == null)
-					filter = new Filter.Dto();
-				filter.addField(RequestQuerier.PARAMETER_NAME_PROCESSING_DATE_IS_NOT_NULL, processingDateIsNotNullable);
-			}
-			if(dispatchSlipIdentifier != null) {
-				if(filter == null)
-					filter = new Filter.Dto();
-				filter.addField(RequestQuerier.PARAMETER_NAME_DISPATCH_SLIP_IDENTIFIER, dispatchSlipIdentifier);
-			}
+			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_EXCLUDED_IDENTIFIERS, excludedIdentifiers, filter);		
+			
+			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_ACTOR_IDENTIFIER, actorIdentifier, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_PROCESSING_DATE_IS_NULL, processingDateIsNullable, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_PROCESSING_DATE_IS_NOT_NULL, processingDateIsNotNullable, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_DISPATCH_SLIP_IDENTIFIER, dispatchSlipIdentifier, filter);
+			
+			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT_SECTION_IDENTIFIER, sectionIdentifier, filter);
 			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER, functionIdentifier, filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_STATUS_IDENTIFIER, statusIdentifier, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_STATUS_IDENTIFIER, statusIdentifier, filter);			
 			return filter;
+		}
+		
+		public LazyDataModelListenerImpl addExcludedIdentifiers(Collection<String> identifiers) {
+			if(CollectionHelper.isEmpty(identifiers))
+				return this;
+			if(excludedIdentifiers == null)
+				excludedIdentifiers = new ArrayList<>();
+			excludedIdentifiers.addAll(identifiers);
+			return this;
 		}
 		
 		public static final String FIELD_PROCESSING_DATE_IS_NULLABLE = "processingDateIsNullable";
