@@ -296,7 +296,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			
 			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT_SECTION_IDENTIFIER, sectionIdentifier, filter);
 			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER, functionIdentifier, filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_STATUS_IDENTIFIER, statusIdentifier, filter);			
+			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_STATUS_IDENTIFIER, statusIdentifier, filter);
 			return filter;
 		}
 		
