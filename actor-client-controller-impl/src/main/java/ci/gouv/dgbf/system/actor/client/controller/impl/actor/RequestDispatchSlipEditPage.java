@@ -18,10 +18,12 @@ import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.random.RandomHelper;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.Redirector;
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
@@ -38,6 +40,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestDispatchSlip;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestStatus;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
+import ci.gouv.dgbf.system.actor.client.controller.impl.actor.RequestListPage.LazyDataModelListenerImpl;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestDispatchSlipBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestDispatchSlipQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestStatusQuerier;
@@ -59,9 +62,16 @@ public class RequestDispatchSlipEditPage extends AbstractEntityEditPageContainer
 		sectionSelectOne = form.getInput(SelectOneCombo.class, RequestDispatchSlip.FIELD_SECTION).enableValueChangeListener(List.of());
 		if(CollectionHelper.getSize(sectionSelectOne.getChoices()) == 1)
 			sectionSelectOne.selectFirstChoice();
+		String identifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(Section.class));
+		if(StringHelper.isNotBlank(identifier))
+			sectionSelectOne.select(__inject__(SectionController.class).readBySystemIdentifier(identifier));
+		
 		functionSelectOne = form.getInput(SelectOneCombo.class, RequestDispatchSlip.FIELD_FUNCTION).enableValueChangeListener(List.of());
 		if(CollectionHelper.getSize(functionSelectOne.getChoices()) == 1)
 			functionSelectOne.selectFirstChoice();
+		identifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(Function.class));
+		if(StringHelper.isNotBlank(identifier))
+			functionSelectOne.select(__inject__(FunctionController.class).readBySystemIdentifier(identifier));
 	}
 	
 	@Override
@@ -98,6 +108,12 @@ public class RequestDispatchSlipEditPage extends AbstractEntityEditPageContainer
 			arguments = new HashMap<>();
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ENTITY_CLASS, RequestDispatchSlip.class);
 		RequestsSelectionController requestsSelectionController = (RequestsSelectionController) MapHelper.readByKey(arguments, RequestsSelectionController.class);
+		if(requestsSelectionController != null) {
+			@SuppressWarnings("unchecked")
+			LazyDataModel<Request> lazyDataModel = (LazyDataModel<Request>) requestsSelectionController.getRequestsDataTable().getValue();
+			RequestListPage.LazyDataModelListenerImpl lazyDataModelListener = (LazyDataModelListenerImpl) lazyDataModel.getListener();
+			lazyDataModelListener.setDispatchSlipIsNullNullable(Boolean.FALSE);
+		}
 		//requestDispatchSlip.setRequests(selectedRequests);
 		Action action = (Action) MapHelper.readByKey(arguments, Form.FIELD_ACTION);
 		RequestDispatchSlip requestDispatchSlip = (RequestDispatchSlip) MapHelper.readByKey(arguments, Form.FIELD_ENTITY);
@@ -175,16 +191,14 @@ public class RequestDispatchSlipEditPage extends AbstractEntityEditPageContainer
 			}else if(RequestDispatchSlip.FIELD_SECTION.equals(fieldName)) {
 				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Section");
 				List<Section> sections = (List<Section>) __inject__(SectionController.class).readVisiblesByLoggedInActorCodeForUI();
-				if(CollectionHelper.getSize(sections) > 1) {
+				if(CollectionHelper.getSize(sections) > 1)
 					sections.add(0, null);
-				}
 				map.put(AbstractInputChoice.FIELD_CHOICES,sections);
 				map.put(AbstractInputChoice.FIELD_CHOICE_CLASS,Section.class);
 			}else if(RequestDispatchSlip.FIELD_FUNCTION.equals(fieldName)) {
-				List<Function> functions = (List<Function>) __inject__(FunctionController.class).readCreditManagersAuthorizingOfficers();
-				if(CollectionHelper.getSize(functions) > 1) {
+				List<Function> functions = (List<Function>) __inject__(FunctionController.class).readCreditManagers();
+				if(CollectionHelper.getSize(functions) > 1)
 					functions.add(0, null);
-				}
 				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Catégorie fonction budgétaire");
 				map.put(AbstractInputChoice.FIELD_CHOICES,functions);
 				map.put(AbstractInputChoice.FIELD_CHOICE_CLASS,Function.class);

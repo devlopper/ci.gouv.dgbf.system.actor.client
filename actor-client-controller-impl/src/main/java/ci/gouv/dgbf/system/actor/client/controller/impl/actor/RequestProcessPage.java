@@ -121,7 +121,7 @@ public class RequestProcessPage extends AbstractEntityEditPageContainerManagedIm
 				actionIdentifier = RequestBusiness.REJECT;
 			EntitySaver.getInstance().save(Request.class, new Arguments<Request>().setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
 						.setActionIdentifier(actionIdentifier)).addCreatablesOrUpdatables(request));
-			Redirector.getInstance().redirect(RequestsAdministrationPage.OUTCOME, null);
+			Redirector.getInstance().redirect(RequestIndexPage.OUTCOME, null);
 		}
 		
 		public Boolean isSubmitButtonShowable(Form form) {

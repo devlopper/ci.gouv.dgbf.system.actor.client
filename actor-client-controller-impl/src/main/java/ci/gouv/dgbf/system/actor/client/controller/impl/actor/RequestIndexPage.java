@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Named @ViewScoped @Getter @Setter
-public class RequestsAdministrationPage extends AbstractPageContainerManagedImpl implements Serializable {
+public class RequestIndexPage extends AbstractPageContainerManagedImpl implements Serializable {
 
 	private Layout layout;
 	private TabMenu tabMenu;
@@ -43,6 +43,8 @@ public class RequestsAdministrationPage extends AbstractPageContainerManagedImpl
 		tabMenu = TabMenu.build(TabMenu.ConfiguratorImpl.FIELD_ITEMS_OUTCOME,OUTCOME,TabMenu.FIELD_ACTIVE_INDEX,TabMenu.Tab.getIndexOf(TABS, selectedTab)
 				,TabMenu.ConfiguratorImpl.FIELD_ITEMS,tabMenuItems);
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,tabMenu,Cell.FIELD_WIDTH,12));
+		
+		//Helper.addCreditManagersAuthorizingOfficersFinancialControllersAssistantsTabMenu(cellsMaps, OUTCOME, TABS, selectedTab.getParameterValue());
 	}
 	
 	private void buildTab(Collection<Map<Object,Object>> cellsMaps,TabMenu.Tab tab) {
@@ -54,16 +56,16 @@ public class RequestsAdministrationPage extends AbstractPageContainerManagedImpl
 	
 	private void buildTabRequestsToProcess(Collection<Map<Object,Object>> cellsMaps) {
 		DataTable dataTable = RequestListPage.buildDataTable(
-				RequestListPage.class,RequestsAdministrationPage.class
-				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new RequestListPage.LazyDataModelListenerImpl().setProcessingDateIsNullable(Boolean.TRUE)
+				RequestListPage.class,RequestIndexPage.class
+				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new RequestListPage.LazyDataModelListenerImpl().setProcessingDateIsNullNullable(Boolean.TRUE)
 				);	
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
 	}
 	
 	private void buildTaRequestsProcessed(Collection<Map<Object,Object>> cellsMaps) {
 		DataTable dataTable = RequestListPage.buildDataTable(
-				RequestListPage.class,RequestsAdministrationPage.class
-				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new RequestListPage.LazyDataModelListenerImpl().setProcessingDateIsNotNullable(Boolean.TRUE)
+				RequestListPage.class,RequestIndexPage.class
+				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new RequestListPage.LazyDataModelListenerImpl().setProcessingDateIsNotNullNullable(Boolean.TRUE)
 				);	
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
 	}
@@ -87,5 +89,5 @@ public class RequestsAdministrationPage extends AbstractPageContainerManagedImpl
 		,new TabMenu.Tab("Demandes traitées",TAB_REQUESTS_PROCESSED)
 	);
 	
-	public static final String OUTCOME = "requestsAdministrationView";
+	public static final String OUTCOME = "requestIndexView";
 }

@@ -8,17 +8,11 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:cyk="http://primefaces.jsf.web.utility.cyk.org">
 	
-    <cyk:page value="#{requestIndexPage}">
+    <cyk:page value="#{requestDispatchSlipIndexPage}">
     	<ui:define name="centerCenter">
-    		<ui:include src="list/__css__.xhtml"/>
-    		
-    		<ui:decorate template="#{primefacesHelper.getModelTemplate(requestIndexPage.layout)}">
-    			<ui:param name="layout" value="#{requestIndexPage.layout}"/>   			
+    		<ui:decorate template="#{primefacesHelper.getModelTemplate(requestDispatchSlipIndexPage.layout)}">
+    			<ui:param name="layout" value="#{requestDispatchSlipIndexPage.layout}"/>   			
     		</ui:decorate>
-    		
-    		<ui:include src="list/__legend__.xhtml">
-    			<ui:param name="requestListController" value="#{requestIndexPage}"/>
-    		</ui:include>
     	</ui:define>
     </cyk:page>
 </html>

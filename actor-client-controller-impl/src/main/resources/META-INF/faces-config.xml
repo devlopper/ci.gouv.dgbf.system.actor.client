@@ -166,7 +166,7 @@
 		</navigation-case>
 		
 		<navigation-case>
-			<from-outcome>requestsAdministrationView</from-outcome>
+			<from-outcome>requestIndexView</from-outcome>
 			<to-view-id>/private/demandes.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
@@ -234,6 +234,12 @@
 		<navigation-case>
 			<from-outcome>publicRequestUpdateSignedRequestSheetView</from-outcome>
 			<to-view-id>/public/request/update/signedrequestsheet.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>requestDispatchSlipIndexView</from-outcome>
+			<to-view-id>/private/requestdispatchslip/index.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		

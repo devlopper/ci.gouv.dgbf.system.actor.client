@@ -87,12 +87,12 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 		DataTable dataTable = DataTable.build(arguments);
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);
 		
-		if(pageClass == null || RequestListPage.class.equals(pageClass) || RequestsAdministrationPage.class.equals(pageClass) 
+		if(pageClass == null || RequestListPage.class.equals(pageClass) || RequestIndexPage.class.equals(pageClass) 
 				|| RequestDispatchSlipReadPage.class.equals(pageClass)) {
 			//dataTable.addRecordMenuItemByArgumentsOpenViewInDialogRead();
 			//dataTable.addRecordMenuItemByArgumentsNavigateToViewRead();
 			dataTable.addRecordMenuItemByArgumentsNavigateToView(null,RequestReadPage.OUTCOME, MenuItem.FIELD_VALUE,"Consulter",MenuItem.FIELD_ICON,"fa fa-eye");
-			if(pageClass == null || RequestListPage.class.equals(pageClass) || RequestsAdministrationPage.class.equals(pageClass)) {
+			if(pageClass == null || RequestListPage.class.equals(pageClass) || RequestIndexPage.class.equals(pageClass)) {
 				dataTable.addRecordMenuItemByArgumentsNavigateToView(null,RequestProcessPage.OUTCOME, MenuItem.FIELD_VALUE,"Traiter",MenuItem.FIELD_ICON,"fa fa-file");
 			}
 		}
@@ -272,7 +272,8 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 	@Getter @Setter @Accessors(chain=true)
 	public static class LazyDataModelListenerImpl extends LazyDataModel.Listener.AbstractImpl<Request> implements Serializable {
 		private String actorIdentifier,sectionIdentifier,functionIdentifier,dispatchSlipIdentifier,statusIdentifier;
-		private Boolean processingDateIsNullable,processingDateIsNotNullable;
+		private Boolean processingDateIsNullNullable,processingDateIsNotNullNullable;
+		private Boolean dispatchSlipIsNullNullable;
 		private Collection<String> excludedIdentifiers;
 		
 		@Override
@@ -290,9 +291,10 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_EXCLUDED_IDENTIFIERS, excludedIdentifiers, filter);		
 			
 			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_ACTOR_IDENTIFIER, actorIdentifier, filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_PROCESSING_DATE_IS_NULL, processingDateIsNullable, filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_PROCESSING_DATE_IS_NOT_NULL, processingDateIsNotNullable, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_PROCESSING_DATE_IS_NULL, processingDateIsNullNullable, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_PROCESSING_DATE_IS_NOT_NULL, processingDateIsNotNullNullable, filter);
 			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_DISPATCH_SLIP_IDENTIFIER, dispatchSlipIdentifier, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_DISPATCH_SLIP_IS_NULL, dispatchSlipIsNullNullable, filter);
 			
 			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT_SECTION_IDENTIFIER, sectionIdentifier, filter);
 			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER, functionIdentifier, filter);

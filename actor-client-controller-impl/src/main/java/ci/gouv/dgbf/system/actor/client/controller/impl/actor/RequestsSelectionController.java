@@ -57,6 +57,7 @@ public class RequestsSelectionController implements Serializable {
 				,DataTable.FIELD_RENDER_TYPE,AbstractCollection.RenderType.SELECTION,DataTable.FIELD_SELECTION_MODE,"multiple"
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new RequestListPage.LazyDataModelListenerImpl()
 				.setStatusIdentifier(requestStatus == null ? null : requestStatus.getIdentifier()));
+		
 	}
 	
 	private void buildAddCommandButton() {
@@ -95,7 +96,7 @@ public class RequestsSelectionController implements Serializable {
 	@SuppressWarnings("unchecked")
 	public void showDialog(Section section,Function function) {
 		if(section == null || function == null) {
-			dialogTitle = "TITRE";
+			dialogTitle = "Sélection de demandes à porter sur le bordereau";
 		}else {
 			dialogTitle = String.format("Sélection de demandes de la section %s de %s à porter sur le bordereau",section.getCode(),function.getName());
 			((RequestListPage.LazyDataModelListenerImpl) ((LazyDataModel<Request>)requestsDataTable.getValue()).getListener()).setFunctionIdentifier(function.getIdentifier());
