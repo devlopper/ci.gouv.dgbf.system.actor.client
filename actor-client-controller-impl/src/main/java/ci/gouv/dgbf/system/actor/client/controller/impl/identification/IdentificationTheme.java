@@ -31,10 +31,11 @@ public interface IdentificationTheme {
 						item.setOutcome("actorCreateFromPublicView");
 						model.addElement(item);
 						*/
+						/*
 						item = new DefaultMenuItem("Nouvelle demande");
 						item.setOutcome("publicRequestEditView");
 						model.addElement(item);
-						
+						*/
 						item = new DefaultMenuItem("Ouvrir demande");
 						item.setOutcome("publicRequestOpenView");
 						model.addElement(item);

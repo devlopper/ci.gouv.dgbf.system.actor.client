@@ -42,14 +42,14 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileTypeQuerier
 
 public interface Helper {
 	
-	static void addCreditManagersAuthorizingOfficersFinancialControllersAssistantsTabMenu(Collection<Map<Object,Object>> cellsMaps,String outcome
-			,Collection<TabMenu.Tab> mastersTabs,String selectedMasterTab) {		
+	static String addCreditManagersAuthorizingOfficersFinancialControllersAssistantsTabMenu(Collection<Map<Object,Object>> cellsMaps,String outcome
+			,Collection<TabMenu.Tab> mastersTabs,String selectedMasterTab,String selectedFunctionIdentifier) {		
 		Collection<Function> functions = DependencyInjection.inject(FunctionController.class).readCreditManagersAuthorizingOfficersFinancialControllersAssistants();;
 		if(CollectionHelper.isEmpty(functions))
-			return;
-		String identifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(Function.class));
-		if(StringHelper.isBlank(identifier))
-			identifier = CollectionHelper.getFirst(functions).getIdentifier();		
+			return null;
+		//String identifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(Function.class));
+		if(StringHelper.isBlank(selectedFunctionIdentifier))
+			selectedFunctionIdentifier = CollectionHelper.getFirst(functions).getIdentifier();		
 		Collection<MenuItem> tabMenuItems = new ArrayList<>();
 		Integer tabActiveIndex = null,index = 0;
 		for(Function function : functions) {
@@ -57,7 +57,7 @@ public interface Helper {
 				.addParameter(TabMenu.Tab.PARAMETER_NAME, TabMenu.Tab.getByParameterValue(mastersTabs, selectedMasterTab).getParameterValue())
 				.addParameter(ParameterName.stringify(Function.class), function.getIdentifier())
 			);
-			if(function.getIdentifier().equals(identifier))
+			if(function.getIdentifier().equals(selectedFunctionIdentifier))
 				tabActiveIndex = index;
 			else
 				index++;
@@ -65,6 +65,7 @@ public interface Helper {
 		TabMenu tabMenu = TabMenu.build(TabMenu.ConfiguratorImpl.FIELD_ITEMS_OUTCOME,outcome,TabMenu.FIELD_ACTIVE_INDEX,tabActiveIndex
 				,TabMenu.ConfiguratorImpl.FIELD_ITEMS,tabMenuItems);
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,tabMenu,Cell.FIELD_WIDTH,12));
+		return selectedFunctionIdentifier;
 	}
 	
 	static TabMenu buildProfileListPageTabMenu(ProfileType profileType) {

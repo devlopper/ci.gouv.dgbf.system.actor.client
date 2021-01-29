@@ -76,6 +76,7 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	private String administrativeUnitAsString;
 	@Input @InputText private String administrativeFunction;
 	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceOneAutoComplete private Section section;
+	private String sectionAsString;
 	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceOneAutoComplete private BudgetSpecializationUnit budgetSpecializationUnit;
 	@Input @InputText private String actOfAppointmentReference;	
 	@Input @InputText private String actOfAppointmentSignatory;
@@ -195,6 +196,7 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	public static final String FIELD_CIVILITY = "civility";
 	public static final String FIELD_GROUP = "group";
 	public static final String FIELD_SECTION = "section";
+	public static final String FIELD_SECTION_AS_STRING = "sectionAsString";
 	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT = "budgetSpecializationUnit";
 	public static final String FIELD_FUNCTIONS = "functions";
 	public static final String FIELD_FUNCTIONS_AS_STRINGS = "functionsAsStrings";
@@ -202,7 +204,6 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	public static final String FIELD_ADMINISTRATIVE_UNIT_AS_STRING = "administrativeUnitAsString";
 	public static final String FIELD_SERVICE = "service";
 	public static final String FIELD_ADMINISTRATIVE_FUNCTION = "administrativeFunction";
-	public static final String FIELD_SECTION_AS_STRING = "sectionAsString";
 	public static final String FIELD_ACT_OF_APPOINTMENT = "actOfAppointment";
 	public static final String FIELD_ACT_OF_APPOINTMENT_REFERENCE = "actOfAppointmentReference";
 	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATORY = "actOfAppointmentSignatory";

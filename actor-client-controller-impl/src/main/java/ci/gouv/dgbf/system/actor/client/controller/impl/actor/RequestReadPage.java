@@ -145,10 +145,11 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 		addLabelValue(cellsMaps, "Date de création", request.getCreationDateAsString());
 		addLabelValue(cellsMaps, "Statut", request.getStatus().getName());
 		if(ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType.CODE_DEMANDE_POSTES_BUDGETAIRES.equals(request.getType().getCode())) {
+			addLabelValue(cellsMaps, "Section", StringUtils.join(request.getSectionAsString(),"<br/>"));
 			if(ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_ACCEPTED.equals(request.getStatus().getCode()))
 				addLabelValue(cellsMaps, "Fonction(s) budgétaire(s) accordée(s)", StringUtils.join(request.getBudgetariesScopeFunctionsGrantedAsStrings(),"<br/>"));
 		}
-			
+
 		map.forEach( (fieldName,attribute) -> {
 			Object value = FieldHelper.read(request, fieldName);
 			if(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS.equals(fieldName)) {
@@ -245,7 +246,11 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 	public static String getWindowTitleValue(Request request,String default_) {
 		if(request == null)
 			return default_;
-		return request.getTypeAsString();
+		StringBuilder stringBuilder = new StringBuilder(request.getTypeAsString());
+		if(StringHelper.isNotBlank(request.getSectionAsString())) {
+			stringBuilder.append(" | "+request.getSectionAsString());
+		}
+		return stringBuilder.toString();
 	}
 	
 	public static final String OUTCOME = "requestReadView";

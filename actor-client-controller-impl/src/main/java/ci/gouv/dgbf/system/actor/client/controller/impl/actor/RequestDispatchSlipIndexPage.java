@@ -62,9 +62,10 @@ public class RequestDispatchSlipIndexPage extends AbstractPageContainerManagedIm
 	private void buildGlobalFiltersSelectOneSection(Collection<Map<Object,Object>> cellsMaps,TabMenu.Tab selectedTab) {
 		sectionIdentifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(Section.class));
 		List<Section> sections = (List<Section>) __inject__(SectionController.class).readVisiblesByLoggedInActorCodeForUI();
-		if(StringHelper.isBlank(sectionIdentifier) && CollectionHelper.isNotEmpty(sections))
+		if(StringHelper.isBlank(sectionIdentifier) && CollectionHelper.getSize(sections) > 1)
 			sections.add(0, null);
-		sectionSelectOne = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,Section.class,SelectOneCombo.FIELD_CHOICES,sections);
+		sectionSelectOne = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,Section.class,SelectOneCombo.FIELD_CHOICES,sections
+				,SelectOneCombo.FIELD_CHOICES_INITIALIZED,Boolean.TRUE);
 		if(StringHelper.isNotBlank(sectionIdentifier))
 			sectionSelectOne.selectBySystemIdentifier(sectionIdentifier);
 		sectionSelectOne.enableValueChangeListener(new AbstractInputChoiceOne.ValueChangeListener() {
@@ -87,9 +88,10 @@ public class RequestDispatchSlipIndexPage extends AbstractPageContainerManagedIm
 	private void buildGlobalFiltersSelectOneFunction(Collection<Map<Object,Object>> cellsMaps,TabMenu.Tab selectedTab) {
 		functionIdentifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(Function.class));
 		List<Function> functions = (List<Function>) __inject__(FunctionController.class).readCreditManagers();
-		if(StringHelper.isBlank(functionIdentifier) && CollectionHelper.isNotEmpty(functions))
+		if(StringHelper.isBlank(functionIdentifier) && CollectionHelper.getSize(functions) > 1)
 			functions.add(0, null);
-		functionSelectOne = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,Function.class,SelectOneCombo.FIELD_CHOICES,functions);
+		functionSelectOne = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,Function.class,SelectOneCombo.FIELD_CHOICES,functions
+				,SelectOneCombo.FIELD_CHOICES_INITIALIZED,Boolean.TRUE);
 		if(StringHelper.isNotBlank(functionIdentifier))
 			functionSelectOne.selectBySystemIdentifier(functionIdentifier);
 		functionSelectOne.enableValueChangeListener(new AbstractInputChoiceOne.ValueChangeListener() {

@@ -19,6 +19,7 @@ import org.cyk.utility.__kernel__.controller.EntitySaver;
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.object.ReadListener;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.__kernel__.value.ValueHelper;
@@ -67,7 +68,27 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 	@Override
 	protected void __listenPostConstruct__() {
 		super.__listenPostConstruct__();
-		redirectIfTypeIsNull(form,RequestEditSelectTypePage.OUTCOME);
+		//redirectIfTypeIsNull(form,RequestEditSelectTypePage.OUTCOME);
+		setAdministrativeUnitAutoCompleteReadItemLabelListener(form);
+	}
+	
+	public static void setAdministrativeUnitAutoCompleteReadItemLabelListener(Form form) {
+		AutoComplete administrativeUnitAutoComplete = form.getInput(AutoComplete.class, Request.FIELD_ADMINISTRATIVE_UNIT);
+		if(administrativeUnitAutoComplete != null) {
+			administrativeUnitAutoComplete.setReadItemLabelListener(new ReadListener() {				
+				@Override
+				public Object read(Object object) {
+					if(object instanceof AdministrativeUnit) {
+						AdministrativeUnit administrativeUnit = (AdministrativeUnit)object;
+						String label = administrativeUnit.toString();
+						if(StringHelper.isNotBlank(administrativeUnit.getSectionCodeName()))
+							label = label + " ("+administrativeUnit.getSectionCodeName()+")";
+						return label;
+					}
+					return null;
+				}
+			});
+		}
 	}
 	
 	public static void redirectIfTypeIsNull(Form form,String outcome) {
@@ -271,6 +292,7 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 				map.put(AutoComplete.FIELD_ENTITY_CLASS, AdministrativeUnit.class);
 				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
 				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_DESCRIPTION_OUTPUT_TEXT_VALUE, "L'unité administrative où vous êtes en fonction");
+				
 				requestBlockStartIndex = currentIndex;
 			}else if(Request.FIELD_BUDGETARIES_FUNCTIONS.equals(fieldName)) {
 				map.put(AutoComplete.FIELD_ENTITY_CLASS, Function.class);

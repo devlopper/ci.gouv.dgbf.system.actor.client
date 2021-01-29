@@ -9,7 +9,9 @@ import java.util.Map;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
+import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
@@ -17,6 +19,8 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu;
 
+import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
+import ci.gouv.dgbf.system.actor.client.controller.impl.Helper;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,10 +29,12 @@ public class RequestIndexPage extends AbstractPageContainerManagedImpl implement
 
 	private Layout layout;
 	private TabMenu tabMenu;
+	private String functionIdentifier;
 	
 	@Override
 	protected void __listenPostConstruct__() {		
 		super.__listenPostConstruct__();
+		functionIdentifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(Function.class));
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
 		TabMenu.Tab selectedTab = TabMenu.Tab.getSelectedByRequestParameter(TABS);
 		buildTabMenu(cellsMaps,selectedTab);
@@ -44,7 +50,7 @@ public class RequestIndexPage extends AbstractPageContainerManagedImpl implement
 				,TabMenu.ConfiguratorImpl.FIELD_ITEMS,tabMenuItems);
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,tabMenu,Cell.FIELD_WIDTH,12));
 		
-		//Helper.addCreditManagersAuthorizingOfficersFinancialControllersAssistantsTabMenu(cellsMaps, OUTCOME, TABS, selectedTab.getParameterValue());
+		functionIdentifier = Helper.addCreditManagersAuthorizingOfficersFinancialControllersAssistantsTabMenu(cellsMaps, OUTCOME, TABS, selectedTab.getParameterValue(),functionIdentifier);
 	}
 	
 	private void buildTab(Collection<Map<Object,Object>> cellsMaps,TabMenu.Tab tab) {
@@ -57,7 +63,9 @@ public class RequestIndexPage extends AbstractPageContainerManagedImpl implement
 	private void buildTabRequestsToProcess(Collection<Map<Object,Object>> cellsMaps) {
 		DataTable dataTable = RequestListPage.buildDataTable(
 				RequestListPage.class,RequestIndexPage.class
-				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new RequestListPage.LazyDataModelListenerImpl().setProcessingDateIsNullNullable(Boolean.TRUE)
+				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new RequestListPage.LazyDataModelListenerImpl()
+				.setFunctionIdentifier(functionIdentifier)
+				.setProcessingDateIsNullNullable(Boolean.FALSE)
 				);	
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
 	}
@@ -65,7 +73,9 @@ public class RequestIndexPage extends AbstractPageContainerManagedImpl implement
 	private void buildTaRequestsProcessed(Collection<Map<Object,Object>> cellsMaps) {
 		DataTable dataTable = RequestListPage.buildDataTable(
 				RequestListPage.class,RequestIndexPage.class
-				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new RequestListPage.LazyDataModelListenerImpl().setProcessingDateIsNotNullNullable(Boolean.TRUE)
+				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new RequestListPage.LazyDataModelListenerImpl()
+				.setFunctionIdentifier(functionIdentifier)
+				.setProcessingDateIsNotNullNullable(Boolean.FALSE)
 				);	
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
 	}

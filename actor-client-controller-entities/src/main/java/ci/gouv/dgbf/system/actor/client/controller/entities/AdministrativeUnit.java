@@ -14,6 +14,8 @@ public class AdministrativeUnit extends AbstractDataIdentifiableSystemStringIden
 	private static final long serialVersionUID = 1L;
 	
 	private Section section;
+	private String sectionCodeName;
+	private String sectionAsString;
 	
 	@Override
 	public String toString() {
@@ -21,4 +23,6 @@ public class AdministrativeUnit extends AbstractDataIdentifiableSystemStringIden
 	}
 	
 	public static final String FIELD_SECTION = "section";
+	public static final String FIELD_SECTION_CODE_NAME = "sectionCodeName";
+	public static final String FIELD_SECTION_AS_STRING = "sectionAsString";
 }
