@@ -97,7 +97,8 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		DataTable dataTable = DataTable.build(arguments);
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);
 		if(Boolean.TRUE.equals(MapHelper.readByKey(arguments, AssignmentsListPage.class))) {
-			Boolean isAdministrationActionsVisible = !Boolean.TRUE.equals(SessionManager.getInstance().isUserLogged()) || Boolean.TRUE.equals(SessionManager.getInstance().isUserHasRole(Profile.CODE_ADMINISTRATEUR));
+			Boolean isAdministrationActionsVisible = !Boolean.TRUE.equals(SessionManager.getInstance().isUserLogged()) 
+					|| Boolean.TRUE.equals(SessionManager.getInstance().isUserHasOneOfRoles(Profile.CODE_ADMINISTRATEUR));
 			if(isAdministrationActionsVisible) {
 				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Initialiser",MenuItem.FIELD_USER_INTERFACE_ACTION
 						,UserInterfaceAction.EXECUTE_FUNCTION,MenuItem.FIELD_ICON,"fa fa-download"
@@ -178,23 +179,23 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 								return null;
 							}
 						});
-				
-				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Appliquer",MenuItem.FIELD_USER_INTERFACE_ACTION
-						,UserInterfaceAction.EXECUTE_FUNCTION,MenuItem.FIELD_ICON,"fa fa-upload"
-						,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
-						,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
-							@Override
-							protected Object __runExecuteFunction__(AbstractAction action) {
-								Assignments assignments = new Assignments();
-								assignments.setOverridable(Boolean.FALSE);
-								Arguments<Assignments> arguments = new Arguments<Assignments>().addCreatablesOrUpdatables(assignments);
-								arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
-										.setActionIdentifier(AssignmentsBusiness.EXPORT));
-								EntitySaver.getInstance().save(Assignments.class, arguments);
-								return null;
-							}
-						});
-				
+			}
+			dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Appliquer",MenuItem.FIELD_USER_INTERFACE_ACTION
+					,UserInterfaceAction.EXECUTE_FUNCTION,MenuItem.FIELD_ICON,"fa fa-upload"
+					,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
+					,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+						@Override
+						protected Object __runExecuteFunction__(AbstractAction action) {
+							Assignments assignments = new Assignments();
+							assignments.setOverridable(Boolean.FALSE);
+							Arguments<Assignments> arguments = new Arguments<Assignments>().addCreatablesOrUpdatables(assignments);
+							arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+									.setActionIdentifier(AssignmentsBusiness.EXPORT));
+							EntitySaver.getInstance().save(Assignments.class, arguments);
+							return null;
+						}
+					});
+			if(isAdministrationActionsVisible) {	
 				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Supprimer toutes les lignes",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
 						,MenuItem.FIELD_ICON,"fa fa-trash"
 						,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
@@ -226,6 +227,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		private Function creditManagerHolder,creditManagerAssistant,authorizingOfficerHolder,authorizingOfficerAssistant
 			,financialControllerHolder,financialControllerAssistant,accountingHolder,accountingAssistant;
 		private String tooltipFormat;
+		private Boolean showTooltip;
 		
 		public DataTableListenerImpl() {
 			creditManagerHolder = __inject__(FunctionController.class).readByBusinessIdentifier(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER);
@@ -236,7 +238,8 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			financialControllerAssistant = __inject__(FunctionController.class).readByBusinessIdentifier(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_ASSISTANT);
 			accountingHolder = __inject__(FunctionController.class).readByBusinessIdentifier(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_HOLDER);
 			accountingAssistant = __inject__(FunctionController.class).readByBusinessIdentifier(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_ASSISTANT);
-			tooltipFormat = StringUtils.join(new String[] {
+			if(showTooltip == null || Boolean.TRUE.equals(showTooltip))
+				tooltipFormat = StringUtils.join(new String[] {
 					 "Section              : %s"
 					,"USB                  : %s"
 					,"Action               : %s"
@@ -351,19 +354,22 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		
 		@Override
 		public String getTooltipByRecord(Object record, Integer recordIndex) {
-			Assignments assignments = (Assignments) record;
-			return String.format(tooltipFormat,assignments.getSectionAsString(),assignments.getBudgetSpecializationUnitAsString()
-					,assignments.getActionAsString(),assignments.getActivityAsString(),assignments.getEconomicNatureAsString()
-					,assignments.getAdministrativeUnitAsString(),assignments.getActivityCategoryAsString(),assignments.getExpenditureNatureAsString()
-					,ValueHelper.defaultToIfBlank(StringHelper.get(assignments.getCreditManagerHolderAsString()),ConstantEmpty.STRING)
-					,ValueHelper.defaultToIfBlank(StringHelper.get(assignments.getCreditManagerAssistantAsString()),ConstantEmpty.STRING)
-					,ValueHelper.defaultToIfBlank(StringHelper.get(assignments.getAuthorizingOfficerHolderAsString()),ConstantEmpty.STRING)
-					,ValueHelper.defaultToIfBlank(StringHelper.get(assignments.getAuthorizingOfficerAssistantAsString()),ConstantEmpty.STRING)
-					,ValueHelper.defaultToIfBlank(StringHelper.get(assignments.getFinancialControllerHolderAsString()),ConstantEmpty.STRING)
-					,ValueHelper.defaultToIfBlank(StringHelper.get(assignments.getFinancialControllerAssistantAsString()),ConstantEmpty.STRING)
-					,ValueHelper.defaultToIfBlank(StringHelper.get(assignments.getAccountingHolderAsString()),ConstantEmpty.STRING)
-					,ValueHelper.defaultToIfBlank(StringHelper.get(assignments.getAccountingAssistantAsString()),ConstantEmpty.STRING)
-				);
+			if(showTooltip == null || Boolean.TRUE.equals(showTooltip)) {
+				Assignments assignments = (Assignments) record;
+				return String.format(tooltipFormat,assignments.getSectionAsString(),assignments.getBudgetSpecializationUnitAsString()
+						,assignments.getActionAsString(),assignments.getActivityAsString(),assignments.getEconomicNatureAsString()
+						,assignments.getAdministrativeUnitAsString(),assignments.getActivityCategoryAsString(),assignments.getExpenditureNatureAsString()
+						,ValueHelper.defaultToIfBlank(StringHelper.get(assignments.getCreditManagerHolderAsString()),ConstantEmpty.STRING)
+						,ValueHelper.defaultToIfBlank(StringHelper.get(assignments.getCreditManagerAssistantAsString()),ConstantEmpty.STRING)
+						,ValueHelper.defaultToIfBlank(StringHelper.get(assignments.getAuthorizingOfficerHolderAsString()),ConstantEmpty.STRING)
+						,ValueHelper.defaultToIfBlank(StringHelper.get(assignments.getAuthorizingOfficerAssistantAsString()),ConstantEmpty.STRING)
+						,ValueHelper.defaultToIfBlank(StringHelper.get(assignments.getFinancialControllerHolderAsString()),ConstantEmpty.STRING)
+						,ValueHelper.defaultToIfBlank(StringHelper.get(assignments.getFinancialControllerAssistantAsString()),ConstantEmpty.STRING)
+						,ValueHelper.defaultToIfBlank(StringHelper.get(assignments.getAccountingHolderAsString()),ConstantEmpty.STRING)
+						,ValueHelper.defaultToIfBlank(StringHelper.get(assignments.getAccountingAssistantAsString()),ConstantEmpty.STRING)
+					);	
+			}
+			return super.getTooltipByRecord(record, recordIndex);
 		}
 		
 		public Class<? extends AbstractMenu> getRecordMenuClass(AbstractCollection collection) {

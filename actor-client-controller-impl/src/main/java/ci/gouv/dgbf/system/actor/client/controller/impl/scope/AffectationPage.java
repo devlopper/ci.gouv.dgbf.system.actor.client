@@ -143,13 +143,17 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,tabMenu,Cell.FIELD_WIDTH,12));
 		
 		AssignmentsListPage.LazyDataModelListenerImpl lazyDataModelListener = new AssignmentsListPage.LazyDataModelListenerImpl();
+		AssignmentsListPage.DataTableListenerImpl dataTableListenerImpl = new AssignmentsListPage.DataTableListenerImpl();
 		if(ASSIGNMENTS_TABS.get(tabActiveIndex).getParameterValue().equals(TAB_ASSIGNMENTS_FULLY_ASSIGNED)) {
 			lazyDataModelListener.setAllHoldersDefined(Boolean.TRUE);
 		}else if(ASSIGNMENTS_TABS.get(tabActiveIndex).getParameterValue().equals(TAB_ASSIGNMENTS_NOT_FULLY_ASSIGNED)) {
 			lazyDataModelListener.setSomeHoldersNotDefined(Boolean.TRUE);
-		}
+		}/*else if(ASSIGNMENTS_TABS.get(tabActiveIndex).getParameterValue().equals(TAB_ASSIGNMENTS_ALL_2)) {
+			dataTableListenerImpl.setShowTooltip(Boolean.FALSE);
+		}*/
 		DataTable dataTable = AssignmentsListPage.buildDataTable(AssignmentsListPage.class,Boolean.TRUE
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,lazyDataModelListener
+				,DataTable.ConfiguratorImpl.FIELD_LISTENER,dataTableListenerImpl
 				/*
 				.setFullyAssigned(ASSIGNMENTS_TABS.get(tabActiveIndex).getParameterValue().equals(TAB_ASSIGNMENTS_ALL) ? null
 						: ASSIGNMENTS_TABS.get(tabActiveIndex).getParameterValue().equals(TAB_ASSIGNMENTS_FULLY_ASSIGNED) ? Boolean.TRUE : Boolean.FALSE)
@@ -178,12 +182,14 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	
 	private static final String TAB_ASSIGNMENTS_PARAMETER_NAME = "a";
 	private static final String TAB_ASSIGNMENTS_ALL = "tout";
+	//private static final String TAB_ASSIGNMENTS_ALL_2 = "tout2";
 	private static final String TAB_ASSIGNMENTS_FULLY_ASSIGNED = "complet";
 	private static final String TAB_ASSIGNMENTS_NOT_FULLY_ASSIGNED = "noncomplet";
 	private static final List<TabMenu.Tab> ASSIGNMENTS_TABS = List.of(		
 		new TabMenu.Tab("Affectées",TAB_ASSIGNMENTS_FULLY_ASSIGNED)
 		,new TabMenu.Tab("Non affectées",TAB_ASSIGNMENTS_NOT_FULLY_ASSIGNED)
 		,new TabMenu.Tab("Toutes les lignes",TAB_ASSIGNMENTS_ALL)
+		//,new TabMenu.Tab("Toutes les lignes V2",TAB_ASSIGNMENTS_ALL_2)
 	);
 	
 	public static final String OUTCOME = "affectationView";
