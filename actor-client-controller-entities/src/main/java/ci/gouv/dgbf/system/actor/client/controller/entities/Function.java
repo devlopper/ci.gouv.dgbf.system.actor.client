@@ -56,7 +56,7 @@ public class Function extends AbstractDataIdentifiableSystemStringIdentifiableBu
 	
 	@Override
 	public String toString() {
-		return code+" "+name;
+		return /*code+" "+*/name;
 	}
 	
 	public static final String FIELD_TYPE = "type";

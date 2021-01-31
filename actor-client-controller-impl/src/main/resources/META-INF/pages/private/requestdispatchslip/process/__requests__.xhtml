@@ -31,12 +31,13 @@
 			<h:outputText value="#{r.budgetariesScopeFunctionsAsStrings}"/>
 		</p:column>
 		<p:column headerText="Action" width="300">
-			<p:selectOneRadio value="#{r.treatment}" requiredMessage="true">
+			<p:selectOneRadio value="#{r.treatment}" requiredMessage="true" rendered="#{not r.processed}">
 				<f:selectItems value="#{__page__.actions}" />
 			</p:selectOneRadio>
+			<h:outputText value="#{r.statusAsString}" rendered="#{r.processed}"/>
 		</p:column>		
 		<p:column headerText="Commentaire / Motif de rejet">
-			<p:inputTextarea value="#{r.treatmentComment}"/>
+			<p:inputTextarea value="#{r.treatmentComment}" rendered="#{not r.processed}"/>
 		</p:column>
 		<p:rowExpansion>
 			<p:dataList var="scopeFunctionAsString" value="#{r.budgetariesScopeFunctionsAsStrings}" >

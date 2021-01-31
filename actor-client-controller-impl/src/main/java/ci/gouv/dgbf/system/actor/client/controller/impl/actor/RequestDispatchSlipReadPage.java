@@ -15,6 +15,7 @@ import org.cyk.utility.__kernel__.controller.EntitySaver;
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.session.SessionManager;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.value.ValueHelper;
@@ -27,11 +28,14 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.Button
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputText;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestDispatchSlip;
+import ci.gouv.dgbf.system.actor.client.controller.impl.Helper;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestDispatchSlipBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestDispatchSlipQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -73,30 +77,35 @@ public class RequestDispatchSlipReadPage extends AbstractPageContainerManagedImp
 						protected Object __runExecuteFunction__(AbstractAction action) {
 							EntitySaver.getInstance().save(RequestDispatchSlip.class, new Arguments<RequestDispatchSlip>().setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
 									.setActionIdentifier(RequestDispatchSlipBusiness.SEND)).addCreatablesOrUpdatables(requestDispatchSlip));		
-							Redirector.getInstance().redirect(OUTCOME,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(requestDispatchSlip.getIdentifier())));
+							writeOnShowNotificationMessage("Bordereau transmis", RequestDispatchSlipIndexPage.class);
+							Redirector.getInstance().redirect(RequestDispatchSlipIndexPage.OUTCOME
+									,Map.of(TabMenu.Tab.PARAMETER_NAME,List.of(RequestDispatchSlipIndexPage.TAB_REQUEST_DISPATCH_SLIPS_TO_PROCESS)));
 							return null;
 						}
 					}),Cell.FIELD_WIDTH,11));
 		}else if(StringHelper.isBlank(requestDispatchSlip.getProcessingDateAsString())) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL
-					,Button.build(Button.FIELD_VALUE,"Traiter",Button.FIELD_ICON,"fa fa-gear",Button.FIELD_OUTCOME,RequestDispatchSlipProcessPage.OUTCOME
-					,Button.FIELD_PARAMETERS,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),requestDispatchSlip.getIdentifier())),Cell.FIELD_WIDTH,12));
+			if(SessionManager.getInstance().isUserHasRole(Profile.CODE_CHARGE_ETUDE_DAS)) {
+				cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL
+						,Button.build(Button.FIELD_VALUE,"Traiter",Button.FIELD_ICON,"fa fa-gear",Button.FIELD_OUTCOME,RequestDispatchSlipProcessPage.OUTCOME
+						,Button.FIELD_PARAMETERS,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),requestDispatchSlip.getIdentifier())),Cell.FIELD_WIDTH,12));
+			}			
 		}
 		
 	}
 	
 	private void buildTexts(Collection<Map<Object,Object>> cellsMaps) {
 		//buildTexts(cellsMaps, "Catégorie de fonction budgétaire", requestDispatchSlip.getFunctionAsString());
-		
+		/*
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Catégorie de fonction budgétaire : "
 				+requestDispatchSlip.getFunctionAsString()),Cell.FIELD_WIDTH,4));
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Section : "+requestDispatchSlip.getSection()),Cell.FIELD_WIDTH,8));
 		
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Code : "+requestDispatchSlip.getCode()),Cell.FIELD_WIDTH,3));
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Date de création : "+requestDispatchSlip.getCreationDateAsString()),Cell.FIELD_WIDTH,3));
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Date de transmission : "
+		*/
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Créé le : "+requestDispatchSlip.getCreationDateAsString()),Cell.FIELD_WIDTH,3));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Transmis le : "
 				+ValueHelper.defaultToIfBlank(requestDispatchSlip.getSendingDateAsString(),"-")),Cell.FIELD_WIDTH,3));
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Date de traitement : "
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Traité le : "
 				+ValueHelper.defaultToIfBlank(requestDispatchSlip.getProcessingDateAsString(),"-")),Cell.FIELD_WIDTH,3));
 		/*
 		buildTexts(cellsMaps, "Code", requestDispatchSlip.getCode());
@@ -127,7 +136,7 @@ public class RequestDispatchSlipReadPage extends AbstractPageContainerManagedImp
 	protected String __getWindowTitleValue__() {
 		if(requestDispatchSlip == null)
 			return super.__getWindowTitleValue__();
-		return "Bordereau de demandes N° "+requestDispatchSlip.getCode();
+		return Helper.formatTitleRequestDispatchSlip(requestDispatchSlip, Action.READ);
 	}
 	
 	public static final String OUTCOME = "requestDispatchSlipReadView";

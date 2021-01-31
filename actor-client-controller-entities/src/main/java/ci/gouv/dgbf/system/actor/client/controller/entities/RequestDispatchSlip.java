@@ -115,6 +115,9 @@ public class RequestDispatchSlip extends AbstractDataIdentifiableSystemStringIde
 	public static final String FIELD_FUNCTION_AS_STRING = "functionAsString";
 	public static final String FIELD_REQUESTS = "requests";
 	public static final String FIELD_COMMENT = "comment";
+	public static final String FIELD_CREATION_DATE_AS_STRING = "creationDateAsString";
+	public static final String FIELD_SENDING_DATE_AS_STRING = "sendingDateAsString";
+	public static final String FIELD_PROCESSING_DATE_AS_STRING = "processingDateAsString";
 	
 	public static final String TREATMENT_ACCEPT = "0";
 	public static final String TREATMENT_REJECT = "1";

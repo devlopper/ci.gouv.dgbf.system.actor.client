@@ -127,6 +127,12 @@ public class RequestDispatchSlipListPage extends AbstractEntityListPageContainer
 				map.put(Column.FIELD_HEADER_TEXT, "Catégorie de fonction budgétaire");
 			}else if(RequestDispatchSlip.FIELD_COMMENT.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Commentaire");
+			}else if(RequestDispatchSlip.FIELD_CREATION_DATE_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Date de création");
+			}else if(RequestDispatchSlip.FIELD_SENDING_DATE_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Date de transmission");
+			}else if(RequestDispatchSlip.FIELD_PROCESSING_DATE_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Date de traitement");
 			}
 			return map;
 		}

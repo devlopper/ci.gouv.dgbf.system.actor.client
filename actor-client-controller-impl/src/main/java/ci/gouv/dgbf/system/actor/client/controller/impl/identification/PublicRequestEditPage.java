@@ -35,7 +35,7 @@ public class PublicRequestEditPage extends AbstractEntityEditPageContainerManage
 		//RequestEditPage.redirectIfTypeIsNull(form,"publicRequestSelectTypeView");
 		RequestEditPage.setAdministrativeUnitAutoCompleteReadItemLabelListener(form);
 	}
-	
+		
 	@Override
 	protected void setActionFromRequestParameter() {
 		super.setActionFromRequestParameter();

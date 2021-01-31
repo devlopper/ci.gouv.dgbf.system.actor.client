@@ -12,6 +12,7 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.constant.ConstantEmpty;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntityReader;
+import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
@@ -34,6 +35,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.FunctionType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Profile;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ProfileType;
+import ci.gouv.dgbf.system.actor.client.controller.entities.RequestDispatchSlip;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Service;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionTypeQuerier;
@@ -41,6 +43,20 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileTypeQuerier;
 
 public interface Helper {
+	
+	static String formatTitleRequestDispatchSlip(RequestDispatchSlip requestDispatchSlip,Action action) {
+		if(requestDispatchSlip == null)
+			return null;
+		if(Action.CREATE.equals(action))
+			return "Nouveau bordereau de demandes";
+		if(Action.READ.equals(action))
+			return String.format("Bordereau de demandes N° %s de %s de la section %s", requestDispatchSlip.getCode(),requestDispatchSlip.getFunction().getName()
+					,requestDispatchSlip.getSection());
+		if(Action.UPDATE.equals(action))
+			return String.format("Modification du bordereau de demandes N° %s de %s de la section %s", requestDispatchSlip.getCode(),requestDispatchSlip.getFunction().getName()
+					,requestDispatchSlip.getSection());
+		return null;
+	}
 	
 	static String addCreditManagersAuthorizingOfficersFinancialControllersAssistantsTabMenu(Collection<Map<Object,Object>> cellsMaps,String outcome
 			,Collection<TabMenu.Tab> mastersTabs,String selectedMasterTab,String selectedFunctionIdentifier) {		

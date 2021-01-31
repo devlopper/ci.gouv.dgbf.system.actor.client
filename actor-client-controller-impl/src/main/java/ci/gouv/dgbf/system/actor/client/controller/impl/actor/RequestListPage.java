@@ -17,6 +17,7 @@ import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.__kernel__.session.SessionManager;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
@@ -29,6 +30,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityL
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -64,7 +66,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 	public static DataTable buildDataTable(Map<Object,Object> arguments) {
 		if(arguments == null)
 			arguments = new HashMap<>();
-		Class<?> pageClass = (Class<?>) MapHelper.readByKey(arguments, RequestListPage.class);
+		//Class<?> pageClass = (Class<?>) MapHelper.readByKey(arguments, RequestListPage.class);
 		LazyDataModelListenerImpl lazyDataModelListener = (LazyDataModelListenerImpl) MapHelper.readByKey(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER);
 		if(lazyDataModelListener == null)
 			lazyDataModelListener = new LazyDataModelListenerImpl();
@@ -87,16 +89,13 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 		DataTable dataTable = DataTable.build(arguments);
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);
 		
-		if(pageClass == null || RequestListPage.class.equals(pageClass) || RequestIndexPage.class.equals(pageClass) 
-				|| RequestDispatchSlipReadPage.class.equals(pageClass)) {
-			//dataTable.addRecordMenuItemByArgumentsOpenViewInDialogRead();
-			//dataTable.addRecordMenuItemByArgumentsNavigateToViewRead();
+		if(AbstractCollection.RenderType.OUTPUT.equals(dataTable.getRenderType())) {
 			dataTable.addRecordMenuItemByArgumentsNavigateToView(null,RequestReadPage.OUTCOME, MenuItem.FIELD_VALUE,"Consulter",MenuItem.FIELD_ICON,"fa fa-eye");
-			if(pageClass == null || RequestListPage.class.equals(pageClass) || RequestIndexPage.class.equals(pageClass)) {
+			if(Boolean.TRUE.equals(SessionManager.getInstance().isUserHasRole(Profile.CODE_CHARGE_ETUDE_DAS))) {
 				dataTable.addRecordMenuItemByArgumentsNavigateToView(null,RequestProcessPage.OUTCOME, MenuItem.FIELD_VALUE,"Traiter",MenuItem.FIELD_ICON,"fa fa-file");
 			}
 		}
-		
+				
 		/*if(pageClass == null || UserRequestsPage.class.equals(pageClass)) {
 			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("myAccountRequestReadView", MenuItem.FIELD_VALUE,"Consulter",MenuItem.FIELD_ICON,"fa fa-eye");
 		}else {

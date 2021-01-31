@@ -373,7 +373,11 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 	
 	@Getter @Setter @Accessors(chain=true)
 	public static class LazyDataModelListenerImpl extends LazyDataModel.Listener.AbstractImpl<Assignments> implements Serializable {		
-		private Boolean fullyAssigned;
+		private Boolean allHoldersDefined,someHoldersNotDefined;
+		private HolderAndAssistant creditManager = new HolderAndAssistant()
+				,authorizingOfficer = new HolderAndAssistant()
+				,financialController = new HolderAndAssistant()
+				,accounting = new HolderAndAssistant();
 		
 		@Override
 		public Boolean getReaderUsable(LazyDataModel<Assignments> lazyDataModel) {
@@ -382,18 +386,46 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		
 		@Override
 		public String getReadQueryIdentifier(LazyDataModel<Assignments> lazyDataModel) {
+			return AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI;
+			/*
 			if(fullyAssigned == null)
 				return AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI;
 			if(fullyAssigned)
 				return AssignmentsQuerier.QUERY_IDENTIFIER_READ_FULLY_ASSIGNED_WHERE_FILTER_FOR_UI;
 			return AssignmentsQuerier.QUERY_IDENTIFIER_READ_NOT_FULLY_ASSIGNED_WHERE_FILTER_FOR_UI;
+			*/
 		}
 		
 		@Override
 		public Filter.Dto instantiateFilter(LazyDataModel<Assignments> lazyDataModel) {
 			Filter.Dto filter = super.instantiateFilter(lazyDataModel);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER_IS_NULL, creditManager.holder.isNull, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER_IS_NOT_NULL, creditManager.holder.isNotNull, filter);
 			
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_IS_NULL, authorizingOfficer.holder.isNull, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_IS_NOT_NULL, authorizingOfficer.holder.isNotNull, filter);
+			
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_IS_NULL, financialController.holder.isNull, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_IS_NOT_NULL, financialController.holder.isNotNull, filter);
+			
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACCOUNTING_HOLDER_IS_NULL, accounting.holder.isNull, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACCOUNTING_HOLDER_IS_NOT_NULL, accounting.holder.isNotNull, filter);
+			
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ALL_HOLDERS_DEFINED, allHoldersDefined, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_SOME_HOLDERS_NOT_DEFINED, someHoldersNotDefined, filter);
 			return filter;
+		}
+		
+		@Getter @Setter @Accessors(chain=true)
+		public static class ScopeFunction implements Serializable {
+			private Boolean isNull;
+			private Boolean isNotNull;
+		}
+		
+		@Getter @Setter @Accessors(chain=true)
+		public static class HolderAndAssistant implements Serializable {
+			private ScopeFunction holder = new ScopeFunction();
+			private ScopeFunction assistant = new ScopeFunction();
 		}
 	}
 }

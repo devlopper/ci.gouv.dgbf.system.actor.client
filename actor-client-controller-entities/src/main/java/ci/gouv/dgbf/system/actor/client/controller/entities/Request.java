@@ -102,12 +102,14 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	
 	/* Processing */
 		
-	private String processingDateAsString;	
+	private String processingDateAsString;
+	private Boolean processed;
 	@Input @InputChoiceOneRadio @NotNull private String treatment;
 	@Input @InputTextarea private String acceptationComment;
-	@Input @InputTextarea @NotNull private String rejectionReason;
-	private String treatmentComment;
 	private Boolean accepted;
+	@Input @InputTextarea @NotNull private String rejectionReason;
+	private Boolean rejected;
+	private String treatmentComment;
 	
 	/* Report identifier */
 	

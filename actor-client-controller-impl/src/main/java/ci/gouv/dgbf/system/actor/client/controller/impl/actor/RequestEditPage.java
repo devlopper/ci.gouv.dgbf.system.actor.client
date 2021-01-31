@@ -154,6 +154,9 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 		if(Action.CREATE.equals(action)) {
 			String requestTypeIdentifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(RequestType.class));
 			if(StringHelper.isBlank(requestTypeIdentifier))
+				requestTypeIdentifier = "DPB";
+				
+			if(StringHelper.isBlank(requestTypeIdentifier))
 				return null;			
 			Request request = null;
 			if(StringHelper.isBlank(actorIdentifier)) {

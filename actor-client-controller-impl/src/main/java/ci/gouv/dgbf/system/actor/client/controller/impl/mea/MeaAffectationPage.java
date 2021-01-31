@@ -145,8 +145,11 @@ public class MeaAffectationPage extends AbstractPageContainerManagedImpl impleme
 		
 		DataTable dataTable = AssignmentsListPage.buildDataTable(AssignmentsListPage.class,Boolean.TRUE
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new AssignmentsListPage.LazyDataModelListenerImpl()
-				.setFullyAssigned(ASSIGNMENTS_TABS.get(tabActiveIndex).getParameterValue().equals(TAB_ASSIGNMENTS_ALL) ? null
-						: ASSIGNMENTS_TABS.get(tabActiveIndex).getParameterValue().equals(TAB_ASSIGNMENTS_FULLY_ASSIGNED) ? Boolean.TRUE : Boolean.FALSE));
+				/*.setFullyAssigned(ASSIGNMENTS_TABS.get(tabActiveIndex).getParameterValue().equals(TAB_ASSIGNMENTS_ALL) ? null
+						: ASSIGNMENTS_TABS.get(tabActiveIndex).getParameterValue().equals(TAB_ASSIGNMENTS_FULLY_ASSIGNED) ? Boolean.TRUE : Boolean.FALSE)
+				*/
+				)
+				;
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
 	}
 	

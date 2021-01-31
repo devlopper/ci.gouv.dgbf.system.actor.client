@@ -1,6 +1,7 @@
 package ci.gouv.dgbf.system.actor.client.controller.impl.actor;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +41,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestDispatchSlip;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestStatus;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
+import ci.gouv.dgbf.system.actor.client.controller.impl.Helper;
 import ci.gouv.dgbf.system.actor.client.controller.impl.actor.RequestListPage.LazyDataModelListenerImpl;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestDispatchSlipBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestDispatchSlipQuerier;
@@ -59,19 +61,21 @@ public class RequestDispatchSlipEditPage extends AbstractEntityEditPageContainer
 	@Override
 	protected void __listenPostConstruct__() {
 		super.__listenPostConstruct__();
-		sectionSelectOne = form.getInput(SelectOneCombo.class, RequestDispatchSlip.FIELD_SECTION).enableValueChangeListener(List.of());
-		if(CollectionHelper.getSize(sectionSelectOne.getChoices()) == 1)
-			sectionSelectOne.selectFirstChoice();
-		String identifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(Section.class));
-		if(StringHelper.isNotBlank(identifier))
-			sectionSelectOne.select(__inject__(SectionController.class).readBySystemIdentifier(identifier));
-		
-		functionSelectOne = form.getInput(SelectOneCombo.class, RequestDispatchSlip.FIELD_FUNCTION).enableValueChangeListener(List.of());
-		if(CollectionHelper.getSize(functionSelectOne.getChoices()) == 1)
-			functionSelectOne.selectFirstChoice();
-		identifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(Function.class));
-		if(StringHelper.isNotBlank(identifier))
-			functionSelectOne.select(__inject__(FunctionController.class).readBySystemIdentifier(identifier));
+		if(Action.CREATE.equals(action)) {
+			sectionSelectOne = form.getInput(SelectOneCombo.class, RequestDispatchSlip.FIELD_SECTION).enableValueChangeListener(List.of());
+			if(CollectionHelper.getSize(sectionSelectOne.getChoices()) == 1)
+				sectionSelectOne.selectFirstChoice();
+			String identifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(Section.class));
+			if(StringHelper.isNotBlank(identifier))
+				sectionSelectOne.select(__inject__(SectionController.class).readBySystemIdentifier(identifier));
+			
+			functionSelectOne = form.getInput(SelectOneCombo.class, RequestDispatchSlip.FIELD_FUNCTION).enableValueChangeListener(List.of());
+			if(CollectionHelper.getSize(functionSelectOne.getChoices()) == 1)
+				functionSelectOne.selectFirstChoice();
+			identifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(Function.class));
+			if(StringHelper.isNotBlank(identifier))
+				functionSelectOne.select(__inject__(FunctionController.class).readBySystemIdentifier(identifier));
+		}		
 	}
 	
 	@Override
@@ -90,11 +94,7 @@ public class RequestDispatchSlipEditPage extends AbstractEntityEditPageContainer
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		if(Action.CREATE.equals(action))
-			return "Nouveau bordereau de demandes";
-		if(Action.UPDATE.equals(action))
-			return "Modification du bordereau de demandes N° "+((RequestDispatchSlip)form.getEntity()).getCode();
-		return super.__getWindowTitleValue__();
+		return Helper.formatTitleRequestDispatchSlip((RequestDispatchSlip)form.getEntity(), action);
 	}
 	
 	public static Action getAction(Action action) {
@@ -130,8 +130,13 @@ public class RequestDispatchSlipEditPage extends AbstractEntityEditPageContainer
 			}
 			requestsSelectionController.setSelected(requestDispatchSlip.getRequests());
 		}
-		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_INPUTS_FIELDS_NAMES, List.of(RequestDispatchSlip.FIELD_SECTION
-				,RequestDispatchSlip.FIELD_FUNCTION,RequestDispatchSlip.FIELD_REQUESTS));
+		Collection<String> inputsFieldsNames = new ArrayList<>();
+		if(Action.CREATE.equals(action)) {
+			inputsFieldsNames.add(RequestDispatchSlip.FIELD_SECTION);
+			inputsFieldsNames.add(RequestDispatchSlip.FIELD_FUNCTION);
+		}
+		inputsFieldsNames.add(RequestDispatchSlip.FIELD_REQUESTS);
+		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_INPUTS_FIELDS_NAMES, inputsFieldsNames);
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_LISTENER, new FormConfiguratorListener());		
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_LISTENER, new FormListener().setRequestsSelectionController(requestsSelectionController));
 		Form form = Form.build(arguments);

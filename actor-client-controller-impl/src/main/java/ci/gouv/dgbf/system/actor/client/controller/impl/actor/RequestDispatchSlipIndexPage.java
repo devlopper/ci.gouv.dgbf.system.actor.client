@@ -14,6 +14,7 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.session.SessionManager;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.Redirector;
@@ -31,7 +32,9 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputT
 import ci.gouv.dgbf.system.actor.client.controller.api.FunctionController;
 import ci.gouv.dgbf.system.actor.client.controller.api.SectionController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
+import ci.gouv.dgbf.system.actor.client.controller.entities.RequestDispatchSlip;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -62,8 +65,11 @@ public class RequestDispatchSlipIndexPage extends AbstractPageContainerManagedIm
 	private void buildGlobalFiltersSelectOneSection(Collection<Map<Object,Object>> cellsMaps,TabMenu.Tab selectedTab) {
 		sectionIdentifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(Section.class));
 		List<Section> sections = (List<Section>) __inject__(SectionController.class).readVisiblesByLoggedInActorCodeForUI();
-		if(StringHelper.isBlank(sectionIdentifier) && CollectionHelper.getSize(sections) > 1)
+		if(CollectionHelper.getSize(sections) > 1)
 			sections.add(0, null);
+		if(StringHelper.isBlank(sectionIdentifier) && CollectionHelper.getSize(sections) == 1)
+			sectionIdentifier = CollectionHelper.getFirst(sections).getIdentifier();
+
 		sectionSelectOne = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,Section.class,SelectOneCombo.FIELD_CHOICES,sections
 				,SelectOneCombo.FIELD_CHOICES_INITIALIZED,Boolean.TRUE);
 		if(StringHelper.isNotBlank(sectionIdentifier))
@@ -88,8 +94,10 @@ public class RequestDispatchSlipIndexPage extends AbstractPageContainerManagedIm
 	private void buildGlobalFiltersSelectOneFunction(Collection<Map<Object,Object>> cellsMaps,TabMenu.Tab selectedTab) {
 		functionIdentifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(Function.class));
 		List<Function> functions = (List<Function>) __inject__(FunctionController.class).readCreditManagers();
-		if(StringHelper.isBlank(functionIdentifier) && CollectionHelper.getSize(functions) > 1)
+		if(CollectionHelper.getSize(functions) > 1)
 			functions.add(0, null);
+		if(StringHelper.isBlank(functionIdentifier) && CollectionHelper.getSize(functions) == 1)			
+			functionIdentifier = CollectionHelper.getFirst(functions).getIdentifier();
 		functionSelectOne = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,Function.class,SelectOneCombo.FIELD_CHOICES,functions
 				,SelectOneCombo.FIELD_CHOICES_INITIALIZED,Boolean.TRUE);
 		if(StringHelper.isNotBlank(functionIdentifier))
@@ -114,7 +122,17 @@ public class RequestDispatchSlipIndexPage extends AbstractPageContainerManagedIm
 	private void buildTabMenu(Collection<Map<Object,Object>> cellsMaps,TabMenu.Tab selectedTab) {		
 		Collection<MenuItem> tabMenuItems = new ArrayList<>();
 		for(TabMenu.Tab tab : TABS) {
-			MenuItem menuItem = new MenuItem().setValue(tab.getName()).addParameter(TabMenu.Tab.PARAMETER_NAME, tab.getParameterValue());
+			String name;
+			if(tab.getParameterValue().equals(TAB_REQUEST_DISPATCH_SLIPS_TO_PROCESS)) {
+				if(SessionManager.getInstance().isUserHasRole(Profile.CODE_CHARGE_ETUDE_DAS)) {
+					name = tab.getName();
+				}else {
+					name = "Bordereaux transmis";
+				}
+			}else {
+				name = tab.getName();
+			}			
+			MenuItem menuItem = new MenuItem().setValue(name).addParameter(TabMenu.Tab.PARAMETER_NAME, tab.getParameterValue());
 			if(sectionSelectOne != null && sectionSelectOne.getValue() != null)
 				menuItem.addParameter(ParameterName.stringify(Section.class), (String)FieldHelper.readSystemIdentifier(sectionSelectOne.getValue()));
 			if(functionSelectOne != null && functionSelectOne.getValue() != null)
@@ -137,9 +155,25 @@ public class RequestDispatchSlipIndexPage extends AbstractPageContainerManagedIm
 			buildTaRequestDispatchSlipsProcessed(cellsMaps);
 	}
 	
+	private Collection<String> buildRequestDataTableColumnsFieldsNames(Boolean sent,Boolean processed) {
+		Collection<String> columnsFieldsNames = new ArrayList<>();
+		columnsFieldsNames.add(RequestDispatchSlip.FIELD_CODE);
+		if(StringHelper.isBlank(sectionIdentifier))
+			columnsFieldsNames.add(RequestDispatchSlip.FIELD_SECTION_AS_STRING);
+		if(StringHelper.isBlank(functionIdentifier))
+			columnsFieldsNames.add(RequestDispatchSlip.FIELD_FUNCTION_AS_STRING);
+		columnsFieldsNames.add(RequestDispatchSlip.FIELD_CREATION_DATE_AS_STRING);
+		if(Boolean.TRUE.equals(sent))
+			columnsFieldsNames.add(RequestDispatchSlip.FIELD_SENDING_DATE_AS_STRING);
+		if(Boolean.TRUE.equals(processed))
+			columnsFieldsNames.add(RequestDispatchSlip.FIELD_PROCESSING_DATE_AS_STRING);
+		return columnsFieldsNames;
+	}
+	
 	private void buildTabRequestDispatchSlipsToSend(Collection<Map<Object,Object>> cellsMaps) {
 		DataTable dataTable = RequestDispatchSlipListPage.buildDataTable(
 				Section.class,sectionSelectOne == null ? null : sectionSelectOne.getValue(),Function.class,functionSelectOne == null ? null : functionSelectOne.getValue()
+				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,buildRequestDataTableColumnsFieldsNames(null,null)
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new RequestDispatchSlipListPage.LazyDataModelListenerImpl()
 				.setSectionIdentifier(sectionIdentifier).setFunctionIdentifier(functionIdentifier)
 				.setSendingDateIsNullNullable(Boolean.FALSE)
@@ -152,6 +186,7 @@ public class RequestDispatchSlipIndexPage extends AbstractPageContainerManagedIm
 	private void buildTaRequestDispatchSlipsSent(Collection<Map<Object,Object>> cellsMaps) {
 		DataTable dataTable = RequestDispatchSlipListPage.buildDataTable(
 				Section.class,sectionSelectOne == null ? null : sectionSelectOne.getValue(),Function.class,functionSelectOne == null ? null : functionSelectOne.getValue()
+				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,buildRequestDataTableColumnsFieldsNames(Boolean.TRUE,null)
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new RequestDispatchSlipListPage.LazyDataModelListenerImpl()
 				.setSectionIdentifier(sectionIdentifier).setFunctionIdentifier(functionIdentifier)
 				//.setSendingDateIsNullNullable(Boolean.TRUE)
@@ -165,6 +200,7 @@ public class RequestDispatchSlipIndexPage extends AbstractPageContainerManagedIm
 	private void buildTabRequestDispatchSlipsToProcess(Collection<Map<Object,Object>> cellsMaps) {
 		DataTable dataTable = RequestDispatchSlipListPage.buildDataTable(
 				Section.class,sectionSelectOne == null ? null : sectionSelectOne.getValue(),Function.class,functionSelectOne == null ? null : functionSelectOne.getValue()
+				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,buildRequestDataTableColumnsFieldsNames(Boolean.TRUE,null)
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new RequestDispatchSlipListPage.LazyDataModelListenerImpl()
 				.setSectionIdentifier(sectionIdentifier).setFunctionIdentifier(functionIdentifier)
 				//.setSendingDateIsNullNullable(Boolean.TRUE)
@@ -178,6 +214,7 @@ public class RequestDispatchSlipIndexPage extends AbstractPageContainerManagedIm
 	private void buildTaRequestDispatchSlipsProcessed(Collection<Map<Object,Object>> cellsMaps) {
 		DataTable dataTable = RequestDispatchSlipListPage.buildDataTable(
 				Section.class,sectionSelectOne == null ? null : sectionSelectOne.getValue(),Function.class,functionSelectOne == null ? null : functionSelectOne.getValue()
+				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,buildRequestDataTableColumnsFieldsNames(Boolean.TRUE,Boolean.TRUE)
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new RequestDispatchSlipListPage.LazyDataModelListenerImpl()
 				.setSectionIdentifier(sectionIdentifier).setFunctionIdentifier(functionIdentifier)
 				//.setSendingDateIsNullNullable(Boolean.TRUE)
