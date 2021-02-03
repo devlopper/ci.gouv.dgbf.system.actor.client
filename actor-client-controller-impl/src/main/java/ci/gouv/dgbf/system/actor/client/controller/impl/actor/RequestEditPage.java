@@ -49,7 +49,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
-import ci.gouv.dgbf.system.actor.client.controller.impl.identification.PublicRequestReadPage;
+import ci.gouv.dgbf.system.actor.client.controller.impl.identification.PublicRequestOpenPage;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.CivilityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentityGroupQuerier;
@@ -162,7 +162,7 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 			if(StringHelper.isBlank(actorIdentifier)) {
 				request = EntityReader.getInstance().readOne(Request.class, RequestQuerier.QUERY_IDENTIFIER_INSTANTIATE_ONE_BY_TYPE_IDENTIFIER
 						, RequestQuerier.PARAMETER_NAME_TYPE_IDENTIFIER,requestTypeIdentifier);
-				request.setReadPageURL(JavaServerFacesHelper.buildUrlFromOutcome(PublicRequestReadPage.OUTCOME));
+				request.setReadPageURL(JavaServerFacesHelper.buildUrlFromOutcome(PublicRequestOpenPage.OUTCOME));
 				request.setActor(__inject__(ActorController.class).getLoggedIn());
 			}else {
 				request = EntityReader.getInstance().readOne(Request.class, RequestQuerier.QUERY_IDENTIFIER_INSTANTIATE_ONE_BY_TYPE_IDENTIFIER_BY_ACTOR_IDENTIFIER

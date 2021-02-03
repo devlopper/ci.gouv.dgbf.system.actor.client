@@ -54,7 +54,7 @@ public class PublicRequestSendAccessTokenPage extends AbstractPageContainerManag
 			arguments = new HashMap<>();
 		Request request = new Request();
 		try {
-			request.setReadPageURL(NavigationCaseGetter.getInstance().get(PublicRequestReadPage.OUTCOME).getRedirectURL(FacesContext.getCurrentInstance()).toString());
+			request.setReadPageURL(NavigationCaseGetter.getInstance().get(PublicRequestOpenPage.OUTCOME).getRedirectURL(FacesContext.getCurrentInstance()).toString());
 		} catch (MalformedURLException exception) {
 			LogHelper.log(exception,PublicRequestSendAccessTokenPage.class);
 		}

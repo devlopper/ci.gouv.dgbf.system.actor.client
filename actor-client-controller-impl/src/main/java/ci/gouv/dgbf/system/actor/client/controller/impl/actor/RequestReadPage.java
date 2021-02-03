@@ -43,7 +43,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationForm;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.impl.FileServletListenerImpl;
-import ci.gouv.dgbf.system.actor.client.controller.impl.identification.PublicRequestReadPage;
+import ci.gouv.dgbf.system.actor.client.controller.impl.identification.PublicRequestOpenPage;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.representation.api.RequestRepresentation;
@@ -72,7 +72,7 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 	public static Layout buildCommandsLayout(Request request,String editOutcome,String readOutcome) {
 		if(request == null || request.getType() == null)
 			return null;
-		request.setReadPageURL(JavaServerFacesHelper.buildUrlFromOutcome(PublicRequestReadPage.OUTCOME));
+		request.setReadPageURL(JavaServerFacesHelper.buildUrlFromOutcome(PublicRequestOpenPage.OUTCOME));
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
 		if(ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_ACCEPTED.equals(request.getStatus().getCode())) {
 			if(CollectionHelper.isNotEmpty(request.getBudgetariesScopeFunctions())) {

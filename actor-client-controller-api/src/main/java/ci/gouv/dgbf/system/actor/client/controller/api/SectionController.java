@@ -1,15 +1,15 @@
 package ci.gouv.dgbf.system.actor.client.controller.api;
 
-import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
-
 import java.util.Collection;
 
 import org.cyk.utility.__kernel__.controller.EntityReader;
 import org.cyk.utility.__kernel__.session.SessionHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.ControllerEntity;
+
+import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
 
 public interface SectionController extends ControllerEntity<Section> {
 

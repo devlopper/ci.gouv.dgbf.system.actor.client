@@ -68,6 +68,7 @@ public class AssignmentsEditScopeFunctionsPage extends AbstractPageContainerMana
 	
 	@Override
 	protected void __listenPostConstruct__() {
+		contentOutputPanel.setDeferred(Boolean.TRUE);
 		assignments = EntityReader.getInstance().readOne(Assignments.class, AssignmentsQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT
 				,AssignmentsQuerier.PARAMETER_NAME_IDENTIFIER, WebController.getInstance().getRequestParameter(ParameterName.ENTITY_IDENTIFIER));
 		super.__listenPostConstruct__();

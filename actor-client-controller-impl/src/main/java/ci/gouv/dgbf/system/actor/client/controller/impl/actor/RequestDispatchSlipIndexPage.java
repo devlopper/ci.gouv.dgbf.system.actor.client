@@ -47,7 +47,8 @@ public class RequestDispatchSlipIndexPage extends AbstractPageContainerManagedIm
 	private String sectionIdentifier,functionIdentifier;
 	
 	@Override
-	protected void __listenPostConstruct__() {		
+	protected void __listenPostConstruct__() {
+		contentOutputPanel.setDeferred(Boolean.TRUE);
 		super.__listenPostConstruct__();
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
 		TabMenu.Tab selectedTab = TabMenu.Tab.getSelectedByRequestParameter(TABS);

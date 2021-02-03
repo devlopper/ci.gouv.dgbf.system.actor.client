@@ -65,6 +65,13 @@
 		<view-id value="/public/request/edit/index.jsf" />
 	</url-mapping>
 	
+	<!-- Request dispatch slip -->
+	
+	<url-mapping id="bordereaux">
+		<pattern value="/private/bordereaux.jsf" />
+		<view-id value="/private/requestdispatchslip/index.jsf" />
+	</url-mapping>
+	
 	<!-- Profile CEDAS -->
 	
 	<url-mapping id="das_affectations">

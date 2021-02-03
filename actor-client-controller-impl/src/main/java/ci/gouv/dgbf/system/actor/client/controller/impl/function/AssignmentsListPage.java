@@ -86,10 +86,10 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 						,Assignments.FIELD_ACTION_AS_STRING,Assignments.FIELD_ACTIVITY_AS_STRING,Assignments.FIELD_ECONOMIC_NATURE_AS_STRING
 						,Assignments.FIELD_ADMINISTRATIVE_UNIT_AS_STRING,Assignments.FIELD_ACTIVITY_CATEGORY_AS_STRING
 						,Assignments.FIELD_EXPENDITURE_NATURE_AS_STRING
-						,Assignments.FIELD_CREDIT_MANAGER_HOLDER_AS_STRING,Assignments.FIELD_CREDIT_MANAGER_ASSISTANT_AS_STRING
-						,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER_AS_STRING,Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT_AS_STRING
-						,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER_AS_STRING,Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT_AS_STRING
-						,Assignments.FIELD_ACCOUNTING_HOLDER_AS_STRING,Assignments.FIELD_ACCOUNTING_ASSISTANT_AS_STRING
+						,Assignments.FIELD_CREDIT_MANAGER_HOLDER_AS_STRING//,Assignments.FIELD_CREDIT_MANAGER_ASSISTANT_AS_STRING
+						,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER_AS_STRING//,Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT_AS_STRING
+						,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER_AS_STRING//,Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT_AS_STRING
+						,Assignments.FIELD_ACCOUNTING_HOLDER_AS_STRING//,Assignments.FIELD_ACCOUNTING_ASSISTANT_AS_STRING
 						));
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl());
@@ -379,6 +379,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 	
 	@Getter @Setter @Accessors(chain=true)
 	public static class LazyDataModelListenerImpl extends LazyDataModel.Listener.AbstractImpl<Assignments> implements Serializable {		
+		private String sectionCode,budgetSpecializationUnitCode,activityCode,economicNatureCode,administrativeUnitCode;
 		private Boolean allHoldersDefined,someHoldersNotDefined;
 		private HolderAndAssistant creditManager = new HolderAndAssistant()
 				,authorizingOfficer = new HolderAndAssistant()
@@ -419,6 +420,10 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			
 			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ALL_HOLDERS_DEFINED, allHoldersDefined, filter);
 			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_SOME_HOLDERS_NOT_DEFINED, someHoldersNotDefined, filter);
+			
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_SECTION, sectionCode, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT, budgetSpecializationUnitCode, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY, activityCode, filter);
 			return filter;
 		}
 		

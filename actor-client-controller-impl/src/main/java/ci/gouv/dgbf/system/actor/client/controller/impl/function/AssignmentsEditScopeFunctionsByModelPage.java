@@ -79,6 +79,7 @@ public class AssignmentsEditScopeFunctionsByModelPage extends AbstractPageContai
 	
 	@Override
 	protected void __listenPostConstruct__() {
+		contentOutputPanel.setDeferred(Boolean.TRUE);
 		super.__listenPostConstruct__();		
 		buildFilters();
 		buildDataTable();

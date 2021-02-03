@@ -91,8 +91,10 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 		
 		if(AbstractCollection.RenderType.OUTPUT.equals(dataTable.getRenderType())) {
 			dataTable.addRecordMenuItemByArgumentsNavigateToView(null,RequestReadPage.OUTCOME, MenuItem.FIELD_VALUE,"Consulter",MenuItem.FIELD_ICON,"fa fa-eye");
-			if(Boolean.TRUE.equals(SessionManager.getInstance().isUserHasRole(Profile.CODE_CHARGE_ETUDE_DAS))) {
-				dataTable.addRecordMenuItemByArgumentsNavigateToView(null,RequestProcessPage.OUTCOME, MenuItem.FIELD_VALUE,"Traiter",MenuItem.FIELD_ICON,"fa fa-file");
+			if(Boolean.TRUE.equals(SessionManager.getInstance().isUserHasOneOfRoles(Profile.CODE_ADMINISTRATEUR,Profile.CODE_CHARGE_ETUDE_DAS))) {
+				if(ContentType.TO_PROCESS.equals(MapHelper.readByKey(arguments, ContentType.class))) {
+					dataTable.addRecordMenuItemByArgumentsNavigateToView(null,RequestProcessPage.OUTCOME, MenuItem.FIELD_VALUE,"Traiter",MenuItem.FIELD_ICON,"fa fa-file");
+				}			
 			}
 		}
 				
@@ -312,6 +314,11 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 		
 		public static final String FIELD_PROCESSING_DATE_IS_NULLABLE = "processingDateIsNullable";
 		public static final String FIELD_PROCESSING_DATE_IS_NOT_NULLABLE = "processingDateIsNotNullable";
+	}
+	
+	public static enum ContentType {
+		TO_PROCESS
+		,PROCESSED
 	}
 	
 	public static final String OUTCOME = "requestListView";

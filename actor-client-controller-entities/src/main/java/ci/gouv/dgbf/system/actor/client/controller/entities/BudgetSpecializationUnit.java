@@ -13,6 +13,8 @@ import lombok.experimental.Accessors;
 public class BudgetSpecializationUnit extends AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	private String sectionIdentifier;
+	
 	@Override
 	public String toString() {
 		return code+" "+name;

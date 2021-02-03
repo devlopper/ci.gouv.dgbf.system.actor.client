@@ -18,6 +18,8 @@ public class Activity extends AbstractDataIdentifiableSystemStringIdentifiableBu
 	private String budgetSpecializationUnitCodeName;
 	private String actionCodeName;	
 	
+	private String budgetSpecializationUnitIdentifier;
+	
 	@Override
 	public String toString() {
 		return code+" "+name;

@@ -239,7 +239,7 @@
 		
 		<navigation-case>
 			<from-outcome>requestDispatchSlipIndexView</from-outcome>
-			<to-view-id>/private/requestdispatchslip/index.jsf</to-view-id>
+			<to-view-id>/private/bordereaux.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		

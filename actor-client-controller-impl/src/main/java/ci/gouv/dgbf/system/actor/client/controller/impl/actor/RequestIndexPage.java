@@ -32,7 +32,8 @@ public class RequestIndexPage extends AbstractPageContainerManagedImpl implement
 	private String functionIdentifier;
 	
 	@Override
-	protected void __listenPostConstruct__() {		
+	protected void __listenPostConstruct__() {
+		contentOutputPanel.setDeferred(Boolean.TRUE);
 		super.__listenPostConstruct__();
 		functionIdentifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(Function.class));
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
@@ -62,7 +63,7 @@ public class RequestIndexPage extends AbstractPageContainerManagedImpl implement
 	
 	private void buildTabRequestsToProcess(Collection<Map<Object,Object>> cellsMaps) {
 		DataTable dataTable = RequestListPage.buildDataTable(
-				RequestListPage.class,RequestIndexPage.class
+				RequestListPage.ContentType.class,RequestListPage.ContentType.TO_PROCESS
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new RequestListPage.LazyDataModelListenerImpl()
 				.setFunctionIdentifier(functionIdentifier)
 				.setProcessingDateIsNullNullable(Boolean.FALSE)
@@ -72,7 +73,7 @@ public class RequestIndexPage extends AbstractPageContainerManagedImpl implement
 	
 	private void buildTaRequestsProcessed(Collection<Map<Object,Object>> cellsMaps) {
 		DataTable dataTable = RequestListPage.buildDataTable(
-				RequestListPage.class,RequestIndexPage.class
+				RequestListPage.ContentType.class,RequestListPage.ContentType.PROCESSED
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new RequestListPage.LazyDataModelListenerImpl()
 				.setFunctionIdentifier(functionIdentifier)
 				.setProcessingDateIsNotNullNullable(Boolean.FALSE)
