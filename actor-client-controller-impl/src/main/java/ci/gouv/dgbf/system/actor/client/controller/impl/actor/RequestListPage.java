@@ -15,9 +15,14 @@ import javax.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.controller.Arguments;
+import org.cyk.utility.__kernel__.controller.EntitySaver;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.session.SessionManager;
+import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
+import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
@@ -29,6 +34,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
+import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 import lombok.Getter;
@@ -94,7 +100,23 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			if(Boolean.TRUE.equals(SessionManager.getInstance().isUserHasOneOfRoles(Profile.CODE_ADMINISTRATEUR,Profile.CODE_CHARGE_ETUDE_DAS))) {
 				if(ContentType.TO_PROCESS.equals(MapHelper.readByKey(arguments, ContentType.class))) {
 					dataTable.addRecordMenuItemByArgumentsNavigateToView(null,RequestProcessPage.OUTCOME, MenuItem.FIELD_VALUE,"Traiter",MenuItem.FIELD_ICON,"fa fa-file");
-				}			
+				}else if(ContentType.PROCESSED.equals(MapHelper.readByKey(arguments, ContentType.class))) {
+					dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Créer les comptes",MenuItem.FIELD_TITLE
+							,"Exporter les demandes acceptées pour la création de compte",MenuItem.FIELD_USER_INTERFACE_ACTION
+							,UserInterfaceAction.EXECUTE_FUNCTION,MenuItem.FIELD_ICON,"fa fa-gear"
+							,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
+							,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+								@Override
+								protected Object __runExecuteFunction__(AbstractAction action) {
+									Request request = new Request();
+									Arguments<Request> arguments = new Arguments<Request>().addCreatablesOrUpdatables(request);
+									arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+											.setActionIdentifier(RequestBusiness.EXPORT_FOR_ACCOUNT_CREATION));
+									EntitySaver.getInstance().save(Request.class, arguments);
+									return null;
+								}
+							});
+				}
 			}
 		}
 				

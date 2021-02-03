@@ -19,6 +19,8 @@ public class Activity extends AbstractDataIdentifiableSystemStringIdentifiableBu
 	private String actionCodeName;	
 	
 	private String budgetSpecializationUnitIdentifier;
+	private String expenditureNatureIdentifier;
+	private String categoryIdentifier;
 	
 	@Override
 	public String toString() {

@@ -379,7 +379,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 	
 	@Getter @Setter @Accessors(chain=true)
 	public static class LazyDataModelListenerImpl extends LazyDataModel.Listener.AbstractImpl<Assignments> implements Serializable {		
-		private String sectionCode,budgetSpecializationUnitCode,activityCode,economicNatureCode,administrativeUnitCode;
+		private String sectionCode,budgetSpecializationUnitCode,expenditureNatureCode,activityCategoryCode,activityCode,economicNatureCode,administrativeUnitCode;
 		private Boolean allHoldersDefined,someHoldersNotDefined;
 		private HolderAndAssistant creditManager = new HolderAndAssistant()
 				,authorizingOfficer = new HolderAndAssistant()
@@ -423,7 +423,10 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			
 			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_SECTION, sectionCode, filter);
 			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT, budgetSpecializationUnitCode, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_EXPENDITURE_NATURE, expenditureNatureCode, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_CATEGORY, activityCategoryCode, filter);
 			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY, activityCode, filter);
+			
 			return filter;
 		}
 		
