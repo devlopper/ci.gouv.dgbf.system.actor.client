@@ -15,10 +15,10 @@ import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Input;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoice;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceMany;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceManyAutoComplete;
-import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceOneAutoComplete;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceOneCombo;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceOneRadio;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputDate;
+import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputMask;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputText;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputTextarea;
 import org.cyk.utility.__kernel__.string.StringHelper;
@@ -57,8 +57,8 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	@Input @InputChoice(choices = @Choices(count = Count.ALL)) @InputChoiceOneRadio private Civility civility;
 	@Input @InputText private String electronicMailAddress;
 	@Input @InputText private String postalBoxAddress;
-	@Input @InputText private String mobilePhoneNumber;
-	@Input @InputText private String officePhoneNumber;
+	@Input @InputMask private String mobilePhoneNumber;
+	@Input @InputMask private String officePhoneNumber;
 	@Input @InputText private String officePhoneExtension;
 	private byte[] photo;
 	private String photoIdentifier;
@@ -72,12 +72,12 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	/* Job */
 	
 	@Input @InputNumber private Integer budgetaryExercice;	
-	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceOneAutoComplete private AdministrativeUnit administrativeUnit;
+	@Input @InputChoice(choices = @Choices(count = Count.RUNTIME)) @InputChoiceOneCombo private AdministrativeUnit administrativeUnit;
 	private String administrativeUnitAsString;
 	@Input @InputText private String administrativeFunction;
-	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceOneAutoComplete private Section section;
+	@Input @InputChoice(choices = @Choices(count = Count.ALL)) @InputChoiceOneCombo private Section section;
 	private String sectionAsString;
-	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceOneAutoComplete private BudgetSpecializationUnit budgetSpecializationUnit;
+	@Input @InputChoice(choices = @Choices(count = Count.ALL)) @InputChoiceOneCombo private BudgetSpecializationUnit budgetSpecializationUnit;
 	@Input @InputText private String actOfAppointmentReference;	
 	@Input @InputText private String actOfAppointmentSignatory;
 	private Long actOfAppointmentSignatureDateAsTimestamp;

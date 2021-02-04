@@ -33,7 +33,8 @@ public class PublicRequestEditPage extends AbstractEntityEditPageContainerManage
 	protected void __listenPostConstruct__() {
 		super.__listenPostConstruct__();
 		//RequestEditPage.redirectIfTypeIsNull(form,"publicRequestSelectTypeView");
-		RequestEditPage.setAdministrativeUnitAutoCompleteReadItemLabelListener(form);
+		//RequestEditPage.setAdministrativeUnitAutoCompleteReadItemLabelListener(form);
+		RequestEditPage.postConstruct(form, budgetaryScopeFunctionSelectionController);
 	}
 		
 	@Override

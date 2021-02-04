@@ -20,6 +20,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOn
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputText;
+import org.primefaces.PrimeFaces;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.FunctionComparator;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
@@ -141,7 +142,7 @@ public class ScopeFunctionSelectionController implements Serializable {
 	}
 	
 	private void buildSectionSelectOne() {
-		List<Section> sections = (List<Section>) EntityReader.getInstance().readMany(Section.class, SectionQuerier.QUERY_IDENTIFIER_READ);
+		List<Section> sections = (List<Section>) EntityReader.getInstance().readMany(Section.class, SectionQuerier.QUERY_IDENTIFIER_READ_ALL_FOR_UI);
 		if(CollectionHelper.getSize(sections)>1)
 			sections.add(0,null);
 		sectionSelectOne = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,Section.class,SelectOneCombo.FIELD_CHOICES, sections
@@ -312,18 +313,23 @@ public class ScopeFunctionSelectionController implements Serializable {
 							.filter(x -> x.getIdentifier().equals( ((ScopeFunction)scopeFunctionSelectOne.getValue()).getIdentifier())).collect(Collectors.toList()).isEmpty())
 						return null;
 					}
-					if(selected == null)
-						selected = new LinkedHashSet<>();
-					selected.add((ScopeFunction) scopeFunctionSelectOne.getValue());
-					
-					//if(CollectionHelper.isNotEmpty(scopeFunctionSelectOne.getChoices()))
-					//	scopeFunctionSelectOne.getChoices().remove(scopeFunctionSelectOne.getValue());
-					
+					addScopeFunction((ScopeFunction) scopeFunctionSelectOne.getValue());
+					PrimeFaces.current().executeScript("PF('scopeFunctionSelectorDialog').hide();");
 					return null;
 				}
 			});
 		addCommandButton.setProcess("@this");
 		addCommandButton.addUpdates(scopeFunctionsListIdentifier);
+	}
+	
+	public void addScopeFunction(ScopeFunction scopeFunction) {
+		if(scopeFunction == null)
+			return;
+		if(selected == null)
+			selected = new LinkedHashSet<>();
+		selected.add(scopeFunction);
+		//if(CollectionHelper.isNotEmpty(scopeFunctionSelectOne.getChoices()))
+		//	scopeFunctionSelectOne.getChoices().remove(scopeFunctionSelectOne.getValue());
 	}
 	
 	private void buildLayout() {

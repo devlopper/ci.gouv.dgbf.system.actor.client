@@ -8,9 +8,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.faces.validator.ValidatorException;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.Arguments;
@@ -30,11 +35,16 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoiceOne;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AutoComplete;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.InputMask;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.InputText;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputLabel;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputText;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityEditPageContainerManagedImpl;
+import org.primefaces.PrimeFaces;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.ActorController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
@@ -51,10 +61,13 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.client.controller.impl.identification.PublicRequestOpenPage;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.CivilityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentityGroupQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestTypeQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -69,7 +82,77 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 	protected void __listenPostConstruct__() {
 		super.__listenPostConstruct__();
 		//redirectIfTypeIsNull(form,RequestEditSelectTypePage.OUTCOME);
-		setAdministrativeUnitAutoCompleteReadItemLabelListener(form);
+		//setAdministrativeUnitAutoCompleteReadItemLabelListener(form);
+		postConstruct(form,budgetaryScopeFunctionSelectionController);
+	}
+	
+	public static void postConstruct(Form form,ScopeFunctionSelectionController budgetaryScopeFunctionSelectionController) {
+		if(form.getEntity() instanceof Request) {
+			Request request = (Request) form.getEntity();
+			if(request.getType() != null && ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType.IDENTIFIER_DEMANDE_POSTES_BUDGETAIRES.equals(request.getType().getIdentifier())) {
+				SelectOneCombo sectionSelectOne = form.getInput(SelectOneCombo.class, Request.FIELD_SECTION);
+				SelectOneCombo administrativeUnitSelectOne = form.getInput(SelectOneCombo.class, Request.FIELD_ADMINISTRATIVE_UNIT);
+				
+				sectionSelectOne.setListener(new SelectOneCombo.Listener.AbstractImpl<Section>() {
+					@Override
+					public Collection<Section> computeChoices(AbstractInputChoice<Section> input) {
+						Collection<Section> sections = EntityReader.getInstance().readMany(Section.class,SectionQuerier.QUERY_IDENTIFIER_READ_ALL_FOR_UI);
+						CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(sections);
+						return sections;
+					}
+					
+					@Override
+					public void select(AbstractInputChoiceOne input, Section section) {
+						super.select(input, section);
+						if(administrativeUnitSelectOne != null) {
+							administrativeUnitSelectOne.setChoicesInitialized(Boolean.FALSE);
+							administrativeUnitSelectOne.updateChoices();
+							administrativeUnitSelectOne.selectFirstChoice();
+						}
+					}
+				});
+				sectionSelectOne.enableValueChangeListener(List.of(administrativeUnitSelectOne));
+				
+				administrativeUnitSelectOne.setListener(new SelectOneCombo.Listener.AbstractImpl<AdministrativeUnit>() {
+					@Override
+					public Collection<AdministrativeUnit> computeChoices(AbstractInputChoice<AdministrativeUnit> input) {
+						if(sectionSelectOne == null || sectionSelectOne.getValue() == null)
+							return null;
+						Collection<AdministrativeUnit> administrativeUnits = EntityReader.getInstance().readMany(AdministrativeUnit.class,AdministrativeUnitQuerier
+								.QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_FOR_UI,AdministrativeUnitQuerier.PARAMETER_NAME_SECTION_IDENTIFIER
+								,((Section)sectionSelectOne.getValue()).getIdentifier());
+						CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(administrativeUnits);
+						return administrativeUnits;
+					}
+					
+					@Override
+					public void select(AbstractInputChoiceOne input, AdministrativeUnit administrativeUnit) {
+						super.select(input, administrativeUnit);
+						if(administrativeUnit != null) {
+							if(budgetaryScopeFunctionSelectionController != null) {
+								if(CollectionHelper.isEmpty(budgetaryScopeFunctionSelectionController.getSelected())) {
+									Collection<ScopeFunction> scopeFunctions = EntityReader.getInstance().readMany(ScopeFunction.class,
+											ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_CODE_FOR_UI
+											, ScopeFunctionQuerier.PARAMETER_NAME_SCOPE_IDENTIFIER, administrativeUnit.getIdentifier()
+											, ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_CODE
+											, ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER);
+									if(CollectionHelper.getSize(scopeFunctions) == 1) {
+										budgetaryScopeFunctionSelectionController.addScopeFunction(scopeFunctions.iterator().next());
+										PrimeFaces.current().ajax().update(":form:"+budgetaryScopeFunctionSelectionController.getScopeFunctionsListIdentifier());
+									}
+								}
+							}
+						}						
+					}
+				});
+				administrativeUnitSelectOne.enableValueChangeListener(List.of());
+				
+				if(Action.UPDATE.equals(form.getAction())) {
+					sectionSelectOne.selectBySystemIdentifier(request.getSection().getIdentifier());
+					administrativeUnitSelectOne.selectBySystemIdentifier(request.getAdministrativeUnit().getIdentifier());
+				}
+			}
+		}		
 	}
 	
 	public static void setAdministrativeUnitAutoCompleteReadItemLabelListener(Form form) {
@@ -154,7 +237,7 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 		if(Action.CREATE.equals(action)) {
 			String requestTypeIdentifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(RequestType.class));
 			if(StringHelper.isBlank(requestTypeIdentifier))
-				requestTypeIdentifier = "DPB";
+				requestTypeIdentifier = ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType.IDENTIFIER_DEMANDE_POSTES_BUDGETAIRES;
 				
 			if(StringHelper.isBlank(requestTypeIdentifier))
 				return null;			
@@ -258,6 +341,13 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 			if(fieldsNames == null)
 				return null;
 			List<String> collection = new ArrayList<>(fieldsNames.keySet());
+			if(request.getType() != null 
+					&& ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType.IDENTIFIER_DEMANDE_POSTES_BUDGETAIRES.equals(request.getType().getIdentifier())) {
+				Integer administrativeUnitIndex = collection.indexOf(Request.FIELD_ADMINISTRATIVE_UNIT);
+				if(administrativeUnitIndex != null) {
+					collection.add(administrativeUnitIndex,Request.FIELD_SECTION);
+				}			
+			}
 			//collection.add(0, Request.FIELD_TYPE);
 			return collection;
 		}
@@ -291,12 +381,15 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 				map.put(AbstractInputChoice.FIELD_CHOICES,EntityReader.getInstance().readMany(IdentityGroup.class,IdentityGroupQuerier.QUERY_IDENTIFIER_READ));
 			}else if(Request.FIELD_CIVILITY.equals(fieldName)) {
 				map.put(AbstractInputChoice.FIELD_CHOICES,EntityReader.getInstance().readMany(Civility.class,CivilityQuerier.QUERY_IDENTIFIER_READ));
-			}else if(Request.FIELD_ADMINISTRATIVE_UNIT.equals(fieldName)) {
-				map.put(AutoComplete.FIELD_ENTITY_CLASS, AdministrativeUnit.class);
-				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
-				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_DESCRIPTION_OUTPUT_TEXT_VALUE, "L'unité administrative où vous êtes en fonction");
-				
+			}else if(Request.FIELD_SECTION.equals(fieldName)) {
+				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_DESCRIPTION_OUTPUT_TEXT_VALUE, "La section où vous êtes en fonction");
+				map.put(AbstractInputChoice.FIELD_CHOICE_CLASS,Section.class);
+				map.put(AbstractInput.FIELD_REQUIRED, Boolean.TRUE);
 				requestBlockStartIndex = currentIndex;
+			}else if(Request.FIELD_ADMINISTRATIVE_UNIT.equals(fieldName)) {
+				map.put(AbstractInputChoice.FIELD_CHOICE_CLASS, AdministrativeUnit.class);
+				//map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
+				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_DESCRIPTION_OUTPUT_TEXT_VALUE, "L'unité administrative où vous êtes en fonction");
 			}else if(Request.FIELD_BUDGETARIES_FUNCTIONS.equals(fieldName)) {
 				map.put(AutoComplete.FIELD_ENTITY_CLASS, Function.class);
 				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
@@ -311,13 +404,27 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 			}else if(Request.FIELD_BUDGET_SPECIALIZATION_UNIT.equals(fieldName)) {
 				map.put(AutoComplete.FIELD_ENTITY_CLASS, BudgetSpecializationUnit.class);
 				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
-			}else if(Request.FIELD_SECTION.equals(fieldName)) {
-				map.put(AutoComplete.FIELD_ENTITY_CLASS, Section.class);
-				map.put(AutoComplete.FIELD_READER_USABLE, Boolean.TRUE);
 			}else if(Request.FIELD_ADMINISTRATIVE_FUNCTION.equals(fieldName)) {
 				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_DESCRIPTION_OUTPUT_TEXT_VALUE, "La fonction que vous exercez dans l'unité administrative spécifiée");
 			}else if(Request.FIELD_ELECTRONIC_MAIL_ADDRESS.equals(fieldName)) {
 				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_DESCRIPTION_OUTPUT_TEXT_VALUE, "L'adresse email avec laquelle vous allez vous connecter au système");
+				map.put(AbstractInput.FIELD_LISTENER, new InputText.Listener.AbstractImpl() {
+					@Override
+					public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
+						super.validate(context, component, value);
+						if(value instanceof String) {
+							String string = (String) value;
+							if(!EmailValidator.getInstance().isValid(string))
+								throwValidatorException("Valeur incorrecte. exemple : abc@mail.com");
+						}
+					}
+				});
+			}else if(Request.FIELD_MOBILE_PHONE_NUMBER.equals(fieldName)) {
+				map.put(InputMask.AbstractConfiguratorImpl.FIELD_DESCRIPTION_OUTPUT_TEXT_VALUE, "Format de dix(10) chiffres. exemple : 0102030405");
+				map.put(InputMask.FIELD_MASK, StringUtils.repeat("99", 5));
+			}else if(Request.FIELD_OFFICE_PHONE_NUMBER.equals(fieldName)) {
+				map.put(InputMask.AbstractConfiguratorImpl.FIELD_DESCRIPTION_OUTPUT_TEXT_VALUE, "Format de dix(10) chiffres. exemple : 0102030405");
+				map.put(InputMask.FIELD_MASK, StringUtils.repeat("99", 5));
 			}
 			return map;
 		}
@@ -364,6 +471,15 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 					CollectionHelper.addElementAt(cellsArguments, requestBlockStartIndex
 							, MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Demande de fonction"),Cell.FIELD_WIDTH,12
 									,Cell.FIELD_STYLE_CLASS,styleClass));
+					/*
+					//administrativeUnitStartIndex = administrativeUnitStartIndex * 2 + 1;
+					CollectionHelper.addElementAt(cellsArguments, requestBlockStartIndex+1
+							, MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Sélection de la section"),Cell.FIELD_WIDTH,3
+									,Cell.FIELD_STYLE_CLASS,styleClass));
+					CollectionHelper.addElementAt(cellsArguments, requestBlockStartIndex+2
+							, MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Sélection de la section"),Cell.FIELD_WIDTH,12
+									,Cell.FIELD_STYLE_CLASS,styleClass));
+					*/
 				}
 			}			
 			return arguments;
