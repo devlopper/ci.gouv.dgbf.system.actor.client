@@ -111,6 +111,9 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		if(section == null)
 			section = WebController.getInstance().getRequestParameterEntityAsParentBySystemIdentifier(Section.class, sections);
 		
+		if(expenditureNature == null && activity != null)
+			expenditureNature = CollectionHelper.getFirst(expenditureNatures.stream().filter(x -> x.getIdentifier().equals(activity.getExpenditureNatureIdentifier()))
+					.collect(Collectors.toList()));
 		if(expenditureNature == null)
 			expenditureNature = WebController.getInstance().getRequestParameterEntityAsParentBySystemIdentifier(ExpenditureNature.class, expenditureNatures);
 		
@@ -303,32 +306,33 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	private void buildTabAssignmentsGlobalFilters(Collection<Map<Object,Object>> cellsMaps) {
 		buildTabAssignmentsGlobalFilterSelectOneActivity(cellsMaps);
 		buildTabAssignmentsGlobalFilterSelectOneActivityCategory(cellsMaps);
+		buildTabAssignmentsGlobalFilterSelectOneExpenditureNature(cellsMaps);
 		buildTabAssignmentsGlobalFilterSelectOneBudgetSpecializationUnit(cellsMaps);
 		buildTabAssignmentsGlobalFilterSelectOneSection(cellsMaps);
 				
 		if(sectionSelectOne != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Section"),Cell.FIELD_WIDTH,3));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,sectionSelectOne,Cell.FIELD_WIDTH,9));	
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Section"),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,sectionSelectOne,Cell.FIELD_WIDTH,11));	
 		}
 		
 		if(budgetSpecializationUnitSelectOne != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Unité de spécialisation du budget"),Cell.FIELD_WIDTH,3));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,budgetSpecializationUnitSelectOne,Cell.FIELD_WIDTH,9));	
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("U.S.B.").setTitle("Unité de spécialisation du budget"),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,budgetSpecializationUnitSelectOne,Cell.FIELD_WIDTH,3));	
 		}
 		
 		if(expenditureNatureSelectOne != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Nature de dépense"),Cell.FIELD_WIDTH,3));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,expenditureNatureSelectOne,Cell.FIELD_WIDTH,9));	
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("N.D.").setTitle("Nature de dépense"),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,expenditureNatureSelectOne,Cell.FIELD_WIDTH,2));	
 		}
 		
 		if(activityCategorySelectOne != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Catégorie d'activité"),Cell.FIELD_WIDTH,3));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activityCategorySelectOne,Cell.FIELD_WIDTH,9));	
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("C.A.").setTitle("Catégorie d'activité"),Cell.FIELD_WIDTH,2));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activityCategorySelectOne,Cell.FIELD_WIDTH,3));	
 		}
 				
 		if(activitySelectOne != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Activité"),Cell.FIELD_WIDTH,3));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activitySelectOne,Cell.FIELD_WIDTH,9));	
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Activité"),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activitySelectOne,Cell.FIELD_WIDTH,10));	
 		}
 		
 		CommandButton commandButton = CommandButton.build(CommandButton.FIELD_VALUE,"Filtrer",CommandButton.FIELD_ICON,"fa fa-filter"
@@ -350,10 +354,12 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 				else if(sectionSelectOne != null && sectionSelectOne.getValue() != null)
 					map.put(ParameterName.stringify(Section.class),List.of( ((Section)sectionSelectOne.getValue()).getIdentifier()));
 				
-				if(activityCategorySelectOne != null && activityCategorySelectOne.getValue() != null)
-					map.put(ParameterName.stringify(ActivityCategory.class),List.of( ((ActivityCategory)activityCategorySelectOne.getValue()).getIdentifier()));
-				if(expenditureNatureSelectOne != null && expenditureNatureSelectOne.getValue() != null)
-					map.put(ParameterName.stringify(ExpenditureNature.class),List.of( ((ActivityCategory)expenditureNatureSelectOne.getValue()).getIdentifier()));
+				if(activitySelectOne == null || activitySelectOne.getValue() == null) {
+					if(activityCategorySelectOne != null && activityCategorySelectOne.getValue() != null)
+						map.put(ParameterName.stringify(ActivityCategory.class),List.of( ((ActivityCategory)activityCategorySelectOne.getValue()).getIdentifier()));
+					if(expenditureNatureSelectOne != null && expenditureNatureSelectOne.getValue() != null)
+						map.put(ParameterName.stringify(ExpenditureNature.class),List.of( ((ExpenditureNature)expenditureNatureSelectOne.getValue()).getIdentifier()));
+				}				
 				
 				//if(functionSelectOne != null && functionSelectOne.getValue() != null)
 				//	map.put(ParameterName.stringify(Function.class),List.of(((Function)functionSelectOne.getValue()).getIdentifier()));				
@@ -361,7 +367,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 				return null;
 			}
 		});
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,commandButton,Cell.FIELD_WIDTH,12));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,commandButton,Cell.FIELD_WIDTH,1));
 	}
 	
 	private void buildTabAssignmentsGlobalFilterSelectOneSection(Collection<Map<Object,Object>> cellsMaps) {		
@@ -417,6 +423,29 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		budgetSpecializationUnitSelectOne.enableValueChangeListener(List.of(activitySelectOne));
 	}
 	
+	private void buildTabAssignmentsGlobalFilterSelectOneExpenditureNature(Collection<Map<Object,Object>> cellsMaps) {
+		expenditureNatureSelectOne = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,ExpenditureNature.class,SelectOneCombo.FIELD_LISTENER
+				,new SelectOneCombo.Listener.AbstractImpl<ExpenditureNature>() {
+			@Override
+			public Collection<ExpenditureNature> computeChoices(AbstractInputChoice<ExpenditureNature> input) {
+				return expenditureNatures;
+			}
+			
+			@Override
+			public void select(AbstractInputChoiceOne input, ExpenditureNature expenditureNature) {
+				super.select(input, expenditureNature);
+				AffectationPage.this.expenditureNature = expenditureNature;
+				if(activitySelectOne != null) {
+					activitySelectOne.setChoicesInitialized(Boolean.FALSE);
+					activitySelectOne.updateChoices();
+					activitySelectOne.selectFirstChoice();
+				}
+			}
+		});
+		expenditureNatureSelectOne.setValue(expenditureNature);
+		expenditureNatureSelectOne.enableValueChangeListener(List.of(activitySelectOne));
+	}
+	
 	private void buildTabAssignmentsGlobalFilterSelectOneActivityCategory(Collection<Map<Object,Object>> cellsMaps) {
 		activityCategorySelectOne = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,ActivityCategory.class,SelectOneCombo.FIELD_LISTENER
 				,new SelectOneCombo.Listener.AbstractImpl<ActivityCategory>() {
@@ -449,15 +478,24 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 					choices = null;
 				else {
 					BudgetSpecializationUnit budgetSpecializationUnit = (BudgetSpecializationUnit) budgetSpecializationUnitSelectOne.getValue();
+					ExpenditureNature expenditureNature = (ExpenditureNature) expenditureNatureSelectOne.getValue();
 					ActivityCategory activityCategory = (ActivityCategory) activityCategorySelectOne.getValue();
-					System.out.println(budgetSpecializationUnit+" / "+activityCategory);
-					if(activityCategory == null)
-						choices = EntityReader.getInstance().readMany(Activity.class, ActivityQuerier.QUERY_IDENTIFIER_READ_BY_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER_FOR_UI
-							,ActivityQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER, budgetSpecializationUnit.getIdentifier());
-					else
+					if(budgetSpecializationUnit != null && expenditureNature != null && activityCategory != null)
+						choices = EntityReader.getInstance().readMany(Activity.class, ActivityQuerier.QUERY_IDENTIFIER_READ_BY_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER_BY_EXPENDITURE_NATURE_IDENTIFIER_BY_CATEGORY_IDENTIFIER_FOR_UI
+								,ActivityQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER, budgetSpecializationUnit.getIdentifier()
+								,ActivityQuerier.PARAMETER_NAME_EXPENDITURE_NATURE_IDENTIFIER, expenditureNature.getIdentifier()
+								,ActivityQuerier.PARAMETER_NAME_CATEGORY_IDENTIFIER, activityCategory.getIdentifier());
+					else if(budgetSpecializationUnit != null && expenditureNature != null)
+						choices = EntityReader.getInstance().readMany(Activity.class, ActivityQuerier.QUERY_IDENTIFIER_READ_BY_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER_BY_EXPENDITURE_NATURE_IDENTIFIER_FOR_UI
+								,ActivityQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER, budgetSpecializationUnit.getIdentifier()
+								,ActivityQuerier.PARAMETER_NAME_EXPENDITURE_NATURE_IDENTIFIER, expenditureNature.getIdentifier());
+					else if(budgetSpecializationUnit != null && activityCategory != null)
 						choices = EntityReader.getInstance().readMany(Activity.class, ActivityQuerier.QUERY_IDENTIFIER_READ_BY_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER_BY_CATEGORY_IDENTIFIER_FOR_UI
 								,ActivityQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER, budgetSpecializationUnit.getIdentifier()
 								,ActivityQuerier.PARAMETER_NAME_CATEGORY_IDENTIFIER, activityCategory.getIdentifier());
+					else if(budgetSpecializationUnit != null)
+						choices = EntityReader.getInstance().readMany(Activity.class, ActivityQuerier.QUERY_IDENTIFIER_READ_BY_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER_FOR_UI
+								,ActivityQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER, budgetSpecializationUnit.getIdentifier());
 				}
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
@@ -477,7 +515,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		Collection<String> strings = new ArrayList<>();
 		strings.add("Affectation");
 		if(section != null)
-			strings.add("Section : "+section.toString());
+			strings.add(section.toString());
 		if(budgetSpecializationUnit != null)
 			strings.add(budgetSpecializationUnit.toString());
 		if(activity != null)
