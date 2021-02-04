@@ -19,6 +19,7 @@ import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
+import org.cyk.utility.__kernel__.session.SessionManager;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.uri.UniformResourceIdentifierBuilder;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
@@ -123,7 +124,26 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 						),Cell.FIELD_WIDTH,1));
 				width += 1;
 			}
-			
+			if(Boolean.TRUE.equals(SessionManager.getInstance().isUserHasOneOfRoles(ci.gouv.dgbf.system.actor.server.persistence.entities.Profile.CODE_ADMINISTRATEUR
+					,ci.gouv.dgbf.system.actor.server.persistence.entities.Profile.CODE_CHARGE_ETUDE_DAS))) {
+				if(ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_SUBMITTED.equals(request.getStatus().getCode())) {
+					cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL
+							,CommandButton.build(CommandButton.FIELD_VALUE,"Retourner",CommandButton.FIELD_ICON,"fa fa-step-backward"
+									,CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
+									,CommandButton.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE
+									,CommandButton.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+								protected Object __runExecuteFunction__(AbstractAction action) {
+									EntitySaver.getInstance().save(Request.class, new Arguments<Request>().setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+											.setActionIdentifier(RequestBusiness.RETURN)).addCreatablesOrUpdatables(request));		
+									Redirector.getInstance().redirect(readOutcome,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(request.getIdentifier())));
+									return null;
+								}
+							}
+							),Cell.FIELD_WIDTH,1));
+					width += 1;
+				}
+			}
+					
 			Integer remainingWidth = 12-width;
 			if(remainingWidth>0) {
 				Map<Object,Object> map = CollectionHelper.getLast(cellsMaps);

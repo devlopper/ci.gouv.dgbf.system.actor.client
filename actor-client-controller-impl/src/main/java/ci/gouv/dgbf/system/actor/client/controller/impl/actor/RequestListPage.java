@@ -72,6 +72,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 	public static DataTable buildDataTable(Map<Object,Object> arguments) {
 		if(arguments == null)
 			arguments = new HashMap<>();
+		ContentType contentType = (ContentType) MapHelper.readByKey(arguments, ContentType.class);
 		//Class<?> pageClass = (Class<?>) MapHelper.readByKey(arguments, RequestListPage.class);
 		LazyDataModelListenerImpl lazyDataModelListener = (LazyDataModelListenerImpl) MapHelper.readByKey(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER);
 		if(lazyDataModelListener == null)
@@ -90,7 +91,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, Request.class);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, columnsFieldsNames);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
-		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl());
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl().setContentType(contentType));
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl());
 		DataTable dataTable = DataTable.build(arguments);
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);
@@ -140,6 +141,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 	
 	@Getter @Setter @Accessors(chain=true)
 	public static class DataTableListenerImpl extends DataTable.Listener.AbstractImpl implements Serializable {
+		private ContentType contentType;
 		
 		@Override
 		public Map<Object, Object> getColumnArguments(AbstractDataTable dataTable, String fieldName) {
@@ -155,11 +157,11 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			}else if(Request.FIELD_CREATION_DATE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Créé le");
 				map.put(Column.FIELD_WIDTH, "130");
-				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
+				map.put(Column.FIELD_VISIBLE, ContentType.TO_PROCESS.equals(contentType));
 			}else if(Request.FIELD_PROCESSING_DATE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Traité le");
 				map.put(Column.FIELD_WIDTH, "130");
-				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
+				map.put(Column.FIELD_VISIBLE, ContentType.PROCESSED.equals(contentType));
 			}else if(Request.FIELD_TYPE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Type");
 			}else if(Request.FIELD_FUNCTIONS_AS_STRINGS.equals(fieldName)) {

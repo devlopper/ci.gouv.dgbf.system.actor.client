@@ -495,5 +495,5 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 	
 	/**/
 	
-	public static final String OUTCOME = "requestReadView";	
+	public static final String OUTCOME = "requestEditView";	
 }

@@ -505,6 +505,11 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 			return ((RequestRepresentation)representation).submitByIdentifier(request.getIdentifier(),request.getReadPageURL());
 		}
 		
+		if(arguments != null && RequestBusiness.RETURN.equals(arguments.getActionIdentifier())) {
+			RequestDto request = (RequestDto) CollectionHelper.getFirst(updatables);
+			return ((RequestRepresentation)representation).returnByIdentifier(request.getIdentifier(),request.getReadPageURL());
+		}
+		
 		if(arguments != null && RequestBusiness.ACCEPT.equals(arguments.getActionIdentifier())) {
 			RequestDto request = (RequestDto) CollectionHelper.getFirst(updatables);
 			//request.set__auditWho__(SessionHelper.getUserName());
