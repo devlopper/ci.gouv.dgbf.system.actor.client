@@ -20,6 +20,7 @@ import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
+import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
@@ -32,11 +33,18 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.FunctionController;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Activity;
+import ci.gouv.dgbf.system.actor.client.controller.entities.ActivityCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Assignments;
+import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
+import ci.gouv.dgbf.system.actor.client.controller.entities.ExpenditureNature;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.server.business.api.AssignmentsBusiness;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import lombok.Getter;
 import lombok.Setter;
@@ -59,13 +67,50 @@ public class AssignmentsCollectionEditScopeFunctionsPage extends AbstractPageCon
 	private Map<String,Object[]> initialValues = new HashMap<>();
 	private CommandButton saveCommandButton;
 	
+	private Section section;
+	private BudgetSpecializationUnit budgetSpecializationUnit;
+	private Activity activity;
+	private ExpenditureNature expenditureNature;
+	private ActivityCategory activityCategory;
+	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Assignation des postes";
+		return AssignmentsListPage.buildWindowTitleValue("Modification des affectations", section, budgetSpecializationUnit, activity);
 	}
 	
 	@Override
 	protected void __listenPostConstruct__() {
+		if(activity == null) {
+			activity = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(Activity.class
+					,ActivityQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI);
+			if(activity != null) {
+				section = activity.getSection();
+				budgetSpecializationUnit = activity.getBudgetSpecializationUnit();
+				expenditureNature = activity.getExpenditureNature();
+				activityCategory = activity.getCategory();
+			}
+		}
+		
+		if(budgetSpecializationUnit == null) {
+			budgetSpecializationUnit = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(BudgetSpecializationUnit.class
+					,BudgetSpecializationUnitQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI);
+			if(budgetSpecializationUnit != null) {
+				section = budgetSpecializationUnit.getSection();
+			}
+		}
+		
+		if(section == null) {
+			section = WebController.getInstance().getRequestParameterEntityAsParent(Section.class);
+		}
+		
+		if(expenditureNature == null) {
+			expenditureNature = WebController.getInstance().getRequestParameterEntityAsParent(ExpenditureNature.class);
+		}
+		
+		if(activityCategory == null) {
+			activityCategory = WebController.getInstance().getRequestParameterEntityAsParent(ActivityCategory.class);
+		}
+		
 		super.__listenPostConstruct__();
 		creditManagerHolderAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER
 				,FIELD_CREDIT_MANAGER_HOLDER_AUTO_COMPLETE,Assignments.FIELD_CREDIT_MANAGER_HOLDER);
@@ -94,18 +139,12 @@ public class AssignmentsCollectionEditScopeFunctionsPage extends AbstractPageCon
 	
 	private void buildDataTable() {
 		assignmentsDataTable = AssignmentsListPage.buildDataTable(DataTable.FIELD_LISTENER,new DataTableListenerImpl()
+				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,AssignmentsListPage.DataTableListenerImpl.buildColumnsNames(section, budgetSpecializationUnit, activity
+						, expenditureNature, activityCategory)
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl()
+				.sectionCode(section).budgetSpecializationUnitCode(budgetSpecializationUnit).activityCode(activity)
 				,DataTable.FIELD_RENDER_TYPE,org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection.RenderType.INPUT
 				);
-		/*
-		executionImputationsDataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Liste",MenuItem.FIELD_ICON,"fa fa-file",MenuItem.FIELD_USER_INTERFACE_ACTION
-				,UserInterfaceAction.NAVIGATE_TO_VIEW,MenuItem.FIELD_LISTENER,new MenuItem.Listener.AbstractImpl() {
-			@Override
-			protected String getOutcome(AbstractAction action) {
-				return "executionImputationListView";
-			}
-		});
-		*/
 	}
 	
 	private void buildSaveCommandButton() {

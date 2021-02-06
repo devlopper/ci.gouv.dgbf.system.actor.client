@@ -1,6 +1,8 @@
 package ci.gouv.dgbf.system.actor.client.controller.impl.function;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,9 +39,14 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.FunctionController;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Activity;
+import ci.gouv.dgbf.system.actor.client.controller.entities.ActivityCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Assignments;
+import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
+import ci.gouv.dgbf.system.actor.client.controller.entities.ExpenditureNature;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.client.controller.impl.Helper;
 import ci.gouv.dgbf.system.actor.server.business.api.AssignmentsBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
@@ -72,6 +79,18 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 	@Override
 	protected String __getWindowTitleValue__() {
 		return "Affectations";
+	}
+	
+	public static String buildWindowTitleValue(String prefix,Section section,BudgetSpecializationUnit budgetSpecializationUnit,Activity activity) {
+		Collection<String> strings = new ArrayList<>();
+		strings.add(prefix);
+		if(section != null)
+			strings.add(section.toString());
+		if(budgetSpecializationUnit != null)
+			strings.add(budgetSpecializationUnit.toString());
+		if(activity != null)
+			strings.add(activity.toString());
+		return StringHelper.concatenate(strings, " | ");
 	}
 	
 	/**/
@@ -375,6 +394,28 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		public Class<? extends AbstractMenu> getRecordMenuClass(AbstractCollection collection) {
 			return ContextMenu.class;
 		}
+	
+		public static Collection<String> buildColumnsNames(Section section,BudgetSpecializationUnit budgetSpecializationUnit,Activity activity
+				,ExpenditureNature expenditureNature,ActivityCategory activityCategory) {
+			Collection<String> columnsFieldsNames = new ArrayList<>();
+			if(activity == null && budgetSpecializationUnit == null && section == null)
+				columnsFieldsNames.add(Assignments.FIELD_SECTION_AS_STRING);
+			if(activity == null && budgetSpecializationUnit == null)
+				columnsFieldsNames.add(Assignments.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING);			
+			if(activity == null)
+				columnsFieldsNames.add(Assignments.FIELD_ACTIVITY_AS_STRING);
+			columnsFieldsNames.add(Assignments.FIELD_ECONOMIC_NATURE_AS_STRING);	
+			if(activity == null)
+				columnsFieldsNames.addAll(List.of(Assignments.FIELD_ADMINISTRATIVE_UNIT_AS_STRING));
+			if(activity == null && expenditureNature == null)
+				columnsFieldsNames.add(Assignments.FIELD_EXPENDITURE_NATURE_AS_STRING);
+			if(activity == null && activityCategory == null)
+				columnsFieldsNames.add(Assignments.FIELD_ACTIVITY_CATEGORY_AS_STRING);			
+			
+			columnsFieldsNames.addAll(List.of(Assignments.FIELD_CREDIT_MANAGER_HOLDER_AS_STRING,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER_AS_STRING
+					,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER_AS_STRING,Assignments.FIELD_ACCOUNTING_HOLDER_AS_STRING));
+			return columnsFieldsNames;
+		}
 	}
 	
 	@Getter @Setter @Accessors(chain=true)
@@ -386,6 +427,27 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 				,financialController = new HolderAndAssistant()
 				,accounting = new HolderAndAssistant();
 		
+		public LazyDataModelListenerImpl sectionCode(Section section) {
+			if(section == null)
+				return this;
+			setSectionCode(section.getCode());
+			return this;
+		}
+		
+		public LazyDataModelListenerImpl budgetSpecializationUnitCode(BudgetSpecializationUnit budgetSpecializationUnit) {
+			if(budgetSpecializationUnit == null)
+				return this;
+			setBudgetSpecializationUnitCode(budgetSpecializationUnit.getCode());
+			return this;
+		}
+		
+		public LazyDataModelListenerImpl activityCode(Activity activity) {
+			if(activity == null)
+				return this;
+			setActivityCode(activity.getCode());
+			return this;
+		}
+		
 		@Override
 		public Boolean getReaderUsable(LazyDataModel<Assignments> lazyDataModel) {
 			return Boolean.TRUE;
@@ -394,13 +456,6 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		@Override
 		public String getReadQueryIdentifier(LazyDataModel<Assignments> lazyDataModel) {
 			return AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI;
-			/*
-			if(fullyAssigned == null)
-				return AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI;
-			if(fullyAssigned)
-				return AssignmentsQuerier.QUERY_IDENTIFIER_READ_FULLY_ASSIGNED_WHERE_FILTER_FOR_UI;
-			return AssignmentsQuerier.QUERY_IDENTIFIER_READ_NOT_FULLY_ASSIGNED_WHERE_FILTER_FOR_UI;
-			*/
 		}
 		
 		@Override

@@ -13,14 +13,29 @@ import lombok.experimental.Accessors;
 public class Activity extends AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private String sectionCodeName;	
-	private String categoryCodeName;	
-	private String budgetSpecializationUnitCodeName;
-	private String actionCodeName;	
+	private Section section;
+	private String sectionIdentifier;
+	private String sectionCodeName;
 	
+	private BudgetSpecializationUnit budgetSpecializationUnit;
 	private String budgetSpecializationUnitIdentifier;
+	private String budgetSpecializationUnitCodeName;
+	
+	private Action action;
+	private String actionIdentifier;
+	private String actionCodeName;
+	
+	private ExpenditureNature expenditureNature;
 	private String expenditureNatureIdentifier;
+	private String expenditureNatureCodeName;
+	
+	private ActivityCategory category;
 	private String categoryIdentifier;
+	private String categoryCodeName;
+	
+	private AdministrativeUnit administrativeUnit;
+	private String administrativeUnitIdentifier;
+	private String administrativeUnitCodeName;
 	
 	@Override
 	public String toString() {

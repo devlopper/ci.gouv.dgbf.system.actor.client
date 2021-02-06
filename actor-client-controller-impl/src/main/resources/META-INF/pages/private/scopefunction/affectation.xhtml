@@ -13,6 +13,12 @@
     		<ui:decorate template="#{primefacesHelper.getModelTemplate(affectationPage.layout)}">
 	    		<ui:param name="layout" value="#{affectationPage.layout}"/>   			
 	    	</ui:decorate>
+	    	
+	    	<ui:fragment rendered="#{affectationPage.activitySelectionController != null}">
+	    		<ui:include src="/private/activity/__selection__.xhtml">
+		    		<ui:param name="activitySelectionController" value="#{affectationPage.activitySelectionController}"/>
+		    	</ui:include>
+	    	</ui:fragment>		    	
     	</ui:define>
     </cyk:page>
 </html>

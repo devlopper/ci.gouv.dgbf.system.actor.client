@@ -14,6 +14,7 @@ public class BudgetSpecializationUnit extends AbstractDataIdentifiableSystemStri
 	private static final long serialVersionUID = 1L;
 	
 	private String sectionIdentifier;
+	private Section section;
 	
 	@Override
 	public String toString() {
