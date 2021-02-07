@@ -16,6 +16,7 @@ public class AdministrativeUnit extends AbstractDataIdentifiableSystemStringIden
 	private Section section;
 	private String sectionCodeName;
 	private String sectionAsString;
+	private String sectionIdentifier;
 	
 	@Override
 	public String toString() {

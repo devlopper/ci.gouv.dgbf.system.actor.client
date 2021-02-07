@@ -75,7 +75,7 @@ public class AssignmentsCollectionEditScopeFunctionsPage extends AbstractPageCon
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return AssignmentsListPage.buildWindowTitleValue("Modification des affectations", section, budgetSpecializationUnit, activity);
+		return AssignmentsListPage.buildWindowTitleValue("Modification des affectations", section, budgetSpecializationUnit, activity,expenditureNature,activityCategory);
 	}
 	
 	@Override

@@ -17,12 +17,14 @@ public interface BudgetSpecializationUnitController extends ControllerEntity<Bud
 		if(StringHelper.isBlank(actorCode))
 			return null;
 		return EntityReader.getInstance().readMany(BudgetSpecializationUnit.class
-				, BudgetSpecializationUnitQuerier.QUERY_IDENTIFIER_READ_VISIBLES_BY_SECTION_IDENTIFIER_BY_ACTOR_CODE_FOR_UI
+				,BudgetSpecializationUnitQuerier.QUERY_IDENTIFIER_READ_VISIBLES_BY_SECTION_IDENTIFIER_BY_ACTOR_CODE_FOR_UI
 				,ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode,ScopeQuerier.PARAMETER_NAME_SECTION_IDENTIFIER, sectionIdentifier);
 	}
 	
 	default Collection<BudgetSpecializationUnit> readVisiblesByLoggedInActorCodeForUI() {
-		return readVisiblesBySectionIdentifierByActorCodeForUI(null,SessionHelper.getUserName());
+		return EntityReader.getInstance().readMany(BudgetSpecializationUnit.class
+				, BudgetSpecializationUnitQuerier.QUERY_IDENTIFIER_READ_VISIBLES_BY_ACTOR_CODE_FOR_UI
+				,ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, SessionHelper.getUserName());
 	}
 	
 	default Collection<BudgetSpecializationUnit> readVisiblesBySectionIdentifierByLoggedInActorCodeForUI(String sectionIdentifier) {

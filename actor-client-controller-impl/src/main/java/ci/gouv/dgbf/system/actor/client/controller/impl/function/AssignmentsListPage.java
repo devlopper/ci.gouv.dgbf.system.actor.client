@@ -81,15 +81,22 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		return "Affectations";
 	}
 	
-	public static String buildWindowTitleValue(String prefix,Section section,BudgetSpecializationUnit budgetSpecializationUnit,Activity activity) {
+	public static String buildWindowTitleValue(String prefix,Section section,BudgetSpecializationUnit budgetSpecializationUnit,Activity activity
+			,ExpenditureNature expenditureNature,ActivityCategory activityCategory) {
 		Collection<String> strings = new ArrayList<>();
 		strings.add(prefix);
 		if(section != null)
 			strings.add(section.toString());
 		if(budgetSpecializationUnit != null)
 			strings.add(budgetSpecializationUnit.toString());
-		if(activity != null)
+		if(activity == null) {
+			if(expenditureNature != null)
+				strings.add("Nature de dépense : "+expenditureNature.toString());
+			if(activityCategory != null)
+				strings.add("Catégorie d'activité : "+activityCategory.toString());	
+		}else {
 			strings.add(activity.toString());
+		}
 		return StringHelper.concatenate(strings, " | ");
 	}
 	
