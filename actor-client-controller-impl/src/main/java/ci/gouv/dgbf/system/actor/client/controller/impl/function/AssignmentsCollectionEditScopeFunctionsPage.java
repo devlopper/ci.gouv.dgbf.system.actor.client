@@ -35,6 +35,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import ci.gouv.dgbf.system.actor.client.controller.api.FunctionController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Activity;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ActivityCategory;
+import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Assignments;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ExpenditureNature;
@@ -43,6 +44,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.server.business.api.AssignmentsBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActivityQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
@@ -68,6 +70,7 @@ public class AssignmentsCollectionEditScopeFunctionsPage extends AbstractPageCon
 	private CommandButton saveCommandButton;
 	
 	private Section section;
+	private AdministrativeUnit administrativeUnit;
 	private BudgetSpecializationUnit budgetSpecializationUnit;
 	private Activity activity;
 	private ExpenditureNature expenditureNature;
@@ -86,6 +89,7 @@ public class AssignmentsCollectionEditScopeFunctionsPage extends AbstractPageCon
 			if(activity != null) {
 				section = activity.getSection();
 				budgetSpecializationUnit = activity.getBudgetSpecializationUnit();
+				administrativeUnit = activity.getAdministrativeUnit();
 				expenditureNature = activity.getExpenditureNature();
 				activityCategory = activity.getCategory();
 			}
@@ -96,6 +100,14 @@ public class AssignmentsCollectionEditScopeFunctionsPage extends AbstractPageCon
 					,BudgetSpecializationUnitQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI);
 			if(budgetSpecializationUnit != null) {
 				section = budgetSpecializationUnit.getSection();
+			}
+		}
+		
+		if(administrativeUnit == null) {
+			administrativeUnit = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(AdministrativeUnit.class
+					,AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI);
+			if(administrativeUnit != null && section == null) {
+				section = administrativeUnit.getSection();
 			}
 		}
 		
@@ -139,7 +151,7 @@ public class AssignmentsCollectionEditScopeFunctionsPage extends AbstractPageCon
 	
 	private void buildDataTable() {
 		assignmentsDataTable = AssignmentsListPage.buildDataTable(DataTable.FIELD_LISTENER,new DataTableListenerImpl()
-				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,AssignmentsListPage.DataTableListenerImpl.buildColumnsNames(section, budgetSpecializationUnit, activity
+				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,AssignmentsListPage.DataTableListenerImpl.buildColumnsNames(section,administrativeUnit, budgetSpecializationUnit, activity
 						, expenditureNature, activityCategory)
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl()
 				.sectionCode(section).budgetSpecializationUnitCode(budgetSpecializationUnit).activityCode(activity)

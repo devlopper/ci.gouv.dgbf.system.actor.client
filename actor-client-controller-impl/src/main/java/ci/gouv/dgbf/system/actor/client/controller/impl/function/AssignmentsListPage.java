@@ -41,6 +41,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityL
 import ci.gouv.dgbf.system.actor.client.controller.api.FunctionController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Activity;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ActivityCategory;
+import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Assignments;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ExpenditureNature;
@@ -402,18 +403,20 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			return ContextMenu.class;
 		}
 	
-		public static Collection<String> buildColumnsNames(Section section,BudgetSpecializationUnit budgetSpecializationUnit,Activity activity
+		public static Collection<String> buildColumnsNames(Section section,AdministrativeUnit administrativeUnit,BudgetSpecializationUnit budgetSpecializationUnit,Activity activity
 				,ExpenditureNature expenditureNature,ActivityCategory activityCategory) {
 			Collection<String> columnsFieldsNames = new ArrayList<>();
 			if(activity == null && budgetSpecializationUnit == null && section == null)
 				columnsFieldsNames.add(Assignments.FIELD_SECTION_AS_STRING);
+			if(activity == null && administrativeUnit == null)
+				columnsFieldsNames.add(Assignments.FIELD_ADMINISTRATIVE_UNIT_AS_STRING);	
 			if(activity == null && budgetSpecializationUnit == null)
 				columnsFieldsNames.add(Assignments.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING);			
 			if(activity == null)
 				columnsFieldsNames.add(Assignments.FIELD_ACTIVITY_AS_STRING);
 			columnsFieldsNames.add(Assignments.FIELD_ECONOMIC_NATURE_AS_STRING);	
-			if(activity == null)
-				columnsFieldsNames.addAll(List.of(Assignments.FIELD_ADMINISTRATIVE_UNIT_AS_STRING));
+			//if(activity == null)
+			//	columnsFieldsNames.addAll(List.of(Assignments.FIELD_ADMINISTRATIVE_UNIT_AS_STRING));
 			if(activity == null && expenditureNature == null)
 				columnsFieldsNames.add(Assignments.FIELD_EXPENDITURE_NATURE_AS_STRING);
 			if(activity == null && activityCategory == null)
@@ -484,6 +487,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_SOME_HOLDERS_NOT_DEFINED, someHoldersNotDefined, filter);
 			
 			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_SECTION, sectionCode, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT, administrativeUnitCode, filter);
 			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT, budgetSpecializationUnitCode, filter);
 			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_EXPENDITURE_NATURE, expenditureNatureCode, filter);
 			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_CATEGORY, activityCategoryCode, filter);

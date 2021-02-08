@@ -41,6 +41,7 @@ import ci.gouv.dgbf.system.actor.client.controller.api.BudgetSpecializationUnitC
 import ci.gouv.dgbf.system.actor.client.controller.api.ExpenditureNatureController;
 import ci.gouv.dgbf.system.actor.client.controller.api.FunctionComparator;
 import ci.gouv.dgbf.system.actor.client.controller.api.SectionController;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Action;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Activity;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ActivityCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
@@ -54,6 +55,7 @@ import ci.gouv.dgbf.system.actor.client.controller.impl.ActivitySelectionControl
 import ci.gouv.dgbf.system.actor.client.controller.impl.function.AssignmentsListPage;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActivityCategoryQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActivityQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExpenditureNatureQuerier;
@@ -67,30 +69,27 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	private Layout layout;
 	private TabMenu tabMenu;
 	private TabMenu.Tab selectedTab,selectedAssignmentsTab;
-	private SelectOneCombo sectionSelectOne,budgetSpecializationUnitSelectOne,activitySelectOne,activityCategorySelectOne,expenditureNatureSelectOne,functionSelectOne;
+	private SelectOneCombo sectionSelectOne,administrativeUnitSelectOne,budgetSpecializationUnitSelectOne,activitySelectOne,activityCategorySelectOne,expenditureNatureSelectOne,functionSelectOne;
 	private List<Function> functions;
 	private Section section,initialSection;
-	//private List<Section> sections;
+	private AdministrativeUnit administrativeUnit,initialAdministrativeUnit;
 	private BudgetSpecializationUnit budgetSpecializationUnit,initialBudgetSpecializationUnit;
-	//private List<BudgetSpecializationUnit> budgetSpecializationUnits;
+	private Action action,initialAction;
 	private Activity activity,initialActivity;
 	private ActivityCategory activityCategory,initalActivityCategory;
-	private ExpenditureNature expenditureNature,initialExpenditureNature;
-	private AdministrativeUnit administrativeUnit,initialAdministrativeUnit;
+	private ExpenditureNature expenditureNature,initialExpenditureNature;	
 	private Function function;
 	private CommandButton applyGlobalFilterCommand;
 	private ActivitySelectionController activitySelectionController;
 	
 	@Override
 	protected void __listenPostConstruct__() {
-		//sections = (List<Section>) __inject__(SectionController.class).readVisiblesByLoggedInActorCodeForUI();
-		//budgetSpecializationUnits = (List<BudgetSpecializationUnit>) __inject__(BudgetSpecializationUnitController.class).readVisiblesByLoggedInActorCodeForUI();
-		
 		if(activity == null)
 			initialActivity = activity = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(Activity.class
 					, ActivityQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI);		
 		if(activity != null) {
 			initialSection = section = activity.getSection();
+			initialAdministrativeUnit = administrativeUnit = activity.getAdministrativeUnit();
 			initialBudgetSpecializationUnit = budgetSpecializationUnit = activity.getBudgetSpecializationUnit();
 			initialExpenditureNature = expenditureNature = activity.getExpenditureNature();
 			initalActivityCategory = activityCategory = activity.getCategory();
@@ -101,6 +100,13 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 					, BudgetSpecializationUnitQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI);		
 		if(budgetSpecializationUnit != null && section == null) {
 			initialSection = section = budgetSpecializationUnit.getSection();
+		}
+		
+		if(administrativeUnit == null)
+			initialAdministrativeUnit = administrativeUnit = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(AdministrativeUnit.class
+					, AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI);		
+		if(administrativeUnit != null && section == null) {
+			initialSection = section = administrativeUnit.getSection();
 		}
 		
 		if(section == null)
@@ -208,11 +214,12 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		AssignmentsListPage.LazyDataModelListenerImpl lazyDataModelListener = new AssignmentsListPage.LazyDataModelListenerImpl();
 		AssignmentsListPage.DataTableListenerImpl dataTableListener = new AssignmentsListPage.DataTableListenerImpl();
 		String sectionCode = (String) FieldHelper.readBusinessIdentifier(section);
+		String administrativeUnitCode = (String) FieldHelper.readBusinessIdentifier(administrativeUnit);
 		String budgetSpecializationUnitCode = (String) FieldHelper.readBusinessIdentifier(budgetSpecializationUnit);
 		String activityCategoryCode = (String) FieldHelper.readBusinessIdentifier(activityCategory);
 		String expenditureNatureCode = (String) FieldHelper.readBusinessIdentifier(expenditureNature);
 		String activityCode = (String) FieldHelper.readBusinessIdentifier(activity);
-		Long total = count(TAB_ASSIGNMENTS_ALL, sectionCode, budgetSpecializationUnitCode, activityCategoryCode, expenditureNatureCode, activityCode);
+		Long total = count(TAB_ASSIGNMENTS_ALL, sectionCode,administrativeUnitCode, budgetSpecializationUnitCode, activityCategoryCode, expenditureNatureCode, activityCode);
 		for(Integer index = 0; index < ASSIGNMENTS_TABS.size(); index = index + 1) {
 			TabMenu.Tab tab = ASSIGNMENTS_TABS.get(index);
 			if(tabActiveIndex == null && tab.getParameterValue().equals(tabAssignmentsParameterValue))
@@ -223,6 +230,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 			arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setQueryExecutorArguments(
 					new QueryExecutorArguments.Dto().setQueryIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER)));
 			arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_SECTION, sectionCode);
+			arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT, administrativeUnitCode);
 			arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT, budgetSpecializationUnitCode);
 			arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_CATEGORY, activityCategoryCode);
 			arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_EXPENDITURE_NATURE, expenditureNatureCode);
@@ -245,20 +253,14 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 					name = String.format("%s (%s|%s)", tab.getName(),count,NumberHelper.computePercentageAsInteger(count, total)+"%");
 				}				
 			}
-			menuItem.setValue(name).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_ASSIGNMENTS).addParameter(TAB_ASSIGNMENTS_PARAMETER_NAME, tab.getParameterValue());
-			if(activity == null) {
-				if(budgetSpecializationUnit == null) {
-					if(section == null) {
-						
-					}else {
-						menuItem.addParameter(ParameterName.stringify(Section.class), section.getIdentifier());
-					}
-				}else {
-					menuItem.addParameter(ParameterName.stringify(BudgetSpecializationUnit.class), budgetSpecializationUnit.getIdentifier());
-				}
-			}else {
-				menuItem.addParameter(ParameterName.stringify(Activity.class), activity.getIdentifier());
-			}
+			menuItem.setValue(name).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_ASSIGNMENTS).addParameter(TAB_ASSIGNMENTS_PARAMETER_NAME, tab.getParameterValue());			
+			menuItem.addParameterFromInstanceIfConditionIsTrue(section,administrativeUnit == null && budgetSpecializationUnit == null && action == null && activity == null);
+			menuItem.addParameterFromInstanceIfConditionIsTrue(administrativeUnit,activity == null);
+			menuItem.addParameterFromInstanceIfConditionIsTrue(budgetSpecializationUnit,action == null && activity == null);
+			menuItem.addParameterFromInstanceIfConditionIsTrue(action,activity == null);
+			menuItem.addParameterFromInstance(activity);
+			menuItem.addParameterFromInstanceIfConditionIsTrue(expenditureNature,activity == null);
+			menuItem.addParameterFromInstanceIfConditionIsTrue(activityCategory,activity == null);
 		}
 		if(tabActiveIndex == null)
 			tabActiveIndex = 0;
@@ -269,6 +271,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 				,TabMenu.ConfiguratorImpl.FIELD_ITEMS,tabMenuItems);
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,tabMenu,Cell.FIELD_WIDTH,12));		
 		lazyDataModelListener.setSectionCode(sectionCode);
+		lazyDataModelListener.setAdministrativeUnitCode(administrativeUnitCode);
 		lazyDataModelListener.setBudgetSpecializationUnitCode(budgetSpecializationUnitCode);
 		lazyDataModelListener.setActivityCategoryCode(activityCategoryCode);
 		lazyDataModelListener.setExpenditureNatureCode(expenditureNatureCode);
@@ -281,7 +284,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		}
 		
 		Collection<String> columnsFieldsNames = AssignmentsListPage.DataTableListenerImpl
-				.buildColumnsNames(section, budgetSpecializationUnit, activity, expenditureNature, activityCategory);
+				.buildColumnsNames(section,administrativeUnit, budgetSpecializationUnit, activity, expenditureNature, activityCategory);
 		/*
 		if(sectionSelectOne == null || sectionSelectOne.getValue() == null)
 			columnsFieldsNames.add(Assignments.FIELD_SECTION_AS_STRING);
@@ -310,7 +313,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
 	}
 	
-	private Long count(String value, String sectionCode, String budgetSpecializationUnitCode, String activityCategoryCode, String expenditureNatureCode, String activityCode) {
+	private Long count(String value, String sectionCode, String administrativeUnitCode, String budgetSpecializationUnitCode, String activityCategoryCode, String expenditureNatureCode, String activityCode) {
 		Arguments<Assignments> arguments = new Arguments<>();
 		arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setQueryExecutorArguments(
 				new QueryExecutorArguments.Dto().setQueryIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER)));
@@ -322,6 +325,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 			
 		}
 		arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_SECTION, sectionCode);
+		arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT, administrativeUnitCode);
 		arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT, budgetSpecializationUnitCode);
 		arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_CATEGORY, activityCategoryCode);
 		arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_EXPENDITURE_NATURE, expenditureNatureCode);
@@ -334,12 +338,18 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		buildTabAssignmentsGlobalFilterSelectOneExpenditureNature();
 		buildTabAssignmentsGlobalFilterSelectOneActivityCategory();		
 		buildTabAssignmentsGlobalFilterSelectOneBudgetSpecializationUnit();
+		buildTabAssignmentsGlobalFilterSelectOneAdministrativeUnit();
 		buildTabAssignmentsGlobalFilterSelectOneSection();
 		buildTabAssignmentsGlobalFilterApplyCommand();
 		
 		if(sectionSelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Section"),Cell.FIELD_WIDTH,1));
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,sectionSelectOne,Cell.FIELD_WIDTH,11));	
+		}
+		
+		if(administrativeUnitSelectOne != null) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("U.A.").setTitle("Unité administrative"),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,administrativeUnitSelectOne,Cell.FIELD_WIDTH,11));	
 		}
 		
 		if(budgetSpecializationUnitSelectOne != null) {
@@ -379,6 +389,15 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 			public void select(AbstractInputChoiceOne input, Section section) {
 				super.select(input, section);
 				AffectationPage.this.section = section;
+				if(administrativeUnitSelectOne != null) {
+					administrativeUnitSelectOne.updateChoices();
+					if(initialAdministrativeUnit == null)
+						administrativeUnitSelectOne.selectFirstChoice();
+					else {
+						administrativeUnitSelectOne.selectBySystemIdentifier(FieldHelper.readSystemIdentifier(initialAdministrativeUnit));
+						initialAdministrativeUnit = null;
+					}
+				}
 				if(budgetSpecializationUnitSelectOne != null) {
 					budgetSpecializationUnitSelectOne.updateChoices();
 					if(initialBudgetSpecializationUnit == null)
@@ -392,7 +411,58 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		});
 		sectionSelectOne.updateChoices();
 		sectionSelectOne.selectBySystemIdentifier(FieldHelper.readSystemIdentifier(section));
-		sectionSelectOne.enableValueChangeListener(List.of(budgetSpecializationUnitSelectOne,expenditureNatureSelectOne,activityCategorySelectOne,activitySelectOne));
+		sectionSelectOne.enableValueChangeListener(List.of(administrativeUnitSelectOne,budgetSpecializationUnitSelectOne,expenditureNatureSelectOne,activityCategorySelectOne,activitySelectOne));
+	}
+	
+	private void buildTabAssignmentsGlobalFilterSelectOneAdministrativeUnit() {		
+		administrativeUnitSelectOne = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,AdministrativeUnit.class
+				,SelectOneCombo.FIELD_LISTENER,new SelectOneCombo.Listener.AbstractImpl<AdministrativeUnit>() {
+			public Collection<AdministrativeUnit> computeChoices(AbstractInputChoice<AdministrativeUnit> input) {
+				Collection<AdministrativeUnit> choices = null;
+				if(sectionSelectOne == null || sectionSelectOne.getValue() == null)
+					return null;
+				Section section = (Section) sectionSelectOne.getValue();
+				choices = EntityReader.getInstance().readMany(AdministrativeUnit.class, AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_FOR_UI
+						, AdministrativeUnitQuerier.PARAMETER_NAME_SECTION_IDENTIFIER,section.getIdentifier());
+				//choices = __inject__(AdministrativeUnitController.class).readVisiblesBySectionIdentifierByLoggedInActorCodeForUI(section.getIdentifier());
+				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
+				return choices;
+			}
+			
+			public void select(AbstractInputChoiceOne input, AdministrativeUnit administrativeUnit) {
+				super.select(input, administrativeUnit);
+				AffectationPage.this.administrativeUnit = administrativeUnit;
+				/*if(expenditureNatureSelectOne != null) {
+					expenditureNatureSelectOne.updateChoices();
+					if(initialExpenditureNature == null)
+						expenditureNatureSelectOne.selectFirstChoice();
+					else {
+						expenditureNatureSelectOne.selectBySystemIdentifier(FieldHelper.readSystemIdentifier(initialExpenditureNature));
+						initialExpenditureNature = null;
+					}
+				}
+				if(activityCategorySelectOne != null) {
+					activityCategorySelectOne.updateChoices();
+					if(initalActivityCategory == null)
+						activityCategorySelectOne.selectFirstChoice();
+					else {
+						activityCategorySelectOne.selectBySystemIdentifier(FieldHelper.readSystemIdentifier(initalActivityCategory));
+						initalActivityCategory = null;
+					}
+				}
+				if(activitySelectOne != null) {
+					activitySelectOne.updateChoices();
+					if(initialActivity == null)
+						activitySelectOne.selectFirstChoice();
+					else {
+						activitySelectOne.selectBySystemIdentifier(FieldHelper.readSystemIdentifier(initialActivity));
+						initialActivity = null;
+					}
+				}*/
+			}
+		}
+		);
+		administrativeUnitSelectOne.enableValueChangeListener(List.of(expenditureNatureSelectOne,activityCategorySelectOne,activitySelectOne));
 	}
 	
 	private void buildTabAssignmentsGlobalFilterSelectOneBudgetSpecializationUnit() {		
@@ -569,16 +639,20 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 				
 				if(activitySelectOne != null && activitySelectOne.getValue() != null)
 					map.put(ParameterName.stringify(Activity.class),List.of( ((Activity)activitySelectOne.getValue()).getIdentifier()));
-				else if(budgetSpecializationUnitSelectOne != null && budgetSpecializationUnitSelectOne.getValue() != null)
+				if((activitySelectOne == null || activitySelectOne.getValue() == null) && budgetSpecializationUnitSelectOne != null && budgetSpecializationUnitSelectOne.getValue() != null)
 					map.put(ParameterName.stringify(BudgetSpecializationUnit.class),List.of( ((BudgetSpecializationUnit)budgetSpecializationUnitSelectOne.getValue()).getIdentifier()));
-				else if(sectionSelectOne != null && sectionSelectOne.getValue() != null)
+				if((budgetSpecializationUnitSelectOne == null || budgetSpecializationUnitSelectOne.getValue() == null)
+						&& (administrativeUnitSelectOne == null || administrativeUnitSelectOne.getValue() == null) 
+						&& sectionSelectOne != null && sectionSelectOne.getValue() != null)
 					map.put(ParameterName.stringify(Section.class),List.of( ((Section)sectionSelectOne.getValue()).getIdentifier()));
 				
 				if(activitySelectOne == null || activitySelectOne.getValue() == null) {
+					if(administrativeUnitSelectOne != null && administrativeUnitSelectOne.getValue() != null)
+						map.put(ParameterName.stringify(AdministrativeUnit.class),List.of( ((AdministrativeUnit)administrativeUnitSelectOne.getValue()).getIdentifier()));
 					if(activityCategorySelectOne != null && activityCategorySelectOne.getValue() != null)
 						map.put(ParameterName.stringify(ActivityCategory.class),List.of( ((ActivityCategory)activityCategorySelectOne.getValue()).getIdentifier()));
 					if(expenditureNatureSelectOne != null && expenditureNatureSelectOne.getValue() != null)
-						map.put(ParameterName.stringify(ExpenditureNature.class),List.of( ((ExpenditureNature)expenditureNatureSelectOne.getValue()).getIdentifier()));
+						map.put(ParameterName.stringify(ExpenditureNature.class),List.of( ((ExpenditureNature)expenditureNatureSelectOne.getValue()).getIdentifier()));				
 				}				
 				
 				//if(functionSelectOne != null && functionSelectOne.getValue() != null)
