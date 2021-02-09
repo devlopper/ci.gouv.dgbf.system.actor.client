@@ -27,6 +27,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContaine
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoiceOne;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
@@ -81,6 +82,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	private Function function;
 	private CommandButton applyGlobalFilterCommand;
 	private ActivitySelectionController activitySelectionController;
+	//private Boolean filtersInitialized;
 	
 	@Override
 	protected void __listenPostConstruct__() {
@@ -309,6 +311,8 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,lazyDataModelListener
 				,DataTable.ConfiguratorImpl.FIELD_LISTENER,dataTableListener
 				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,columnsFieldsNames
+				,Section.class,section,AdministrativeUnit.class,administrativeUnit,BudgetSpecializationUnit.class,budgetSpecializationUnit
+				,Action.class,action,Activity.class,activity,ExpenditureNature.class,expenditureNature,ActivityCategory.class,activityCategory
 				);
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
 	}
@@ -347,26 +351,26 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,sectionSelectOne,Cell.FIELD_WIDTH,11));	
 		}
 		
-		if(administrativeUnitSelectOne != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("U.A.").setTitle("Unité administrative"),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,administrativeUnitSelectOne,Cell.FIELD_WIDTH,11));	
-		}
-		
 		if(budgetSpecializationUnitSelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("U.S.B.").setTitle("Unité de spécialisation du budget"),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,budgetSpecializationUnitSelectOne,Cell.FIELD_WIDTH,3));	
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,budgetSpecializationUnitSelectOne,Cell.FIELD_WIDTH,3));
+		}
+		
+		if(administrativeUnitSelectOne != null) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("U.A.").setTitle("Unité administrative"),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,administrativeUnitSelectOne,Cell.FIELD_WIDTH,7));
 		}
 		
 		if(expenditureNatureSelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("N.D.").setTitle("Nature de dépense"),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,expenditureNatureSelectOne,Cell.FIELD_WIDTH,2));	
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,expenditureNatureSelectOne,Cell.FIELD_WIDTH,5));	
 		}
 		
 		if(activityCategorySelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("C.A.").setTitle("Catégorie d'activité"),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activityCategorySelectOne,Cell.FIELD_WIDTH,4));	
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activityCategorySelectOne,Cell.FIELD_WIDTH,5));	
 		}
-				
+		
 		if(activitySelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Activité"),Cell.FIELD_WIDTH,1));
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activitySelectOne,Cell.FIELD_WIDTH,9));	
@@ -424,7 +428,6 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 				Section section = (Section) sectionSelectOne.getValue();
 				choices = EntityReader.getInstance().readMany(AdministrativeUnit.class, AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_FOR_UI
 						, AdministrativeUnitQuerier.PARAMETER_NAME_SECTION_IDENTIFIER,section.getIdentifier());
-				//choices = __inject__(AdministrativeUnitController.class).readVisiblesBySectionIdentifierByLoggedInActorCodeForUI(section.getIdentifier());
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
 			}
@@ -449,16 +452,16 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 						activityCategorySelectOne.selectBySystemIdentifier(FieldHelper.readSystemIdentifier(initalActivityCategory));
 						initalActivityCategory = null;
 					}
-				}
+				}*/
 				if(activitySelectOne != null) {
 					activitySelectOne.updateChoices();
 					if(initialActivity == null)
 						activitySelectOne.selectFirstChoice();
 					else {
 						activitySelectOne.selectBySystemIdentifier(FieldHelper.readSystemIdentifier(initialActivity));
-						initialActivity = null;
+						//initialActivity = null;
 					}
-				}*/
+				}
 			}
 		}
 		);
@@ -592,30 +595,21 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		activitySelectOne = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,Activity.class
 				,SelectOneCombo.FIELD_LISTENER,new SelectOneCombo.Listener.AbstractImpl<Activity>() {
 			public Collection<Activity> computeChoices(AbstractInputChoice<Activity> input) {
-				Collection<Activity> choices = null;
-				if(budgetSpecializationUnitSelectOne == null || budgetSpecializationUnitSelectOne.getValue() == null)
-					choices = null;
-				else {
-					BudgetSpecializationUnit budgetSpecializationUnit = (BudgetSpecializationUnit) budgetSpecializationUnitSelectOne.getValue();
-					ExpenditureNature expenditureNature = (ExpenditureNature) expenditureNatureSelectOne.getValue();
-					ActivityCategory activityCategory = (ActivityCategory) activityCategorySelectOne.getValue();
-					if(budgetSpecializationUnit != null && expenditureNature != null && activityCategory != null)
-						choices = EntityReader.getInstance().readMany(Activity.class, ActivityQuerier.QUERY_IDENTIFIER_READ_BY_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER_BY_EXPENDITURE_NATURE_IDENTIFIER_BY_CATEGORY_IDENTIFIER_FOR_UI
-								,ActivityQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER, budgetSpecializationUnit.getIdentifier()
-								,ActivityQuerier.PARAMETER_NAME_EXPENDITURE_NATURE_IDENTIFIER, expenditureNature.getIdentifier()
-								,ActivityQuerier.PARAMETER_NAME_CATEGORY_IDENTIFIER, activityCategory.getIdentifier());
-					else if(budgetSpecializationUnit != null && expenditureNature != null)
-						choices = EntityReader.getInstance().readMany(Activity.class, ActivityQuerier.QUERY_IDENTIFIER_READ_BY_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER_BY_EXPENDITURE_NATURE_IDENTIFIER_FOR_UI
-								,ActivityQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER, budgetSpecializationUnit.getIdentifier()
-								,ActivityQuerier.PARAMETER_NAME_EXPENDITURE_NATURE_IDENTIFIER, expenditureNature.getIdentifier());
-					else if(budgetSpecializationUnit != null && activityCategory != null)
-						choices = EntityReader.getInstance().readMany(Activity.class, ActivityQuerier.QUERY_IDENTIFIER_READ_BY_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER_BY_CATEGORY_IDENTIFIER_FOR_UI
-								,ActivityQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER, budgetSpecializationUnit.getIdentifier()
-								,ActivityQuerier.PARAMETER_NAME_CATEGORY_IDENTIFIER, activityCategory.getIdentifier());
-					else if(budgetSpecializationUnit != null)
-						choices = EntityReader.getInstance().readMany(Activity.class, ActivityQuerier.QUERY_IDENTIFIER_READ_BY_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER_FOR_UI
-								,ActivityQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER, budgetSpecializationUnit.getIdentifier());
-				}
+				if(AbstractInput.getValue(administrativeUnitSelectOne) == null && AbstractInput.getValue(budgetSpecializationUnitSelectOne) == null)
+					return null;
+				Arguments<Activity> arguments = new Arguments<>();
+				arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments());
+				arguments.getRepresentationArguments().setQueryExecutorArguments(new QueryExecutorArguments.Dto()
+						.setQueryIdentifier(ActivityQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI));
+				if(administrativeUnit != null)
+					arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(ActivityQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT_IDENTIFIER,FieldHelper.readSystemIdentifier(administrativeUnit));
+				if(budgetSpecializationUnit != null)
+					arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(ActivityQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER,FieldHelper.readSystemIdentifier(budgetSpecializationUnit));
+				if(expenditureNature != null)
+					arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(ActivityQuerier.PARAMETER_NAME_EXPENDITURE_NATURE_IDENTIFIER,FieldHelper.readSystemIdentifier(expenditureNature));
+				if(activityCategory != null)
+					arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(ActivityQuerier.PARAMETER_NAME_CATEGORY_IDENTIFIER,FieldHelper.readSystemIdentifier(activityCategory));								
+				Collection<Activity> choices = EntityReader.getInstance().readMany(Activity.class, arguments);				
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
 			}
@@ -669,7 +663,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return AssignmentsListPage.buildWindowTitleValue("Affectation", section, budgetSpecializationUnit, activity,expenditureNature,activityCategory);
+		return AssignmentsListPage.buildWindowTitleValue("Affectation", section,administrativeUnit, budgetSpecializationUnit,action, activity,expenditureNature,activityCategory);
 	}
 	
 	/**/

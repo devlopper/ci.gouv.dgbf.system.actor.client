@@ -54,7 +54,6 @@ public class AccountListPage extends AbstractPageContainerManagedImpl implements
 	
 	@Override
 	protected void __listenPostConstruct__() {
-		contentOutputPanel.setDeferred(Boolean.TRUE);
 		Tab selectedTab = Tab.getByParameterValue(WebController.getInstance().getRequestParameter(Tab.PARAMETER_NAME));
 		if(selectedTab == null)
 			selectedTab = Tab.ACTOR;

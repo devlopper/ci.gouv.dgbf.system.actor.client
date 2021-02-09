@@ -17,6 +17,7 @@ import org.cyk.utility.__kernel__.constant.ConstantEmpty;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntitySaver;
 import org.cyk.utility.__kernel__.field.FieldHelper;
+import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.session.SessionManager;
@@ -24,6 +25,7 @@ import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
 import org.cyk.utility.__kernel__.value.ValueHelper;
+import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
@@ -39,6 +41,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.FunctionController;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Action;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Activity;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ActivityCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
@@ -50,7 +53,10 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.client.controller.impl.Helper;
 import ci.gouv.dgbf.system.actor.server.business.api.AssignmentsBusiness;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActivityQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 import lombok.Getter;
 import lombok.Setter;
@@ -82,14 +88,37 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		return "Affectations";
 	}
 	
-	public static String buildWindowTitleValue(String prefix,Section section,BudgetSpecializationUnit budgetSpecializationUnit,Activity activity
+	public static String buildWindowTitleValue(String prefix,PageArguments pageArguments) {
+		return buildWindowTitleValue(prefix, pageArguments.section, pageArguments.administrativeUnit, pageArguments.budgetSpecializationUnit, pageArguments.action
+				, pageArguments.activity, pageArguments.expenditureNature, pageArguments.activityCategory);
+	}
+	
+	public static String buildWindowTitleValue(String prefix,Section section,AdministrativeUnit administrativeUnit,BudgetSpecializationUnit budgetSpecializationUnit,Action action,Activity activity
 			,ExpenditureNature expenditureNature,ActivityCategory activityCategory) {
 		Collection<String> strings = new ArrayList<>();
 		strings.add(prefix);
-		if(section != null)
-			strings.add(section.toString());
-		if(budgetSpecializationUnit != null)
-			strings.add(budgetSpecializationUnit.toString());
+		if(section != null) {
+			if(administrativeUnit == null && budgetSpecializationUnit == null)
+				strings.add(section.toString());
+			else
+				strings.add("Section "+section.getCode());
+		}
+		if(administrativeUnit != null) {
+			strings.add(administrativeUnit.toString());
+		}
+		if(budgetSpecializationUnit != null) {
+			if(action == null && activity == null)
+				strings.add(budgetSpecializationUnit.toString());
+			else
+				strings.add((budgetSpecializationUnit.getCode().startsWith("1") ? "Dotation":"Programme")+" "+budgetSpecializationUnit.getCode());
+		}
+		if(action != null) {
+			if(activity == null)
+				strings.add(action.toString());
+			else
+				strings.add("Action "+action.getCode());
+		}
+		
 		if(activity == null) {
 			if(expenditureNature != null)
 				strings.add("Nature de dépense : "+expenditureNature.toString());
@@ -100,8 +129,6 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		}
 		return StringHelper.concatenate(strings, " | ");
 	}
-	
-	/**/
 	
 	public static DataTable buildDataTable(Map<Object,Object> arguments) {
 		if(arguments == null)
@@ -169,10 +196,26 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 						}
 					});
 			*/
-			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog("assignmentsEditManyView"
-					, MenuItem.FIELD_VALUE,"Modifier",MenuItem.FIELD_ICON,"fa fa-pencil",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.OPEN_VIEW_IN_DIALOG);
+			Map<String, List<String>> parameters = new HashMap<>();
+			if(MapHelper.readByKey(arguments, Section.class) != null)
+				parameters.put(ParameterName.stringify(Section.class), List.of((String)FieldHelper.readSystemIdentifier(MapHelper.readByKey(arguments, Section.class))));
+			if(MapHelper.readByKey(arguments, AdministrativeUnit.class) != null)
+				parameters.put(ParameterName.stringify(AdministrativeUnit.class), List.of((String)FieldHelper.readSystemIdentifier(MapHelper.readByKey(arguments, AdministrativeUnit.class))));
+			if(MapHelper.readByKey(arguments, BudgetSpecializationUnit.class) != null)
+				parameters.put(ParameterName.stringify(BudgetSpecializationUnit.class), List.of((String)FieldHelper.readSystemIdentifier(MapHelper.readByKey(arguments, BudgetSpecializationUnit.class))));
+			if(MapHelper.readByKey(arguments, Action.class) != null)
+				parameters.put(ParameterName.stringify(Action.class), List.of((String)FieldHelper.readSystemIdentifier(MapHelper.readByKey(arguments, Action.class))));
+			if(MapHelper.readByKey(arguments, Activity.class) != null)
+				parameters.put(ParameterName.stringify(Activity.class), List.of((String)FieldHelper.readSystemIdentifier(MapHelper.readByKey(arguments, Activity.class))));
+			if(MapHelper.readByKey(arguments, ExpenditureNature.class) != null)
+				parameters.put(ParameterName.stringify(ExpenditureNature.class), List.of((String)FieldHelper.readSystemIdentifier(MapHelper.readByKey(arguments, ExpenditureNature.class))));
+			if(MapHelper.readByKey(arguments, ActivityCategory.class) != null)
+				parameters.put(ParameterName.stringify(ActivityCategory.class), List.of((String)FieldHelper.readSystemIdentifier(MapHelper.readByKey(arguments, ActivityCategory.class))));
 			
-			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog("assignmentsEditManyByModelView"
+			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog("assignmentsEditManyView",MenuItem.FIELD___PARAMETERS__,parameters
+					, MenuItem.FIELD_VALUE,"Modifier",MenuItem.FIELD_ICON,"fa fa-pencil",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.OPEN_VIEW_IN_DIALOG);
+	
+			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog("assignmentsEditManyByModelView",MenuItem.FIELD___PARAMETERS__,parameters
 					, MenuItem.FIELD_VALUE,"Modifier par modèle",MenuItem.FIELD_ICON,"fa fa-cubes",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.OPEN_VIEW_IN_DIALOG);
 			/*
 			dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Initialiser",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
@@ -238,8 +281,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 						});
 			}
 
-			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("assignmentsEditView", CommandButton.FIELD_VALUE,"Modifier"
-					,CommandButton.FIELD_ICON,"fa fa-pencil");
+			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("assignmentsEditView", CommandButton.FIELD_VALUE,"Modifier",CommandButton.FIELD_ICON,"fa fa-pencil");
 		}
 		return dataTable;
 	}
@@ -247,6 +289,62 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 	public static DataTable buildDataTable(Object...objects) {
 		return buildDataTable(ArrayHelper.isEmpty(objects) ? null : MapHelper.instantiate(objects));
 	}
+
+	/**/
+	
+	public static class PageArguments implements Serializable{
+		public Section section;
+		public AdministrativeUnit administrativeUnit;
+		public BudgetSpecializationUnit budgetSpecializationUnit;
+		public Action action;
+		public Activity activity;
+		public ExpenditureNature expenditureNature;
+		public ActivityCategory activityCategory;
+		
+		public void initialize() {
+			if(activity == null) {
+				activity = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(Activity.class
+						,ActivityQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI);
+				if(activity != null) {
+					section = activity.getSection();
+					budgetSpecializationUnit = activity.getBudgetSpecializationUnit();
+					administrativeUnit = activity.getAdministrativeUnit();
+					expenditureNature = activity.getExpenditureNature();
+					activityCategory = activity.getCategory();
+				}
+			}
+			
+			if(budgetSpecializationUnit == null) {
+				budgetSpecializationUnit = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(BudgetSpecializationUnit.class
+						,BudgetSpecializationUnitQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI);
+				if(budgetSpecializationUnit != null) {
+					section = budgetSpecializationUnit.getSection();
+				}
+			}
+			
+			if(administrativeUnit == null) {
+				administrativeUnit = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(AdministrativeUnit.class
+						,AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI);
+				if(administrativeUnit != null && section == null) {
+					section = administrativeUnit.getSection();
+				}
+			}
+			
+			if(section == null) {
+				section = WebController.getInstance().getRequestParameterEntityAsParent(Section.class);
+			}
+			
+			if(expenditureNature == null) {
+				expenditureNature = WebController.getInstance().getRequestParameterEntityAsParent(ExpenditureNature.class);
+			}
+			
+			if(activityCategory == null) {
+				activityCategory = WebController.getInstance().getRequestParameterEntityAsParent(ActivityCategory.class);
+			}
+		}
+	}
+	
+	/**/
 	
 	@Getter @Setter @Accessors(chain=true)
 	public static class DataTableListenerImpl extends DataTable.Listener.AbstractImpl implements Serializable {
@@ -403,6 +501,11 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			return ContextMenu.class;
 		}
 	
+		public static Collection<String> buildColumnsNames(PageArguments pageArguments) {
+			return buildColumnsNames(pageArguments.section, pageArguments.administrativeUnit, pageArguments.budgetSpecializationUnit, pageArguments.activity
+					, pageArguments.expenditureNature, pageArguments.activityCategory);
+		}
+		
 		public static Collection<String> buildColumnsNames(Section section,AdministrativeUnit administrativeUnit,BudgetSpecializationUnit budgetSpecializationUnit,Activity activity
 				,ExpenditureNature expenditureNature,ActivityCategory activityCategory) {
 			Collection<String> columnsFieldsNames = new ArrayList<>();
@@ -430,17 +533,32 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 	
 	@Getter @Setter @Accessors(chain=true)
 	public static class LazyDataModelListenerImpl extends LazyDataModel.Listener.AbstractImpl<Assignments> implements Serializable {		
-		private String sectionCode,budgetSpecializationUnitCode,expenditureNatureCode,activityCategoryCode,activityCode,economicNatureCode,administrativeUnitCode;
+		private String sectionCode,budgetSpecializationUnitCode,actionCode,expenditureNatureCode,activityCategoryCode,activityCode,economicNatureCode,administrativeUnitCode;
 		private Boolean allHoldersDefined,someHoldersNotDefined;
 		private HolderAndAssistant creditManager = new HolderAndAssistant()
 				,authorizingOfficer = new HolderAndAssistant()
 				,financialController = new HolderAndAssistant()
 				,accounting = new HolderAndAssistant();
 		
+		public LazyDataModelListenerImpl applyPageArguments(PageArguments pageArguments){
+			sectionCode(pageArguments.section);
+			administrativeUnitCode(pageArguments.administrativeUnit);
+			budgetSpecializationUnitCode(pageArguments.budgetSpecializationUnit);
+			activityCode(pageArguments.activity);
+			return this;
+		}
+		
 		public LazyDataModelListenerImpl sectionCode(Section section) {
 			if(section == null)
 				return this;
 			setSectionCode(section.getCode());
+			return this;
+		}
+		
+		public LazyDataModelListenerImpl administrativeUnitCode(AdministrativeUnit administrativeUnit) {
+			if(administrativeUnit == null)
+				return this;
+			setAdministrativeUnitCode(administrativeUnit.getCode());
 			return this;
 		}
 		

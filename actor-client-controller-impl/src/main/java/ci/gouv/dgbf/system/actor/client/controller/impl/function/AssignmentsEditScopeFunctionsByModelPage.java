@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
@@ -24,7 +23,7 @@ import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntitySaver;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
@@ -72,14 +71,16 @@ public class AssignmentsEditScopeFunctionsByModelPage extends AbstractPageContai
 	
 	private CommandButton saveCommandButton;
 	
+	private AssignmentsListPage.PageArguments pageArguments = new AssignmentsListPage.PageArguments();
+	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Affectation par modèle";
+		return AssignmentsListPage.buildWindowTitleValue("Affectation par modèle", pageArguments);
 	}
 	
 	@Override
 	protected void __listenPostConstruct__() {
-		contentOutputPanel.setDeferred(Boolean.TRUE);
+		pageArguments.initialize();
 		super.__listenPostConstruct__();		
 		buildFilters();
 		buildDataTable();
@@ -130,10 +131,18 @@ public class AssignmentsEditScopeFunctionsByModelPage extends AbstractPageContai
 					@SuppressWarnings("unchecked")
 					@Override
 					protected Object __runExecuteFunction__(AbstractAction action) {
+						LazyDataModel<Assignments> lazyDataModel = (LazyDataModel<Assignments>)assignmentsDataTable.getValue();
+						//AssignmentsListPage.LazyDataModelListenerImpl lazyDataModelListener = (AssignmentsListPage.LazyDataModelListenerImpl) lazyDataModel.getListener();						
+						Filter.Dto filter = lazyDataModel.get__filter__();
+						if(filter == null || CollectionHelper.isEmpty(filter.getFields()))
+							throw new RuntimeException("Le filtre est obligatoire");
+						model.setFilter(filter);
+						/*
 						Map<String,Object> filters = ((LazyDataModel<Assignments>)assignmentsDataTable.getValue()).get__filters__();						
 						if(filters == null || MapHelper.isEmpty(filters) || CollectionHelper.isEmpty(filters.values().stream().filter(value -> StringHelper.isNotBlank((String)value)).collect(Collectors.toList())))
 							throw new RuntimeException("Le filtre est obligatoire");
 						model.setFilter(((LazyDataModel<Assignments>)assignmentsDataTable.getValue()).get__filter__());
+						*/
 						copyToModel(Assignments.FIELD_CREDIT_MANAGER_HOLDER);
 						copyToModel(Assignments.FIELD_CREDIT_MANAGER_ASSISTANT);
 						copyToModel(Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER);
@@ -161,7 +170,8 @@ public class AssignmentsEditScopeFunctionsByModelPage extends AbstractPageContai
 	
 	private void buildDataTable() {
 		assignmentsDataTable = AssignmentsListPage.buildDataTable(DataTable.FIELD_LISTENER,new DataTableListenerImpl()
-				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl()
+				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,AssignmentsListPage.DataTableListenerImpl.buildColumnsNames(pageArguments)
+				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl().applyPageArguments(pageArguments)
 				,DataTable.FIELD_RENDER_TYPE,org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection.RenderType.INPUT
 				);
 	}

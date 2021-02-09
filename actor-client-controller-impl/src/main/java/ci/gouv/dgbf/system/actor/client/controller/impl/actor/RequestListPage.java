@@ -155,11 +155,11 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			}else if(Request.FIELD_COMMENT.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Commentaire");
 			}else if(Request.FIELD_CREATION_DATE_AS_STRING.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Créé le");
+				map.put(Column.FIELD_HEADER_TEXT, "Créée le");
 				map.put(Column.FIELD_WIDTH, "130");
 				map.put(Column.FIELD_VISIBLE, ContentType.TO_PROCESS.equals(contentType));
 			}else if(Request.FIELD_PROCESSING_DATE_AS_STRING.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Traité le");
+				map.put(Column.FIELD_HEADER_TEXT, "Traitée le");
 				map.put(Column.FIELD_WIDTH, "130");
 				map.put(Column.FIELD_VISIBLE, ContentType.PROCESSED.equals(contentType));
 			}else if(Request.FIELD_TYPE_AS_STRING.equals(fieldName)) {

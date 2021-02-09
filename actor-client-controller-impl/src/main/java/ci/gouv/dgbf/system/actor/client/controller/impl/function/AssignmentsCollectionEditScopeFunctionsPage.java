@@ -33,6 +33,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.FunctionController;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Action;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Activity;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ActivityCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
@@ -72,13 +73,14 @@ public class AssignmentsCollectionEditScopeFunctionsPage extends AbstractPageCon
 	private Section section;
 	private AdministrativeUnit administrativeUnit;
 	private BudgetSpecializationUnit budgetSpecializationUnit;
+	private Action action;
 	private Activity activity;
 	private ExpenditureNature expenditureNature;
 	private ActivityCategory activityCategory;
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return AssignmentsListPage.buildWindowTitleValue("Modification des affectations", section, budgetSpecializationUnit, activity,expenditureNature,activityCategory);
+		return AssignmentsListPage.buildWindowTitleValue("Modification des affectations", section,administrativeUnit, budgetSpecializationUnit,action, activity,expenditureNature,activityCategory);
 	}
 	
 	@Override
@@ -154,7 +156,7 @@ public class AssignmentsCollectionEditScopeFunctionsPage extends AbstractPageCon
 				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,AssignmentsListPage.DataTableListenerImpl.buildColumnsNames(section,administrativeUnit, budgetSpecializationUnit, activity
 						, expenditureNature, activityCategory)
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl()
-				.sectionCode(section).budgetSpecializationUnitCode(budgetSpecializationUnit).activityCode(activity)
+				.sectionCode(section).administrativeUnitCode(administrativeUnit).budgetSpecializationUnitCode(budgetSpecializationUnit).activityCode(activity)
 				,DataTable.FIELD_RENDER_TYPE,org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection.RenderType.INPUT
 				);
 	}

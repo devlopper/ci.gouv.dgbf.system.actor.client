@@ -33,7 +33,6 @@ public class RequestIndexPage extends AbstractPageContainerManagedImpl implement
 	
 	@Override
 	protected void __listenPostConstruct__() {
-		contentOutputPanel.setDeferred(Boolean.TRUE);
 		super.__listenPostConstruct__();
 		functionIdentifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(Function.class));
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
