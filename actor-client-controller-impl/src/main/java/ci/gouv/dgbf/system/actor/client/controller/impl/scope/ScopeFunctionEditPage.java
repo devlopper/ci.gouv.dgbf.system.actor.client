@@ -122,7 +122,10 @@ public class ScopeFunctionEditPage extends AbstractEntityEditPageContainerManage
 		if(map == null)
 			map = new HashMap<>();
 		MapHelper.writeByKeyDoNotOverride(map, Form.FIELD_ENTITY_CLASS, ScopeFunction.class);
-		MapHelper.writeByKeyDoNotOverride(map,Form.FIELD_ACTION, ValueHelper.defaultToIfNull(WebController.getInstance().getRequestParameterAction(), Action.CREATE));
+		Action action = (Action) MapHelper.readByKey(map, Form.FIELD_ACTION);
+		if(action == null)
+			action = ValueHelper.defaultToIfNull(WebController.getInstance().getRequestParameterAction(), Action.CREATE);
+		MapHelper.writeByKeyDoNotOverride(map,Form.FIELD_ACTION, action);
 		MapHelper.writeByKeyDoNotOverride(map,Form.ConfiguratorImpl.FIELD_LISTENER, new FormConfiguratorListenerImpl());		
 		MapHelper.writeByKeyDoNotOverride(map,Form.FIELD_LISTENER, new FormListenerImpl());
 		Form form = Form.build(map);
@@ -204,4 +207,8 @@ public class ScopeFunctionEditPage extends AbstractEntityEditPageContainerManage
 			return map;
 		}
 	}
+
+	/**/
+	
+	
 }

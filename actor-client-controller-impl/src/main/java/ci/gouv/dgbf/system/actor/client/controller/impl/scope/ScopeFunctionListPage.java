@@ -153,6 +153,10 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 				dataTable.addRecordMenuItemByArgumentsOpenViewInDialogUpdate();
 				dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
 			}
+			if(!Boolean.TRUE.equals(SessionManager.getInstance().isUserHasOneOfRoles(Profile.CODE_ADMINISTRATEUR)) 
+					&&  Boolean.TRUE.equals(SessionManager.getInstance().isUserHasOneOfRoles(Profile.CODE_CHARGE_ETUDE_DAS))) {
+				dataTable.addRecordMenuItemByArgumentsOpenViewInDialog(ScopeFunctionEditNamePage.OUTCOME, MenuItem.FIELD_VALUE,"Modifier le libellé",MenuItem.FIELD_ICON,"fa fa-edit");
+			}
 			dataTable.setAreColumnsChoosable(Boolean.TRUE);
 		}		
 		return dataTable;

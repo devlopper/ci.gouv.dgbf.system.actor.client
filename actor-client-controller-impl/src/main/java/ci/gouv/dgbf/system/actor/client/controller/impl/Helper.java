@@ -60,12 +60,12 @@ public interface Helper {
 	
 	static String addCreditManagersAuthorizingOfficersFinancialControllersAssistantsTabMenu(Collection<Map<Object,Object>> cellsMaps,String outcome
 			,Collection<TabMenu.Tab> mastersTabs,String selectedMasterTab,String selectedFunctionIdentifier) {		
-		Collection<Function> functions = DependencyInjection.inject(FunctionController.class).readCreditManagersAuthorizingOfficersFinancialControllersAssistants();;
+		Collection<Function> functions = DependencyInjection.inject(FunctionController.class).readCreditManagersAuthorizingOfficersFinancialControllersAssistants();
 		if(CollectionHelper.isEmpty(functions))
 			return null;
 		//String identifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(Function.class));
 		if(StringHelper.isBlank(selectedFunctionIdentifier))
-			selectedFunctionIdentifier = CollectionHelper.getFirst(functions).getIdentifier();		
+			selectedFunctionIdentifier = CollectionHelper.getFirst(functions).getIdentifier();
 		Collection<MenuItem> tabMenuItems = new ArrayList<>();
 		Integer tabActiveIndex = null,index = 0;
 		for(Function function : functions) {

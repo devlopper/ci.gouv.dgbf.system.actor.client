@@ -20,6 +20,7 @@ import org.cyk.utility.__kernel__.controller.EntitySaver;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.session.SessionManager;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
@@ -33,7 +34,11 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMe
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 
+import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
+import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
@@ -65,6 +70,27 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 	@Override
 	protected String __getWindowTitleValue__() {
 		return "Liste des demandes";
+	}
+	
+	public static String buildWindowTitleValue(String prefix,Function function,Section section,AdministrativeUnit administrativeUnit,BudgetSpecializationUnit budgetSpecializationUnit) {
+		Collection<String> strings = new ArrayList<>();
+		strings.add(prefix);
+		if(section != null) {
+			if(administrativeUnit == null && budgetSpecializationUnit == null)
+				strings.add(section.toString());
+			else
+				strings.add("Section "+section.getCode());
+		}
+		if(administrativeUnit != null) {
+			strings.add(administrativeUnit.toString());
+		}
+		if(function != null) {
+			strings.add(function.getName());
+		}
+		if(budgetSpecializationUnit != null) {
+			strings.add((budgetSpecializationUnit.getCode().startsWith("1") ? "Dotation":"Programme")+" "+budgetSpecializationUnit.getCode());
+		}
+		return StringHelper.concatenate(strings, " | ");
 	}
 	
 	/**/
@@ -173,33 +199,38 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}else if(Request.FIELD_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Numéro");
-				map.put(Column.FIELD_WIDTH, "120");
+				map.put(Column.FIELD_WIDTH, "110");
 				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
 				map.put(Column.FIELD_FILTER_BY, RequestQuerier.PARAMETER_NAME_CODE);
 			}else if(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Fonction(s) budgétaire(s)");
+				map.put(Column.FIELD_WIDTH, "150");
 			}else if(Request.FIELD_ELECTRONIC_MAIL_ADDRESS.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Email");
 				map.put(Column.FIELD_WIDTH, "200");
 				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
 				map.put(Column.FIELD_FILTER_BY, RequestQuerier.PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS);
+				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}else if(Request.FIELD_MOBILE_PHONE_NUMBER.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Tel. Mobile");
 				map.put(Column.FIELD_WIDTH, "100");
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}else if(Request.FIELD_ADMINISTRATIVE_UNIT_AS_STRING.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "UA");
-				map.put(Column.FIELD_WIDTH, "100");
-				//map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
-				//map.put(Column.FIELD_FILTER_BY, RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT);
+				map.put(Column.FIELD_HEADER_TEXT, "Unité administrative");
+				//map.put(Column.FIELD_WIDTH, "90");
+			}else if(Request.FIELD_SECTION_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Section");
+				map.put(Column.FIELD_WIDTH, "70");
 			}else if(Request.FIELD_FIRST_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Nom");
 				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
 				map.put(Column.FIELD_FILTER_BY, RequestQuerier.PARAMETER_NAME_FIRST_NAME);
+				map.put(Column.FIELD_WIDTH, "100");
 			}else if(Request.FIELD_LAST_NAMES.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Prénoms");
 				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
 				map.put(Column.FIELD_FILTER_BY, RequestQuerier.PARAMETER_NAME_LAST_NAMES);
+				map.put(Column.FIELD_WIDTH, "150");
 			}else if(Request.FIELD_REGISTRATION_NUMBER.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Matricule");
 				map.put(Column.FIELD_WIDTH, "110");
@@ -258,8 +289,10 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 				}
 				if(CollectionHelper.isNotEmpty(strings))
 					return strings.stream().map(x -> StringUtils.substringBefore(x, " ")).collect(Collectors.joining(","));
-			}else if(Request.FIELD_ADMINISTRATIVE_UNIT_AS_STRING.equals(column.getFieldName())) {
+			}/*else if(Request.FIELD_ADMINISTRATIVE_UNIT_AS_STRING.equals(column.getFieldName())) {
 				return StringUtils.substringBefore(((Request)record).getAdministrativeUnitAsString()," ");
+			}*/else if(Request.FIELD_SECTION_AS_STRING.equals(column.getFieldName())) {
+				return StringUtils.substringBefore(((Request)record).getSectionAsString()," ");
 			}
 			return super.getCellValueByRecordByColumn(record, recordIndex, column, columnIndex);
 		}
@@ -278,9 +311,9 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 					}
 					if(CollectionHelper.isNotEmpty(strings))
 						if(strings.size() == 1)
-							return String.format(TOOLTIP_FORMAT, request.getAdministrativeUnitAsString(),strings.get(0));
+							return String.format(TOOLTIP_FORMAT, request.getSectionAsString(),request.getAdministrativeUnitAsString(),strings.get(0));
 						else
-							return String.format(TOOLTIP_FORMAT, request.getAdministrativeUnitAsString(),SEPARATOR+StringUtils.join(strings,SEPARATOR));
+							return String.format(TOOLTIP_FORMAT, request.getSectionAsString(),request.getAdministrativeUnitAsString(),SEPARATOR+StringUtils.join(strings,SEPARATOR));
 				}
 			}
 			return super.getTooltipByRecord(record, recordIndex);
@@ -290,13 +323,34 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			return ContextMenu.class;
 		}
 		
+		public static Collection<String> buildColumnsNames(Function function,Section section,AdministrativeUnit administrativeUnit,BudgetSpecializationUnit budgetSpecializationUnit,ContentType contentType) {
+			Collection<String> columnsFieldsNames = new ArrayList<>();
+			columnsFieldsNames.addAll(List.of(Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
+					,Request.FIELD_ELECTRONIC_MAIL_ADDRESS,Request.FIELD_MOBILE_PHONE_NUMBER));
+			if(section == null)
+				columnsFieldsNames.add(Request.FIELD_SECTION_AS_STRING);
+			if(administrativeUnit == null)
+				columnsFieldsNames.add(Request.FIELD_ADMINISTRATIVE_UNIT_AS_STRING);
+			if(function == null)
+				columnsFieldsNames.addAll(List.of(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS));
+			if(ContentType.TO_PROCESS.equals(contentType)) {
+				columnsFieldsNames.addAll(List.of(Request.FIELD_CREATION_DATE_AS_STRING));
+			}else if(ContentType.PROCESSED.equals(contentType)) {
+				columnsFieldsNames.addAll(List.of(Request.FIELD_PROCESSING_DATE_AS_STRING));
+			}else if(ContentType.ALL.equals(contentType)) {
+				columnsFieldsNames.addAll(List.of(Request.FIELD_CREATION_DATE_AS_STRING,Request.FIELD_PROCESSING_DATE_AS_STRING));
+			}
+			columnsFieldsNames.addAll(List.of(Request.FIELD_STATUS_AS_STRING));
+			return columnsFieldsNames;
+		}
+		
 		private static final String SEPARATOR = "<br/>"+StringUtils.repeat("&nbsp;", 10);
-		private static final String TOOLTIP_FORMAT = "Unité administrative : %s<br/>Fonction(s) budgétaire(s) :%s";
+		private static final String TOOLTIP_FORMAT = "Section : %s<br/>Unité administrative : %s<br/>Fonction(s) budgétaire(s) :%s";
 	}
 	
 	@Getter @Setter @Accessors(chain=true)
 	public static class LazyDataModelListenerImpl extends LazyDataModel.Listener.AbstractImpl<Request> implements Serializable {
-		private String actorIdentifier,sectionIdentifier,functionIdentifier,dispatchSlipIdentifier,statusIdentifier;
+		private String actorIdentifier,sectionIdentifier,administrativeUnitIdentifier,functionIdentifier,dispatchSlipIdentifier,statusIdentifier;
 		private Boolean processingDateIsNullNullable,processingDateIsNotNullNullable;
 		private Boolean dispatchSlipIsNullNullable;
 		private Collection<String> excludedIdentifiers;
@@ -341,8 +395,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 	}
 	
 	public static enum ContentType {
-		TO_PROCESS
-		,PROCESSED
+		TO_PROCESS,PROCESSED,ALL
 	}
 	
 	public static final String OUTCOME = "requestListView";

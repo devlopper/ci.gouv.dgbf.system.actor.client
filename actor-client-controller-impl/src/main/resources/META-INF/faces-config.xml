@@ -500,6 +500,12 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>scopeFunctionEditNameView</from-outcome>
+			<to-view-id>/private/scopefunction/editname.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>privilegeListView</from-outcome>
 			<to-view-id>/private/privilege/list.jsf</to-view-id>
 			<redirect />
