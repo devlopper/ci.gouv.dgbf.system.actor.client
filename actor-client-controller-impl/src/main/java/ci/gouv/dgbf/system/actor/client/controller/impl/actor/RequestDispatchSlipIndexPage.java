@@ -194,6 +194,7 @@ public class RequestDispatchSlipIndexPage extends AbstractPageContainerManagedIm
 				.setProcessingDateIsNullNullable(Boolean.FALSE)
 				//.setProcessingDateIsNotNullNullable(Boolean.TRUE)
 				);
+		
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
 	}
 	

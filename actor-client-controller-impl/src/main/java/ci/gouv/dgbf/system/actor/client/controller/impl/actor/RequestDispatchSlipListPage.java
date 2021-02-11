@@ -128,11 +128,11 @@ public class RequestDispatchSlipListPage extends AbstractEntityListPageContainer
 			}else if(RequestDispatchSlip.FIELD_COMMENT.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Commentaire");
 			}else if(RequestDispatchSlip.FIELD_CREATION_DATE_AS_STRING.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Date de création");
+				map.put(Column.FIELD_HEADER_TEXT, "Créé le");
 			}else if(RequestDispatchSlip.FIELD_SENDING_DATE_AS_STRING.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Date de transmission");
+				map.put(Column.FIELD_HEADER_TEXT, "Transmis le");
 			}else if(RequestDispatchSlip.FIELD_PROCESSING_DATE_AS_STRING.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Date de traitement");
+				map.put(Column.FIELD_HEADER_TEXT, "Traité le");
 			}
 			return map;
 		}

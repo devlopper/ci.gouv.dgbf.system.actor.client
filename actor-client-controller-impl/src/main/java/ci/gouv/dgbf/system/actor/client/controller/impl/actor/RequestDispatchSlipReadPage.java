@@ -17,12 +17,14 @@ import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.session.SessionManager;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.uri.UniformResourceIdentifierBuilder;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.Redirector;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.Event;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.Button;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
@@ -30,6 +32,9 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputText;
+import org.cyk.utility.javascript.OpenWindowScriptBuilder;
+import org.cyk.utility.report.ReportRepresentation;
+import org.cyk.utility.report.jasper.client.ReportServlet;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestDispatchSlip;
 import ci.gouv.dgbf.system.actor.client.controller.impl.Helper;
@@ -84,6 +89,15 @@ public class RequestDispatchSlipReadPage extends AbstractPageContainerManagedImp
 						}
 					}),Cell.FIELD_WIDTH,11));
 		}else if(StringHelper.isBlank(requestDispatchSlip.getProcessingDateAsString())) {
+			if(SessionManager.getInstance().isUserHasOneOfRoles(Profile.CODE_ADMINISTRATEUR,Profile.CODE_RESPONSABLE_FONCTION_FINANCIERE_MINISTERE)) {
+				Button button = Button.build(Button.FIELD_VALUE,"Imprimer",Button.FIELD_ICON,"fa fa-print");		
+				button.setEventScript(Event.CLICK,OpenWindowScriptBuilder.getInstance()
+						.build(UniformResourceIdentifierBuilder.getInstance().buildFromCurrentRequest(ReportServlet.PATH
+						, ReportRepresentation.buildURIQuery("/reports/sigobe/acteur/bordereau_de_demande", Map.of("numero_bordereau",requestDispatchSlip.getCode())
+								, "pdf", "true")).toString(), "Bordereau "+requestDispatchSlip.getCode()));
+				cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,button,Cell.FIELD_WIDTH,12));
+			}
+			
 			if(SessionManager.getInstance().isUserHasRole(Profile.CODE_CHARGE_ETUDE_DAS)) {
 				cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL
 						,Button.build(Button.FIELD_VALUE,"Traiter",Button.FIELD_ICON,"fa fa-gear",Button.FIELD_OUTCOME,RequestDispatchSlipProcessPage.OUTCOME

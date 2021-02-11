@@ -57,6 +57,8 @@ public class RequestDispatchSlipEditPage extends AbstractEntityEditPageContainer
 	private RequestsSelectionController requestsSelectionController;
 	private String requestsListIdentifier = RandomHelper.getAlphabetic(4);
 	private SelectOneCombo sectionSelectOne,functionSelectOne;
+	private Section section;
+	private Function function;
 	
 	@Override
 	protected void __listenPostConstruct__() {
@@ -75,7 +77,24 @@ public class RequestDispatchSlipEditPage extends AbstractEntityEditPageContainer
 			identifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(Function.class));
 			if(StringHelper.isNotBlank(identifier))
 				functionSelectOne.select(__inject__(FunctionController.class).readBySystemIdentifier(identifier));
-		}		
+		}else {
+			if(form.getEntity() instanceof RequestDispatchSlip) {
+				section = ((RequestDispatchSlip)form.getEntity()).getSection();
+				function = ((RequestDispatchSlip)form.getEntity()).getFunction();
+			}
+		}
+	}
+	
+	public Section getSelectedSection() {
+		if(sectionSelectOne == null)
+			return section;
+		return (Section) sectionSelectOne.getValue();
+	}
+	
+	public Function getSelectedFunction() {
+		if(functionSelectOne == null)
+			return function;
+		return (Function) functionSelectOne.getValue();
 	}
 	
 	@Override
@@ -201,7 +220,7 @@ public class RequestDispatchSlipEditPage extends AbstractEntityEditPageContainer
 				map.put(AbstractInputChoice.FIELD_CHOICES,sections);
 				map.put(AbstractInputChoice.FIELD_CHOICE_CLASS,Section.class);
 			}else if(RequestDispatchSlip.FIELD_FUNCTION.equals(fieldName)) {
-				List<Function> functions = (List<Function>) __inject__(FunctionController.class).readCreditManagers();
+				List<Function> functions = (List<Function>) __inject__(FunctionController.class).readCreditManagersAuthorizingOfficers();
 				if(CollectionHelper.getSize(functions) > 1)
 					functions.add(0, null);
 				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Catégorie fonction budgétaire");
