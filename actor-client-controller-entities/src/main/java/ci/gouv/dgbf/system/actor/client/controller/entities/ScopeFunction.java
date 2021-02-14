@@ -42,6 +42,9 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	@Input @InputBoolean @InputBooleanButton private Boolean shared;	
 	private String sharedAsString;	
 	
+	private String parentAsString;
+	private Collection<String> childrenCodesNames;
+	
 	/**/
 	
 	private String signatureSpecimenReadReportURIQuery;
@@ -68,4 +71,6 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	public static final String FIELD_SHARED_AS_STRING = "sharedAsString";
 	
 	public static final String FIELD_PARENT_IDENTIFIER = "parentIdentifier";
+	public static final String FIELD_PARENT_AS_STRING = "parentAsString";
+	public static final String FIELD_CHILDREN_CODES_NAMES = "childrenCodesNames";
 }

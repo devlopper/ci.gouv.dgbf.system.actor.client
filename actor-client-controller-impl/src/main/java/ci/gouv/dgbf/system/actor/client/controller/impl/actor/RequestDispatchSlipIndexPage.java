@@ -93,7 +93,7 @@ public class RequestDispatchSlipIndexPage extends AbstractPageContainerManagedIm
 	
 	private void buildGlobalFiltersSelectOneFunction(Collection<Map<Object,Object>> cellsMaps,TabMenu.Tab selectedTab) {
 		functionIdentifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(Function.class));
-		List<Function> functions = (List<Function>) __inject__(FunctionController.class).readCreditManagers();
+		List<Function> functions = (List<Function>) __inject__(FunctionController.class).readCreditManagersAuthorizingOfficers();
 		if(CollectionHelper.getSize(functions) > 1)
 			functions.add(0, null);
 		if(StringHelper.isBlank(functionIdentifier) && CollectionHelper.getSize(functions) == 1)			

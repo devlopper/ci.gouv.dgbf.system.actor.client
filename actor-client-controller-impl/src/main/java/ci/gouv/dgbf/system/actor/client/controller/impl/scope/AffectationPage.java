@@ -133,8 +133,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		buildTab(cellsMaps);
 		buildLayout(cellsMaps);
 	}
-	
-	
+		
 	private void buildTabMenu(Collection<Map<Object,Object>> cellsMaps) {		
 		Collection<MenuItem> tabMenuItems = new ArrayList<>();
 		for(TabMenu.Tab tab : TABS) {
@@ -188,7 +187,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		if(StringHelper.isBlank(functionIdentifier) && CollectionHelper.isNotEmpty(functions))
 			functionIdentifier = CollectionHelper.getFirst(functions).getIdentifier();
 		*/
-		DataTable dataTable = ScopeFunctionListPage.buildDataTable(ScopeFunctionListPage.class,Boolean.TRUE
+		DataTable dataTable = ScopeFunctionListPage.buildDataTable(ScopeFunctionListPage.class,Boolean.TRUE,Function.class,function
 				,FieldHelper.join(ScopeFunction.FIELD_FUNCTION,Function.FIELD_IDENTIFIER),FieldHelper.readSystemIdentifier(function));
 		//dataTable.setTitle(OutputText.buildFromValue("Liste des postes"));
 		/*SelectOneCombo functionSelectOneCombo = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,Function.class,SelectOneCombo.FIELD_CHOICES,functions);

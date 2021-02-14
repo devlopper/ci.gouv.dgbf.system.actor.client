@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.Arguments;
@@ -82,12 +83,25 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, ScopeFunction.class);
 		String functionIdentifier = (String) MapHelper.readByKey(arguments, FieldHelper.join(ScopeFunction.FIELD_FUNCTION,Function.FIELD_IDENTIFIER));
+		Function function = (Function) MapHelper.readByKey(arguments, Function.class);
+		if(function != null) {
+			functionIdentifier = function.getIdentifier();
+		}
 		Collection<String> columnsNames = new ArrayList<>();
 		columnsNames.addAll(List.of(ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME,ScopeFunction.FIELD_SCOPE_AS_STRING));
 		if(StringHelper.isBlank(functionIdentifier))
 			columnsNames.addAll(List.of(ScopeFunction.FIELD_FUNCTION_AS_STRING));
+		else {
+			if(function != null) {
+				if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.EXECUTION_HOLDERS_CODES.contains(function.getCode())) {
+					columnsNames.addAll(List.of(ScopeFunction.FIELD_CHILDREN_CODES_NAMES));
+				}else if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.EXECUTION_ASSISTANTS_CODES.contains(function.getCode())) {
+					columnsNames.addAll(List.of(ScopeFunction.FIELD_PARENT_AS_STRING));
+				}
+			}
+		}
 		columnsNames.addAll(List.of(ScopeFunction.FIELD_SHARED_AS_STRING));
-				
+
 		//Function function = StringHelper.isBlank(functionIdentifier) ? null : __inject__(FunctionController.class).readBySystemIdentifier(functionIdentifier);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, columnsNames);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
@@ -153,12 +167,16 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 				dataTable.addRecordMenuItemByArgumentsOpenViewInDialogUpdate();
 				dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
 			}
+		}
+		
+		if(Boolean.TRUE.equals(MapHelper.readByKey(arguments, ScopeFunctionListPage.class))) {
 			if(!Boolean.TRUE.equals(SessionManager.getInstance().isUserHasOneOfRoles(Profile.CODE_ADMINISTRATEUR)) 
 					&&  Boolean.TRUE.equals(SessionManager.getInstance().isUserHasOneOfRoles(Profile.CODE_CHARGE_ETUDE_DAS))) {
 				dataTable.addRecordMenuItemByArgumentsOpenViewInDialog(ScopeFunctionEditNamePage.OUTCOME, MenuItem.FIELD_VALUE,"Modifier le libellé",MenuItem.FIELD_ICON,"fa fa-edit");
 			}
-			dataTable.setAreColumnsChoosable(Boolean.TRUE);
-		}		
+		}
+		
+		dataTable.setAreColumnsChoosable(Boolean.TRUE);
 		return dataTable;
 	}
 	
@@ -201,12 +219,33 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 			}else if(ScopeFunction.FIELD_FUNCTION_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Fonction");
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
+			}else if(ScopeFunction.FIELD_PARENT_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Titulaire");
+				map.put(Column.FIELD_WIDTH, "75");
+			}else if(ScopeFunction.FIELD_CHILDREN_CODES_NAMES.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Assistant");
+				map.put(Column.FIELD_WIDTH, "75");
 			}
 			return map;
 		}
 		
 		public Class<? extends AbstractMenu> getRecordMenuClass(AbstractCollection collection) {
 			return ContextMenu.class;
+		}
+		
+		@Override
+		public Object getCellValueByRecordByColumn(Object record, Integer recordIndex, Column column,Integer columnIndex) {
+			if(ScopeFunction.FIELD_CHILDREN_CODES_NAMES.equals(column.getFieldName())) {
+				if(CollectionHelper.isEmpty(((ScopeFunction)record).getChildrenCodesNames()))
+					return null;
+				return StringHelper.concatenate(((ScopeFunction)record).getChildrenCodesNames().stream().map(x -> StringUtils.substringBefore(x, " "))
+						.collect(Collectors.toList()),",");
+			}else if(ScopeFunction.FIELD_PARENT_AS_STRING.equals(column.getFieldName())) {
+				if(StringHelper.isBlank(((ScopeFunction)record).getParentAsString()))
+					return null;
+				return StringUtils.substringBefore(((ScopeFunction)record).getParentAsString(), " ");
+			}
+			return super.getCellValueByRecordByColumn(record, recordIndex, column, columnIndex);
 		}
 	}
 	
@@ -221,7 +260,7 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 		
 		@Override
 		public String getReadQueryIdentifier(LazyDataModel<ScopeFunction> lazyDataModel) {
-			return ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER;
+			return ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI;
 		}
 		
 		@Override
