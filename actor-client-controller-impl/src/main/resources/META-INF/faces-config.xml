@@ -506,6 +506,18 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>scopeFunctionReadAssistantsView</from-outcome>
+			<to-view-id>/private/scopefunction/assistants.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>scopeFunctionAssistantEditView</from-outcome>
+			<to-view-id>/private/scopefunction/assistantedit.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>privilegeListView</from-outcome>
 			<to-view-id>/private/privilege/list.jsf</to-view-id>
 			<redirect />

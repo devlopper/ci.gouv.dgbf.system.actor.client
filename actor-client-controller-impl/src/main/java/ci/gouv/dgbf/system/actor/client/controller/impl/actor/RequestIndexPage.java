@@ -159,7 +159,7 @@ public class RequestIndexPage extends AbstractPageContainerManagedImpl implement
 					.buildColumnsNames(function,section, administrativeUnit, budgetSpecializationUnit, ContentType.TO_PROCESS)
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,lazyDataModelListener
 				.setProcessingDateIsNullNullable(Boolean.FALSE)
-				);	
+				);
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
 	}
 	

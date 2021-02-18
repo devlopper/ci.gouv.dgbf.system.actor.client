@@ -89,7 +89,7 @@ public class RequestDispatchSlipReadPage extends AbstractPageContainerManagedImp
 						}
 					}),Cell.FIELD_WIDTH,11));
 		}else if(StringHelper.isBlank(requestDispatchSlip.getProcessingDateAsString())) {
-			if(SessionManager.getInstance().isUserHasOneOfRoles(Profile.CODE_ADMINISTRATEUR,Profile.CODE_RESPONSABLE_FONCTION_FINANCIERE_MINISTERE)) {
+			if(Boolean.TRUE.equals(SessionManager.getInstance().isUserHasOneOfRoles(Profile.CODE_ADMINISTRATEUR,Profile.CODE_RESPONSABLE_FONCTION_FINANCIERE_MINISTERE))) {
 				Button button = Button.build(Button.FIELD_VALUE,"Imprimer",Button.FIELD_ICON,"fa fa-print");		
 				button.setEventScript(Event.CLICK,OpenWindowScriptBuilder.getInstance()
 						.build(UniformResourceIdentifierBuilder.getInstance().buildFromCurrentRequest(ReportServlet.PATH
@@ -98,7 +98,7 @@ public class RequestDispatchSlipReadPage extends AbstractPageContainerManagedImp
 				cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,button,Cell.FIELD_WIDTH,12));
 			}
 			
-			if(SessionManager.getInstance().isUserHasRole(Profile.CODE_CHARGE_ETUDE_DAS)) {
+			if(Boolean.TRUE.equals(SessionManager.getInstance().isUserHasRole(Profile.CODE_CHARGE_ETUDE_DAS))) {
 				cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL
 						,Button.build(Button.FIELD_VALUE,"Traiter",Button.FIELD_ICON,"fa fa-gear",Button.FIELD_OUTCOME,RequestDispatchSlipProcessPage.OUTCOME
 						,Button.FIELD_PARAMETERS,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),requestDispatchSlip.getIdentifier())),Cell.FIELD_WIDTH,12));

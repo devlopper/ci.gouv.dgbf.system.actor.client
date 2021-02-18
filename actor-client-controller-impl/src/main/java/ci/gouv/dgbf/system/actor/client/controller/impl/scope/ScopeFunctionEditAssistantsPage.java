@@ -24,16 +24,16 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Named @ViewScoped @Getter @Setter
-public class ScopeFunctionEditNamePage extends AbstractEntityEditPageContainerManagedImpl<ScopeFunction> implements Serializable {
+public class ScopeFunctionEditAssistantsPage extends AbstractEntityEditPageContainerManagedImpl<ScopeFunction> implements Serializable {
 
 	@Override
 	protected Form __buildForm__() {		
 		return buildForm();
 	}
-
+		
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Modification du libellé de "+((ScopeFunction)form.getEntity()).toString();
+		return "Modification des assistants de "+((ScopeFunction)form.getEntity()).toString();
 	}
 
 	public static Form buildForm(Map<Object,Object> map) {
@@ -77,5 +77,5 @@ public class ScopeFunctionEditNamePage extends AbstractEntityEditPageContainerMa
 		}
 	}
 	
-	public static final String OUTCOME = "scopeFunctionEditNameView";
+	public static final String OUTCOME = "scopeFunctionEditAssistantsView";
 }

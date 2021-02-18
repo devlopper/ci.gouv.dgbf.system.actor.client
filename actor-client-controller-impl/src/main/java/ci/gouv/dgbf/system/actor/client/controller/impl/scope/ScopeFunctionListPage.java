@@ -17,19 +17,20 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntityReader;
 import org.cyk.utility.__kernel__.controller.EntitySaver;
+import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.session.SessionManager;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
-import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.AbstractMenu;
@@ -80,6 +81,9 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 	public static DataTable buildDataTable(Map<Object,Object> arguments) {
 		if(arguments == null)
 			arguments = new HashMap<>();
+		RenderType renderType = (RenderType) MapHelper.readByKey(arguments, RenderType.class);
+		ScopeFunction scopeFunction = (ScopeFunction) MapHelper.readByKey(arguments, ScopeFunction.class);
+		
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, ScopeFunction.class);
 		String functionIdentifier = (String) MapHelper.readByKey(arguments, FieldHelper.join(ScopeFunction.FIELD_FUNCTION,Function.FIELD_IDENTIFIER));
@@ -109,14 +113,19 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl()
 				.setFunctionIdentifier(functionIdentifier));
 		DataTable dataTable = DataTable.build(arguments);
+		dataTable.set__parentElement__(scopeFunction);
 		if(Boolean.TRUE.equals(SessionManager.getInstance().isUserHasRole(Profile.CODE_ADMINISTRATEUR))) {
-			if(Boolean.TRUE.equals(MapHelper.readByKey(arguments, ScopeFunctionListPage.class))) {
+			if(scopeFunction == null) {
 				dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();
-				
+			}else {
+				dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog(ScopeFunctionAssistantEditPage.OUTCOME,CommandButton.FIELD___ACTION__,Action.CREATE);
+			}
+			if(Boolean.TRUE.equals(MapHelper.readByKey(arguments, ScopeFunctionListPage.class))) {
+				//dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();
 				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Initialiser",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
 						,MenuItem.FIELD_ICON,"fa fa-database"
 						,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
-						,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+						,List.of(org.cyk.utility.__kernel__.user.interface_.message.RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
 							@Override
 							protected Object __runExecuteFunction__(AbstractAction action) {
 								@SuppressWarnings("unchecked")
@@ -133,7 +142,7 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Recodifier",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
 						,MenuItem.FIELD_ICON,"fa fa-cubes"
 						,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
-						,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+						,List.of(org.cyk.utility.__kernel__.user.interface_.message.RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
 							@Override
 							protected Object __runExecuteFunction__(AbstractAction action) {
 								@SuppressWarnings("unchecked")
@@ -150,7 +159,7 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Supprimer",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
 						,MenuItem.FIELD_ICON,"fa fa-trash"
 						,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
-						,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+						,List.of(org.cyk.utility.__kernel__.user.interface_.message.RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
 							@Override
 							protected Object __runExecuteFunction__(AbstractAction action) {
 								@SuppressWarnings("unchecked")
@@ -164,6 +173,13 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 							}
 						});
 				
+				dataTable.addRecordMenuItemByArgumentsOpenViewInDialog(ScopeFunctionReadAssistantsPage.OUTCOME, MenuItem.FIELD_VALUE,"Assistants",MenuItem.FIELD_ICON,"fa fa-user");
+				
+				//dataTable.addRecordMenuItemByArgumentsOpenViewInDialogUpdate();
+				//dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
+			}
+			
+			if(Boolean.TRUE.equals(MapHelper.readByKey(arguments, ScopeFunctionListPage.class)) || RenderType.LIST.equals(renderType) || scopeFunction != null) {
 				dataTable.addRecordMenuItemByArgumentsOpenViewInDialogUpdate();
 				dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
 			}
@@ -274,5 +290,10 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 				filter.addField(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER, functionIdentifier);
 			return filter;
 		}
+	}
+	
+	public static enum RenderType {
+		LIST
+		,ASSISTANTS
 	}
 }
