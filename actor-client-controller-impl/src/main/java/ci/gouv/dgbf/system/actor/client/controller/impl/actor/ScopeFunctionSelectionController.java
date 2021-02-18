@@ -8,8 +8,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.controller.Arguments;
 import org.cyk.utility.__kernel__.controller.EntityReader;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.random.RandomHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
@@ -284,12 +286,15 @@ public class ScopeFunctionSelectionController implements Serializable {
 						return null;
 					scopeCode = ((BudgetSpecializationUnit)budgetSpecializationUnitSelectOne.getValue()).getCode();
 				}
-				
-				List<ScopeFunction> scopeFunctions = (List<ScopeFunction>) EntityReader.getInstance().readMany(ScopeFunction.class, ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER
-						,ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER,functionIdentifier
+				//Arguments<ScopeFunction> s
+				QueryExecutorArguments.Dto queryExecutorArguments = new QueryExecutorArguments.Dto();
+				queryExecutorArguments.setQueryIdentifier(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER);
+				queryExecutorArguments.addFilterFieldsValues(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER,functionIdentifier
 						,ScopeFunctionQuerier.PARAMETER_NAME_SCOPE_CODE_NAME,scopeCode);
-				if(CollectionHelper.getSize(scopeFunctions)>1)
+				List<ScopeFunction> scopeFunctions = (List<ScopeFunction>) EntityReader.getInstance().readMany(ScopeFunction.class, queryExecutorArguments);
+				if(CollectionHelper.getSize(scopeFunctions)>1) {
 					scopeFunctions.add(0, null);
+				}
 				//if(CollectionHelper.isNotEmpty(scopeFunctions) && CollectionHelper.isNotEmpty(ScopeFunctionSelectionController.this.scopeFunctions)) {
 				//	scopeFunctions.removeAll(ScopeFunctionSelectionController.this.scopeFunctions);
 				//}

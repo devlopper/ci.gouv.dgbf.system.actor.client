@@ -38,6 +38,7 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	private String localityAsString;
 	
 	private Integer numberOfActor;
+	private Collection<String> actorsAsStrings;
 	
 	@Input @InputBoolean @InputBooleanButton private Boolean shared;	
 	private String sharedAsString;
@@ -48,6 +49,9 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceManyAutoComplete private Collection<Scope> children;
 	private Collection<String> childrenIdentifiers;
 	private Collection<String> childrenCodesNames;
+	
+	private Boolean requested;
+	private Boolean granted;
 	
 	/**/
 	
@@ -70,6 +74,7 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	public static final String FIELD_LOCALITY_AS_STRING = "localityAsString";
 	
 	public static final String FIELD_NUMBER_OF_ACTOR = "numberOfActor";
+	public static final String FIELD_ACTORS_AS_STRINGS = "actorsAsStrings";
 	
 	public static final String FIELD_SHARED = "shared";
 	public static final String FIELD_SHARED_AS_STRING = "sharedAsString";
@@ -79,4 +84,7 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	public static final String FIELD_CHILDREN = "children";
 	public static final String FIELD_CHILDREN_IDENTIFIERS = "childrenIdentifiers";
 	public static final String FIELD_CHILDREN_CODES_NAMES = "childrenCodesNames";
+	
+	public static final String FIELD_REQUESTED = "requested";
+	public static final String FIELD_GRANTED = "granted";
 }
