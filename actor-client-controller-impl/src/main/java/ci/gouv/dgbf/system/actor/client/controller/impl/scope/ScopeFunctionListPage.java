@@ -193,6 +193,7 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 		}
 		
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);
+		dataTable.getContentOutputPanel().setDeferred(Boolean.TRUE);
 		return dataTable;
 	}
 	

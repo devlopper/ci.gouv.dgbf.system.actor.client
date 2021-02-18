@@ -303,6 +303,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 
 			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("assignmentsEditView", CommandButton.FIELD_VALUE,"Modifier",CommandButton.FIELD_ICON,"fa fa-pencil");
 		}
+		dataTable.getContentOutputPanel().setDeferred(Boolean.TRUE);
 		return dataTable;
 	}
 	

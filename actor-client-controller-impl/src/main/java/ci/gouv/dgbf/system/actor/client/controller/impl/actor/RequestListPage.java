@@ -157,7 +157,8 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 		//dataTable.addRecordMenuItemByArgumentsNavigateToViewRead();
 		//if(Boolean.TRUE.equals(lazyDataModelListener.getProcessingDateIsNullable()))
 			
-		//dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();	
+		//dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
+		dataTable.getContentOutputPanel().setDeferred(Boolean.TRUE);
 		return dataTable;
 	}
 	
@@ -196,7 +197,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			}else if(Request.FIELD_STATUS_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Statut");
 				map.put(Column.FIELD_WIDTH, "130");
-				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
+				map.put(Column.FIELD_VISIBLE, Boolean.TRUE);
 			}else if(Request.FIELD_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Numéro");
 				map.put(Column.FIELD_WIDTH, "110");

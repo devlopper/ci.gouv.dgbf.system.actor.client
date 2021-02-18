@@ -3,6 +3,7 @@ package ci.gouv.dgbf.system.actor.client.controller.impl.actor;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
@@ -11,6 +12,8 @@ import org.cyk.utility.__kernel__.random.RandomHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
@@ -55,8 +58,11 @@ public class RequestsSelectionController implements Serializable {
 	private void buildDataTable(RequestStatus requestStatus) {
 		requestsDataTable = RequestListPage.buildDataTable(RequestListPage.class,RequestsSelectionController.class
 				,DataTable.FIELD_RENDER_TYPE,AbstractCollection.RenderType.SELECTION,DataTable.FIELD_SELECTION_MODE,"multiple"
+				,DataTable.FIELD_LISTENER,new DataTableListenerImpl()
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new RequestListPage.LazyDataModelListenerImpl()
-				.setStatusIdentifier(requestStatus == null ? null : requestStatus.getIdentifier()));
+				.setProcessingDateIsNullNullable(Boolean.FALSE)
+				//.setStatusIdentifier(requestStatus == null ? null : requestStatus.getIdentifier())
+				);
 		
 	}
 	
@@ -107,6 +113,19 @@ public class RequestsSelectionController implements Serializable {
 				((RequestListPage.LazyDataModelListenerImpl) ((LazyDataModel<Request>)requestsDataTable.getValue()).getListener())
 				.setExcludedIdentifiers(selected.stream().map(x -> x.getIdentifier()).collect(Collectors.toList()));
 			//PrimeFaces.current().executeScript(String.format("PF('%s').show();",dialogWidgetVar));
+		}
+	}
+	
+	@Getter @Setter @Accessors(chain=true)
+	public static class DataTableListenerImpl extends RequestListPage.DataTableListenerImpl implements Serializable {
+		@Override
+		public Map<Object, Object> getColumnArguments(AbstractDataTable dataTable, String fieldName) {
+			Map<Object, Object> map = super.getColumnArguments(dataTable, fieldName);
+			map.put(Column.ConfiguratorImpl.FIELD_EDITABLE, Boolean.FALSE);
+			if(Request.FIELD_STATUS_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_VISIBLE, Boolean.TRUE);
+			}
+			return map;
 		}
 	}
 }
