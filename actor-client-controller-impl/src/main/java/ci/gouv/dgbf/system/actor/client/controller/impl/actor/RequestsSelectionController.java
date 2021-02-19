@@ -56,7 +56,9 @@ public class RequestsSelectionController implements Serializable {
 		requestsDataTable = RequestListPage.buildDataTable(RequestListPage.class,RequestsSelectionController.class
 				,DataTable.FIELD_RENDER_TYPE,AbstractCollection.RenderType.SELECTION,DataTable.FIELD_SELECTION_MODE,"multiple"
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new RequestListPage.LazyDataModelListenerImpl()
-				.setStatusIdentifier(requestStatus == null ? null : requestStatus.getIdentifier()));
+				.setProcessingDateIsNullNullable(Boolean.FALSE)
+				//.setStatusIdentifier(requestStatus == null ? null : requestStatus.getIdentifier())
+				);
 		
 	}
 	

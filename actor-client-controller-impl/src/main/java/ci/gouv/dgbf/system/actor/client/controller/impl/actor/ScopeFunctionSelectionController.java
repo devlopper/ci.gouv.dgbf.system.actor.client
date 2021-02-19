@@ -1,6 +1,7 @@
 package ci.gouv.dgbf.system.actor.client.controller.impl.actor;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -270,6 +271,14 @@ public class ScopeFunctionSelectionController implements Serializable {
 	private void buildScopeFunctionSelectOne() {
 		scopeFunctionSelectOne = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,ScopeFunction.class
 				,SelectOneCombo.FIELD_LISTENER,new SelectOneCombo.Listener.AbstractImpl<ScopeFunction>() {	
+			
+			@Override
+			public Boolean getIsChoiceDisabled(AbstractInputChoice<ScopeFunction> input, ScopeFunction choice) {
+				if(choice != null)
+					return Boolean.TRUE.equals(choice.getIsHolder()) && Boolean.TRUE.equals(choice.getGranted());
+				return super.getIsChoiceDisabled(input, choice);
+			}
+			
 			protected Collection<ScopeFunction> __computeChoices__(AbstractInputChoice<ScopeFunction> input, Class<?> entityClass) {
 				if(functionSelectOne == null || functionSelectOne.getValue() ==  null)
 					return null;
@@ -286,14 +295,22 @@ public class ScopeFunctionSelectionController implements Serializable {
 						return null;
 					scopeCode = ((BudgetSpecializationUnit)budgetSpecializationUnitSelectOne.getValue()).getCode();
 				}
-				//Arguments<ScopeFunction> s
-				QueryExecutorArguments.Dto queryExecutorArguments = new QueryExecutorArguments.Dto();
-				queryExecutorArguments.setQueryIdentifier(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER);
-				queryExecutorArguments.addFilterFieldsValues(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER,functionIdentifier
-						,ScopeFunctionQuerier.PARAMETER_NAME_SCOPE_CODE_NAME,scopeCode);
-				List<ScopeFunction> scopeFunctions = (List<ScopeFunction>) EntityReader.getInstance().readMany(ScopeFunction.class, queryExecutorArguments);
+				Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>();
+				arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments());
+				arguments.getRepresentationArguments().setQueryExecutorArguments(new QueryExecutorArguments.Dto());
+				arguments.getRepresentationArguments().getQueryExecutorArguments().setQueryIdentifier(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI);
+				arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterFieldsValues(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER
+						,functionIdentifier,ScopeFunctionQuerier.PARAMETER_NAME_SCOPE_CODE_NAME,scopeCode);
+				ArrayList<String> list = new ArrayList<>();
+				list.addAll(List.of(ScopeFunction.FIELD_REQUESTED,ScopeFunction.FIELD_GRANTED,ScopeFunction.FIELD_IS_HOLDER));
+				arguments.getRepresentationArguments().getQueryExecutorArguments().setProcessableTransientFieldsNames(list);
+				List<ScopeFunction> scopeFunctions = (List<ScopeFunction>) EntityReader.getInstance().readMany(ScopeFunction.class, arguments);
 				if(CollectionHelper.getSize(scopeFunctions)>1) {
 					scopeFunctions.add(0, null);
+				}else if(CollectionHelper.getSize(scopeFunctions) == 1) {
+					ScopeFunction scopeFunction = scopeFunctions.iterator().next();
+					if(Boolean.TRUE.equals(scopeFunction.getIsHolder()) && Boolean.TRUE.equals(scopeFunction.getGranted()))
+						scopeFunctions.add(0, null);
 				}
 				//if(CollectionHelper.isNotEmpty(scopeFunctions) && CollectionHelper.isNotEmpty(ScopeFunctionSelectionController.this.scopeFunctions)) {
 				//	scopeFunctions.removeAll(ScopeFunctionSelectionController.this.scopeFunctions);

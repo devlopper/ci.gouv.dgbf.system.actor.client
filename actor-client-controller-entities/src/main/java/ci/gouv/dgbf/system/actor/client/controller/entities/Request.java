@@ -90,6 +90,7 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceMany @InputChoiceManyAutoComplete private Collection<ScopeFunction> budgetariesScopeFunctions;
 	private Collection<String> budgetariesScopeFunctionsAsStrings;
 	private Collection<String> budgetariesScopeFunctionsGrantedAsStrings;
+	private Boolean hasGrantedHolderScopeFunction;
 	private Boolean hasBudgetaryScopeFunctionWhereFunctionCodeBelongsToExecutionAssistantsCodes;
 	private Boolean hasBudgetaryScopeFunctionWhereFunctionCodeIsCreditManagerHolder;
 	private Boolean hasBudgetaryScopeFunctionWhereFunctionCodeIsAuthorizingOfficerHolder;
@@ -170,6 +171,8 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	public static final String FIELD_TYPE_AS_STRING = "typeAsString";
 	public static final String FIELD_STATUS = "status";
 	public static final String FIELD_STATUS_AS_STRING = "statusAsString";
+	public static final String FIELD_ACCEPTED = "accepted";
+	public static final String FIELD_REJECTED = "rejected";
 	public static final String FIELD_CREATION_DATE = "creationDate";
 	public static final String FIELD_CREATION_DATE_AS_STRING = "creationDateAsString";
 	
@@ -215,6 +218,7 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	public static final String FIELD_AUTHORIZING_OFFICER_HOLDER = "authorizingOfficerHolder";
 	public static final String FIELD_FINANCIAL_CONTROLLER_HOLDER = "financialControllerHolder";
 	public static final String FIELD_ACCOUNTING_HOLDER = "accountingHolder";
+	public static final String FIELD_HAS_GRANTED_HOLDER_SCOPE_FUNCTION = "hasGrantedHolderScopeFunction";
 	public static final String FIELD_BUDGETARIES_FUNCTIONS = "budgetariesFunctions";
 	public static final String FIELD_BUDGETARIES_SCOPE_FUNCTIONS = "budgetariesScopeFunctions";
 	public static final String FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS = "budgetariesScopeFunctionsAsStrings";

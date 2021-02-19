@@ -196,7 +196,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			}else if(Request.FIELD_STATUS_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Statut");
 				map.put(Column.FIELD_WIDTH, "130");
-				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
+				map.put(Column.FIELD_VISIBLE, Boolean.TRUE);
 			}else if(Request.FIELD_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Numéro");
 				map.put(Column.FIELD_WIDTH, "110");
@@ -344,6 +344,16 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			return columnsFieldsNames;
 		}
 		
+		@Override
+		public String getStyleClassByRecord(Object record, Integer recordIndex) {
+			if(record instanceof Request) {
+				Request request = (Request) record;
+				if(!Boolean.TRUE.equals(request.getAccepted()) && Boolean.TRUE.equals(request.getHasGrantedHolderScopeFunction()))
+					return "cyk-background-highlight";
+			}
+			return super.getStyleClassByRecord(record, recordIndex);
+		}
+		
 		private static final String SEPARATOR = "<br/>"+StringUtils.repeat("&nbsp;", 10);
 		private static final String TOOLTIP_FORMAT = "Section : %s<br/>Unité administrative : %s<br/>Fonction(s) budgétaire(s) :%s";
 	}
@@ -379,6 +389,16 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER, functionIdentifier, filter);
 			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_STATUS_IDENTIFIER, statusIdentifier, filter);
 			return filter;
+		}
+		
+		@Override
+		public Arguments<Request> instantiateArguments(LazyDataModel<Request> lazyDataModel) {
+			Arguments<Request> arguments = super.instantiateArguments(lazyDataModel);
+			ArrayList<String> list = new ArrayList<>();
+			list.addAll(List.of(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRINGS
+					,Request.FIELD_HAS_GRANTED_HOLDER_SCOPE_FUNCTION,Request.FIELD_ACCEPTED));
+			arguments.getRepresentationArguments().getQueryExecutorArguments().setProcessableTransientFieldsNames(list);
+			return arguments;
 		}
 		
 		public LazyDataModelListenerImpl addExcludedIdentifiers(Collection<String> identifiers) {

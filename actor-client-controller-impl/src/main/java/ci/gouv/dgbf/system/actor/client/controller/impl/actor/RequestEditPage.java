@@ -25,6 +25,7 @@ import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.object.ReadListener;
+import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.__kernel__.value.ValueHelper;
@@ -131,14 +132,25 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 						if(administrativeUnit != null) {
 							if(budgetaryScopeFunctionSelectionController != null) {
 								if(CollectionHelper.isEmpty(budgetaryScopeFunctionSelectionController.getSelected())) {
-									Collection<ScopeFunction> scopeFunctions = EntityReader.getInstance().readMany(ScopeFunction.class,
-											ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_CODE_FOR_UI
-											, ScopeFunctionQuerier.PARAMETER_NAME_SCOPE_IDENTIFIER, administrativeUnit.getIdentifier()
+									Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>();
+									arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments());
+									arguments.getRepresentationArguments().setQueryExecutorArguments(new QueryExecutorArguments.Dto());
+									arguments.getRepresentationArguments().getQueryExecutorArguments()
+										.setQueryIdentifier(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_CODE_FOR_UI);
+									arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterFieldsValues(
+											ScopeFunctionQuerier.PARAMETER_NAME_SCOPE_IDENTIFIER, administrativeUnit.getIdentifier()
 											, ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_CODE
 											, ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER);
+									ArrayList<String> list = new ArrayList<>();
+									list.addAll(List.of(ScopeFunction.FIELD_REQUESTED,ScopeFunction.FIELD_GRANTED));
+									arguments.getRepresentationArguments().getQueryExecutorArguments().setProcessableTransientFieldsNames(list);
+									Collection<ScopeFunction> scopeFunctions = EntityReader.getInstance().readMany(ScopeFunction.class,arguments);
 									if(CollectionHelper.getSize(scopeFunctions) == 1) {
-										budgetaryScopeFunctionSelectionController.addScopeFunction(scopeFunctions.iterator().next());
-										PrimeFaces.current().ajax().update(":form:"+budgetaryScopeFunctionSelectionController.getScopeFunctionsListIdentifier());
+										ScopeFunction scopeFunction = CollectionHelper.getFirst(scopeFunctions);
+										if(!Boolean.TRUE.equals(scopeFunction.getGranted())) {
+											budgetaryScopeFunctionSelectionController.addScopeFunction(scopeFunction);
+											PrimeFaces.current().ajax().update(":form:"+budgetaryScopeFunctionSelectionController.getScopeFunctionsListIdentifier());
+										}
 									}
 								}
 							}

@@ -104,8 +104,8 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 				}
 			}
 		}
-		columnsNames.addAll(List.of(ScopeFunction.FIELD_SHARED_AS_STRING));
-
+		columnsNames.addAll(List.of(ScopeFunction.FIELD_SHARED_AS_STRING,ScopeFunction.FIELD_REQUESTED_AS_STRING,ScopeFunction.FIELD_GRANTED_AS_STRING));
+		
 		//Function function = StringHelper.isBlank(functionIdentifier) ? null : __inject__(FunctionController.class).readBySystemIdentifier(functionIdentifier);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, columnsNames);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
@@ -241,6 +241,14 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 			}else if(ScopeFunction.FIELD_CHILDREN_CODES_NAMES.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Assistant");
 				map.put(Column.FIELD_WIDTH, "75");
+			}else if(ScopeFunction.FIELD_REQUESTED_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Demandée ?");
+				map.put(Column.FIELD_WIDTH, "75");
+				map.put(Column.FIELD_VISIBLE, Boolean.TRUE);
+			}else if(ScopeFunction.FIELD_GRANTED_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Accordée ?");
+				map.put(Column.FIELD_WIDTH, "75");
+				map.put(Column.FIELD_VISIBLE, Boolean.TRUE);
 			}
 			return map;
 		}
@@ -263,6 +271,18 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 			}
 			return super.getCellValueByRecordByColumn(record, recordIndex, column, columnIndex);
 		}
+		
+		/*@Override
+		public String getStyleClassByRecord(Object record, Integer recordIndex) {
+			if(record instanceof ScopeFunction) {
+				ScopeFunction scopeFunction = (ScopeFunction) record;
+				if(Boolean.TRUE.equals(scopeFunction.getGranted()))
+					return "cyk-background-highlight";
+				if(Boolean.TRUE.equals(scopeFunction.getRequested()))
+					return "background: red !important";
+			}
+			return super.getStyleClassByRecord(record, recordIndex);
+		}*/
 	}
 	
 	@Getter @Setter @Accessors(chain=true)
@@ -289,6 +309,15 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 			if(StringHelper.isNotBlank(functionIdentifier))
 				filter.addField(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER, functionIdentifier);
 			return filter;
+		}
+		
+		@Override
+		public Arguments<ScopeFunction> instantiateArguments(LazyDataModel<ScopeFunction> lazyDataModel) {
+			Arguments<ScopeFunction> arguments = super.instantiateArguments(lazyDataModel);
+			ArrayList<String> list = new ArrayList<>();
+			list.addAll(List.of(ScopeFunction.FIELD_REQUESTED,ScopeFunction.FIELD_GRANTED));
+			arguments.getRepresentationArguments().getQueryExecutorArguments().setProcessableTransientFieldsNames(list);
+			return arguments;
 		}
 	}
 	

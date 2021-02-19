@@ -33,6 +33,7 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	@Input @InputChoice @InputChoiceOne @InputChoiceOneCombo private Function function;
 	private String functionAsString;
 	private Collection<String> functionsIdentifiers;
+	private Boolean isHolder;
 	
 	@Input @InputChoice @InputChoiceOne @InputChoiceOneCombo private Locality locality;
 	private String localityAsString;
@@ -51,7 +52,9 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	private Collection<String> childrenCodesNames;
 	
 	private Boolean requested;
+	private String requestedAsString;
 	private Boolean granted;
+	private String grantedAsString;	
 	
 	/**/
 	
@@ -69,6 +72,7 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	
 	public static final String FIELD_FUNCTION = "function";
 	public static final String FIELD_FUNCTION_AS_STRING = "functionAsString";
+	public static final String FIELD_IS_HOLDER = "isHolder";
 	
 	public static final String FIELD_LOCALITY = "locality";
 	public static final String FIELD_LOCALITY_AS_STRING = "localityAsString";
@@ -86,5 +90,7 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	public static final String FIELD_CHILDREN_CODES_NAMES = "childrenCodesNames";
 	
 	public static final String FIELD_REQUESTED = "requested";
+	public static final String FIELD_REQUESTED_AS_STRING = "requestedAsString";
 	public static final String FIELD_GRANTED = "granted";
+	public static final String FIELD_GRANTED_AS_STRING = "grantedAsString";
 }
