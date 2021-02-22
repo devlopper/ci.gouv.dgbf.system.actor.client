@@ -20,6 +20,7 @@ import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.Redirector;
@@ -27,6 +28,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContaine
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.RemoteCommand;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoiceOne;
@@ -68,7 +70,14 @@ import lombok.Setter;
 public class AffectationPage extends AbstractPageContainerManagedImpl implements Serializable {
 
 	private Layout layout;
+	private DataTable dataTable;
+	
+	private Cell assignmentsTabCell;
+	private TabMenu assignmentsTabMenu;
+	private Cell dataTableCell;
+	
 	private TabMenu tabMenu;
+	private Integer selectedAssignmentsTabIndex;
 	private TabMenu.Tab selectedTab,selectedAssignmentsTab;
 	private SelectOneCombo sectionSelectOne,administrativeUnitSelectOne,budgetSpecializationUnitSelectOne,activitySelectOne,activityCategorySelectOne,expenditureNatureSelectOne,functionSelectOne;
 	private List<Function> functions;
@@ -209,48 +218,47 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		activitySelectionController = new ActivitySelectionController();
 		activitySelectionController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(OUTCOME).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_ASSIGNMENTS);
 		
-		Collection<MenuItem> tabMenuItems = new ArrayList<>();
-		Integer tabActiveIndex = null;
-		String tabAssignmentsParameterValue = WebController.getInstance().getRequestParameter(TAB_ASSIGNMENTS_PARAMETER_NAME);
-		AssignmentsListPage.LazyDataModelListenerImpl lazyDataModelListener = new AssignmentsListPage.LazyDataModelListenerImpl();
-		AssignmentsListPage.DataTableListenerImpl dataTableListener = new AssignmentsListPage.DataTableListenerImpl();
-		String sectionCode = (String) FieldHelper.readBusinessIdentifier(section);
+		String tabAssignmentsParameterValue = WebController.getInstance().getRequestParameter(TAB_ASSIGNMENTS_PARAMETER_NAME);		
+		for(Integer index = 0; index < ASSIGNMENTS_TABS.size(); index = index + 1) {
+			TabMenu.Tab tab = ASSIGNMENTS_TABS.get(index);
+			if(selectedAssignmentsTabIndex == null && tab.getParameterValue().equals(tabAssignmentsParameterValue))
+				selectedAssignmentsTabIndex = index;
+		}
+		if(selectedAssignmentsTabIndex == null)
+			selectedAssignmentsTabIndex = 0;
+		selectedAssignmentsTab = ASSIGNMENTS_TABS.get(selectedAssignmentsTabIndex);
+		
+		activitySelectionController.getOnSelectRedirectorArguments().addParameter(TAB_ASSIGNMENTS_PARAMETER_NAME, selectedAssignmentsTab.getParameterValue());			
+		buildTabAssignmentsGlobalFilters(cellsMaps);
+		
+		//AssignmentsListPage.LazyDataModelListenerImpl lazyDataModelListener = new AssignmentsListPage.LazyDataModelListenerImpl();
+		//AssignmentsListPage.DataTableListenerImpl dataTableListener = new AssignmentsListPage.DataTableListenerImpl();
+		/*String sectionCode = (String) FieldHelper.readBusinessIdentifier(section);
 		String administrativeUnitCode = (String) FieldHelper.readBusinessIdentifier(administrativeUnit);
 		String budgetSpecializationUnitCode = (String) FieldHelper.readBusinessIdentifier(budgetSpecializationUnit);
 		String activityCategoryCode = (String) FieldHelper.readBusinessIdentifier(activityCategory);
 		String expenditureNatureCode = (String) FieldHelper.readBusinessIdentifier(expenditureNature);
 		String activityCode = (String) FieldHelper.readBusinessIdentifier(activity);
+		*/
+		/*
+		Collection<MenuItem> tabMenuItems = new ArrayList<>();
 		Long total = count(TAB_ASSIGNMENTS_ALL, sectionCode,administrativeUnitCode, budgetSpecializationUnitCode, activityCategoryCode, expenditureNatureCode, activityCode);
 		for(Integer index = 0; index < ASSIGNMENTS_TABS.size(); index = index + 1) {
 			TabMenu.Tab tab = ASSIGNMENTS_TABS.get(index);
-			if(tabActiveIndex == null && tab.getParameterValue().equals(tabAssignmentsParameterValue))
-				tabActiveIndex = index;
+			if(selectedAssignmentsTabIndex == null && tab.getParameterValue().equals(tabAssignmentsParameterValue))
+				selectedAssignmentsTabIndex = index;
 			MenuItem menuItem = new MenuItem();
 			tabMenuItems.add(menuItem);
-			Arguments<Assignments> arguments = new Arguments<>();
-			arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setQueryExecutorArguments(
-					new QueryExecutorArguments.Dto().setQueryIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER)));
-			arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_SECTION, sectionCode);
-			arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT, administrativeUnitCode);
-			arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT, budgetSpecializationUnitCode);
-			arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_CATEGORY, activityCategoryCode);
-			arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_EXPENDITURE_NATURE, expenditureNatureCode);
-			arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY, activityCode);
 			Long count = null;
 			String name;
 			if(tab.getParameterValue().equals(TAB_ASSIGNMENTS_ALL)) {
 				count = total;
 				name = String.format("%s (%s)", tab.getName(),count);
 			}else {
-				if(tab.getParameterValue().equals(TAB_ASSIGNMENTS_FULLY_ASSIGNED)) {
-					arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_ALL_HOLDERS_DEFINED,Boolean.TRUE);
-				}else if(tab.getParameterValue().equals(TAB_ASSIGNMENTS_NOT_FULLY_ASSIGNED)) {
-					arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_SOME_HOLDERS_NOT_DEFINED,Boolean.TRUE);
-				}
 				if(NumberHelper.isEqualToZero(total)) {
 					name = String.format("%s (%s)", tab.getName(),0);
 				}else {
-					count = EntityCounter.getInstance().count(Assignments.class,arguments);
+					count = count(tab.getParameterValue(), sectionCode, administrativeUnitCode, budgetSpecializationUnitCode, activityCategoryCode, expenditureNatureCode, activityCode);
 					name = String.format("%s (%s|%s)", tab.getName(),count,NumberHelper.computePercentageAsInteger(count, total)+"%");
 				}				
 			}
@@ -263,14 +271,23 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 			menuItem.addParameterFromInstanceIfConditionIsTrue(expenditureNature,activity == null);
 			menuItem.addParameterFromInstanceIfConditionIsTrue(activityCategory,activity == null);
 		}
-		if(tabActiveIndex == null)
-			tabActiveIndex = 0;
-		selectedAssignmentsTab = ASSIGNMENTS_TABS.get(tabActiveIndex);
-		activitySelectionController.getOnSelectRedirectorArguments().addParameter(TAB_ASSIGNMENTS_PARAMETER_NAME, selectedAssignmentsTab.getParameterValue());		
-		buildTabAssignmentsGlobalFilters(cellsMaps);		
-		TabMenu tabMenu = TabMenu.build(TabMenu.ConfiguratorImpl.FIELD_ITEMS_OUTCOME,OUTCOME,TabMenu.FIELD_ACTIVE_INDEX,tabActiveIndex
+		if(selectedAssignmentsTabIndex == null)
+			selectedAssignmentsTabIndex = 0;
+		selectedAssignmentsTab = ASSIGNMENTS_TABS.get(selectedAssignmentsTabIndex);
+		*/
+			
+		/*
+		assignmentsTabMenu = TabMenu.build(TabMenu.ConfiguratorImpl.FIELD_ITEMS_OUTCOME,OUTCOME,TabMenu.FIELD_ACTIVE_INDEX,selectedAssignmentsTabIndex
 				,TabMenu.ConfiguratorImpl.FIELD_ITEMS,tabMenuItems);
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,tabMenu,Cell.FIELD_WIDTH,12));		
+		*/
+		//cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,assignmentsTabMenu,Cell.FIELD_WIDTH,12));
+		cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
+			@Override
+			public Object buildControl(Cell cell) {
+				return buildAssignmentsTabMenu();
+			}
+		},Cell.FIELD_WIDTH,12));
+		/*
 		lazyDataModelListener.setSectionCode(sectionCode);
 		lazyDataModelListener.setAdministrativeUnitCode(administrativeUnitCode);
 		lazyDataModelListener.setBudgetSpecializationUnitCode(budgetSpecializationUnitCode);
@@ -284,36 +301,97 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 			lazyDataModelListener.setSomeHoldersNotDefined(Boolean.TRUE);
 		}
 		
-		Collection<String> columnsFieldsNames = AssignmentsListPage.DataTableListenerImpl
-				.buildColumnsNames(section,administrativeUnit, budgetSpecializationUnit, activity, expenditureNature, activityCategory);
-		/*
-		if(sectionSelectOne == null || sectionSelectOne.getValue() == null)
-			columnsFieldsNames.add(Assignments.FIELD_SECTION_AS_STRING);
-		if(budgetSpecializationUnitSelectOne == null || budgetSpecializationUnitSelectOne.getValue() == null)
-			columnsFieldsNames.add(Assignments.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING);
-		if(activitySelectOne == null || activitySelectOne.getValue() == null)
-			columnsFieldsNames.add(Assignments.FIELD_ACTIVITY_AS_STRING);
-		columnsFieldsNames.add(Assignments.FIELD_ECONOMIC_NATURE_AS_STRING);
-		
-		columnsFieldsNames.addAll(List.of(Assignments.FIELD_ADMINISTRATIVE_UNIT_AS_STRING));
-		
-		if(activityCategorySelectOne == null || activityCategorySelectOne.getValue() == null)
-			columnsFieldsNames.add(Assignments.FIELD_ACTIVITY_CATEGORY_AS_STRING);
-		
-		if(expenditureNatureSelectOne == null || expenditureNatureSelectOne.getValue() == null)
-			columnsFieldsNames.add(Assignments.FIELD_EXPENDITURE_NATURE_AS_STRING);
-		
-		columnsFieldsNames.addAll(List.of(Assignments.FIELD_CREDIT_MANAGER_HOLDER_AS_STRING,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER_AS_STRING
-				,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER_AS_STRING,Assignments.FIELD_ACCOUNTING_HOLDER_AS_STRING));
+		dataTable = AssignmentsListPage.buildDataTable(AssignmentsListPage.class,Boolean.TRUE
+				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,lazyDataModelListener
+				,DataTable.ConfiguratorImpl.FIELD_LISTENER,dataTableListener
+				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,AssignmentsListPage.DataTableListenerImpl
+				.buildColumnsNames(section,administrativeUnit, budgetSpecializationUnit, activity, expenditureNature, activityCategory)
+				,Section.class,section,AdministrativeUnit.class,administrativeUnit,BudgetSpecializationUnit.class,budgetSpecializationUnit
+				,Action.class,action,Activity.class,activity,ExpenditureNature.class,expenditureNature,ActivityCategory.class,activityCategory
+				);	
 		*/
+		//cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));	
+		cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
+			@Override
+			public Object buildControl(Cell cell) {
+				return buildDataTable();
+			}
+		},Cell.FIELD_WIDTH,12));		
+	}
+	
+	public TabMenu buildAssignmentsTabMenu() {
+		String sectionCode = (String) FieldHelper.readBusinessIdentifier(section);
+		String administrativeUnitCode = (String) FieldHelper.readBusinessIdentifier(administrativeUnit);
+		String budgetSpecializationUnitCode = (String) FieldHelper.readBusinessIdentifier(budgetSpecializationUnit);
+		String activityCategoryCode = (String) FieldHelper.readBusinessIdentifier(activityCategory);
+		String expenditureNatureCode = (String) FieldHelper.readBusinessIdentifier(expenditureNature);
+		String activityCode = (String) FieldHelper.readBusinessIdentifier(activity);
+		
+		Collection<MenuItem> items = new ArrayList<>();
+		Long total = count(TAB_ASSIGNMENTS_ALL, sectionCode,administrativeUnitCode, budgetSpecializationUnitCode, activityCategoryCode, expenditureNatureCode, activityCode);
+		for(Integer index = 0; index < ASSIGNMENTS_TABS.size(); index = index + 1) {
+			TabMenu.Tab tab = ASSIGNMENTS_TABS.get(index);
+			MenuItem item = new MenuItem();
+			items.add(item);
+			Long count = null;
+			String name;
+			if(tab.getParameterValue().equals(TAB_ASSIGNMENTS_ALL)) {
+				count = total;
+				name = String.format("%s (%s)", tab.getName(),count);
+			}else {
+				if(NumberHelper.isEqualToZero(total)) {
+					name = String.format("%s (%s)", tab.getName(),0);
+				}else {
+					count = count(tab.getParameterValue(), sectionCode, administrativeUnitCode, budgetSpecializationUnitCode, activityCategoryCode, expenditureNatureCode, activityCode);
+					name = String.format("%s (%s|%s)", tab.getName(),count,NumberHelper.computePercentageAsInteger(count, total)+"%");
+				}				
+			}
+			item.setValue(name).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_ASSIGNMENTS).addParameter(TAB_ASSIGNMENTS_PARAMETER_NAME, tab.getParameterValue());			
+			item.addParameterFromInstanceIfConditionIsTrue(section,administrativeUnit == null && budgetSpecializationUnit == null && action == null && activity == null);
+			item.addParameterFromInstanceIfConditionIsTrue(administrativeUnit,activity == null);
+			item.addParameterFromInstanceIfConditionIsTrue(budgetSpecializationUnit,action == null && activity == null);
+			item.addParameterFromInstanceIfConditionIsTrue(action,activity == null);
+			item.addParameterFromInstance(activity);
+			item.addParameterFromInstanceIfConditionIsTrue(expenditureNature,activity == null);
+			item.addParameterFromInstanceIfConditionIsTrue(activityCategory,activity == null);
+		}		
+		TabMenu tabMenu = TabMenu.build(TabMenu.ConfiguratorImpl.FIELD_ITEMS_OUTCOME,OUTCOME,TabMenu.FIELD_ACTIVE_INDEX,selectedAssignmentsTabIndex
+				,TabMenu.ConfiguratorImpl.FIELD_ITEMS,items);
+		return tabMenu;
+	}
+	
+	public DataTable buildDataTable() {
+		String sectionCode = (String) FieldHelper.readBusinessIdentifier(section);
+		String administrativeUnitCode = (String) FieldHelper.readBusinessIdentifier(administrativeUnit);
+		String budgetSpecializationUnitCode = (String) FieldHelper.readBusinessIdentifier(budgetSpecializationUnit);
+		String activityCategoryCode = (String) FieldHelper.readBusinessIdentifier(activityCategory);
+		String expenditureNatureCode = (String) FieldHelper.readBusinessIdentifier(expenditureNature);
+		String activityCode = (String) FieldHelper.readBusinessIdentifier(activity);
+		
+		AssignmentsListPage.LazyDataModelListenerImpl lazyDataModelListener = new AssignmentsListPage.LazyDataModelListenerImpl();
+		lazyDataModelListener.setSectionCode(sectionCode);
+		lazyDataModelListener.setAdministrativeUnitCode(administrativeUnitCode);
+		lazyDataModelListener.setBudgetSpecializationUnitCode(budgetSpecializationUnitCode);
+		lazyDataModelListener.setActivityCategoryCode(activityCategoryCode);
+		lazyDataModelListener.setExpenditureNatureCode(expenditureNatureCode);
+		lazyDataModelListener.setActivityCode(activityCode);		
+		if(selectedAssignmentsTab.getParameterValue().equals(TAB_ASSIGNMENTS_FULLY_ASSIGNED)) {
+			lazyDataModelListener.setAllHoldersDefined(Boolean.TRUE);
+		}else if(selectedAssignmentsTab.getParameterValue().equals(TAB_ASSIGNMENTS_NOT_FULLY_ASSIGNED)) {
+			lazyDataModelListener.setSomeHoldersNotDefined(Boolean.TRUE);
+		}
+		
+		AssignmentsListPage.DataTableListenerImpl dataTableListener = new AssignmentsListPage.DataTableListenerImpl();
+		
 		DataTable dataTable = AssignmentsListPage.buildDataTable(AssignmentsListPage.class,Boolean.TRUE
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,lazyDataModelListener
 				,DataTable.ConfiguratorImpl.FIELD_LISTENER,dataTableListener
-				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,columnsFieldsNames
+				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,AssignmentsListPage.DataTableListenerImpl
+				.buildColumnsNames(section,administrativeUnit, budgetSpecializationUnit, activity, expenditureNature, activityCategory)
 				,Section.class,section,AdministrativeUnit.class,administrativeUnit,BudgetSpecializationUnit.class,budgetSpecializationUnit
 				,Action.class,action,Activity.class,activity,ExpenditureNature.class,expenditureNature,ActivityCategory.class,activityCategory
 				);
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
+		return dataTable;
 	}
 	
 	private Long count(String value, String sectionCode, String administrativeUnitCode, String budgetSpecializationUnitCode, String activityCategoryCode, String expenditureNatureCode, String activityCode) {
@@ -658,6 +736,26 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	
 	private void buildLayout(Collection<Map<Object,Object>> cellsMaps) {
 		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
+		/*assignmentsTabCell = layout.getCellAt(15);
+		assignmentsTabCell.setControlBuilderRemoteCommand(RemoteCommand.build(RemoteCommand.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+			@Override
+			protected Object __runExecuteFunction__(AbstractAction action) {
+				assignmentsTabCell.setControl(assignmentsTabMenu);
+				return super.__runExecuteFunction__(action);
+			}
+		}));
+		assignmentsTabCell.getControlBuilderRemoteCommand().addUpdates(assignmentsTabCell.getIdentifier());
+		
+		dataTableCell = layout.getCellAt(16);
+		dataTableCell.setControlBuilderRemoteCommand(RemoteCommand.build(RemoteCommand.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+			@Override
+			protected Object __runExecuteFunction__(AbstractAction action) {
+				dataTableCell.setControl(dataTable);
+				return super.__runExecuteFunction__(action);
+			}
+		}));
+		dataTableCell.getControlBuilderRemoteCommand().addUpdates(dataTableCell.getIdentifier());
+		*/
 	}
 	
 	@Override
