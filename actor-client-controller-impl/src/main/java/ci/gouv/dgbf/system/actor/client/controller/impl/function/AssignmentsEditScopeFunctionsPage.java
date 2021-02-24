@@ -1,12 +1,8 @@
 package ci.gouv.dgbf.system.actor.client.controller.impl.function;
 
-import static ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_ASSISTANT;
 import static ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_HOLDER;
-import static ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_ASSISTANT;
 import static ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_HOLDER;
-import static ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_ASSISTANT;
 import static ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER;
-import static ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_ASSISTANT;
 import static ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_HOLDER;
 
 import java.io.Serializable;
@@ -35,7 +31,6 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.Comman
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AutoComplete;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputText;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Assignments;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
@@ -63,7 +58,9 @@ public class AssignmentsEditScopeFunctionsPage extends AbstractPageContainerMana
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Affectations";
+		if(assignments == null)
+			return super.__getWindowTitleValue__();
+		return "Affectation : "+(assignments.getActivityAsString()+" | "+assignments.getEconomicNatureAsString());
 	}
 	
 	@Override
@@ -72,33 +69,42 @@ public class AssignmentsEditScopeFunctionsPage extends AbstractPageContainerMana
 				,AssignmentsQuerier.PARAMETER_NAME_IDENTIFIER, WebController.getInstance().getRequestParameter(ParameterName.ENTITY_IDENTIFIER));
 		super.__listenPostConstruct__();
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
+		/*
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Activité"),Cell.FIELD_WIDTH,3));
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue(assignments.getActivityAsString()),Cell.FIELD_WIDTH,9));
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Nature économique"),Cell.FIELD_WIDTH,3));
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue(assignments.getEconomicNatureAsString()),Cell.FIELD_WIDTH,9));
-		
+		*/
+		buildInputs(cellsMaps);
+		buildCommandButton(cellsMaps);
+		buildLayout(cellsMaps);
+	}
+	
+	public void buildInputs(Collection<Map<Object,Object>> cellsMaps) {
 		creditManagerHolderAutoComplete = addScopeFunctionAutoComplete(assignments,CODE_CREDIT_MANAGER_HOLDER,Assignments.FIELD_CREDIT_MANAGER_HOLDER,cellsMaps);
-		creditManagerAssistantAutoComplete = addScopeFunctionAutoComplete(assignments,CODE_CREDIT_MANAGER_ASSISTANT,Assignments.FIELD_CREDIT_MANAGER_ASSISTANT,cellsMaps);
+		//creditManagerAssistantAutoComplete = addScopeFunctionAutoComplete(assignments,CODE_CREDIT_MANAGER_ASSISTANT,Assignments.FIELD_CREDIT_MANAGER_ASSISTANT,cellsMaps);
 		authorizingOfficerHolderAutoComplete = addScopeFunctionAutoComplete(assignments,CODE_AUTHORIZING_OFFICER_HOLDER,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER,cellsMaps);
-		authorizingOfficerAssistantAutoComplete = addScopeFunctionAutoComplete(assignments,CODE_AUTHORIZING_OFFICER_ASSISTANT,Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT,cellsMaps);
+		//authorizingOfficerAssistantAutoComplete = addScopeFunctionAutoComplete(assignments,CODE_AUTHORIZING_OFFICER_ASSISTANT,Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT,cellsMaps);
 		financialControllerHolderAutoComplete = addScopeFunctionAutoComplete(assignments,CODE_FINANCIAL_CONTROLLER_HOLDER,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER,cellsMaps);
-		financialControllerAssistantAutoComplete = addScopeFunctionAutoComplete(assignments,CODE_FINANCIAL_CONTROLLER_ASSISTANT,Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT,cellsMaps);
+		//financialControllerAssistantAutoComplete = addScopeFunctionAutoComplete(assignments,CODE_FINANCIAL_CONTROLLER_ASSISTANT,Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT,cellsMaps);
 		accountingHolderAutoComplete = addScopeFunctionAutoComplete(assignments,CODE_ACCOUNTING_HOLDER,Assignments.FIELD_ACCOUNTING_HOLDER,cellsMaps);
-		accountingAssistantAutoComplete = addScopeFunctionAutoComplete(assignments,CODE_ACCOUNTING_ASSISTANT,Assignments.FIELD_ACCOUNTING_ASSISTANT,cellsMaps);
-		
+		//accountingAssistantAutoComplete = addScopeFunctionAutoComplete(assignments,CODE_ACCOUNTING_ASSISTANT,Assignments.FIELD_ACCOUNTING_ASSISTANT,cellsMaps);
+	}
+	
+	public void buildCommandButton(Collection<Map<Object,Object>> cellsMaps) {
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,CommandButton.build(CommandButton.FIELD_VALUE,"Enregistrer",CommandButton.FIELD_ICON,"fa fa-floppy-o"
 				,CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
 				,CommandButton.FIELD_LISTENER,new CommandButton.Listener.AbstractImpl() {
 					@Override
 					protected Object __runExecuteFunction__(AbstractAction action) {
 						assignments.setCreditManagerHolderAsString((String) FieldHelper.readSystemIdentifier(creditManagerHolderAutoComplete.getValue()));
-						assignments.setCreditManagerAssistantAsString((String) FieldHelper.readSystemIdentifier(creditManagerAssistantAutoComplete.getValue()));
+						//assignments.setCreditManagerAssistantAsString((String) FieldHelper.readSystemIdentifier(creditManagerAssistantAutoComplete.getValue()));
 						assignments.setAuthorizingOfficerHolderAsString((String) FieldHelper.readSystemIdentifier(authorizingOfficerHolderAutoComplete.getValue()));
-						assignments.setAuthorizingOfficerAssistantAsString((String) FieldHelper.readSystemIdentifier(authorizingOfficerAssistantAutoComplete.getValue()));
+						//assignments.setAuthorizingOfficerAssistantAsString((String) FieldHelper.readSystemIdentifier(authorizingOfficerAssistantAutoComplete.getValue()));
 						assignments.setFinancialControllerHolderAsString((String) FieldHelper.readSystemIdentifier(financialControllerHolderAutoComplete.getValue()));
-						assignments.setFinancialControllerAssistantAsString((String) FieldHelper.readSystemIdentifier(financialControllerAssistantAutoComplete.getValue()));
+						//assignments.setFinancialControllerAssistantAsString((String) FieldHelper.readSystemIdentifier(financialControllerAssistantAutoComplete.getValue()));
 						assignments.setAccountingHolderAsString((String) FieldHelper.readSystemIdentifier(accountingHolderAutoComplete.getValue()));						
-						assignments.setAccountingAssistantAsString((String) FieldHelper.readSystemIdentifier(accountingAssistantAutoComplete.getValue()));
+						//assignments.setAccountingAssistantAsString((String) FieldHelper.readSystemIdentifier(accountingAssistantAutoComplete.getValue()));
 						Arguments<Assignments> arguments = new Arguments<Assignments>();
 						arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
 								.setActionIdentifier(AssignmentsBusiness.SAVE_SCOPE_FUNCTIONS));
@@ -109,7 +115,9 @@ public class AssignmentsEditScopeFunctionsPage extends AbstractPageContainerMana
 						return null;
 					}
 				},CommandButton.FIELD_STYLE_CLASS,"cyk-float-right"),Cell.FIELD_WIDTH,12));
-		
+	}
+	
+	public void buildLayout(Collection<Map<Object,Object>> cellsMaps) {
 		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
 	}
 	

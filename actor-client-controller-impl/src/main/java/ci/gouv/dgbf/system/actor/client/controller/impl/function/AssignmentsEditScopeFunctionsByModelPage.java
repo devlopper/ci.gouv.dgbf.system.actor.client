@@ -1,12 +1,8 @@
 package ci.gouv.dgbf.system.actor.client.controller.impl.function;
 
-import static ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_ASSISTANT;
 import static ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_HOLDER;
-import static ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_ASSISTANT;
 import static ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_HOLDER;
-import static ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_ASSISTANT;
 import static ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER;
-import static ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_ASSISTANT;
 import static ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_HOLDER;
 
 import java.io.Serializable;
@@ -24,6 +20,7 @@ import org.cyk.utility.__kernel__.controller.EntitySaver;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.__kernel__.random.RandomHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
@@ -47,27 +44,28 @@ public class AssignmentsEditScopeFunctionsByModelPage extends AbstractPageContai
 
 	private Layout layout;
 	private DataTable assignmentsDataTable;
+	private String assignmentsDataTableCellIdentifier = RandomHelper.getAlphabetic(5);
 	private Assignments model = new Assignments();
 	
 	private AutoComplete creditManagerHolderAutoComplete;
 	private SelectBooleanButton creditManagerHolderSelectBooleanButton;
-	private AutoComplete creditManagerAssistantAutoComplete;
-	private SelectBooleanButton creditManagerAssistantSelectBooleanButton;
+	//private AutoComplete creditManagerAssistantAutoComplete;
+	//private SelectBooleanButton creditManagerAssistantSelectBooleanButton;
 	
 	private AutoComplete authorizingOfficerHolderAutoComplete;
 	private SelectBooleanButton authorizingOfficerHolderSelectBooleanButton;
-	private AutoComplete authorizingOfficerAssistantAutoComplete;
-	private SelectBooleanButton authorizingOfficerAssistantSelectBooleanButton;
+	//private AutoComplete authorizingOfficerAssistantAutoComplete;
+	//private SelectBooleanButton authorizingOfficerAssistantSelectBooleanButton;
 	
 	private AutoComplete financialControllerHolderAutoComplete;
 	private SelectBooleanButton financialControllerHolderSelectBooleanButton;
-	private AutoComplete financialControllerAssistantAutoComplete;
-	private SelectBooleanButton financialControllerAssistantSelectBooleanButton;
+	//private AutoComplete financialControllerAssistantAutoComplete;
+	//private SelectBooleanButton financialControllerAssistantSelectBooleanButton;
 	
 	private AutoComplete accountingHolderAutoComplete;
 	private SelectBooleanButton accountingHolderSelectBooleanButton;
-	private AutoComplete accountingAssistantAutoComplete;
-	private SelectBooleanButton accountingAssistantSelectBooleanButton;
+	//private AutoComplete accountingAssistantAutoComplete;
+	//private SelectBooleanButton accountingAssistantSelectBooleanButton;
 	
 	private CommandButton saveCommandButton;
 	
@@ -83,7 +81,6 @@ public class AssignmentsEditScopeFunctionsByModelPage extends AbstractPageContai
 		pageArguments.initialize();
 		super.__listenPostConstruct__();		
 		buildFilters();
-		buildDataTable();
 		buildSaveCommandButton();		
 		buildLayout();
 	}
@@ -91,36 +88,36 @@ public class AssignmentsEditScopeFunctionsByModelPage extends AbstractPageContai
 	private void buildFilters() {
 		creditManagerHolderAutoComplete = AssignmentsEditScopeFunctionsPage.buildScopeFunctionAutoComplete(model,CODE_CREDIT_MANAGER_HOLDER
 				,Assignments.FIELD_CREDIT_MANAGER_HOLDER);
-		creditManagerAssistantAutoComplete = AssignmentsEditScopeFunctionsPage.buildScopeFunctionAutoComplete(model,CODE_CREDIT_MANAGER_ASSISTANT
-				,Assignments.FIELD_CREDIT_MANAGER_ASSISTANT);
+		//creditManagerAssistantAutoComplete = AssignmentsEditScopeFunctionsPage.buildScopeFunctionAutoComplete(model,CODE_CREDIT_MANAGER_ASSISTANT
+		//		,Assignments.FIELD_CREDIT_MANAGER_ASSISTANT);
 		
 		authorizingOfficerHolderAutoComplete = AssignmentsEditScopeFunctionsPage.buildScopeFunctionAutoComplete(model,CODE_AUTHORIZING_OFFICER_HOLDER
 				,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER);
-		authorizingOfficerAssistantAutoComplete = AssignmentsEditScopeFunctionsPage.buildScopeFunctionAutoComplete(model,CODE_AUTHORIZING_OFFICER_ASSISTANT
-				,Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT);
+		//authorizingOfficerAssistantAutoComplete = AssignmentsEditScopeFunctionsPage.buildScopeFunctionAutoComplete(model,CODE_AUTHORIZING_OFFICER_ASSISTANT
+		//		,Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT);
 		
 		financialControllerHolderAutoComplete = AssignmentsEditScopeFunctionsPage.buildScopeFunctionAutoComplete(model,CODE_FINANCIAL_CONTROLLER_HOLDER
 				,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER);
-		financialControllerAssistantAutoComplete = AssignmentsEditScopeFunctionsPage.buildScopeFunctionAutoComplete(model,CODE_FINANCIAL_CONTROLLER_ASSISTANT
-				,Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT);
+		//financialControllerAssistantAutoComplete = AssignmentsEditScopeFunctionsPage.buildScopeFunctionAutoComplete(model,CODE_FINANCIAL_CONTROLLER_ASSISTANT
+		//		,Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT);
 		
 		accountingHolderAutoComplete = AssignmentsEditScopeFunctionsPage.buildScopeFunctionAutoComplete(model,CODE_ACCOUNTING_HOLDER
 				,Assignments.FIELD_ACCOUNTING_HOLDER);
-		accountingAssistantAutoComplete = AssignmentsEditScopeFunctionsPage.buildScopeFunctionAutoComplete(model,CODE_ACCOUNTING_ASSISTANT
-				,Assignments.FIELD_ACCOUNTING_ASSISTANT);
+		//accountingAssistantAutoComplete = AssignmentsEditScopeFunctionsPage.buildScopeFunctionAutoComplete(model,CODE_ACCOUNTING_ASSISTANT
+		//		,Assignments.FIELD_ACCOUNTING_ASSISTANT);
 		
 		String offLabel = "Non, ne pas écraser existant",onLabel = "Oui, écraser existant";
 		creditManagerHolderSelectBooleanButton = SelectBooleanButton.build(SelectBooleanButton.FIELD_OFF_LABEL,offLabel,SelectBooleanButton.FIELD_ON_LABEL,onLabel);
-		creditManagerAssistantSelectBooleanButton = SelectBooleanButton.build(SelectBooleanButton.FIELD_OFF_LABEL,offLabel,SelectBooleanButton.FIELD_ON_LABEL,onLabel);
+		//creditManagerAssistantSelectBooleanButton = SelectBooleanButton.build(SelectBooleanButton.FIELD_OFF_LABEL,offLabel,SelectBooleanButton.FIELD_ON_LABEL,onLabel);
 		
 		authorizingOfficerHolderSelectBooleanButton = SelectBooleanButton.build(SelectBooleanButton.FIELD_OFF_LABEL,offLabel,SelectBooleanButton.FIELD_ON_LABEL,onLabel);
-		authorizingOfficerAssistantSelectBooleanButton = SelectBooleanButton.build(SelectBooleanButton.FIELD_OFF_LABEL,offLabel,SelectBooleanButton.FIELD_ON_LABEL,onLabel);
+		//authorizingOfficerAssistantSelectBooleanButton = SelectBooleanButton.build(SelectBooleanButton.FIELD_OFF_LABEL,offLabel,SelectBooleanButton.FIELD_ON_LABEL,onLabel);
 		
 		financialControllerHolderSelectBooleanButton = SelectBooleanButton.build(SelectBooleanButton.FIELD_OFF_LABEL,offLabel,SelectBooleanButton.FIELD_ON_LABEL,onLabel);
-		financialControllerAssistantSelectBooleanButton = SelectBooleanButton.build(SelectBooleanButton.FIELD_OFF_LABEL,offLabel,SelectBooleanButton.FIELD_ON_LABEL,onLabel);
+		//financialControllerAssistantSelectBooleanButton = SelectBooleanButton.build(SelectBooleanButton.FIELD_OFF_LABEL,offLabel,SelectBooleanButton.FIELD_ON_LABEL,onLabel);
 		
 		accountingHolderSelectBooleanButton = SelectBooleanButton.build(SelectBooleanButton.FIELD_OFF_LABEL,offLabel,SelectBooleanButton.FIELD_ON_LABEL,onLabel);
-		accountingAssistantSelectBooleanButton = SelectBooleanButton.build(SelectBooleanButton.FIELD_OFF_LABEL,offLabel,SelectBooleanButton.FIELD_ON_LABEL,onLabel);
+		//accountingAssistantSelectBooleanButton = SelectBooleanButton.build(SelectBooleanButton.FIELD_OFF_LABEL,offLabel,SelectBooleanButton.FIELD_ON_LABEL,onLabel);
 	}
 	
 	private void buildSaveCommandButton() {
@@ -131,9 +128,9 @@ public class AssignmentsEditScopeFunctionsByModelPage extends AbstractPageContai
 					@SuppressWarnings("unchecked")
 					@Override
 					protected Object __runExecuteFunction__(AbstractAction action) {
-						LazyDataModel<Assignments> lazyDataModel = (LazyDataModel<Assignments>)assignmentsDataTable.getValue();
+						LazyDataModel<Assignments> lazyDataModel = assignmentsDataTable == null ? null : (LazyDataModel<Assignments>)assignmentsDataTable.getValue();
 						//AssignmentsListPage.LazyDataModelListenerImpl lazyDataModelListener = (AssignmentsListPage.LazyDataModelListenerImpl) lazyDataModel.getListener();						
-						Filter.Dto filter = lazyDataModel.get__filter__();
+						Filter.Dto filter = lazyDataModel == null ? null : lazyDataModel.get__filter__();
 						if(filter == null || CollectionHelper.isEmpty(filter.getFields()))
 							throw new RuntimeException("Le filtre est obligatoire");
 						model.setFilter(filter);
@@ -157,7 +154,7 @@ public class AssignmentsEditScopeFunctionsByModelPage extends AbstractPageContai
 						return null;
 					}
 				},CommandButton.FIELD_STYLE_CLASS,"cyk-float-right");
-		saveCommandButton.addUpdates(":form:"+assignmentsDataTable.getIdentifier());
+		saveCommandButton.addUpdates(":form:"+assignmentsDataTableCellIdentifier);
 	}
 	
 	private void copyToModel(String fieldName) {
@@ -168,30 +165,37 @@ public class AssignmentsEditScopeFunctionsByModelPage extends AbstractPageContai
 			model.getOverridablesFieldsNames(Boolean.TRUE).add(fieldName);
 	}
 	
-	private void buildDataTable() {
+	private DataTable buildDataTable() {
 		assignmentsDataTable = AssignmentsListPage.buildDataTable(DataTable.FIELD_LISTENER,new DataTableListenerImpl()
 				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,AssignmentsListPage.DataTableListenerImpl.buildColumnsNames(pageArguments)
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl().applyPageArguments(pageArguments)
 				,DataTable.FIELD_RENDER_TYPE,org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection.RenderType.INPUT
 				);
+		return assignmentsDataTable;
 	}
 	
 	private void buildLayout() {
 		Collection<Map<Object,Object>> cells = new ArrayList<>();
 		buildLayoutAddInput(cells, creditManagerHolderAutoComplete,creditManagerHolderSelectBooleanButton);
-		buildLayoutAddInput(cells, creditManagerAssistantAutoComplete,creditManagerAssistantSelectBooleanButton);
+		//buildLayoutAddInput(cells, creditManagerAssistantAutoComplete,creditManagerAssistantSelectBooleanButton);
 		
 		buildLayoutAddInput(cells, authorizingOfficerHolderAutoComplete,authorizingOfficerHolderSelectBooleanButton);
-		buildLayoutAddInput(cells, authorizingOfficerAssistantAutoComplete,authorizingOfficerAssistantSelectBooleanButton);
+		//buildLayoutAddInput(cells, authorizingOfficerAssistantAutoComplete,authorizingOfficerAssistantSelectBooleanButton);
 		
 		buildLayoutAddInput(cells, financialControllerHolderAutoComplete,financialControllerHolderSelectBooleanButton);
-		buildLayoutAddInput(cells, financialControllerAssistantAutoComplete,financialControllerAssistantSelectBooleanButton);
+		//buildLayoutAddInput(cells, financialControllerAssistantAutoComplete,financialControllerAssistantSelectBooleanButton);
 		
 		buildLayoutAddInput(cells, accountingHolderAutoComplete,accountingHolderSelectBooleanButton);
-		buildLayoutAddInput(cells, accountingAssistantAutoComplete,accountingAssistantSelectBooleanButton);
+		//buildLayoutAddInput(cells, accountingAssistantAutoComplete,accountingAssistantSelectBooleanButton);
 		
 		cells.add(MapHelper.instantiate(Cell.FIELD_CONTROL,saveCommandButton,Cell.FIELD_WIDTH,12));
-		cells.add(MapHelper.instantiate(Cell.FIELD_CONTROL,assignmentsDataTable,Cell.FIELD_WIDTH,12));
+		cells.add(MapHelper.instantiate(Cell.FIELD_IDENTIFIER,assignmentsDataTableCellIdentifier,Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE
+				,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
+			@Override
+			public Object buildControl(Cell cell) {
+				return buildDataTable();
+			}
+		},Cell.FIELD_WIDTH,12));
 		
 		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cells);
 	}

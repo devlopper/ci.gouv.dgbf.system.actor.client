@@ -565,6 +565,8 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			administrativeUnitCode(pageArguments.administrativeUnit);
 			budgetSpecializationUnitCode(pageArguments.budgetSpecializationUnit);
 			activityCode(pageArguments.activity);
+			activityCategoryCode(pageArguments.activityCategory);
+			expenditureNatureCode(pageArguments.expenditureNature);
 			return this;
 		}
 		
@@ -593,6 +595,20 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			if(activity == null)
 				return this;
 			setActivityCode(activity.getCode());
+			return this;
+		}
+		
+		public LazyDataModelListenerImpl activityCategoryCode(ActivityCategory activityCategory) {
+			if(activityCategory == null)
+				return this;
+			setActivityCategoryCode(activityCategory.getCode());
+			return this;
+		}
+		
+		public LazyDataModelListenerImpl expenditureNatureCode(ExpenditureNature expenditureNature) {
+			if(expenditureNature == null)
+				return this;
+			setExpenditureNatureCode(expenditureNature.getCode());
 			return this;
 		}
 		

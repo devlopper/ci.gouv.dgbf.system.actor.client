@@ -17,6 +17,7 @@ import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.__kernel__.random.RandomHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
@@ -58,6 +59,7 @@ public class AssignmentsCollectionEditScopeFunctionsPage extends AbstractPageCon
 
 	private Layout layout;
 	private DataTable assignmentsDataTable;
+	private String assignmentsDataTableCellIdentifier = RandomHelper.getAlphabetic(5);
 	private List<Assignments> assignmentsCollection;
 	private AutoComplete creditManagerHolderAutoComplete;
 	private AutoComplete creditManagerAssistantAutoComplete;
@@ -80,7 +82,8 @@ public class AssignmentsCollectionEditScopeFunctionsPage extends AbstractPageCon
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return AssignmentsListPage.buildWindowTitleValue("Modification des affectations", section,administrativeUnit, budgetSpecializationUnit,action, activity,expenditureNature,activityCategory);
+		return AssignmentsListPage.buildWindowTitleValue("Modification des affectations", section,administrativeUnit, budgetSpecializationUnit,action, activity
+				,expenditureNature,activityCategory);
 	}
 	
 	@Override
@@ -128,40 +131,40 @@ public class AssignmentsCollectionEditScopeFunctionsPage extends AbstractPageCon
 		super.__listenPostConstruct__();
 		creditManagerHolderAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER
 				,FIELD_CREDIT_MANAGER_HOLDER_AUTO_COMPLETE,Assignments.FIELD_CREDIT_MANAGER_HOLDER);
-		creditManagerAssistantAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_ASSISTANT
-				,FIELD_CREDIT_MANAGER_ASSISTANT_AUTO_COMPLETE,Assignments.FIELD_CREDIT_MANAGER_ASSISTANT);
+		//creditManagerAssistantAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_ASSISTANT
+		//		,FIELD_CREDIT_MANAGER_ASSISTANT_AUTO_COMPLETE,Assignments.FIELD_CREDIT_MANAGER_ASSISTANT);
 		
 		authorizingOfficerHolderAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_HOLDER
 				,FIELD_AUTHORIZING_OFFICER_HOLDER_AUTO_COMPLETE,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER);
-		authorizingOfficerAssistantAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_ASSISTANT
-				,FIELD_AUTHORIZING_OFFICER_ASSISTANT_AUTO_COMPLETE,Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT);
+		//authorizingOfficerAssistantAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_ASSISTANT
+		//		,FIELD_AUTHORIZING_OFFICER_ASSISTANT_AUTO_COMPLETE,Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT);
 		
 		financialControllerHolderAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_HOLDER
 				,FIELD_FINANCIAL_CONTROLLER_HOLDER_AUTO_COMPLETE,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER);
-		financialControllerAssistantAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_ASSISTANT
-				,FIELD_FINANCIAL_CONTROLLER_ASSISTANT_AUTO_COMPLETE,Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT);
+		//financialControllerAssistantAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_ASSISTANT
+		//		,FIELD_FINANCIAL_CONTROLLER_ASSISTANT_AUTO_COMPLETE,Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT);
 		
 		accountingHolderAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_HOLDER
 				,FIELD_ACCOUNTING_HOLDER_AUTO_COMPLETE,Assignments.FIELD_ACCOUNTING_HOLDER);
-		accountingAssistantAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_ASSISTANT
-				,FIELD_ACCOUNTING_ASSISTANT_AUTO_COMPLETE,Assignments.FIELD_ACCOUNTING_ASSISTANT);
+		//accountingAssistantAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_ASSISTANT
+		//		,FIELD_ACCOUNTING_ASSISTANT_AUTO_COMPLETE,Assignments.FIELD_ACCOUNTING_ASSISTANT);
 		
-		buildDataTable();
-		buildSaveCommandButton();
 		buildLayout();
 	}
 	
-	private void buildDataTable() {
+	private DataTable buildDataTable() {
 		assignmentsDataTable = AssignmentsListPage.buildDataTable(DataTable.FIELD_LISTENER,new DataTableListenerImpl()
-				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,AssignmentsListPage.DataTableListenerImpl.buildColumnsNames(section,administrativeUnit, budgetSpecializationUnit, activity
-						, expenditureNature, activityCategory)
+				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,AssignmentsListPage.DataTableListenerImpl.buildColumnsNames(section,administrativeUnit
+						, budgetSpecializationUnit, activity, expenditureNature, activityCategory)
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl()
 				.sectionCode(section).administrativeUnitCode(administrativeUnit).budgetSpecializationUnitCode(budgetSpecializationUnit).activityCode(activity)
+				.activityCategoryCode(activityCategory).expenditureNatureCode(expenditureNature)
 				,DataTable.FIELD_RENDER_TYPE,org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection.RenderType.INPUT
 				);
+		return assignmentsDataTable;
 	}
 	
-	private void buildSaveCommandButton() {
+	private CommandButton buildSaveCommandButton() {
 		saveCommandButton = CommandButton.build(CommandButton.FIELD_VALUE,"Enregistrer",CommandButton.FIELD_ICON,"fa fa-floppy-o"
 				,CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
 				,CommandButton.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES,List.of(RenderType.GROWL)
@@ -190,14 +193,23 @@ public class AssignmentsCollectionEditScopeFunctionsPage extends AbstractPageCon
 						return null;
 					}
 				},CommandButton.FIELD_STYLE_CLASS,"cyk-float-right");
-		saveCommandButton.addUpdates(":form:"+assignmentsDataTable.getIdentifier());
+		//saveCommandButton.addUpdates(":form:"+assignmentsDataTableCellIdentifier);
+		return saveCommandButton;
 	}
 	
 	private void buildLayout() {
-		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,CollectionHelper.listOf(
-				MapHelper.instantiate(Cell.FIELD_CONTROL,assignmentsDataTable,Cell.FIELD_WIDTH,12)
-				,MapHelper.instantiate(Cell.FIELD_CONTROL,saveCommandButton,Cell.FIELD_WIDTH,12)
-				));
+		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
+		cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
+			@Override
+			public Object buildControl(Cell cell) {
+				return buildDataTable();
+			}
+		},Cell.FIELD_WIDTH,12));
+		//cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,buildDataTable(),Cell.FIELD_WIDTH,12));		
+		//assignmentsDataTable.getContentOutputPanel().setDeferred(Boolean.TRUE);
+		
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,buildSaveCommandButton(),Cell.FIELD_WIDTH,12));
+		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
 	}
 	
 	public static AutoComplete buildScopeFunctionAutoComplete(String functionCode,String componentFieldName,String functionFieldName) {
@@ -272,16 +284,16 @@ public class AssignmentsCollectionEditScopeFunctionsPage extends AbstractPageCon
 				assignmentsCollection.forEach(assignments -> {
 					initialValues.put(assignments.getIdentifier(), new Object[] {
 							assignments.getCreditManagerHolder()
-							,assignments.getCreditManagerAssistant()
+							//,assignments.getCreditManagerAssistant()
 							
 							,assignments.getAuthorizingOfficerHolder()
-							,assignments.getAuthorizingOfficerAssistant()
+							//,assignments.getAuthorizingOfficerAssistant()
 							
 							,assignments.getFinancialControllerHolder()
-							,assignments.getFinancialControllerAssistant()
+							//,assignments.getFinancialControllerAssistant()
 							
 							,assignments.getAccountingHolder()
-							,assignments.getAccountingAssistant()
+							//,assignments.getAccountingAssistant()
 						});
 				});
 			return assignmentsCollection;
@@ -295,13 +307,13 @@ public class AssignmentsCollectionEditScopeFunctionsPage extends AbstractPageCon
 	
 	private void setIdentifiers(Assignments assignments) {
 		setIdentifiers(assignments,Assignments.FIELD_CREDIT_MANAGER_HOLDER);
-		setIdentifiers(assignments,Assignments.FIELD_CREDIT_MANAGER_ASSISTANT);
+		//setIdentifiers(assignments,Assignments.FIELD_CREDIT_MANAGER_ASSISTANT);
 		setIdentifiers(assignments,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER);
-		setIdentifiers(assignments,Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT);
+		//setIdentifiers(assignments,Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT);
 		setIdentifiers(assignments,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER);
-		setIdentifiers(assignments,Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT);
+		//setIdentifiers(assignments,Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT);
 		setIdentifiers(assignments,Assignments.FIELD_ACCOUNTING_HOLDER);
-		setIdentifiers(assignments,Assignments.FIELD_ACCOUNTING_ASSISTANT);
+		//setIdentifiers(assignments,Assignments.FIELD_ACCOUNTING_ASSISTANT);
 	}
 	
 	private void setIdentifiers(Assignments assignments,String fieldName) {
@@ -315,20 +327,20 @@ public class AssignmentsCollectionEditScopeFunctionsPage extends AbstractPageCon
 			return Boolean.FALSE;
 		if(isHasBeenEdited(assignments,Assignments.FIELD_CREDIT_MANAGER_HOLDER,0))
 			return Boolean.TRUE;
-		if(isHasBeenEdited(assignments,Assignments.FIELD_CREDIT_MANAGER_ASSISTANT,1))
+		//if(isHasBeenEdited(assignments,Assignments.FIELD_CREDIT_MANAGER_ASSISTANT,1))
+		//	return Boolean.TRUE;
+		if(isHasBeenEdited(assignments,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER,1))
 			return Boolean.TRUE;
-		if(isHasBeenEdited(assignments,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER,2))
+		//if(isHasBeenEdited(assignments,Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT,3))
+		//	return Boolean.TRUE;
+		if(isHasBeenEdited(assignments,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER,2))
 			return Boolean.TRUE;
-		if(isHasBeenEdited(assignments,Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT,3))
+		//if(isHasBeenEdited(assignments,Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT,5))
+		//	return Boolean.TRUE;
+		if(isHasBeenEdited(assignments,Assignments.FIELD_ACCOUNTING_HOLDER,3))
 			return Boolean.TRUE;
-		if(isHasBeenEdited(assignments,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER,4))
-			return Boolean.TRUE;
-		if(isHasBeenEdited(assignments,Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT,5))
-			return Boolean.TRUE;
-		if(isHasBeenEdited(assignments,Assignments.FIELD_ACCOUNTING_HOLDER,6))
-			return Boolean.TRUE;
-		if(isHasBeenEdited(assignments,Assignments.FIELD_ACCOUNTING_ASSISTANT,7))
-			return Boolean.TRUE;
+		//if(isHasBeenEdited(assignments,Assignments.FIELD_ACCOUNTING_ASSISTANT,7))
+		//	return Boolean.TRUE;
 		return  Boolean.FALSE;
 	}
 

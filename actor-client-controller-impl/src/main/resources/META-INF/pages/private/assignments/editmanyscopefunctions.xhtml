@@ -13,46 +13,44 @@
     		<ui:decorate template="#{primefacesHelper.getModelTemplate(assignmentsCollectionEditScopeFunctionsPage.layout)}">
     			<ui:param name="layout" value="#{assignmentsCollectionEditScopeFunctionsPage.layout}"/>     			
     			<ui:define name="cell0">
-  					<ui:decorate template="#{primefacesHelper.getModelTemplate(assignmentsCollectionEditScopeFunctionsPage.assignmentsDataTable)}">
-    					<ui:param name="dataTable" value="#{assignmentsCollectionEditScopeFunctionsPage.assignmentsDataTable}"/>
-    					<ui:define name="collectionColumnsAfterRowIndexBodies">
-							<ui:fragment rendered="#{column.inputable}">
-								<ui:fragment rendered="#{column.fieldName eq 'creditManagerHolderAsString'}">
-	    							<p:autoComplete binding="#{assignmentsCollectionEditScopeFunctionsPage.creditManagerHolderAutoComplete.binding}" />
-	    						</ui:fragment>   						
-	    						<ui:fragment rendered="#{column.fieldName eq 'creditManagerAssistantAsString'}">
-	    							<p:autoComplete binding="#{assignmentsCollectionEditScopeFunctionsPage.creditManagerAssistantAutoComplete.binding}" />
-	    						</ui:fragment>
-	    						
-	    						
-	    						<ui:fragment rendered="#{column.fieldName eq 'authorizingOfficerHolderAsString'}">
-	    							<p:autoComplete binding="#{assignmentsCollectionEditScopeFunctionsPage.authorizingOfficerHolderAutoComplete.binding}" />
-	    						</ui:fragment>	    						
-	    						<ui:fragment rendered="#{column.fieldName eq 'authorizingOfficerAssistantAsString'}">
-	    							<p:autoComplete binding="#{assignmentsCollectionEditScopeFunctionsPage.authorizingOfficerAssistantAutoComplete.binding}" />
-	    						</ui:fragment>
-	    						
-	    						
-	    						<ui:fragment rendered="#{column.fieldName eq 'financialControllerHolderAsString'}">
-	    							<p:autoComplete binding="#{assignmentsCollectionEditScopeFunctionsPage.financialControllerHolderAutoComplete.binding}" />
-	    						</ui:fragment>   						
-	    						<ui:fragment rendered="#{column.fieldName eq 'financialControllerAssistantAsString'}">
-	    							<p:autoComplete binding="#{assignmentsCollectionEditScopeFunctionsPage.financialControllerAssistantAutoComplete.binding}" />
-	    						</ui:fragment>
-	    						
-	    						
-	    						<ui:fragment rendered="#{column.fieldName eq 'accountingHolderAsString'}">
-	    							<p:autoComplete binding="#{assignmentsCollectionEditScopeFunctionsPage.accountingHolderAutoComplete.binding}" />
-	    						</ui:fragment>
-	    						<ui:fragment rendered="#{column.fieldName eq 'accountingAssistantAsString'}">
-	    							<p:autoComplete binding="#{assignmentsCollectionEditScopeFunctionsPage.accountingAssistantAutoComplete.binding}" />
-	    						</ui:fragment>
-							</ui:fragment>
-    						<ui:fragment rendered="#{not column.inputable}">
-    							<ui:decorate template="/collection/datatable/__columns__bodies.xhtml" />
+    				<ui:decorate template="/layout/__cell__.xhtml">
+    					<ui:define name="cellControl">
+    						<ui:fragment rendered="#{assignmentsCollectionEditScopeFunctionsPage.assignmentsDataTable == null}">
+    							<ui:decorate template="#{primefacesHelper.getModelTemplate(cell.builderRunningControl)}">
+		    						<ui:param name="graphicImage" value="#{cell.builderRunningControl}"/>
+		    					</ui:decorate>
+    							<!--
+    							<ui:include src="/layout/__cellControl__.xhtml"/>
+    							-->
     						</ui:fragment>
-						</ui:define>
-					</ui:decorate>
+    						 						
+    						<ui:decorate template="#{primefacesHelper.getModelTemplate(assignmentsCollectionEditScopeFunctionsPage.assignmentsDataTable)}">
+		    					<ui:param name="dataTable" value="#{assignmentsCollectionEditScopeFunctionsPage.assignmentsDataTable}"/>
+		    					<ui:define name="collectionColumnsAfterRowIndexBodies">
+									<ui:fragment rendered="#{column.inputable}">
+										<ui:fragment rendered="#{column.fieldName eq 'creditManagerHolderAsString'}">
+			    							<p:autoComplete binding="#{assignmentsCollectionEditScopeFunctionsPage.creditManagerHolderAutoComplete.binding}" />
+			    						</ui:fragment>   						
+			    						
+			    						<ui:fragment rendered="#{column.fieldName eq 'authorizingOfficerHolderAsString'}">
+			    							<p:autoComplete binding="#{assignmentsCollectionEditScopeFunctionsPage.authorizingOfficerHolderAutoComplete.binding}" />
+			    						</ui:fragment>	    						
+			    						
+			    						<ui:fragment rendered="#{column.fieldName eq 'financialControllerHolderAsString'}">
+			    							<p:autoComplete binding="#{assignmentsCollectionEditScopeFunctionsPage.financialControllerHolderAutoComplete.binding}" />
+			    						</ui:fragment>   						
+			    						
+			    						<ui:fragment rendered="#{column.fieldName eq 'accountingHolderAsString'}">
+			    							<p:autoComplete binding="#{assignmentsCollectionEditScopeFunctionsPage.accountingHolderAutoComplete.binding}" />
+			    						</ui:fragment>
+									</ui:fragment>
+		    						<ui:fragment rendered="#{not column.inputable}">
+		    							<ui:decorate template="/collection/datatable/__columns__bodies.xhtml" />
+		    						</ui:fragment>
+								</ui:define>
+							</ui:decorate>
+    					</ui:define>
+    				</ui:decorate>	  					
 				</ui:define>				
     		</ui:decorate>
     	</ui:define>
