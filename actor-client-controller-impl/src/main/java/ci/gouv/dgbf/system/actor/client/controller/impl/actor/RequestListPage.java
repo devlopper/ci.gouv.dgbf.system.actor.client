@@ -262,13 +262,13 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			if(record instanceof Request) {
 				Request request = (Request) record;
 				if(columnIndex != null && columnIndex == 0) {					
-					if(Boolean.TRUE.equals(request.getHasBudgetaryScopeFunctionWhereFunctionCodeIsAccountingHolder()))
+					if(Boolean.TRUE.equals(request.getIsAccountingHolder()))
 						return "cyk-scope-function-cpt";
-					if(Boolean.TRUE.equals(request.getHasBudgetaryScopeFunctionWhereFunctionCodeIsFinancialControllerHolder()))
+					if(Boolean.TRUE.equals(request.getIsFinancialControllerHolder()))
 						return "cyk-scope-function-cf";
-					if(Boolean.TRUE.equals(request.getHasBudgetaryScopeFunctionWhereFunctionCodeIsAuthorizingOfficerHolder()))
+					if(Boolean.TRUE.equals(request.getIsAuthorizingOfficerHolder()))
 						return "cyk-scope-function-ord";
-					if(Boolean.TRUE.equals(request.getHasBudgetaryScopeFunctionWhereFunctionCodeIsCreditManagerHolder()))
+					if(Boolean.TRUE.equals(request.getIsCreditManagerHolder()))
 						return "cyk-scope-function-gc";
 					return "cyk-scope-function-assistant";
 				}
@@ -396,7 +396,8 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			Arguments<Request> arguments = super.instantiateArguments(lazyDataModel);
 			ArrayList<String> list = new ArrayList<>();
 			list.addAll(List.of(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRINGS
-					,Request.FIELD_HAS_GRANTED_HOLDER_SCOPE_FUNCTION,Request.FIELD_ACCEPTED));
+					,Request.FIELD_HAS_GRANTED_HOLDER_SCOPE_FUNCTION,Request.FIELD_ACCEPTED,Request.FIELD_IS_CREDIT_MANAGER_HOLDER
+					,Request.FIELD_IS_AUTHORIZING_OFFICER_HOLDER,Request.FIELD_IS_FINANCIAL_CONTROLLER_HOLDER,Request.FIELD_IS_ACCOUNTING_HOLDER));
 			arguments.getRepresentationArguments().getQueryExecutorArguments().setProcessableTransientFieldsNames(list);
 			return arguments;
 		}

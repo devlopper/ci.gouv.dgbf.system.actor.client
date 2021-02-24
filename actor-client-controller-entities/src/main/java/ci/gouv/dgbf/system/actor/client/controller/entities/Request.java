@@ -97,6 +97,12 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	private Boolean hasBudgetaryScopeFunctionWhereFunctionCodeIsFinancialControllerHolder;
 	private Boolean hasBudgetaryScopeFunctionWhereFunctionCodeIsAccountingHolder;
 	
+	private Boolean isCreditManagerHolder;
+	private Boolean isAuthorizingOfficerHolder;
+	private Boolean isFinancialControllerHolder;
+	private Boolean isAccountingHolder;
+	private Boolean isAssistant;
+	
 	/* Others */
 	
 	@Input @InputTextarea private String comment;	
@@ -235,6 +241,13 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	public static final String FIELD_TREATMENT = "treatment";
 	public static final String FIELD_ACCEPTATION_COMMENT = "acceptationComment";
 	public static final String FIELD_REJECTION_REASON = "rejectionReason";
+	
+	/**/
+	
+	public static final String FIELD_IS_CREDIT_MANAGER_HOLDER = "isCreditManagerHolder";
+	public static final String FIELD_IS_AUTHORIZING_OFFICER_HOLDER = "isAuthorizingOfficerHolder";
+	public static final String FIELD_IS_FINANCIAL_CONTROLLER_HOLDER = "isFinancialControllerHolder";
+	public static final String FIELD_IS_ACCOUNTING_HOLDER = "isAccountingHolder";
 	
 	/**/
 	
