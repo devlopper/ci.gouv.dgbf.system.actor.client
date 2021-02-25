@@ -76,8 +76,10 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 		request.setReadPageURL(JavaServerFacesHelper.buildUrlFromOutcome(PublicRequestOpenPage.OUTCOME));
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
 		if(ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_ACCEPTED.equals(request.getStatus().getCode())) {
-			if(CollectionHelper.isNotEmpty(request.getBudgetariesScopeFunctions())) {
-				for(ScopeFunction scopeFunction : request.getBudgetariesScopeFunctions()) {
+			if(CollectionHelper.isNotEmpty(request.getGrantedBudgetariesScopeFunctions())) {
+				for(ScopeFunction scopeFunction : request.getGrantedBudgetariesScopeFunctions()) {
+					if(!scopeFunction.getCode().startsWith("G") && !scopeFunction.getCode().startsWith("O"))
+						continue;
 					Button button = Button.build(Button.FIELD_VALUE,"Imprimer spécimen de signature - "+scopeFunction.getCode(),Button.FIELD_ICON,"fa fa-print");
 					button.setEventScript(Event.CLICK,OpenWindowScriptBuilder.getInstance().build(
 							UniformResourceIdentifierBuilder.getInstance().buildFromCurrentRequest(ReportServlet.PATH, scopeFunction.getSignatureSpecimenReadReportURIQuery()).toString()

@@ -141,13 +141,13 @@ public class AssignmentsEditScopeFunctionsByModelPage extends AbstractPageContai
 						model.setFilter(((LazyDataModel<Assignments>)assignmentsDataTable.getValue()).get__filter__());
 						*/
 						copyToModel(Assignments.FIELD_CREDIT_MANAGER_HOLDER);
-						copyToModel(Assignments.FIELD_CREDIT_MANAGER_ASSISTANT);
+						//copyToModel(Assignments.FIELD_CREDIT_MANAGER_ASSISTANT);
 						copyToModel(Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER);
-						copyToModel(Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT);
+						//copyToModel(Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT);
 						copyToModel(Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER);
-						copyToModel(Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT);
+						//copyToModel(Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT);
 						copyToModel(Assignments.FIELD_ACCOUNTING_HOLDER);
-						copyToModel(Assignments.FIELD_ACCOUNTING_ASSISTANT);
+						//copyToModel(Assignments.FIELD_ACCOUNTING_ASSISTANT);
 						EntitySaver.getInstance().save(Assignments.class, new Arguments<Assignments>()
 								.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
 								.setActionIdentifier(AssignmentsBusiness.APPLY_MODEL)).setUpdatables(List.of(model)));							

@@ -59,7 +59,6 @@ public class RequestIndexPage extends AbstractPageContainerManagedImpl implement
 	private AdministrativeUnit administrativeUnit;
 	private BudgetSpecializationUnit budgetSpecializationUnit;
 	private Function function;
-	//private String functionIdentifier;
 	private CommandButton applyGlobalFilterCommand;
 		
 	@Override
@@ -145,14 +144,29 @@ public class RequestIndexPage extends AbstractPageContainerManagedImpl implement
 		lazyDataModelListener.setAdministrativeUnitIdentifier(StringHelper.get(FieldHelper.readSystemIdentifier(AbstractInput.getValue(administrativeUnitSelectOne))));
 		lazyDataModelListener.setFunctionIdentifier(StringHelper.get(FieldHelper.readSystemIdentifier(AbstractInput.getValue(functionSelectOne))));
 		if(tab.getParameterValue().equals(TAB_REQUESTS_TO_PROCESS))
-			buildTabRequestsToProcess(cellsMaps,lazyDataModelListener);
+			cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
+				@Override
+				public Object buildControl(Cell cell) {
+					return buildDataTableRequestsToProcess(lazyDataModelListener);
+				}
+			},Cell.FIELD_WIDTH,12));
 		else if(tab.getParameterValue().equals(TAB_REQUESTS_PROCESSED))
-			buildTaRequestsProcessed(cellsMaps,lazyDataModelListener);
+			cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
+				@Override
+				public Object buildControl(Cell cell) {
+					return buildDataTableRequestsProcessed(lazyDataModelListener);
+				}
+			},Cell.FIELD_WIDTH,12));
 		else if(tab.getParameterValue().equals(TAB_REQUESTS_ALL))
-			buildTaRequestsAll(cellsMaps,lazyDataModelListener);
+			cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
+				@Override
+				public Object buildControl(Cell cell) {
+					return buildDataTableRequestsAll(lazyDataModelListener);
+				}
+			},Cell.FIELD_WIDTH,12));
 	}
 	
-	private void buildTabRequestsToProcess(Collection<Map<Object,Object>> cellsMaps,RequestListPage.LazyDataModelListenerImpl lazyDataModelListener) {
+	private DataTable buildDataTableRequestsToProcess(RequestListPage.LazyDataModelListenerImpl lazyDataModelListener) {
 		DataTable dataTable = RequestListPage.buildDataTable(
 				RequestListPage.ContentType.class,RequestListPage.ContentType.TO_PROCESS
 				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,RequestListPage.DataTableListenerImpl
@@ -160,28 +174,28 @@ public class RequestIndexPage extends AbstractPageContainerManagedImpl implement
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,lazyDataModelListener
 				.setProcessingDateIsNullNullable(Boolean.FALSE)
 				);
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
+		return dataTable;
 	}
 	
-	private void buildTaRequestsProcessed(Collection<Map<Object,Object>> cellsMaps,RequestListPage.LazyDataModelListenerImpl lazyDataModelListener) {
+	private DataTable buildDataTableRequestsProcessed(RequestListPage.LazyDataModelListenerImpl lazyDataModelListener) {
 		DataTable dataTable = RequestListPage.buildDataTable(
 				RequestListPage.ContentType.class,RequestListPage.ContentType.PROCESSED
 				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,RequestListPage.DataTableListenerImpl
 				.buildColumnsNames(function,section, administrativeUnit, budgetSpecializationUnit, ContentType.PROCESSED)
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,lazyDataModelListener
 				.setProcessingDateIsNotNullNullable(Boolean.FALSE)
-				);	
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
+				);
+		return dataTable;
 	}
 	
-	private void buildTaRequestsAll(Collection<Map<Object,Object>> cellsMaps,RequestListPage.LazyDataModelListenerImpl lazyDataModelListener) {
+	private DataTable buildDataTableRequestsAll(RequestListPage.LazyDataModelListenerImpl lazyDataModelListener) {
 		DataTable dataTable = RequestListPage.buildDataTable(
 				RequestListPage.ContentType.class,RequestListPage.ContentType.ALL
 				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,RequestListPage.DataTableListenerImpl
 				.buildColumnsNames(function,section, administrativeUnit, budgetSpecializationUnit, ContentType.ALL)
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,lazyDataModelListener
 				);
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
+		return dataTable;
 	}
 	
 	private void buildGlobalFilters(Collection<Map<Object,Object>> cellsMaps) {

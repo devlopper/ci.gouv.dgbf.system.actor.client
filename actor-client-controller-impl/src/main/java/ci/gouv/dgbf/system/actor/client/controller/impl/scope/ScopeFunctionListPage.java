@@ -76,6 +76,15 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 		return "Liste des postes";
 	}
 	
+	public static String buildWindowTitleValue(String prefix,Function function) {
+		Collection<String> strings = new ArrayList<>();
+		strings.add(prefix);
+		if(function != null) {
+			strings.add(function.getName());
+		}
+		return StringHelper.concatenate(strings, " | ");
+	}
+	
 	/**/
 	
 	public static DataTable buildDataTable(Map<Object,Object> arguments) {

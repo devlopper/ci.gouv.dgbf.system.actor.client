@@ -206,7 +206,6 @@ public class AssignmentsCollectionEditScopeFunctionsPage extends AbstractPageCon
 			}
 		},Cell.FIELD_WIDTH,12));
 		//cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,buildDataTable(),Cell.FIELD_WIDTH,12));		
-		//assignmentsDataTable.getContentOutputPanel().setDeferred(Boolean.TRUE);
 		
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,buildSaveCommandButton(),Cell.FIELD_WIDTH,12));
 		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);

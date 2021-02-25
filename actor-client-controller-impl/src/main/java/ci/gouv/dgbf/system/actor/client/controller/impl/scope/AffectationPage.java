@@ -3,7 +3,6 @@ package ci.gouv.dgbf.system.actor.client.controller.impl.scope;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +39,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputT
 import ci.gouv.dgbf.system.actor.client.controller.api.ActivityCategoryController;
 import ci.gouv.dgbf.system.actor.client.controller.api.BudgetSpecializationUnitController;
 import ci.gouv.dgbf.system.actor.client.controller.api.ExpenditureNatureController;
-import ci.gouv.dgbf.system.actor.client.controller.api.FunctionComparator;
+import ci.gouv.dgbf.system.actor.client.controller.api.FunctionController;
 import ci.gouv.dgbf.system.actor.client.controller.api.SectionController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Action;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Activity;
@@ -60,7 +59,6 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnit
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExpenditureNatureQuerier;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -77,7 +75,8 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	private TabMenu tabMenu;
 	private Integer selectedAssignmentsTabIndex;
 	private TabMenu.Tab selectedTab,selectedAssignmentsTab;
-	private SelectOneCombo sectionSelectOne,administrativeUnitSelectOne,budgetSpecializationUnitSelectOne,activitySelectOne,activityCategorySelectOne,expenditureNatureSelectOne,functionSelectOne;
+	private SelectOneCombo sectionSelectOne,administrativeUnitSelectOne,budgetSpecializationUnitSelectOne,activitySelectOne,activityCategorySelectOne
+		,expenditureNatureSelectOne,functionSelectOne;
 	private List<Function> functions;
 	private Section section,initialSection;
 	private AdministrativeUnit administrativeUnit,initialAdministrativeUnit;
@@ -134,11 +133,12 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 			initalActivityCategory = activityCategory = __inject__(ActivityCategoryController.class).readBySystemIdentifier(activity.getCategoryIdentifier());
 		if(activityCategory == null)
 			initalActivityCategory = activityCategory = WebController.getInstance().getRequestParameterEntityAsParentBySystemIdentifier(ActivityCategory.class, null);
-				
-		super.__listenPostConstruct__();
-		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
+		
 		selectedTab = TabMenu.Tab.getSelectedByRequestParameter(TABS);
 		
+		super.__listenPostConstruct__();
+		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
+
 		buildTabMenu(cellsMaps);
 		buildTab(cellsMaps);
 		buildLayout(cellsMaps);
@@ -158,7 +158,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 			buildFunctionsTabMenu(cellsMaps);
 		*/
 	}
-	
+	/*
 	private TabMenu buildFunctionsTabMenu() {				
 		functions = (List<Function>) EntityReader.getInstance().readMany(Function.class, FunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE_FOR_UI);
 		if(CollectionHelper.isEmpty(functions))
@@ -182,7 +182,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 				,TabMenu.ConfiguratorImpl.FIELD_ITEMS,tabMenuItems);
 		return tabMenu;
 	}
-	
+	*/
 	private void buildTab(Collection<Map<Object,Object>> cellsMaps) {
 		if(selectedTab.getParameterValue().equals(TAB_SCOPE_FUNCTION))
 			buildTabScopeFunction(cellsMaps);
@@ -191,13 +191,15 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	}
 	
 	private void buildTabScopeFunction(Collection<Map<Object,Object>> cellsMaps) {
+		buildTabScopeFunctionsGlobalFilters(cellsMaps);
+		/*
 		cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
 			@Override
 			public Object buildControl(Cell cell) {
 				return buildFunctionsTabMenu();
 			}
 		},Cell.FIELD_WIDTH,12));
-		
+		*/
 		cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
 			@Override
 			public Object buildControl(Cell cell) {
@@ -339,6 +341,98 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY, activityCode);			
 		return EntityCounter.getInstance().count(Assignments.class,arguments);
 	}
+	
+	private void buildLayout(Collection<Map<Object,Object>> cellsMaps) {
+		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
+		/*assignmentsTabCell = layout.getCellAt(15);
+		assignmentsTabCell.setControlBuilderRemoteCommand(RemoteCommand.build(RemoteCommand.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+			@Override
+			protected Object __runExecuteFunction__(AbstractAction action) {
+				assignmentsTabCell.setControl(assignmentsTabMenu);
+				return super.__runExecuteFunction__(action);
+			}
+		}));
+		assignmentsTabCell.getControlBuilderRemoteCommand().addUpdates(assignmentsTabCell.getIdentifier());
+		
+		dataTableCell = layout.getCellAt(16);
+		dataTableCell.setControlBuilderRemoteCommand(RemoteCommand.build(RemoteCommand.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+			@Override
+			protected Object __runExecuteFunction__(AbstractAction action) {
+				dataTableCell.setControl(dataTable);
+				return super.__runExecuteFunction__(action);
+			}
+		}));
+		dataTableCell.getControlBuilderRemoteCommand().addUpdates(dataTableCell.getIdentifier());
+		*/
+	}
+	
+	@Override
+	protected String __getWindowTitleValue__() {
+		if(selectedTab == null)
+			return super.__getWindowTitleValue__();
+		if(TAB_SCOPE_FUNCTION.equals(selectedTab.getParameterValue()))
+			return ScopeFunctionListPage.buildWindowTitleValue("Affectation", function);
+		else if(TAB_ASSIGNMENTS.equals(selectedTab.getParameterValue()))
+			return AssignmentsListPage.buildWindowTitleValue("Affectation", section,administrativeUnit, budgetSpecializationUnit,action, activity,expenditureNature,activityCategory);
+		return "Affectation";
+	}
+	
+	/* Filters */
+	
+	/*         Scope Function */
+	
+	private void buildTabScopeFunctionsGlobalFilters(Collection<Map<Object,Object>> cellsMaps) {
+		buildTabScopeFunctionsGlobalFilterSelectOneFunction();
+		buildTabScopeFunctionsGlobalFilterApplyCommand();
+		
+		if(functionSelectOne != null) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Catégorie de fonction budgétaire"),Cell.FIELD_WIDTH,2));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,functionSelectOne,Cell.FIELD_WIDTH,9));	
+		}
+		
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,applyGlobalFilterCommand,Cell.FIELD_WIDTH,1));
+	}
+	
+	private void buildTabScopeFunctionsGlobalFilterSelectOneFunction() {		
+		functionSelectOne = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,Function.class,SelectOneCombo.FIELD_LISTENER
+				,new SelectOneCombo.Listener.AbstractImpl<Function>() {
+			@Override
+			public Collection<Function> computeChoices(AbstractInputChoice<Function> input) {
+				Collection<Function> choices = __inject__(FunctionController.class).readCreditManagersAuthorizingOfficersFinancialControllersAssistants();
+				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
+				return choices;
+			}
+			@Override
+			public void select(AbstractInputChoiceOne input, Function function) {
+				super.select(input, function);
+				AffectationPage.this.function = function;
+			}
+		});
+		functionSelectOne.updateChoices();
+		functionSelectOne.selectBySystemIdentifier(FieldHelper.readSystemIdentifier(function));
+		functionSelectOne.enableValueChangeListener(List.of());
+	}
+	
+	private void buildTabScopeFunctionsGlobalFilterApplyCommand() {
+		applyGlobalFilterCommand = CommandButton.build(CommandButton.FIELD_VALUE,"Filtrer",CommandButton.FIELD_ICON,"fa fa-filter"
+				,CommandButton.FIELD_STYLE,"float:right;"
+				,CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION,CommandButton.FIELD_LISTENER
+				,new AbstractAction.Listener.AbstractImpl() {
+			@Override
+			protected Object __runExecuteFunction__(AbstractAction action) {
+				Map<String,List<String>> map = new LinkedHashMap<>();
+				if(selectedTab != null)
+					map.put(TabMenu.Tab.PARAMETER_NAME,List.of(selectedTab.getParameterValue()));				
+				if(functionSelectOne != null && functionSelectOne.getValue() != null)
+					map.put(ParameterName.stringify(Function.class),List.of( ((Function)functionSelectOne.getValue()).getIdentifier()));	
+				Redirector.getInstance().redirect(OUTCOME, map);
+				return null;
+			}
+		});
+	}
+	
+	
+	/*         Assignments */
 	
 	private void buildTabAssignmentsGlobalFilters(Collection<Map<Object,Object>> cellsMaps) {
 		buildTabAssignmentsGlobalFilterSelectOneActivity();
@@ -658,35 +752,6 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 				return null;
 			}
 		});
-	}
-	
-	private void buildLayout(Collection<Map<Object,Object>> cellsMaps) {
-		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
-		/*assignmentsTabCell = layout.getCellAt(15);
-		assignmentsTabCell.setControlBuilderRemoteCommand(RemoteCommand.build(RemoteCommand.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
-			@Override
-			protected Object __runExecuteFunction__(AbstractAction action) {
-				assignmentsTabCell.setControl(assignmentsTabMenu);
-				return super.__runExecuteFunction__(action);
-			}
-		}));
-		assignmentsTabCell.getControlBuilderRemoteCommand().addUpdates(assignmentsTabCell.getIdentifier());
-		
-		dataTableCell = layout.getCellAt(16);
-		dataTableCell.setControlBuilderRemoteCommand(RemoteCommand.build(RemoteCommand.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
-			@Override
-			protected Object __runExecuteFunction__(AbstractAction action) {
-				dataTableCell.setControl(dataTable);
-				return super.__runExecuteFunction__(action);
-			}
-		}));
-		dataTableCell.getControlBuilderRemoteCommand().addUpdates(dataTableCell.getIdentifier());
-		*/
-	}
-	
-	@Override
-	protected String __getWindowTitleValue__() {
-		return AssignmentsListPage.buildWindowTitleValue("Affectation", section,administrativeUnit, budgetSpecializationUnit,action, activity,expenditureNature,activityCategory);
 	}
 	
 	/**/

@@ -1,1 +1,1 @@
-docker run -e "cyk.variable.system.proxy.uniform.resource.identifier=http://192.168.99.100:8080/api" -p 8081:8080 mic-acteur:latest
+docker run -e "cyk.variable.system.proxy.uniform.resource.identifier=http://192.168.99.100:8080/api" -e "cyk.variable.keycloak.enabled=false" -e "cyk.variable.system.security.authentication.enable=false" -e "cyk.variable.user.interface.theme.menu.is.dynamic=false" -p 8081:8080 mic-acteur:latest

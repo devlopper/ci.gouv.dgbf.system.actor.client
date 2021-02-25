@@ -90,6 +90,9 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceMany @InputChoiceManyAutoComplete private Collection<ScopeFunction> budgetariesScopeFunctions;
 	private Collection<String> budgetariesScopeFunctionsAsStrings;
 	private Collection<String> budgetariesScopeFunctionsGrantedAsStrings;
+	
+	private Collection<ScopeFunction> grantedBudgetariesScopeFunctions;
+	
 	private Boolean hasGrantedHolderScopeFunction;
 	private Boolean hasBudgetaryScopeFunctionWhereFunctionCodeBelongsToExecutionAssistantsCodes;
 	private Boolean hasBudgetaryScopeFunctionWhereFunctionCodeIsCreditManagerHolder;
