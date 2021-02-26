@@ -269,22 +269,23 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 								return null;
 							}
 						});
+				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Appliquer",MenuItem.FIELD_USER_INTERFACE_ACTION
+						,UserInterfaceAction.EXECUTE_FUNCTION,MenuItem.FIELD_ICON,"fa fa-upload"
+						,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
+						,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+							@Override
+							protected Object __runExecuteFunction__(AbstractAction action) {
+								Assignments assignments = new Assignments();
+								assignments.setOverridable(Boolean.FALSE);
+								Arguments<Assignments> arguments = new Arguments<Assignments>().addCreatablesOrUpdatables(assignments);
+								arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+										.setActionIdentifier(AssignmentsBusiness.EXPORT));
+								EntitySaver.getInstance().save(Assignments.class, arguments);
+								return null;
+							}
+						});
 			}
-			dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Appliquer",MenuItem.FIELD_USER_INTERFACE_ACTION
-					,UserInterfaceAction.EXECUTE_FUNCTION,MenuItem.FIELD_ICON,"fa fa-upload"
-					,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
-					,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
-						@Override
-						protected Object __runExecuteFunction__(AbstractAction action) {
-							Assignments assignments = new Assignments();
-							assignments.setOverridable(Boolean.FALSE);
-							Arguments<Assignments> arguments = new Arguments<Assignments>().addCreatablesOrUpdatables(assignments);
-							arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
-									.setActionIdentifier(AssignmentsBusiness.EXPORT));
-							EntitySaver.getInstance().save(Assignments.class, arguments);
-							return null;
-						}
-					});
+			
 			if(isAdministrationActionsVisible) {	
 				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Supprimer toutes les lignes",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
 						,MenuItem.FIELD_ICON,"fa fa-trash"

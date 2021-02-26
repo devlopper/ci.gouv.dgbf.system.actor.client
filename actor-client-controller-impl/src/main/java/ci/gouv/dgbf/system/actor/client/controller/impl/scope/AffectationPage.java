@@ -39,7 +39,6 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputT
 import ci.gouv.dgbf.system.actor.client.controller.api.ActivityCategoryController;
 import ci.gouv.dgbf.system.actor.client.controller.api.BudgetSpecializationUnitController;
 import ci.gouv.dgbf.system.actor.client.controller.api.ExpenditureNatureController;
-import ci.gouv.dgbf.system.actor.client.controller.api.FunctionController;
 import ci.gouv.dgbf.system.actor.client.controller.api.SectionController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Action;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Activity;
@@ -53,6 +52,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.client.controller.impl.ActivitySelectionController;
 import ci.gouv.dgbf.system.actor.client.controller.impl.function.AssignmentsListPage;
+import ci.gouv.dgbf.system.actor.client.controller.impl.function.ScopeFunctionFilterController;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActivityCategoryQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
@@ -85,10 +85,10 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	private Activity activity,initialActivity;
 	private ActivityCategory activityCategory,initalActivityCategory;
 	private ExpenditureNature expenditureNature,initialExpenditureNature;	
-	private Function function;
+	
 	private CommandButton applyGlobalFilterCommand;
+	private ScopeFunctionFilterController scopeFunctionFilterController;
 	private ActivitySelectionController activitySelectionController;
-	//private Boolean filtersInitialized;
 	
 	@Override
 	protected void __listenPostConstruct__() {
@@ -120,9 +120,6 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		if(section == null)
 			initialSection = section = WebController.getInstance().getRequestParameterEntityAsParentBySystemIdentifier(Section.class, null);
 		
-		if(function == null)
-			function = WebController.getInstance().getRequestParameterEntityAsParentBySystemIdentifier(Function.class, null);
-		
 		if(expenditureNature == null && activity != null)
 			initialExpenditureNature = expenditureNature = __inject__(ExpenditureNatureController.class).readBySystemIdentifier(activity.getExpenditureNatureIdentifier());
 		if(expenditureNature == null)
@@ -136,12 +133,12 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		
 		selectedTab = TabMenu.Tab.getSelectedByRequestParameter(TABS);
 		
-		super.__listenPostConstruct__();
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
-
 		buildTabMenu(cellsMaps);
 		buildTab(cellsMaps);
 		buildLayout(cellsMaps);
+		super.__listenPostConstruct__();
+		
 	}
 		
 	private void buildTabMenu(Collection<Map<Object,Object>> cellsMaps) {		
@@ -158,31 +155,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 			buildFunctionsTabMenu(cellsMaps);
 		*/
 	}
-	/*
-	private TabMenu buildFunctionsTabMenu() {				
-		functions = (List<Function>) EntityReader.getInstance().readMany(Function.class, FunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE_FOR_UI);
-		if(CollectionHelper.isEmpty(functions))
-			return null;
-		Collections.sort((List<Function>)functions, new FunctionComparator());
-		Collection<MenuItem> tabMenuItems = new ArrayList<>();
-		Integer tabActiveIndex = null,index = 0;
-		for(Function indexFunction : functions) {
-			tabMenuItems.add(new MenuItem().setValue(indexFunction.getName())
-				.addParameter(TabMenu.Tab.PARAMETER_NAME, TabMenu.Tab.getByParameterValue(TABS, TAB_SCOPE_FUNCTION).getParameterValue())
-				.addParameter(ParameterName.stringify(Function.class), indexFunction.getIdentifier())
-			);
-			if(tabActiveIndex == null && indexFunction.equals(function))
-				tabActiveIndex = index;
-			else
-				index++;
-		}
-		if(tabActiveIndex == null)
-			tabActiveIndex = 0;
-		TabMenu tabMenu = TabMenu.build(TabMenu.ConfiguratorImpl.FIELD_ITEMS_OUTCOME,OUTCOME,TabMenu.FIELD_ACTIVE_INDEX,tabActiveIndex
-				,TabMenu.ConfiguratorImpl.FIELD_ITEMS,tabMenuItems);
-		return tabMenu;
-	}
-	*/
+	
 	private void buildTab(Collection<Map<Object,Object>> cellsMaps) {
 		if(selectedTab.getParameterValue().equals(TAB_SCOPE_FUNCTION))
 			buildTabScopeFunction(cellsMaps);
@@ -191,15 +164,10 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	}
 	
 	private void buildTabScopeFunction(Collection<Map<Object,Object>> cellsMaps) {
-		buildTabScopeFunctionsGlobalFilters(cellsMaps);
-		/*
-		cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
-			@Override
-			public Object buildControl(Cell cell) {
-				return buildFunctionsTabMenu();
-			}
-		},Cell.FIELD_WIDTH,12));
-		*/
+		scopeFunctionFilterController = new ScopeFunctionFilterController().build();
+		scopeFunctionFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(OUTCOME).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_SCOPE_FUNCTION);	
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeFunctionFilterController.getLayout(),Cell.FIELD_WIDTH,12));
+		
 		cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
 			@Override
 			public Object buildControl(Cell cell) {
@@ -209,9 +177,8 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	}
 	
 	public DataTable buildScopeFunctionDataTable() {
-		String functionIdentifier = (String) FieldHelper.readSystemIdentifier(function);
-		DataTable dataTable = ScopeFunctionListPage.buildDataTable(ScopeFunctionListPage.class,Boolean.TRUE,Function.class,function
-				,FieldHelper.join(ScopeFunction.FIELD_FUNCTION,Function.FIELD_IDENTIFIER),functionIdentifier);
+		DataTable dataTable = ScopeFunctionListPage.buildDataTable(ScopeFunctionListPage.class,Boolean.TRUE,Function.class,scopeFunctionFilterController.getFunction()
+				,FieldHelper.join(ScopeFunction.FIELD_FUNCTION,Function.FIELD_IDENTIFIER),FieldHelper.readSystemIdentifier(scopeFunctionFilterController.getFunction()));
 		return dataTable;
 	}
 	
@@ -344,26 +311,6 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	
 	private void buildLayout(Collection<Map<Object,Object>> cellsMaps) {
 		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
-		/*assignmentsTabCell = layout.getCellAt(15);
-		assignmentsTabCell.setControlBuilderRemoteCommand(RemoteCommand.build(RemoteCommand.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
-			@Override
-			protected Object __runExecuteFunction__(AbstractAction action) {
-				assignmentsTabCell.setControl(assignmentsTabMenu);
-				return super.__runExecuteFunction__(action);
-			}
-		}));
-		assignmentsTabCell.getControlBuilderRemoteCommand().addUpdates(assignmentsTabCell.getIdentifier());
-		
-		dataTableCell = layout.getCellAt(16);
-		dataTableCell.setControlBuilderRemoteCommand(RemoteCommand.build(RemoteCommand.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
-			@Override
-			protected Object __runExecuteFunction__(AbstractAction action) {
-				dataTableCell.setControl(dataTable);
-				return super.__runExecuteFunction__(action);
-			}
-		}));
-		dataTableCell.getControlBuilderRemoteCommand().addUpdates(dataTableCell.getIdentifier());
-		*/
 	}
 	
 	@Override
@@ -371,66 +318,13 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		if(selectedTab == null)
 			return super.__getWindowTitleValue__();
 		if(TAB_SCOPE_FUNCTION.equals(selectedTab.getParameterValue()))
-			return ScopeFunctionListPage.buildWindowTitleValue("Affectation", function);
+			return ScopeFunctionListPage.buildWindowTitleValue("Affectation", scopeFunctionFilterController.getFunction());
 		else if(TAB_ASSIGNMENTS.equals(selectedTab.getParameterValue()))
 			return AssignmentsListPage.buildWindowTitleValue("Affectation", section,administrativeUnit, budgetSpecializationUnit,action, activity,expenditureNature,activityCategory);
 		return "Affectation";
 	}
 	
 	/* Filters */
-	
-	/*         Scope Function */
-	
-	private void buildTabScopeFunctionsGlobalFilters(Collection<Map<Object,Object>> cellsMaps) {
-		buildTabScopeFunctionsGlobalFilterSelectOneFunction();
-		buildTabScopeFunctionsGlobalFilterApplyCommand();
-		
-		if(functionSelectOne != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Catégorie de fonction budgétaire"),Cell.FIELD_WIDTH,2));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,functionSelectOne,Cell.FIELD_WIDTH,9));	
-		}
-		
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,applyGlobalFilterCommand,Cell.FIELD_WIDTH,1));
-	}
-	
-	private void buildTabScopeFunctionsGlobalFilterSelectOneFunction() {		
-		functionSelectOne = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,Function.class,SelectOneCombo.FIELD_LISTENER
-				,new SelectOneCombo.Listener.AbstractImpl<Function>() {
-			@Override
-			public Collection<Function> computeChoices(AbstractInputChoice<Function> input) {
-				Collection<Function> choices = __inject__(FunctionController.class).readCreditManagersAuthorizingOfficersFinancialControllersAssistants();
-				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
-				return choices;
-			}
-			@Override
-			public void select(AbstractInputChoiceOne input, Function function) {
-				super.select(input, function);
-				AffectationPage.this.function = function;
-			}
-		});
-		functionSelectOne.updateChoices();
-		functionSelectOne.selectBySystemIdentifier(FieldHelper.readSystemIdentifier(function));
-		functionSelectOne.enableValueChangeListener(List.of());
-	}
-	
-	private void buildTabScopeFunctionsGlobalFilterApplyCommand() {
-		applyGlobalFilterCommand = CommandButton.build(CommandButton.FIELD_VALUE,"Filtrer",CommandButton.FIELD_ICON,"fa fa-filter"
-				,CommandButton.FIELD_STYLE,"float:right;"
-				,CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION,CommandButton.FIELD_LISTENER
-				,new AbstractAction.Listener.AbstractImpl() {
-			@Override
-			protected Object __runExecuteFunction__(AbstractAction action) {
-				Map<String,List<String>> map = new LinkedHashMap<>();
-				if(selectedTab != null)
-					map.put(TabMenu.Tab.PARAMETER_NAME,List.of(selectedTab.getParameterValue()));				
-				if(functionSelectOne != null && functionSelectOne.getValue() != null)
-					map.put(ParameterName.stringify(Function.class),List.of( ((Function)functionSelectOne.getValue()).getIdentifier()));	
-				Redirector.getInstance().redirect(OUTCOME, map);
-				return null;
-			}
-		});
-	}
-	
 	
 	/*         Assignments */
 	
@@ -745,9 +639,6 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 					if(expenditureNatureSelectOne != null && expenditureNatureSelectOne.getValue() != null)
 						map.put(ParameterName.stringify(ExpenditureNature.class),List.of( ((ExpenditureNature)expenditureNatureSelectOne.getValue()).getIdentifier()));				
 				}				
-				
-				//if(functionSelectOne != null && functionSelectOne.getValue() != null)
-				//	map.put(ParameterName.stringify(Function.class),List.of(((Function)functionSelectOne.getValue()).getIdentifier()));				
 				Redirector.getInstance().redirect(OUTCOME, map);
 				return null;
 			}
