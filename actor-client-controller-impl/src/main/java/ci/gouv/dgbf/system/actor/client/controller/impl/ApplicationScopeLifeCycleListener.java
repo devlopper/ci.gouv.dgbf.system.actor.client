@@ -6,8 +6,8 @@ import javax.enterprise.context.ApplicationScoped;
 
 import org.cyk.user.interface_.theme.web.jsf.primefaces.atlantis.ThemeManager;
 import org.cyk.utility.__kernel__.AbstractApplicationScopeLifeCycleListener;
-import org.cyk.utility.__kernel__.controller.EntitySaver;
-import org.cyk.utility.__kernel__.representation.RepresentationClassNameGetter;
+import org.cyk.utility.controller.EntitySaver;
+import org.cyk.utility.representation.RepresentationClassNameGetter;
 import org.cyk.utility.__kernel__.security.UserBuilder;
 import org.cyk.utility.client.controller.component.menu.MenuBuilderMapInstantiator;
 import org.cyk.utility.client.controller.web.jsf.FileServlet;

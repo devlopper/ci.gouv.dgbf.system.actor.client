@@ -18,14 +18,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntityReader;
-import org.cyk.utility.__kernel__.controller.EntitySaver;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntityReader;
+import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.object.ReadListener;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.__kernel__.value.ValueHelper;
@@ -133,7 +133,7 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 							if(budgetaryScopeFunctionSelectionController != null) {
 								if(CollectionHelper.isEmpty(budgetaryScopeFunctionSelectionController.getSelected())) {
 									Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>();
-									arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments());
+									arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments());
 									arguments.getRepresentationArguments().setQueryExecutorArguments(new QueryExecutorArguments.Dto());
 									arguments.getRepresentationArguments().getQueryExecutorArguments()
 										.setQueryIdentifier(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_CODE_FOR_UI);
@@ -312,7 +312,7 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 				request.setActOfAppointmentSignatureDateAsTimestamp(null);
 			else
 				request.setActOfAppointmentSignatureDateAsTimestamp(request.getActOfAppointmentSignatureDate().getTime());
-			Arguments<Request> arguments = new Arguments<Request>().setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+			Arguments<Request> arguments = new Arguments<Request>().setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 					.setActionIdentifier(actionIdentifier)).addCreatablesOrUpdatables(request);
 			EntitySaver.getInstance().save(Request.class,arguments);
 			List<Object> v = arguments.get__response__().getHeaders().get(Request.FIELD_IDENTIFIER);

@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntitySaver;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
@@ -54,7 +54,7 @@ public abstract class AbstractActorProfileCreateOrDeleteManyPage extends Abstrac
 						if(CollectionHelper.isEmpty(profiles))
 							throw new RuntimeException("Sélectionner au moins un profile");
 						Arguments<Actor> arguments = new Arguments<Actor>();
-						arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(getActionIdentifier()));																
+						arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(getActionIdentifier()));																
 						CollectionHelper.getFirst(actors).setProfilesCodes(profiles.stream().map(x -> x.getCode()).collect(Collectors.toList()));
 						if(ActorBusiness.CREATE_PROFILES.equals(getActionIdentifier()))
 							arguments.setCreatables(actors);

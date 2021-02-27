@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntityReader;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntityReader;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
@@ -54,7 +54,7 @@ public abstract class AbstractActorListScopesPage extends AbstractActorListPrivi
 	protected void addOutputs(Collection<Map<?, ?>> cellsMaps) {
 		scopeType = WebController.getInstance().getRequestParameterEntityAsParent(ScopeType.class);
 		Collection<ScopeType> scopeTypes = EntityReader.getInstance().readMany(ScopeType.class, new Arguments<ScopeType>()
-				.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+				.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 						.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(ScopeTypeQuerier.QUERY_IDENTIFIER_READ_ORDER_BY_ORDER_NUMBER_ASCENDING))));
 		if(scopeType == null)
 			scopeType = CollectionHelper.getFirst(scopeTypes);
@@ -93,7 +93,7 @@ public abstract class AbstractActorListScopesPage extends AbstractActorListPrivi
 				__inject__(ActorScopeController.class).deleteByActorByScopes(actor, List.of(scope));
 				/*
 				Arguments<Scope> arguments = new Arguments<Scope>();
-				arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(ActorScopeBusiness.DELETE_BY_ACTOR_BY_SCOPES));
+				arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(ActorScopeBusiness.DELETE_BY_ACTOR_BY_SCOPES));
 				arguments.setDeletables(List.of(scope));
 				EntitySaver.getInstance().save(Scope.class, arguments);
 				*/

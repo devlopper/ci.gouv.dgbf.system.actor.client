@@ -15,10 +15,10 @@ import javax.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntitySaver;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.__kernel__.session.SessionManager;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
@@ -137,7 +137,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 								protected Object __runExecuteFunction__(AbstractAction action) {
 									Request request = new Request();
 									Arguments<Request> arguments = new Arguments<Request>().addCreatablesOrUpdatables(request);
-									arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+									arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 											.setActionIdentifier(RequestBusiness.EXPORT_FOR_ACCOUNT_CREATION));
 									EntitySaver.getInstance().save(Request.class, arguments);
 									return null;

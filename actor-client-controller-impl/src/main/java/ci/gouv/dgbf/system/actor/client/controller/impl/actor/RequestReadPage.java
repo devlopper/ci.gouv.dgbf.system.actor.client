@@ -11,9 +11,9 @@ import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntityReader;
-import org.cyk.utility.__kernel__.controller.EntitySaver;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntityReader;
+import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
@@ -116,7 +116,7 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 								,CommandButton.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE
 								,CommandButton.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
 							protected Object __runExecuteFunction__(AbstractAction action) {
-								EntitySaver.getInstance().save(Request.class, new Arguments<Request>().setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+								EntitySaver.getInstance().save(Request.class, new Arguments<Request>().setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 										.setActionIdentifier(RequestBusiness.SUBMIT)).addCreatablesOrUpdatables(request));		
 								Redirector.getInstance().redirect(readOutcome,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(request.getIdentifier())));
 								return null;
@@ -136,7 +136,7 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 									,CommandButton.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE
 									,CommandButton.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
 								protected Object __runExecuteFunction__(AbstractAction action) {
-									EntitySaver.getInstance().save(Request.class, new Arguments<Request>().setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+									EntitySaver.getInstance().save(Request.class, new Arguments<Request>().setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 											.setActionIdentifier(RequestBusiness.RETURN)).addCreatablesOrUpdatables(request));		
 									Redirector.getInstance().redirect(readOutcome,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(request.getIdentifier())));
 									return null;

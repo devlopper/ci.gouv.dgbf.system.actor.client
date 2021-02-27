@@ -11,9 +11,9 @@ import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntityReader;
-import org.cyk.utility.__kernel__.controller.EntitySaver;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntityReader;
+import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Tree;
@@ -130,7 +130,7 @@ public class ActorEditPrivilegesPage extends AbstractActorEditPrivilegesOrScopes
 	@Override
 	protected void save() {
 		Arguments<ProfilePrivilege> arguments = new Arguments<ProfilePrivilege>();
-		arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(ProfilePrivilegeBusiness.SAVE));
+		arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(ProfilePrivilegeBusiness.SAVE));
 		if(ArrayHelper.isNotEmpty(availableTree.getSelection()))
 			arguments.setCreatables(availableTree.getSelectionDatas(Privilege.class).stream().map(x -> new ProfilePrivilege().setProfile(profile).setPrivilege(x)).collect(Collectors.toList()));
 		if(ArrayHelper.isNotEmpty(selectedTree.getSelection()))

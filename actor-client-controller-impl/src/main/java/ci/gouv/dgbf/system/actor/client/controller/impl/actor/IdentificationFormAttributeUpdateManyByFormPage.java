@@ -11,8 +11,8 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntitySaver;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
@@ -114,7 +114,7 @@ public class IdentificationFormAttributeUpdateManyByFormPage extends AbstractIde
 		@Override
 		protected void act(Form form,Data data, Collection<IdentificationFormAttribute> formAttributes) {
 			EntitySaver.getInstance().save(IdentificationFormAttribute.class, new Arguments<IdentificationFormAttribute>()
-					.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(IdentificationFormAttributeBusiness.SAVE))
+					.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(IdentificationFormAttributeBusiness.SAVE))
 					.addCreatablesOrUpdatables(formAttributes));
 		}
 	}

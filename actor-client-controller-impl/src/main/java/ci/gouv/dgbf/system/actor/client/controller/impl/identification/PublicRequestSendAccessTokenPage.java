@@ -12,8 +12,8 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
-import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntitySaver;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
@@ -79,7 +79,7 @@ public class PublicRequestSendAccessTokenPage extends AbstractPageContainerManag
 		public void act(Form form) {			
 			Request request = (Request) form.getEntity();
 			EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
-					.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(RequestBusiness.NOTIFY_ACCESS_TOKENS))
+					.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(RequestBusiness.NOTIFY_ACCESS_TOKENS))
 					.addCreatablesOrUpdatables(request));
 			Redirector.getInstance().redirect(PublicRequestOpenPage.OUTCOME, null);			
 		}

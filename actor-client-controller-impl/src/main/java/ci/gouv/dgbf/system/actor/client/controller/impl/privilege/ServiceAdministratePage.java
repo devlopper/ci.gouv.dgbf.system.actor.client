@@ -10,9 +10,9 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntityReader;
-import org.cyk.utility.__kernel__.controller.EntitySaver;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntityReader;
+import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
@@ -63,7 +63,7 @@ public class ServiceAdministratePage extends AbstractPageContainerManagedImpl im
 						@Override
 						protected Object __runExecuteFunction__(AbstractAction action) {
 							Arguments<Service> arguments = new Arguments<Service>().addCreatablesOrUpdatables((Service)serviceSelectOneCombo.getValue());
-							arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(ServiceBusiness.DERIVE_KEYCLOAK_AUTHORIZATIONS));					
+							arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(ServiceBusiness.DERIVE_KEYCLOAK_AUTHORIZATIONS));					
 							EntitySaver.getInstance().save(Service.class, arguments);
 							return null;
 						}
@@ -76,7 +76,7 @@ public class ServiceAdministratePage extends AbstractPageContainerManagedImpl im
 						@Override
 						protected Object __runExecuteFunction__(AbstractAction action) {
 							Arguments<Service> arguments = new Arguments<Service>().addCreatablesOrUpdatables((Service)serviceSelectOneCombo.getValue());
-							arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(ServiceBusiness.DELETE_KEYCLOAK_AUTHORIZATIONS));					
+							arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(ServiceBusiness.DELETE_KEYCLOAK_AUTHORIZATIONS));					
 							EntitySaver.getInstance().save(Service.class, arguments);
 							return null;
 						}

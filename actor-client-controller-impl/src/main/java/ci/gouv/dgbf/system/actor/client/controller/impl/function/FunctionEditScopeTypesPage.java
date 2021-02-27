@@ -11,9 +11,9 @@ import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntityReader;
-import org.cyk.utility.__kernel__.controller.EntitySaver;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntityReader;
+import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.client.controller.web.WebController;
@@ -116,7 +116,7 @@ public class FunctionEditScopeTypesPage extends AbstractPageContainerManagedImpl
 							@Override
 							protected Object __runExecuteFunction__(AbstractAction action) {
 								Arguments<ScopeTypeFunction> arguments = new Arguments<ScopeTypeFunction>();
-								arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(ScopeTypeFunctionBusiness.SAVE));
+								arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(ScopeTypeFunctionBusiness.SAVE));
 								if(CollectionHelper.isNotEmpty(scopeTypes)) {
 									//Collection<ScopeType> selectedScopeTypes = CollectionHelper.cast(ScopeType.class, scopeTypesSelectManyCheckbox.getValue());
 									Collection<ScopeType> selectedScopeTypes = CollectionHelper.cast(ScopeType.class, scopeTypesDataTable.getSelectionAsCollection());

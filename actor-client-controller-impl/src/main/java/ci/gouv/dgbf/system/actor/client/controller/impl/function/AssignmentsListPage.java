@@ -14,12 +14,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.constant.ConstantEmpty;
-import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntitySaver;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.__kernel__.session.SessionManager;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
@@ -163,7 +163,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 								Assignments assignments = new Assignments();
 								assignments.setOverridable(Boolean.FALSE);
 								Arguments<Assignments> arguments = new Arguments<Assignments>().addCreatablesOrUpdatables(assignments);
-								arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+								arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 										.setActionIdentifier(AssignmentsBusiness.IMPORT));
 								EntitySaver.getInstance().save(Assignments.class, arguments);
 								return null;
@@ -181,7 +181,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 								assignments.setAssistantsSettable(Boolean.TRUE);
 								assignments.setOverridable(Boolean.FALSE);
 								Arguments<Assignments> arguments = new Arguments<Assignments>().addCreatablesOrUpdatables(assignments);
-								arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+								arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 										.setActionIdentifier(AssignmentsBusiness.DERIVE_ALL_VALUES));
 								EntitySaver.getInstance().save(Assignments.class, arguments);
 								return null;
@@ -199,7 +199,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 								assignments.setAssistantsSettable(Boolean.TRUE);
 								assignments.setOverridable(Boolean.FALSE);
 								Arguments<Assignments> arguments = new Arguments<Assignments>().addCreatablesOrUpdatables(assignments);
-								arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+								arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 										.setActionIdentifier(AssignmentsBusiness.DERIVE_ALL_VALUES));					
 								EntitySaver.getInstance().save(Assignments.class, arguments);
 								return null;
@@ -245,7 +245,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 						@Override
 						protected Object __runExecuteFunction__(AbstractAction action) {
 							Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>();
-							arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+							arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 									.setActionIdentifier(AssignmentsBusiness.INITIALIZE));					
 							EntitySaver.getInstance().save(ScopeFunction.class, arguments);
 							return null;
@@ -263,7 +263,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 								Assignments assignments = new Assignments();
 								assignments.setOverridable(Boolean.FALSE);
 								Arguments<Assignments> arguments = new Arguments<Assignments>().addCreatablesOrUpdatables(assignments);
-								arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+								arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 										.setActionIdentifier(AssignmentsBusiness.CLEAN));
 								EntitySaver.getInstance().save(Assignments.class, arguments);
 								return null;
@@ -278,7 +278,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 								Assignments assignments = new Assignments();
 								assignments.setOverridable(Boolean.FALSE);
 								Arguments<Assignments> arguments = new Arguments<Assignments>().addCreatablesOrUpdatables(assignments);
-								arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+								arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 										.setActionIdentifier(AssignmentsBusiness.EXPORT));
 								EntitySaver.getInstance().save(Assignments.class, arguments);
 								return null;
@@ -294,7 +294,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 							@Override
 							protected Object __runExecuteFunction__(AbstractAction action) {
 								Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>();
-								arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+								arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 										.setActionIdentifier(AssignmentsBusiness.DELETE_ALL));					
 								EntitySaver.getInstance().save(ScopeFunction.class, arguments);
 								return null;

@@ -11,10 +11,10 @@ import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntitySaver;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
@@ -76,7 +76,7 @@ public class ServiceListPage extends AbstractEntityListPageContainerManagedImpl<
 					@Override
 					protected Object __runExecuteFunction__(AbstractAction action) {
 						Arguments<Service> arguments = new Arguments<Service>();
-						arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(ServiceBusiness.DERIVE_ALL_KEYCLOAK_AUTHORIZATIONS));					
+						arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(ServiceBusiness.DERIVE_ALL_KEYCLOAK_AUTHORIZATIONS));					
 						EntitySaver.getInstance().save(Service.class, arguments);
 						return null;
 					}
@@ -88,7 +88,7 @@ public class ServiceListPage extends AbstractEntityListPageContainerManagedImpl<
 					@Override
 					protected Object __runExecuteFunction__(AbstractAction action) {
 						Arguments<Service> arguments = new Arguments<Service>().addCreatablesOrUpdatables((Service)action.readArgument());
-						arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+						arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 								.setActionIdentifier(ServiceBusiness.DERIVE_ALL_KEYCLOAK_AUTHORIZATIONS_FROM_SCRATCH));					
 						EntitySaver.getInstance().save(Service.class, arguments);
 						return null;
@@ -99,7 +99,7 @@ public class ServiceListPage extends AbstractEntityListPageContainerManagedImpl<
 			@Override
 			protected Object __runExecuteFunction__(AbstractAction action) {
 				Arguments<Service> arguments = new Arguments<Service>().addCreatablesOrUpdatables((Service)action.readArgument());
-				arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+				arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 						.setActionIdentifier(ServiceBusiness.DERIVE_KEYCLOAK_AUTHORIZATIONS));					
 				EntitySaver.getInstance().save(Service.class, arguments);
 				return null;
@@ -109,7 +109,7 @@ public class ServiceListPage extends AbstractEntityListPageContainerManagedImpl<
 			@Override
 			protected Object __runExecuteFunction__(AbstractAction action) {
 				Arguments<Service> arguments = new Arguments<Service>().addCreatablesOrUpdatables((Service)action.readArgument());
-				arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+				arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 						.setActionIdentifier(ServiceBusiness.DERIVE_KEYCLOAK_AUTHORIZATIONS_FROM_SCRATCH));					
 				EntitySaver.getInstance().save(Service.class, arguments);
 				return null;
@@ -119,7 +119,7 @@ public class ServiceListPage extends AbstractEntityListPageContainerManagedImpl<
 			@Override
 			protected Object __runExecuteFunction__(AbstractAction action) {
 				Arguments<Service> arguments = new Arguments<Service>().addCreatablesOrUpdatables((Service)action.readArgument());
-				arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+				arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 						.setActionIdentifier(ServiceBusiness.DELETE_KEYCLOAK_AUTHORIZATIONS));					
 				EntitySaver.getInstance().save(Service.class, arguments);
 				return null;

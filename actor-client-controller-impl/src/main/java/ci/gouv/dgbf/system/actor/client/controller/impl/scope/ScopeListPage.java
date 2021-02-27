@@ -11,12 +11,12 @@ import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntityReader;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntityReader;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
@@ -51,7 +51,7 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 	protected void __listenPostConstruct__() {
 		scopeType = WebController.getInstance().getRequestParameterEntityAsParent(ScopeType.class);
 		Collection<ScopeType> scopeTypes = EntityReader.getInstance().readMany(ScopeType.class, new Arguments<ScopeType>()
-				.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+				.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 						.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(ScopeTypeQuerier.QUERY_IDENTIFIER_READ_ORDER_BY_ORDER_NUMBER_ASCENDING))));
 		if(scopeType == null)
 			scopeType = CollectionHelper.getFirst(scopeTypes);

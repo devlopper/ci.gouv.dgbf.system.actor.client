@@ -6,8 +6,8 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntitySaver;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 
@@ -34,7 +34,7 @@ public class ActorCreatePrivilegesByProfilesPage extends AbstractActorCreatePriv
 	@Override
 	protected void __create__() {
 		Arguments<Profile> arguments = new Arguments<Profile>();
-		arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(ProfilePrivilegeBusiness.CREATE_FROM_PROFILES));		
+		arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(ProfilePrivilegeBusiness.CREATE_FROM_PROFILES));		
 		((Profile)dataTable.getSelectionAsCollection().iterator().next()).setProfileIdentifier(profile.getIdentifier());
 		arguments.setCreatables(CollectionHelper.cast(Profile.class, dataTable.getSelectionAsCollection()));
 		EntitySaver.getInstance().save(Profile.class, arguments);

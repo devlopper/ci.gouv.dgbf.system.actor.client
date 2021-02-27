@@ -9,9 +9,9 @@ import java.util.Map;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
-import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntityReader;
-import org.cyk.utility.__kernel__.controller.EntitySaver;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntityReader;
+import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
@@ -80,7 +80,7 @@ public class RequestDispatchSlipReadPage extends AbstractPageContainerManagedImp
 							,CommandButton.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE
 							,CommandButton.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
 						protected Object __runExecuteFunction__(AbstractAction action) {
-							EntitySaver.getInstance().save(RequestDispatchSlip.class, new Arguments<RequestDispatchSlip>().setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+							EntitySaver.getInstance().save(RequestDispatchSlip.class, new Arguments<RequestDispatchSlip>().setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 									.setActionIdentifier(RequestDispatchSlipBusiness.SEND)).addCreatablesOrUpdatables(requestDispatchSlip));		
 							writeOnShowNotificationMessage("Bordereau transmis", RequestDispatchSlipIndexPage.class);
 							Redirector.getInstance().redirect(RequestDispatchSlipIndexPage.OUTCOME

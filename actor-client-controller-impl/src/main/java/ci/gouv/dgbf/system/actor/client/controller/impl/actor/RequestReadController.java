@@ -2,7 +2,7 @@ package ci.gouv.dgbf.system.actor.client.controller.impl.actor;
 
 import java.io.Serializable;
 
-import org.cyk.utility.__kernel__.controller.EntityReader;
+import org.cyk.utility.controller.EntityReader;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.object.AbstractObject;
 import org.cyk.utility.client.controller.web.WebController;

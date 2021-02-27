@@ -11,13 +11,13 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntityCounter;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntityCounter;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.client.controller.web.WebController;
@@ -120,7 +120,7 @@ public class RequestIndexPage extends AbstractPageContainerManagedImpl implement
 	
 	private Long count(String value,String functionIdentifier,String sectionIdentifier, String administrativeUnitIdentifier, String budgetSpecializationUnitIdentifier) {
 		Arguments<Request> arguments = new Arguments<>();
-		arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setQueryExecutorArguments(
+		arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setQueryExecutorArguments(
 				new QueryExecutorArguments.Dto().setQueryIdentifier(RequestQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER)));
 		if(value.equals(TAB_REQUESTS_PROCESSED)) {
 			arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(RequestQuerier.PARAMETER_NAME_PROCESSING_DATE_IS_NOT_NULL,Boolean.TRUE);

@@ -8,8 +8,8 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntitySaver;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
@@ -53,7 +53,7 @@ public class AssignPrivilegesToActorsByFunctionsPage extends AbstractPageContain
 							Collection<Function> functions = (Collection<Function>) functionsAutoComplete.getValue();
 							if(CollectionHelper.isNotEmpty(functions)) {
 								Arguments<Actor> arguments = new Arguments<Actor>();
-								arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(ActorBusiness.CREATE_PRIVILEGES_FROM_FUNCTIONS));																
+								arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(ActorBusiness.CREATE_PRIVILEGES_FROM_FUNCTIONS));																
 								CollectionHelper.getFirst(actors).setFunctionsCodes(functions.stream().map(x -> x.getCode()).collect(Collectors.toList()));
 								arguments.setUpdatables(actors);
 								EntitySaver.getInstance().save(Actor.class, arguments);

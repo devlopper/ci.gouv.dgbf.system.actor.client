@@ -10,14 +10,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.DependencyInjection;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.constant.ConstantEmpty;
-import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntityReader;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntityReader;
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.WebController;
@@ -86,7 +86,7 @@ public interface Helper {
 	
 	static TabMenu buildProfileListPageTabMenu(ProfileType profileType) {
 		Collection<ProfileType> profileTypes = EntityReader.getInstance().readMany(ProfileType.class, new Arguments<ProfileType>()
-				.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+				.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 						.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(ProfileTypeQuerier.QUERY_IDENTIFIER_READ_ORDER_BY_CODE_ASCENDING))));
 		Collection<MenuItem> tabMenuItems = new ArrayList<>();
 		if(CollectionHelper.isNotEmpty(profileTypes)) {		
@@ -102,7 +102,7 @@ public interface Helper {
 	
 	static TabMenu buildFunctionListPageTabMenu(FunctionType functionType) {
 		Collection<FunctionType> functionTypes = EntityReader.getInstance().readMany(FunctionType.class, new Arguments<FunctionType>()
-				.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+				.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 						.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(FunctionTypeQuerier.QUERY_IDENTIFIER_READ_ORDER_BY_CODE_ASCENDING))));
 		Collection<MenuItem> tabMenuItems = new ArrayList<>();
 		if(CollectionHelper.isNotEmpty(functionTypes)) {		
@@ -178,7 +178,7 @@ public interface Helper {
 		if(actor == null)
 			return null;		
 		profile = CollectionHelper.getFirst(EntityReader.getInstance().readMany(Profile.class, new Arguments<Profile>()
-				.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setQueryExecutorArguments(
+				.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setQueryExecutorArguments(
 						new QueryExecutorArguments.Dto().setQueryIdentifier(ProfileQuerier.QUERY_IDENTIFIER_READ_BY_ACTORS_CODES)
 						.addFilterField(ProfileQuerier.PARAMETER_NAME_ACTORS_CODES, List.of(actor.getCode()))))));
 		return profile;

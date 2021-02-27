@@ -15,14 +15,14 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntityReader;
-import org.cyk.utility.__kernel__.controller.EntitySaver;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntityReader;
+import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.JsfController;
@@ -202,7 +202,7 @@ public class AccountRequestEditPage extends AbstractEntityEditPageContainerManag
 							@Override
 							public Collection<Civility> computeChoices(AbstractInputChoice<Civility> input) {
 								return EntityReader.getInstance().readMany(Civility.class, new Arguments<Civility>()
-									.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+									.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 										.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(CivilityQuerier.QUERY_IDENTIFIER_READ))));
 							}
 						})
@@ -214,7 +214,7 @@ public class AccountRequestEditPage extends AbstractEntityEditPageContainerManag
 					@Override
 					public Collection<IdentityGroup> computeChoices(AbstractInputChoice<IdentityGroup> input) {
 						return EntityReader.getInstance().readMany(IdentityGroup.class, new Arguments<IdentityGroup>()
-							.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+							.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 								.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(IdentityGroupQuerier.QUERY_IDENTIFIER_READ))));
 					}
 						})
@@ -276,13 +276,13 @@ public class AccountRequestEditPage extends AbstractEntityEditPageContainerManag
 					accountRequest.setActOfAppointmentSignatureDate(null);
 				}
 				EntitySaver.getInstance().save(AccountRequest.class, new Arguments<AccountRequest>().setUpdatables(List.of(accountRequest))
-						.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(AccountRequestBusiness.RECORD)));
+						.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(AccountRequestBusiness.RECORD)));
 			}else if(Action.READ.equals(form.getAction())) {
 				String acceptOrReject = isRejectable() ? AccountRequestBusiness.REJECT : TREATMENT_CHOICE_ACCEPT.equals(accountRequest.getTreatment()) ? AccountRequestBusiness.ACCEPT : AccountRequestBusiness.REJECT;
 				if(AccountRequestBusiness.REJECT.equals(acceptOrReject))
 					AccountRequestBusiness.validateReject(accountRequest.getRejectReason());
 				EntitySaver.getInstance().save(AccountRequest.class, new Arguments<AccountRequest>()
-						.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+						.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 						.setActionIdentifier(acceptOrReject))
 						.setRepresentation(AccountRequestRepresentation.getProxy())
 						.addCreatablesOrUpdatables(accountRequest));
@@ -340,7 +340,7 @@ public class AccountRequestEditPage extends AbstractEntityEditPageContainerManag
 					@Override
 					public Collection<Civility> computeChoices(AbstractInputChoice<Civility> input) {
 						return EntityReader.getInstance().readMany(Civility.class, new Arguments<Civility>()
-							.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+							.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 								.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(CivilityQuerier.QUERY_IDENTIFIER_READ))));
 					}
 				});
@@ -350,7 +350,7 @@ public class AccountRequestEditPage extends AbstractEntityEditPageContainerManag
 					@Override
 					public Collection<IdentityGroup> computeChoices(AbstractInputChoice<IdentityGroup> input) {
 						return EntityReader.getInstance().readMany(IdentityGroup.class, new Arguments<IdentityGroup>()
-							.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+							.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 								.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(IdentityGroupQuerier.QUERY_IDENTIFIER_READ))));
 					}
 				});

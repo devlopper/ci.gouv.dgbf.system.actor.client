@@ -7,9 +7,9 @@ import java.util.stream.Collectors;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
-import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntitySaver;
-import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntitySaver;
+import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
@@ -53,7 +53,7 @@ public class ActorCreateScopesPage extends AbstractActorCreateScopesOrPrivileges
 	@Override
 	protected void create(Collection<Scope> scopes) {
 		EntitySaver.getInstance().save(ActorScope.class, new Arguments<ActorScope>()
-				.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(ActorScopeBusiness.CREATE_BY_ACTOR_BY_SCOPES))
+				.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(ActorScopeBusiness.CREATE_BY_ACTOR_BY_SCOPES))
 				.setRepresentation(ActorScopeRepresentation.getProxy())
 				.addCreatablesOrUpdatables(scopes.stream().map(scope -> new ActorScope().setActor(actor).setScope(scope)).collect(Collectors.toList())));
 	}

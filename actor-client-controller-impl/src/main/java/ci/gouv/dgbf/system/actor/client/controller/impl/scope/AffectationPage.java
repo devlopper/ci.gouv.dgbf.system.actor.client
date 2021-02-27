@@ -11,14 +11,14 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntityCounter;
-import org.cyk.utility.__kernel__.controller.EntityReader;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntityCounter;
+import org.cyk.utility.controller.EntityReader;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.Redirector;
@@ -291,7 +291,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	
 	private Long count(String value, String sectionCode, String administrativeUnitCode, String budgetSpecializationUnitCode, String activityCategoryCode, String expenditureNatureCode, String activityCode) {
 		Arguments<Assignments> arguments = new Arguments<>();
-		arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setQueryExecutorArguments(
+		arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setQueryExecutorArguments(
 				new QueryExecutorArguments.Dto().setQueryIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER)));
 		if(value.equals(TAB_ASSIGNMENTS_FULLY_ASSIGNED)) {
 			arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_ALL_HOLDERS_DEFINED,Boolean.TRUE);
@@ -589,7 +589,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 				if(AbstractInput.getValue(administrativeUnitSelectOne) == null && AbstractInput.getValue(budgetSpecializationUnitSelectOne) == null)
 					return null;
 				Arguments<Activity> arguments = new Arguments<>();
-				arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments());
+				arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments());
 				arguments.getRepresentationArguments().setQueryExecutorArguments(new QueryExecutorArguments.Dto()
 						.setQueryIdentifier(ActivityQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI));
 				if(administrativeUnit != null)

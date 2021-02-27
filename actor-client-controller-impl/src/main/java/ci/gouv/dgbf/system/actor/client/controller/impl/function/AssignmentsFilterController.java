@@ -278,7 +278,7 @@ public class AssignmentsFilterController implements Serializable {
 				if(AbstractInput.getValue(administrativeUnitSelectOne) == null && AbstractInput.getValue(budgetSpecializationUnitSelectOne) == null)
 					return null;
 				Arguments<Activity> arguments = new Arguments<>();
-				arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments());
+				arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments());
 				arguments.getRepresentationArguments().setQueryExecutorArguments(new QueryExecutorArguments.Dto()
 						.setQueryIdentifier(ActivityQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI));
 				if(administrativeUnit != null)

@@ -11,12 +11,12 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntitySaver;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.__kernel__.random.RandomHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
@@ -188,7 +188,7 @@ public class AssignmentsCollectionEditScopeFunctionsPage extends AbstractPageCon
 						}
 						LogHelper.logInfo("Update "+updatables.size()+" assignments", getClass());
 						EntitySaver.getInstance().save(Assignments.class, new Arguments<Assignments>()
-								.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+								.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 								.setActionIdentifier(AssignmentsBusiness.SAVE_SCOPE_FUNCTIONS)).setUpdatables(updatables));	
 						return null;
 					}

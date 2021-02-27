@@ -10,8 +10,8 @@ import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntitySaver;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
@@ -65,7 +65,7 @@ public class AccountRequestListPage extends AbstractEntityListPageContainerManag
 			protected Object __runExecuteFunction__(AbstractAction action) {
 				AccountRequest accountRequest = (AccountRequest) action.get__argument__();
 				EntitySaver.getInstance().save(AccountRequest.class, new Arguments<AccountRequest>()
-						.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(AccountRequestBusiness.ACCEPT))
+						.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(AccountRequestBusiness.ACCEPT))
 						.setRepresentation(AccountRequestRepresentation.getProxy())
 						.addCreatablesOrUpdatables(accountRequest));
 				return null;
@@ -91,7 +91,7 @@ public class AccountRequestListPage extends AbstractEntityListPageContainerManag
 			protected Object __runExecuteFunction__(AbstractAction action) {
 				AccountRequest accountRequest = (AccountRequest) action.get__argument__();
 				EntitySaver.getInstance().save(AccountRequest.class, new Arguments<AccountRequest>()
-						.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(AccountRequestBusiness.REJECT))
+						.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(AccountRequestBusiness.REJECT))
 						.setRepresentation(AccountRequestRepresentation.getProxy())
 						.addCreatablesOrUpdatables(accountRequest));
 				return null;

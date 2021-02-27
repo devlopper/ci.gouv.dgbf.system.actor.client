@@ -12,9 +12,9 @@ import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntityReader;
-import org.cyk.utility.__kernel__.controller.EntitySaver;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntityReader;
+import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
@@ -138,7 +138,7 @@ public class ProfileEditPrivilegesPage extends AbstractPageContainerManagedImpl 
 									});
 								}
 								Arguments<Profile> arguments = new Arguments<Profile>();
-								arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(ProfileBusiness.SAVE_PRIVILEGES));
+								arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(ProfileBusiness.SAVE_PRIVILEGES));
 								arguments.setUpdatables(List.of(profile));
 								EntitySaver.getInstance().save(Profile.class, arguments);	
 								JsfController.getInstance().redirect("profileEditPrivilegesView",Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),List.of(profile.getIdentifier())));

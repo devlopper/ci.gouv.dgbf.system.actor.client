@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntityReader;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntityReader;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.random.RandomHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
@@ -296,7 +296,7 @@ public class ScopeFunctionSelectionController implements Serializable {
 					scopeCode = ((BudgetSpecializationUnit)budgetSpecializationUnitSelectOne.getValue()).getCode();
 				}
 				Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>();
-				arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments());
+				arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments());
 				arguments.getRepresentationArguments().setQueryExecutorArguments(new QueryExecutorArguments.Dto());
 				arguments.getRepresentationArguments().getQueryExecutorArguments().setQueryIdentifier(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI);
 				arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterFieldsValues(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER

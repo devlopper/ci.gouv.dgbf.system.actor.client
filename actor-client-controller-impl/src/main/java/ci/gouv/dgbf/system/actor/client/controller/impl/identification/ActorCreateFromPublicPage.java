@@ -14,12 +14,12 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
-import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntityReader;
-import org.cyk.utility.__kernel__.controller.EntitySaver;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntityReader;
+import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.client.controller.web.jsf.JsfController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
@@ -121,7 +121,7 @@ public class ActorCreateFromPublicPage extends AbstractEntityEditPageContainerMa
 						@Override
 						public Collection<Civility> computeChoices(AbstractInputChoice<Civility> input) {
 							return EntityReader.getInstance().readMany(Civility.class, new Arguments<Civility>()
-								.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+								.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 									.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(CivilityQuerier.QUERY_IDENTIFIER_READ))));
 						}
 					});
@@ -131,7 +131,7 @@ public class ActorCreateFromPublicPage extends AbstractEntityEditPageContainerMa
 						@Override
 						public Collection<IdentityGroup> computeChoices(AbstractInputChoice<IdentityGroup> input) {
 							return EntityReader.getInstance().readMany(IdentityGroup.class, new Arguments<IdentityGroup>()
-								.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+								.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 									.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(IdentityGroupQuerier.QUERY_IDENTIFIER_READ))));
 						}
 					});
@@ -182,7 +182,7 @@ public class ActorCreateFromPublicPage extends AbstractEntityEditPageContainerMa
 		
 		@Override
 		public void act(Form form) {
-			EntitySaver.getInstance().save(Actor.class, new Arguments<Actor>().setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+			EntitySaver.getInstance().save(Actor.class, new Arguments<Actor>().setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 				.setActionIdentifier(ActorBusiness.CREATE_FROM_PUBLIC)).setRepresentation(ActorRepresentation.getProxy())
 				.addCreatablesOrUpdatables((Actor)form.getEntity()));
 		}
@@ -248,7 +248,7 @@ public class ActorCreateFromPublicPage extends AbstractEntityEditPageContainerMa
 					@Override
 					public Collection<Civility> computeChoices(AbstractInputChoice<Civility> input) {
 						return EntityReader.getInstance().readMany(Civility.class, new Arguments<Civility>()
-							.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+							.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 								.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(CivilityQuerier.QUERY_IDENTIFIER_READ))));
 					}
 				});
@@ -258,7 +258,7 @@ public class ActorCreateFromPublicPage extends AbstractEntityEditPageContainerMa
 					@Override
 					public Collection<IdentityGroup> computeChoices(AbstractInputChoice<IdentityGroup> input) {
 						return EntityReader.getInstance().readMany(IdentityGroup.class, new Arguments<IdentityGroup>()
-							.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+							.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 								.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(IdentityGroupQuerier.QUERY_IDENTIFIER_READ))));
 					}
 				});

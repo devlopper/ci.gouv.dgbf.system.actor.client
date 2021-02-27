@@ -14,9 +14,9 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
-import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntityReader;
-import org.cyk.utility.__kernel__.controller.EntitySaver;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntityReader;
+import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
@@ -131,7 +131,7 @@ public class ActorAccountProfileEditPage extends AbstractEntityEditPageContainer
 				actor.setActOfAppointmentSignatureDateAsTimestamp(null);
 			else
 				actor.setActOfAppointmentSignatureDateAsTimestamp(actor.getActOfAppointmentSignatureDate().getTime());
-			EntitySaver.getInstance().save(Actor.class, new Arguments<Actor>().setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments()
+			EntitySaver.getInstance().save(Actor.class, new Arguments<Actor>().setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 					.setActionIdentifier(ActorBusiness.SAVE_PROFILE)).addCreatablesOrUpdatables(actor));
 		}
 	}

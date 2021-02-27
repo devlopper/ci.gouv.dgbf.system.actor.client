@@ -12,9 +12,9 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntityReader;
-import org.cyk.utility.__kernel__.controller.EntitySaver;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntityReader;
+import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
@@ -98,7 +98,7 @@ public class ActorEditProfilesPage extends AbstractPageContainerManagedImpl impl
 								@Override
 								protected Object __runExecuteFunction__(AbstractAction action) {
 									Arguments<ActorProfile> arguments = new Arguments<ActorProfile>();
-									arguments.setRepresentationArguments(new org.cyk.utility.__kernel__.representation.Arguments().setActionIdentifier(ActorProfileBusiness.SAVE));
+									arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(ActorProfileBusiness.SAVE));
 									if(CollectionHelper.isNotEmpty(profiles)) {
 										Collection<Profile> selectedProfiles = CollectionHelper.cast(Profile.class, profilesSelectManyCheckbox.getValue());
 										arguments.addCreatablesOrUpdatables(profiles.stream().filter(profile -> CollectionHelper

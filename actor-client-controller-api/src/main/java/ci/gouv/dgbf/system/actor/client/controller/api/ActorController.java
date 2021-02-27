@@ -1,9 +1,9 @@
 package ci.gouv.dgbf.system.actor.client.controller.api;
 
-import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntityReader;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntityReader;
 import org.cyk.utility.__kernel__.mapping.MappingHelper;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.session.SessionHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.ControllerEntity;
@@ -23,14 +23,14 @@ public interface ActorController extends ControllerEntity<Actor> {
 	}
 	
 	default Actor readByCode(String code) {
-		return EntityReader.getInstance().readOne(Actor.class,new Arguments<Actor>().setRepresentationArguments(new org.cyk.utility.__kernel__.representation
+		return EntityReader.getInstance().readOne(Actor.class,new Arguments<Actor>().setRepresentationArguments(new org.cyk.utility.representation
 				.Arguments().setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(ActorQuerier.QUERY_IDENTIFIER_READ_BY_CODE)
 						.addFilterField(ActorQuerier.PARAMETER_NAME_CODE,code)
 						)));
 	}
 	
 	default Actor readByElectronicMailAddress(String electronicMailAddress) {
-		return EntityReader.getInstance().readOne(Actor.class,new Arguments<Actor>().setRepresentationArguments(new org.cyk.utility.__kernel__.representation
+		return EntityReader.getInstance().readOne(Actor.class,new Arguments<Actor>().setRepresentationArguments(new org.cyk.utility.representation
 				.Arguments().setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(ActorQuerier.QUERY_IDENTIFIER_READ_BY_ELECTRONIC_MAIL_ADDRESS)
 						.addFilterField(ActorQuerier.PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS,electronicMailAddress)
 						)));

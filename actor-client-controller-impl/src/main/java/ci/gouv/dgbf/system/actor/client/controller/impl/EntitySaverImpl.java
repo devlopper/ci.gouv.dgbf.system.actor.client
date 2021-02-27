@@ -8,9 +8,9 @@ import java.util.List;
 import javax.ws.rs.core.Response;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.controller.Arguments;
-import org.cyk.utility.__kernel__.controller.EntitySaver;
-import org.cyk.utility.__kernel__.representation.RepresentationProxyGetter;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntitySaver;
+import org.cyk.utility.representation.RepresentationProxyGetter;
 import org.cyk.utility.__kernel__.session.SessionHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 
@@ -180,7 +180,7 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 	}
 	
 	@Override
-	protected <T> Response save(Object representation, Collection<?> creatables, Collection<?> updatables,Collection<?> deletables, org.cyk.utility.__kernel__.representation.Arguments arguments) {
+	protected <T> Response save(Object representation, Collection<?> creatables, Collection<?> updatables,Collection<?> deletables, org.cyk.utility.representation.Arguments arguments) {
 		if(arguments != null && ProfilePrivilegeBusiness.SAVE.equals(arguments.getActionIdentifier())) {
 			Collection<ProfilePrivilegeDto> dtos = new ArrayList<>();
 			if(CollectionHelper.isNotEmpty(creatables))
