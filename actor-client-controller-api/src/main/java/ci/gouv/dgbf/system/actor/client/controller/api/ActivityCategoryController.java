@@ -2,7 +2,7 @@ package ci.gouv.dgbf.system.actor.client.controller.api;
 
 import java.util.Collection;
 
-import org.cyk.utility.__kernel__.controller.EntityReader;
+import org.cyk.utility.controller.EntityReader;
 import org.cyk.utility.client.controller.ControllerEntity;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.ActivityCategory;

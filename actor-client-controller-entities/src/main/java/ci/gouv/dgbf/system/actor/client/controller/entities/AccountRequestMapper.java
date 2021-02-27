@@ -3,7 +3,7 @@ import ci.gouv.dgbf.system.actor.server.representation.entities.AccountRequestDt
 
 import java.util.Date;
 
-import org.cyk.utility.__kernel__.controller.AbstractMapperSourceDestinationImpl;
+import org.cyk.utility.controller.AbstractMapperSourceDestinationImpl;
 import org.mapstruct.Mapper;
 
 @Mapper

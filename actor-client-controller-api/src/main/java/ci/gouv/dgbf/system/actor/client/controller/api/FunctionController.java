@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.controller.EntityReader;
+import org.cyk.utility.controller.EntityReader;
 import org.cyk.utility.client.controller.ControllerEntity;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
