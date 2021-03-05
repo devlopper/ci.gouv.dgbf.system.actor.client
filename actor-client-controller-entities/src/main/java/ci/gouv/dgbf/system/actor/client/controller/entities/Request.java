@@ -41,6 +41,7 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	private String creationDateAsString;
 	private RequestStatus status;
 	private String statusAsString;
+	private String accountCreationDateAsString;
 	private String accountCreationMessage;
 	private String accessToken;
 	

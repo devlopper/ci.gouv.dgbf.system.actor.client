@@ -414,8 +414,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			ArrayList<String> list = new ArrayList<>();
 			list.addAll(List.of(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRINGS
 					,Request.FIELD_HAS_GRANTED_HOLDER_SCOPE_FUNCTION,Request.FIELD_ACCEPTED,Request.FIELD_IS_CREDIT_MANAGER_HOLDER
-					,Request.FIELD_IS_AUTHORIZING_OFFICER_HOLDER,Request.FIELD_IS_FINANCIAL_CONTROLLER_HOLDER,Request.FIELD_IS_ACCOUNTING_HOLDER
-					,Request.FIELD_ACCOUNT_CREATION_MESSAGE));
+					,Request.FIELD_IS_AUTHORIZING_OFFICER_HOLDER,Request.FIELD_IS_FINANCIAL_CONTROLLER_HOLDER,Request.FIELD_IS_ACCOUNTING_HOLDER));
 			arguments.getRepresentationArguments().getQueryExecutorArguments().setProcessableTransientFieldsNames(list);
 			return arguments;
 		}

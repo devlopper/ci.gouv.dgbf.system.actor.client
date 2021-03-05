@@ -39,6 +39,7 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	private String localityAsString;
 	
 	private Integer numberOfActor;
+	private Collection<String> actorsNames;
 	private Collection<String> actorsAsStrings;
 	
 	@Input @InputBoolean @InputBooleanButton private Boolean shared;	
@@ -56,7 +57,7 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	private Boolean granted;
 	private String grantedAsString;	
 	
-	private String actorAsString;
+	private String actorAsString;	
 	private String assignmentToActorMessage;
 	
 	/**/
@@ -81,6 +82,7 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	public static final String FIELD_LOCALITY_AS_STRING = "localityAsString";
 	
 	public static final String FIELD_NUMBER_OF_ACTOR = "numberOfActor";
+	public static final String FIELD_ACTORS_NAMES = "actorsNames";
 	public static final String FIELD_ACTORS_AS_STRINGS = "actorsAsStrings";
 	
 	public static final String FIELD_SHARED = "shared";
