@@ -107,12 +107,18 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 		List<String> columnsFieldsNames = new ArrayList<>();
 		columnsFieldsNames.addAll(List.of(Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
 				,Request.FIELD_ELECTRONIC_MAIL_ADDRESS,Request.FIELD_MOBILE_PHONE_NUMBER,Request.FIELD_ADMINISTRATIVE_UNIT_AS_STRING
-				,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS
-				,Request.FIELD_CREATION_DATE_AS_STRING,Request.FIELD_STATUS_AS_STRING,Request.FIELD_PROCESSING_DATE_AS_STRING));
-		//columnsFieldsNames.addAll(0, List.of(Request.FIELD_NAMES));
-			//if(Boolean.TRUE.equals(lazyDataModelListener.getProcessingDateIsNotNullable()))
-			//	columnsFieldsNames.addAll(List.of(Request.FIELD_PROCESSING_DATE_AS_STRING));
-			
+				,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS));
+		if(ContentType.TO_PROCESS.equals(contentType)) {
+			columnsFieldsNames.addAll(List.of(Request.FIELD_CREATION_DATE_AS_STRING));
+		}else if(ContentType.PROCESSED.equals(contentType)) {
+			columnsFieldsNames.addAll(List.of(Request.FIELD_PROCESSING_DATE_AS_STRING));
+		}else
+			columnsFieldsNames.addAll(List.of(Request.FIELD_CREATION_DATE_AS_STRING,Request.FIELD_PROCESSING_DATE_AS_STRING));		
+		columnsFieldsNames.addAll(List.of(Request.FIELD_STATUS_AS_STRING));
+		if(ContentType.PROCESSED.equals(contentType) || ContentType.ALL.equals(contentType)) {
+			columnsFieldsNames.addAll(List.of(Request.FIELD_ACCOUNT_CREATION_MESSAGE));
+		}
+		
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, Request.class);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, columnsFieldsNames);
@@ -125,9 +131,9 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 		if(AbstractCollection.RenderType.OUTPUT.equals(dataTable.getRenderType())) {
 			dataTable.addRecordMenuItemByArgumentsNavigateToView(null,RequestReadPage.OUTCOME, MenuItem.FIELD_VALUE,"Consulter",MenuItem.FIELD_ICON,"fa fa-eye");
 			if(Boolean.TRUE.equals(SessionManager.getInstance().isUserHasOneOfRoles(Profile.CODE_ADMINISTRATEUR,Profile.CODE_CHARGE_ETUDE_DAS))) {
-				if(ContentType.TO_PROCESS.equals(MapHelper.readByKey(arguments, ContentType.class))) {
+				if(ContentType.TO_PROCESS.equals(contentType)) {
 					dataTable.addRecordMenuItemByArgumentsNavigateToView(null,RequestProcessPage.OUTCOME, MenuItem.FIELD_VALUE,"Traiter",MenuItem.FIELD_ICON,"fa fa-file");
-				}else if(ContentType.PROCESSED.equals(MapHelper.readByKey(arguments, ContentType.class))) {
+				}else if(ContentType.PROCESSED.equals(contentType)) {
 					dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Créer les comptes",MenuItem.FIELD_TITLE
 							,"Exporter les demandes acceptées pour la création de compte",MenuItem.FIELD_USER_INTERFACE_ACTION
 							,UserInterfaceAction.EXECUTE_FUNCTION,MenuItem.FIELD_ICON,"fa fa-gear"
@@ -236,6 +242,10 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 				map.put(Column.FIELD_WIDTH, "110");
 				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
 				map.put(Column.FIELD_FILTER_BY, RequestQuerier.PARAMETER_NAME_REGISTRATION_NUMBER);
+			}else if(Request.FIELD_ACCOUNT_CREATION_MESSAGE.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Création compte");
+				map.put(Column.FIELD_WIDTH, "200");
+				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}
 			return map;
 		}
@@ -341,6 +351,13 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 				columnsFieldsNames.addAll(List.of(Request.FIELD_CREATION_DATE_AS_STRING,Request.FIELD_PROCESSING_DATE_AS_STRING));
 			}
 			columnsFieldsNames.addAll(List.of(Request.FIELD_STATUS_AS_STRING));
+			if(ContentType.TO_PROCESS.equals(contentType)) {
+				
+			}else if(ContentType.PROCESSED.equals(contentType)) {
+				columnsFieldsNames.addAll(List.of(Request.FIELD_ACCOUNT_CREATION_MESSAGE));
+			}else if(ContentType.ALL.equals(contentType)) {
+				columnsFieldsNames.addAll(List.of(Request.FIELD_ACCOUNT_CREATION_MESSAGE));
+			}
 			return columnsFieldsNames;
 		}
 		
@@ -397,7 +414,8 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			ArrayList<String> list = new ArrayList<>();
 			list.addAll(List.of(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRINGS
 					,Request.FIELD_HAS_GRANTED_HOLDER_SCOPE_FUNCTION,Request.FIELD_ACCEPTED,Request.FIELD_IS_CREDIT_MANAGER_HOLDER
-					,Request.FIELD_IS_AUTHORIZING_OFFICER_HOLDER,Request.FIELD_IS_FINANCIAL_CONTROLLER_HOLDER,Request.FIELD_IS_ACCOUNTING_HOLDER));
+					,Request.FIELD_IS_AUTHORIZING_OFFICER_HOLDER,Request.FIELD_IS_FINANCIAL_CONTROLLER_HOLDER,Request.FIELD_IS_ACCOUNTING_HOLDER
+					,Request.FIELD_ACCOUNT_CREATION_MESSAGE));
 			arguments.getRepresentationArguments().getQueryExecutorArguments().setProcessableTransientFieldsNames(list);
 			return arguments;
 		}

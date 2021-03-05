@@ -530,3 +530,17 @@ f1b5933fe4b5: Layer already exists
 7098da18d89a: Pushed
 v0.0.0-202103011738: digest: sha256:2f2e791e18f411c10283199e4ba8178c970066ff5955c3a49f05bce87483212f size: 1376
 Deploying with time stamp : v0.0.0-202103011738 
+Publishing with time stamp : v0.0.0-202103041917 
+The push refers to repository [10.3.4.18:5000/mic-acteur]
+d6539a2ae60f: Preparing
+58ec449c1ca6: Preparing
+13f0b213c32d: Preparing
+849cb74592b3: Preparing
+f1b5933fe4b5: Preparing
+f1b5933fe4b5: Layer already exists
+13f0b213c32d: Layer already exists
+849cb74592b3: Layer already exists
+58ec449c1ca6: Layer already exists
+d6539a2ae60f: Pushed
+v0.0.0-202103041917: digest: sha256:4d2941fadf3df6d0f474cc3e7fd53ae84db973d4ebf9187550434353fad70f7b size: 1376
+Deploying with time stamp : v0.0.0-202103041917 

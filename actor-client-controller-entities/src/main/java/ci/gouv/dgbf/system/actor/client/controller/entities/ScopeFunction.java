@@ -56,6 +56,9 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	private Boolean granted;
 	private String grantedAsString;	
 	
+	private String actorAsString;
+	private String assignmentToActorMessage;
+	
 	/**/
 	
 	private String signatureSpecimenReadReportURIQuery;
@@ -93,4 +96,7 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	public static final String FIELD_REQUESTED_AS_STRING = "requestedAsString";
 	public static final String FIELD_GRANTED = "granted";
 	public static final String FIELD_GRANTED_AS_STRING = "grantedAsString";
+	
+	public static final String FIELD_ACTOR_AS_STRING = "actorAsString";
+	public static final String FIELD_ASSIGNMENT_TO_ACTOR_MESSAGE = "assignmentToActorMessage";
 }

@@ -41,6 +41,7 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	private String creationDateAsString;
 	private RequestStatus status;
 	private String statusAsString;
+	private String accountCreationMessage;
 	private String accessToken;
 	
 	/* Identity */
@@ -180,6 +181,7 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	public static final String FIELD_TYPE_AS_STRING = "typeAsString";
 	public static final String FIELD_STATUS = "status";
 	public static final String FIELD_STATUS_AS_STRING = "statusAsString";
+	public static final String FIELD_ACCOUNT_CREATION_MESSAGE = "accountCreationMessage";
 	public static final String FIELD_ACCEPTED = "accepted";
 	public static final String FIELD_REJECTED = "rejected";
 	public static final String FIELD_CREATION_DATE = "creationDate";
