@@ -273,6 +273,8 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 						, RequestQuerier.PARAMETER_NAME_IDENTIFIER,WebController.getInstance().getRequestParameter(ParameterName.ENTITY_IDENTIFIER.getValue()));
 			}else {
 				request = EntityReader.getInstance().readOne(Request.class, RequestQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI
+						,new String[] {Request.FIELD_GRANTED_BUDGETARIES_SCOPE_FUNCTIONS,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS
+								,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRINGS}
 						, RequestQuerier.PARAMETER_NAME_IDENTIFIER,WebController.getInstance().getRequestParameter(ParameterName.ENTITY_IDENTIFIER.getValue()));				
 			}
 			if(request != null) {

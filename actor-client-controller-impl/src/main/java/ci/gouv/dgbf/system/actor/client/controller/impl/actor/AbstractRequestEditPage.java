@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
-import org.cyk.utility.controller.EntityReader;
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
@@ -21,6 +20,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.Abstract
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AutoComplete;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityEditPageContainerManagedImpl;
+import org.cyk.utility.controller.EntityReader;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.ActorController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
@@ -103,6 +103,8 @@ public abstract class AbstractRequestEditPage extends AbstractEntityEditPageCont
 			return request;
 		}else {
 			Request request = EntityReader.getInstance().readOne(Request.class, RequestQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI
+					,new String[] {Request.FIELD_GRANTED_BUDGETARIES_SCOPE_FUNCTIONS,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS
+							,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRINGS}
 					, RequestQuerier.PARAMETER_NAME_IDENTIFIER,WebController.getInstance().getRequestParameter(ParameterName.ENTITY_IDENTIFIER.getValue()));
 			if(request.getActOfAppointmentSignatureDateAsTimestamp() != null && request.getActOfAppointmentSignatureDate() == null)
 				request.setActOfAppointmentSignatureDate(new Date(request.getActOfAppointmentSignatureDateAsTimestamp()));

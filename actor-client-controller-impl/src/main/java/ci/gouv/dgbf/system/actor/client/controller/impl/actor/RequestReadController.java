@@ -40,6 +40,9 @@ public class RequestReadController extends AbstractObject implements Serializabl
 	
 	public static Request loadRequest() {
 		String identifier = WebController.getInstance().getRequestParameter(ParameterName.ENTITY_IDENTIFIER.getValue());
-		return EntityReader.getInstance().readOne(Request.class, RequestQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI, RequestQuerier.PARAMETER_NAME_IDENTIFIER, identifier);
+		return EntityReader.getInstance().readOne(Request.class, RequestQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI
+				,new String[] {Request.FIELD_GRANTED_BUDGETARIES_SCOPE_FUNCTIONS,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS
+						,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRINGS}
+				, RequestQuerier.PARAMETER_NAME_IDENTIFIER, identifier);
 	}
 }

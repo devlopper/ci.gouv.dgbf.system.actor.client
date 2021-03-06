@@ -235,6 +235,7 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	public static final String FIELD_BUDGETARIES_SCOPE_FUNCTIONS = "budgetariesScopeFunctions";
 	public static final String FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS = "budgetariesScopeFunctionsAsStrings";
 	public static final String FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRINGS = "budgetariesScopeFunctionsGrantedAsStrings";
+	public static final String FIELD_GRANTED_BUDGETARIES_SCOPE_FUNCTIONS = "grantedBudgetariesScopeFunctions";
 	
 	/* Others */
 	
