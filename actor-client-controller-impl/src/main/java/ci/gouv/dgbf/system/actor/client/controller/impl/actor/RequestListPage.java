@@ -190,10 +190,12 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 				map.put(Column.FIELD_HEADER_TEXT, "Créée le");
 				map.put(Column.FIELD_WIDTH, "130");
 				map.put(Column.FIELD_VISIBLE, ContentType.TO_PROCESS.equals(contentType));
+				map.put(Column.FIELD_SORT_BY, Request.FIELD_CREATION_DATE);
 			}else if(Request.FIELD_PROCESSING_DATE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Traitée le");
 				map.put(Column.FIELD_WIDTH, "130");
 				map.put(Column.FIELD_VISIBLE, ContentType.PROCESSED.equals(contentType));
+				map.put(Column.FIELD_SORT_BY, Request.FIELD_PROCESSING_DATE);
 			}else if(Request.FIELD_TYPE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Type");
 			}else if(Request.FIELD_FUNCTIONS_AS_STRINGS.equals(fieldName)) {
@@ -231,9 +233,11 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 				map.put(Column.FIELD_HEADER_TEXT, "Nom");
 				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
 				map.put(Column.FIELD_FILTER_BY, RequestQuerier.PARAMETER_NAME_FIRST_NAME);
+				map.put(Column.FIELD_SORT_BY, RequestQuerier.PARAMETER_NAME_FIRST_NAME);
 				map.put(Column.FIELD_WIDTH, "100");
 			}else if(Request.FIELD_LAST_NAMES.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Prénoms");
+				map.put(Column.FIELD_SORT_BY, RequestQuerier.PARAMETER_NAME_LAST_NAMES);
 				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
 				map.put(Column.FIELD_FILTER_BY, RequestQuerier.PARAMETER_NAME_LAST_NAMES);
 				map.put(Column.FIELD_WIDTH, "150");
