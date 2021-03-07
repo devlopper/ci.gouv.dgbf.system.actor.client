@@ -11,6 +11,7 @@ import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.controller.Arguments;
 import org.cyk.utility.controller.EntityReader;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
@@ -26,12 +27,16 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Col
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoiceOne;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.AbstractMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 
+import ci.gouv.dgbf.system.actor.client.controller.api.FunctionController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.FunctionType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
@@ -183,5 +188,28 @@ public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl
 			}
 			return filter;
 		}
+	}
+
+	/**/
+	
+	public static SelectOneCombo buildSelectOne(Function function) {
+		SelectOneCombo selectOne = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,Function.class,SelectOneCombo.FIELD_LISTENER
+				,new SelectOneCombo.Listener.AbstractImpl<Function>() {
+			@Override
+			public Collection<Function> computeChoices(AbstractInputChoice<Function> input) {
+				Collection<Function> choices = __inject__(FunctionController.class).readCreditManagersAuthorizingOfficersFinancialControllersAssistants();
+				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
+				return choices;
+			}
+			@Override
+			public void select(AbstractInputChoiceOne input, Function function) {
+				super.select(input, function);
+				
+			}
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Catégorie de fonction budgétaire");
+		selectOne.updateChoices();
+		selectOne.selectBySystemIdentifier(FieldHelper.readSystemIdentifier(function));
+		//functionSelectOne.enableValueChangeListener(List.of());
+		return selectOne;
 	}
 }

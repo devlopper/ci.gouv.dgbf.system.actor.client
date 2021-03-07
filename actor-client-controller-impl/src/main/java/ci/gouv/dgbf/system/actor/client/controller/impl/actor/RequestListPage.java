@@ -347,12 +347,13 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 				columnsFieldsNames.add(Request.FIELD_ADMINISTRATIVE_UNIT_AS_STRING);
 			if(function == null)
 				columnsFieldsNames.addAll(List.of(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS));
+			columnsFieldsNames.addAll(List.of(Request.FIELD_CREATION_DATE_AS_STRING));
 			if(ContentType.TO_PROCESS.equals(contentType)) {
-				columnsFieldsNames.addAll(List.of(Request.FIELD_CREATION_DATE_AS_STRING));
+				
 			}else if(ContentType.PROCESSED.equals(contentType)) {
 				columnsFieldsNames.addAll(List.of(Request.FIELD_PROCESSING_DATE_AS_STRING));
 			}else if(ContentType.ALL.equals(contentType)) {
-				columnsFieldsNames.addAll(List.of(Request.FIELD_CREATION_DATE_AS_STRING,Request.FIELD_PROCESSING_DATE_AS_STRING));
+				columnsFieldsNames.addAll(List.of(Request.FIELD_PROCESSING_DATE_AS_STRING));
 			}
 			columnsFieldsNames.addAll(List.of(Request.FIELD_STATUS_AS_STRING));
 			if(ContentType.TO_PROCESS.equals(contentType)) {

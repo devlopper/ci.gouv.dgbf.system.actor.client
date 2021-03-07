@@ -11,6 +11,7 @@ import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.controller.Arguments;
 import org.cyk.utility.controller.EntityReader;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
@@ -22,13 +23,18 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Abs
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoiceOne;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 import org.primefaces.model.menu.DefaultMenuItem;
 import org.primefaces.model.menu.DefaultMenuModel;
 import org.primefaces.model.menu.MenuModel;
 
+import ci.gouv.dgbf.system.actor.client.controller.api.SectionController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Scope;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeBudgetSpecializationUnitQuerier;
@@ -218,5 +224,30 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 			}
 			return filter;
 		}
+	}
+
+	/**/
+	
+	public static SelectOneCombo buildSectionSelectOne(Section section,Boolean isParent) {		
+		SelectOneCombo sectionSelect = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,Section.class,SelectOneCombo.FIELD_LISTENER
+				,new SelectOneCombo.Listener.AbstractImpl<Section>() {
+			@Override
+			public Collection<Section> computeChoices(AbstractInputChoice<Section> input) {
+				Collection<Section> choices = __inject__(SectionController.class).readVisiblesByLoggedInActorCodeForUI();
+				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
+				return choices;
+			}
+			@Override
+			public void select(AbstractInputChoiceOne input, Section section) {
+				super.select(input, section);
+				
+			}
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Section");
+		sectionSelect.updateChoices();
+		sectionSelect.selectBySystemIdentifier(FieldHelper.readSystemIdentifier(section));
+		if(Boolean.TRUE.equals(isParent)) {
+			sectionSelect.enableValueChangeListener(List.of());
+		}
+		return sectionSelect;
 	}
 }
