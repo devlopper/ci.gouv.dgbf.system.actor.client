@@ -24,6 +24,7 @@ import ci.gouv.dgbf.system.actor.client.controller.api.ActivityCategoryControlle
 import ci.gouv.dgbf.system.actor.client.controller.api.BudgetSpecializationUnitController;
 import ci.gouv.dgbf.system.actor.client.controller.api.ExpenditureNatureController;
 import ci.gouv.dgbf.system.actor.client.controller.api.SectionController;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Action;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Activity;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ActivityCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
@@ -43,7 +44,7 @@ import lombok.experimental.Accessors;
 @Getter @Setter @Accessors(chain=true)
 public class AssignmentsFilterController extends AbstractFilterController implements Serializable {
 
-	private SelectOneCombo sectionSelectOne,administrativeUnitSelectOne,budgetSpecializationUnitSelectOne,activitySelectOne,activityCategorySelectOne
+	private SelectOneCombo sectionSelectOne,administrativeUnitSelectOne,budgetSpecializationUnitSelectOne,actionSelectOne,activitySelectOne,activityCategorySelectOne
 		,expenditureNatureSelectOne;
 	private ActivitySelectionController activitySelectionController;
 	
@@ -383,6 +384,30 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 	
 	public Section getSection() {
 		return (Section) AbstractInput.getValue(sectionSelectOne);
+	}
+	
+	public AdministrativeUnit getAdministrativeUnit() {
+		return (AdministrativeUnit) AbstractInput.getValue(administrativeUnitSelectOne);
+	}
+	
+	public BudgetSpecializationUnit getBudgetSpecializationUnit() {
+		return (BudgetSpecializationUnit) AbstractInput.getValue(budgetSpecializationUnitSelectOne);
+	}
+	
+	public Action getAction() {
+		return (Action) AbstractInput.getValue(actionSelectOne);
+	}
+	
+	public ExpenditureNature getExpenditureNature() {
+		return (ExpenditureNature) AbstractInput.getValue(expenditureNatureSelectOne);
+	}
+	
+	public ActivityCategory getActivityCategory() {
+		return (ActivityCategory) AbstractInput.getValue(activityCategorySelectOne);
+	}
+	
+	public Activity getActivity() {
+		return (Activity) AbstractInput.getValue(activitySelectOne);
 	}
 	
 	public static final String FIELD_SECTION_SELECT_ONE = "sectionSelectOne";
