@@ -1,12 +1,9 @@
 package ci.gouv.dgbf.system.actor.client.controller.impl.actor;
 
 import java.io.Serializable;
-import java.util.List;
 
-import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoiceOne;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
@@ -48,17 +45,7 @@ public class RequestFilterController extends AbstractFilterController implements
 			return FunctionListPage.buildSelectOne((Function) value);
 		return null;
 	}
-	
-	@Override
-	protected List<AbstractInput<?>> getInputs() {
-		return CollectionHelper.listOf(sectionSelectOne,functionSelectOne);
-	}
-	
-	@Override
-	protected List<AbstractInputChoiceOne> getInputsChoicesOne() {
-		return CollectionHelper.listOf(sectionSelectOne,functionSelectOne);
-	}
-	
+
 	public Section getSection() {
 		return (Section) AbstractInput.getValue(sectionSelectOne);
 	}

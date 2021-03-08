@@ -19,7 +19,6 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.panel.Panel;
 import org.cyk.utility.controller.Arguments;
 import org.cyk.utility.controller.EntityCounter;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
@@ -168,7 +167,6 @@ public class RequestIndexPage extends AbstractPageContainerManagedImpl implement
 	
 	private void buildGlobalFilters(Collection<Map<Object,Object>> cellsMaps) {
 		requestFilterController = new RequestFilterController()/*.ignore(RequestFilterController.FIELD_NAME_SECTION_SELECT_ONE)*/.build();
-		((Panel)requestFilterController.getLayout().getContainer()).setCollapsed(Boolean.TRUE);
 		requestFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(OUTCOME).addParameter(TabMenu.Tab.PARAMETER_NAME, selectedTab.getParameterValue());	
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,requestFilterController.getLayout(),Cell.FIELD_WIDTH,12));
 	}

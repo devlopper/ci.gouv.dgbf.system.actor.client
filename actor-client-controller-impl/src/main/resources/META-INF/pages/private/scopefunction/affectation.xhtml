@@ -14,27 +14,11 @@
 	    		<ui:param name="layout" value="#{affectationPage.layout}"/>   			
 	    	</ui:decorate>
 	    	
-	    	<ui:fragment rendered="#{affectationPage.activitySelectionController != null}">
+	    	<ui:fragment rendered="#{affectationPage.assignmentsFilterController.activitySelectionController != null}">
 	    		<ui:include src="/private/activity/__selection__.xhtml">
-		    		<ui:param name="activitySelectionController" value="#{affectationPage.activitySelectionController}"/>
+		    		<ui:param name="activitySelectionController" value="#{affectationPage.assignmentsFilterController.activitySelectionController}"/>
 		    	</ui:include>
 	    	</ui:fragment>
-	    	
-	    	<ui:fragment rendered="#{affectationPage.scopeFunctionFilterController != null}">
-	    		<!--
-	    		<ui:include src="/private/scopefunction/__filter__.xhtml">
-		    		<ui:param name="scopeFunctionFilterController" value="#{affectationPage.scopeFunctionFilterController}"/>
-		    	</ui:include>
-		    	-->
-		    	<!--
-	    		<p:dialog header="Filtre fonction budgétaire" widgetVar="scopeFunctionFilterDialog" modal="true" closable="true" closeOnEscape="true" width="1000" height="250">
-					<ui:decorate template="#{primefacesHelper.getModelTemplate(affectationPage.scopeFunctionFilterController.layout)}">
-				    	<ui:param name="layout" value="#{affectationPage.scopeFunctionFilterController.layout}"/>
-				    </ui:decorate>	
-				</p:dialog>
-				-->
-	    	</ui:fragment>
-	    	
     	</ui:define>
     </cyk:page>
 </html>

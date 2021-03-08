@@ -51,6 +51,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.client.controller.impl.ActivitySelectionController;
+import ci.gouv.dgbf.system.actor.client.controller.impl.function.AssignmentsFilterController;
 import ci.gouv.dgbf.system.actor.client.controller.impl.function.AssignmentsListPage;
 import ci.gouv.dgbf.system.actor.client.controller.impl.function.ScopeFunctionFilterController;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActivityCategoryQuerier;
@@ -89,6 +90,8 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	private CommandButton applyGlobalFilterCommand;
 	private ScopeFunctionFilterController scopeFunctionFilterController;
 	private ActivitySelectionController activitySelectionController;
+	
+	private AssignmentsFilterController assignmentsFilterController;
 	
 	@Override
 	protected void __listenPostConstruct__() {
@@ -318,9 +321,9 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		if(selectedTab == null)
 			return super.__getWindowTitleValue__();
 		if(TAB_SCOPE_FUNCTION.equals(selectedTab.getParameterValue()))
-			return ScopeFunctionListPage.buildWindowTitleValue("Affectation", scopeFunctionFilterController.getFunction());
+			return ScopeFunctionListPage.buildWindowTitleValue(selectedTab.getName(), scopeFunctionFilterController.getFunction());
 		else if(TAB_ASSIGNMENTS.equals(selectedTab.getParameterValue()))
-			return AssignmentsListPage.buildWindowTitleValue("Affectation", section,administrativeUnit, budgetSpecializationUnit,action, activity,expenditureNature,activityCategory);
+			return AssignmentsListPage.buildWindowTitleValue(selectedAssignmentsTab.getName(), section,administrativeUnit, budgetSpecializationUnit,action, activity,expenditureNature,activityCategory);
 		return "Affectation";
 	}
 	
@@ -329,6 +332,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	/*         Assignments */
 	
 	private void buildTabAssignmentsGlobalFilters(Collection<Map<Object,Object>> cellsMaps) {
+		/*
 		buildTabAssignmentsGlobalFilterSelectOneActivity();
 		buildTabAssignmentsGlobalFilterSelectOneExpenditureNature();
 		buildTabAssignmentsGlobalFilterSelectOneActivityCategory();		
@@ -369,6 +373,13 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,applyGlobalFilterCommand,Cell.FIELD_WIDTH,1));
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activitySelectionController.getShowDialogCommandButton(),Cell.FIELD_WIDTH,1));
+		*/
+		assignmentsFilterController = new AssignmentsFilterController().build();
+		assignmentsFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(OUTCOME).addParameter(TabMenu.Tab.PARAMETER_NAME, selectedTab.getParameterValue());			
+		assignmentsFilterController.getActivitySelectionController().getOnSelectRedirectorArguments(Boolean.TRUE).outcome(OUTCOME).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_ASSIGNMENTS);
+		assignmentsFilterController.getActivitySelectionController().getOnSelectRedirectorArguments().addParameter(TAB_ASSIGNMENTS_PARAMETER_NAME, selectedAssignmentsTab.getParameterValue());		
+		
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,assignmentsFilterController.getLayout(),Cell.FIELD_WIDTH,12));
 	}
 	
 	private void buildTabAssignmentsGlobalFilterSelectOneSection() {		
@@ -460,7 +471,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	}
 	
 	private void buildTabAssignmentsGlobalFilterSelectOneBudgetSpecializationUnit() {		
-		budgetSpecializationUnitSelectOne = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,Section.class
+		budgetSpecializationUnitSelectOne = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,BudgetSpecializationUnit.class
 				,SelectOneCombo.FIELD_LISTENER,new SelectOneCombo.Listener.AbstractImpl<BudgetSpecializationUnit>() {
 			public Collection<BudgetSpecializationUnit> computeChoices(AbstractInputChoice<BudgetSpecializationUnit> input) {
 				Collection<BudgetSpecializationUnit> choices = null;
@@ -660,8 +671,8 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	private static final String TAB_ASSIGNMENTS_FULLY_ASSIGNED = "complet";
 	private static final String TAB_ASSIGNMENTS_NOT_FULLY_ASSIGNED = "noncomplet";
 	private static final List<TabMenu.Tab> ASSIGNMENTS_TABS = List.of(		
-		new TabMenu.Tab("Affectées",TAB_ASSIGNMENTS_FULLY_ASSIGNED)
-		,new TabMenu.Tab("Non affectées",TAB_ASSIGNMENTS_NOT_FULLY_ASSIGNED)
+		new TabMenu.Tab("Lignes complètement affectées",TAB_ASSIGNMENTS_FULLY_ASSIGNED)
+		,new TabMenu.Tab("Lignes non complètement affectées",TAB_ASSIGNMENTS_NOT_FULLY_ASSIGNED)
 		,new TabMenu.Tab("Toutes les lignes",TAB_ASSIGNMENTS_ALL)
 		//,new TabMenu.Tab("Toutes les lignes V2",TAB_ASSIGNMENTS_ALL_2)
 	);
