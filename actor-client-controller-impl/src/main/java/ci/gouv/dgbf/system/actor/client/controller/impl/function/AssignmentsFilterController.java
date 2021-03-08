@@ -30,6 +30,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.ActivityCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ExpenditureNature;
+import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.client.controller.impl.ActivitySelectionController;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActivityCategoryQuerier;
@@ -45,7 +46,7 @@ import lombok.experimental.Accessors;
 public class AssignmentsFilterController extends AbstractFilterController implements Serializable {
 
 	private SelectOneCombo sectionSelectOne,administrativeUnitSelectOne,budgetSpecializationUnitSelectOne,actionSelectOne,activitySelectOne,activityCategorySelectOne
-		,expenditureNatureSelectOne;
+		,expenditureNatureSelectOne,creditManagerHolderSelectOne;
 	private ActivitySelectionController activitySelectionController;
 	
 	private Section sectionInitial;
@@ -54,6 +55,7 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 	private ActivityCategory activityCategoryInitial;
 	private ExpenditureNature expenditureNatureInitial;
 	private Activity activityInitial;
+	private ScopeFunction creditManagerHolderInitial,authorizingOfficerHolderInitial,financialControllerHolderInitial,accountingHolderInitial;
 	
 	public AssignmentsFilterController() {
 		activityInitial = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(Activity.class
@@ -115,6 +117,8 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 			return activityCategoryInitial;
 		if(FIELD_ACTIVITY_SELECT_ONE.equals(fieldName))
 			return activityInitial;
+		if(FIELD_CREDIT_MANAGER_HOLDER_SELECT_ONE.equals(fieldName))
+			return creditManagerHolderInitial;
 		return super.getInputSelectOneInitialValue(fieldName, klass);
 	}
 	
@@ -125,7 +129,8 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 		buildInputSelectOne(FIELD_BUDGET_SPECIALIZATION_UNIT_SELECT_ONE, BudgetSpecializationUnit.class);
 		buildInputSelectOne(FIELD_EXPENDITURE_NATURE_SELECT_ONE, ExpenditureNature.class);
 		buildInputSelectOne(FIELD_ACTIVITY_CATEGORY_SELECT_ONE, ActivityCategory.class);
-		buildInputSelectOne(FIELD_ACTIVITY_SELECT_ONE, Activity.class);		
+		buildInputSelectOne(FIELD_ACTIVITY_SELECT_ONE, Activity.class);
+		buildInputSelectOne(FIELD_CREDIT_MANAGER_HOLDER_SELECT_ONE, ScopeFunction.class);
 		enableValueChangeListeners();		
 		selectByValueSystemIdentifier();		
 	}
@@ -157,6 +162,8 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 			return buildActivityCategorySelectOne((ActivityCategory) value);
 		if(FIELD_ACTIVITY_SELECT_ONE.equals(fieldName))
 			return buildActivitySelectOne((Activity) value);
+		//if(FIELD_CREDIT_MANAGER_HOLDER_SELECT_ONE.equals(fieldName))
+		//	return buildCreditManagerHolderSelectOne((ScopeFunction) value);
 		return null;
 	}
 	
@@ -342,7 +349,25 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Activité");
 		return input;
 	}
-	
+	/*
+	private SelectOneCombo buildCreditManagerHolderSelectOne(ScopeFunction creditManagerHolder) {		
+		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,creditManagerHolder,SelectOneCombo.FIELD_CHOICE_CLASS,Section.class,SelectOneCombo.FIELD_LISTENER
+				,new SelectOneCombo.Listener.AbstractImpl<ScopeFunction>() {
+			@Override
+			public Collection<ScopeFunction> computeChoices(AbstractInputChoice<ScopeFunction> input) {
+				Collection<ScopeFunction> choices = EntityReader.getInstance().readMany(ScopeFunction.class, ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI
+						, ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_CODE
+						,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER);
+				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
+				return choices;
+			}
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"G.C.");
+		Function function = EntityReader.getInstance().readOne(Function.class, FunctionQuerier.QUERY_IDENTIFIER_READ_BY_CODE_FOR_UI
+				,FunctionQuerier.PARAMETER_NAME_CODE, ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER);
+		input.getOutputLabel().setTitle(function == null ? "Gestionnaire de crédits" : function.getName());
+		return input;
+	}
+	*/
 	@Override
 	protected Collection<Map<Object, Object>> buildLayoutCells() {
 		Collection<Map<Object, Object>> cellsMaps = new ArrayList<>();
@@ -374,10 +399,16 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 		if(activitySelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activitySelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activitySelectOne,Cell.FIELD_WIDTH,9));	
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activitySelectionController.getShowDialogCommandButton(),Cell.FIELD_WIDTH,1));
 		}
-		
+		/*	
+		if(creditManagerHolderSelectOne != null) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,creditManagerHolderSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,creditManagerHolderSelectOne,Cell.FIELD_WIDTH,10));	
+		}
+		*/	
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,filterCommandButton,Cell.FIELD_WIDTH,1));
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activitySelectionController.getShowDialogCommandButton(),Cell.FIELD_WIDTH,1));
+		
 		
 		return cellsMaps;
 	}
@@ -416,4 +447,6 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 	public static final String FIELD_EXPENDITURE_NATURE_SELECT_ONE = "expenditureNatureSelectOne";
 	public static final String FIELD_ACTIVITY_CATEGORY_SELECT_ONE = "activityCategorySelectOne";
 	public static final String FIELD_ACTIVITY_SELECT_ONE = "activitySelectOne";
+	
+	public static final String FIELD_CREDIT_MANAGER_HOLDER_SELECT_ONE = "creditManagerHolderSelectOne";
 }
