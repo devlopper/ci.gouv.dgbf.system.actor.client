@@ -11,13 +11,8 @@ import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.field.FieldHelper;
-import org.cyk.utility.controller.Arguments;
-import org.cyk.utility.controller.EntityReader;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
@@ -35,6 +30,10 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.AbstractMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntityReader;
+import org.cyk.utility.persistence.query.Filter;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.FunctionController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
@@ -193,7 +192,7 @@ public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl
 	/**/
 	
 	public static SelectOneCombo buildSelectOne(Function function) {
-		SelectOneCombo selectOne = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,Function.class,SelectOneCombo.FIELD_LISTENER
+		SelectOneCombo selectOne = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,function,SelectOneCombo.FIELD_CHOICE_CLASS,Function.class,SelectOneCombo.FIELD_LISTENER
 				,new SelectOneCombo.Listener.AbstractImpl<Function>() {
 			@Override
 			public Collection<Function> computeChoices(AbstractInputChoice<Function> input) {
@@ -208,7 +207,7 @@ public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl
 			}
 		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Catégorie de fonction budgétaire");
 		selectOne.updateChoices();
-		selectOne.selectBySystemIdentifier(FieldHelper.readSystemIdentifier(function));
+		selectOne.selectByValueSystemIdentifier();
 		//functionSelectOne.enableValueChangeListener(List.of());
 		return selectOne;
 	}

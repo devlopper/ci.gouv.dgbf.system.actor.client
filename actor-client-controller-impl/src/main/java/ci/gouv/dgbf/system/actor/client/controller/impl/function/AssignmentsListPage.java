@@ -57,6 +57,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetSpecializationUnitQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 import lombok.Getter;
 import lombok.Setter;
@@ -90,11 +91,11 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 	
 	public static String buildWindowTitleValue(String prefix,PageArguments pageArguments) {
 		return buildWindowTitleValue(prefix, pageArguments.section, pageArguments.administrativeUnit, pageArguments.budgetSpecializationUnit, pageArguments.action
-				, pageArguments.activity, pageArguments.expenditureNature, pageArguments.activityCategory);
+				, pageArguments.activity, pageArguments.expenditureNature, pageArguments.activityCategory,pageArguments.scopeFunction);
 	}
 	
 	public static String buildWindowTitleValue(String prefix,Section section,AdministrativeUnit administrativeUnit,BudgetSpecializationUnit budgetSpecializationUnit,Action action,Activity activity
-			,ExpenditureNature expenditureNature,ActivityCategory activityCategory) {
+			,ExpenditureNature expenditureNature,ActivityCategory activityCategory,ScopeFunction scopeFunction) {
 		Collection<String> strings = new ArrayList<>();
 		strings.add(prefix);
 		if(section != null) {
@@ -127,6 +128,12 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		}else {
 			strings.add(activity.toString());
 		}
+		
+		if(scopeFunction == null) {
+				
+		}else {
+			strings.add(scopeFunction.toString());
+		}
 		return StringHelper.concatenate(strings, " | ");
 	}
 	
@@ -154,6 +161,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			Boolean isAdministrationActionsVisible = !Boolean.TRUE.equals(SessionManager.getInstance().isUserLogged()) 
 					|| Boolean.TRUE.equals(SessionManager.getInstance().isUserHasOneOfRoles(Profile.CODE_ADMINISTRATEUR));
 			if(isAdministrationActionsVisible) {
+				/*
 				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Initialiser",MenuItem.FIELD_USER_INTERFACE_ACTION
 						,UserInterfaceAction.EXECUTE_FUNCTION,MenuItem.FIELD_ICON,"fa fa-download"
 						,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
@@ -205,6 +213,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 								return null;
 							}
 						});	
+				*/
 			}
 				
 			/*
@@ -231,6 +240,9 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 				parameters.put(ParameterName.stringify(ExpenditureNature.class), List.of((String)FieldHelper.readSystemIdentifier(MapHelper.readByKey(arguments, ExpenditureNature.class))));
 			if(MapHelper.readByKey(arguments, ActivityCategory.class) != null)
 				parameters.put(ParameterName.stringify(ActivityCategory.class), List.of((String)FieldHelper.readSystemIdentifier(MapHelper.readByKey(arguments, ActivityCategory.class))));
+			if(MapHelper.readByKey(arguments, ScopeFunction.class) != null)
+				parameters.put(ParameterName.stringify(ScopeFunction.class), List.of((String)FieldHelper.readSystemIdentifier(MapHelper.readByKey(arguments, ScopeFunction.class))));
+			
 			
 			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog("assignmentsEditManyView",MenuItem.FIELD___PARAMETERS__,parameters
 					, MenuItem.FIELD_VALUE,"Modifier",MenuItem.FIELD_ICON,"fa fa-pencil",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.OPEN_VIEW_IN_DIALOG);
@@ -254,7 +266,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			*/
 					
 			if(isAdministrationActionsVisible) {
-				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Éffacer les fonctions",MenuItem.FIELD_USER_INTERFACE_ACTION
+				/*dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Éffacer les fonctions",MenuItem.FIELD_USER_INTERFACE_ACTION
 						,UserInterfaceAction.EXECUTE_FUNCTION,MenuItem.FIELD_ICON,"fa fa-trash"
 						,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
 						,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
@@ -269,6 +281,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 								return null;
 							}
 						});
+				*/
 				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Appliquer",MenuItem.FIELD_USER_INTERFACE_ACTION
 						,UserInterfaceAction.EXECUTE_FUNCTION,MenuItem.FIELD_ICON,"fa fa-upload"
 						,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
@@ -287,6 +300,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			}
 			
 			if(isAdministrationActionsVisible) {	
+				/*
 				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Supprimer toutes les lignes",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
 						,MenuItem.FIELD_ICON,"fa fa-trash"
 						,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
@@ -300,6 +314,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 								return null;
 							}
 						});
+				*/
 			}
 
 			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("assignmentsEditView", CommandButton.FIELD_VALUE,"Modifier",CommandButton.FIELD_ICON,"fa fa-pencil");
@@ -321,6 +336,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		public Activity activity;
 		public ExpenditureNature expenditureNature;
 		public ActivityCategory activityCategory;
+		private ScopeFunction scopeFunction;
 		
 		public void initialize() {
 			if(activity == null) {
@@ -362,6 +378,10 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			if(activityCategory == null) {
 				activityCategory = WebController.getInstance().getRequestParameterEntityAsParent(ActivityCategory.class);
 			}
+			
+			if(scopeFunction == null)
+				scopeFunction = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(ScopeFunction.class,
+						ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI);
 		}
 	}
 	
@@ -524,11 +544,11 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 	
 		public static Collection<String> buildColumnsNames(PageArguments pageArguments) {
 			return buildColumnsNames(pageArguments.section, pageArguments.administrativeUnit, pageArguments.budgetSpecializationUnit, pageArguments.activity
-					, pageArguments.expenditureNature, pageArguments.activityCategory);
+					, pageArguments.expenditureNature, pageArguments.activityCategory,pageArguments.scopeFunction);
 		}
 		
 		public static Collection<String> buildColumnsNames(Section section,AdministrativeUnit administrativeUnit,BudgetSpecializationUnit budgetSpecializationUnit,Activity activity
-				,ExpenditureNature expenditureNature,ActivityCategory activityCategory) {
+				,ExpenditureNature expenditureNature,ActivityCategory activityCategory,ScopeFunction scopeFunction) {
 			Collection<String> columnsFieldsNames = new ArrayList<>();
 			if(activity == null && budgetSpecializationUnit == null && section == null)
 				columnsFieldsNames.add(Assignments.FIELD_SECTION_AS_STRING);
@@ -546,8 +566,23 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			if(activity == null && activityCategory == null)
 				columnsFieldsNames.add(Assignments.FIELD_ACTIVITY_CATEGORY_AS_STRING);			
 			
-			columnsFieldsNames.addAll(List.of(Assignments.FIELD_CREDIT_MANAGER_HOLDER_AS_STRING,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER_AS_STRING
-					,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER_AS_STRING,Assignments.FIELD_ACCOUNTING_HOLDER_AS_STRING));
+			if(scopeFunction == null || StringHelper.isBlank(scopeFunction.getFunctionCode())) {
+				columnsFieldsNames.addAll(List.of(Assignments.FIELD_CREDIT_MANAGER_HOLDER_AS_STRING,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER_AS_STRING
+						,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER_AS_STRING,Assignments.FIELD_ACCOUNTING_HOLDER_AS_STRING));
+			}else {
+				if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER.equals(scopeFunction.getFunctionCode()))
+					columnsFieldsNames.addAll(List.of(Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER_AS_STRING
+							,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER_AS_STRING,Assignments.FIELD_ACCOUNTING_HOLDER_AS_STRING));
+				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_HOLDER.equals(scopeFunction.getFunctionCode()))
+					columnsFieldsNames.addAll(List.of(Assignments.FIELD_CREDIT_MANAGER_HOLDER_AS_STRING
+							,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER_AS_STRING,Assignments.FIELD_ACCOUNTING_HOLDER_AS_STRING));
+				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_HOLDER.equals(scopeFunction.getFunctionCode()))
+					columnsFieldsNames.addAll(List.of(Assignments.FIELD_CREDIT_MANAGER_HOLDER_AS_STRING,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER_AS_STRING
+							,Assignments.FIELD_ACCOUNTING_HOLDER_AS_STRING));
+				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_HOLDER.equals(scopeFunction.getFunctionCode()))
+					columnsFieldsNames.addAll(List.of(Assignments.FIELD_CREDIT_MANAGER_HOLDER_AS_STRING,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER_AS_STRING
+							,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER_AS_STRING));					
+			}		
 			return columnsFieldsNames;
 		}
 	}
@@ -568,6 +603,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			activityCode(pageArguments.activity);
 			activityCategoryCode(pageArguments.activityCategory);
 			expenditureNatureCode(pageArguments.expenditureNature);
+			scopeFunctionCode(pageArguments.scopeFunction);
 			return this;
 		}
 		
@@ -613,6 +649,20 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			return this;
 		}
 		
+		public LazyDataModelListenerImpl scopeFunctionCode(ScopeFunction scopeFunction) {
+			if(scopeFunction == null)
+				return this;
+			if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER.equals(scopeFunction.getFunctionCode()))
+				getCreditManager().getHolder().setFilter(scopeFunction.getCode());
+			else if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_HOLDER.equals(scopeFunction.getFunctionCode()))
+				getAuthorizingOfficer().getHolder().setFilter(scopeFunction.getCode());
+			else if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_HOLDER.equals(scopeFunction.getFunctionCode()))
+				getFinancialController().getHolder().setFilter(scopeFunction.getCode());
+			else if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_HOLDER.equals(scopeFunction.getFunctionCode()))
+				getAccounting().getHolder().setFilter(scopeFunction.getCode());
+			return this;
+		}
+		
 		@Override
 		public Boolean getReaderUsable(LazyDataModel<Assignments> lazyDataModel) {
 			return Boolean.TRUE;
@@ -626,15 +676,19 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		@Override
 		public Filter.Dto instantiateFilter(LazyDataModel<Assignments> lazyDataModel) {
 			Filter.Dto filter = super.instantiateFilter(lazyDataModel);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER, creditManager.holder.filter, filter);
 			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER_IS_NULL, creditManager.holder.isNull, filter);
 			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER_IS_NOT_NULL, creditManager.holder.isNotNull, filter);
 			
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER, authorizingOfficer.holder.filter, filter);
 			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_IS_NULL, authorizingOfficer.holder.isNull, filter);
 			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_IS_NOT_NULL, authorizingOfficer.holder.isNotNull, filter);
 			
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER, financialController.holder.filter, filter);
 			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_IS_NULL, financialController.holder.isNull, filter);
 			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_IS_NOT_NULL, financialController.holder.isNotNull, filter);
 			
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACCOUNTING_HOLDER, accounting.holder.filter, filter);
 			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACCOUNTING_HOLDER_IS_NULL, accounting.holder.isNull, filter);
 			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACCOUNTING_HOLDER_IS_NOT_NULL, accounting.holder.isNotNull, filter);
 			
@@ -652,15 +706,16 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		}
 		
 		@Getter @Setter @Accessors(chain=true)
-		public static class ScopeFunction implements Serializable {
+		public static class ScopeFunctionData implements Serializable {
+			private String filter;
 			private Boolean isNull;
 			private Boolean isNotNull;
 		}
 		
 		@Getter @Setter @Accessors(chain=true)
 		public static class HolderAndAssistant implements Serializable {
-			private ScopeFunction holder = new ScopeFunction();
-			private ScopeFunction assistant = new ScopeFunction();
+			private ScopeFunctionData holder = new ScopeFunctionData();
+			private ScopeFunctionData assistant = new ScopeFunctionData();
 		}
 	}
 }

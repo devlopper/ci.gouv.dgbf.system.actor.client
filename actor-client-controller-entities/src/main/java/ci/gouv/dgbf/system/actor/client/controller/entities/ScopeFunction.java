@@ -31,6 +31,7 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceManyAutoComplete private Collection<Scope> scopes;
 	
 	@Input @InputChoice @InputChoiceOne @InputChoiceOneCombo private Function function;
+	private String functionCode;
 	private String functionAsString;
 	private Collection<String> functionsIdentifiers;
 	private Boolean isHolder;
@@ -75,6 +76,7 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	public static final String FIELD_SCOPE_AS_STRING = "scopeAsString";
 	
 	public static final String FIELD_FUNCTION = "function";
+	public static final String FIELD_FUNCTION_CODE = "functionCode";
 	public static final String FIELD_FUNCTION_AS_STRING = "functionAsString";
 	public static final String FIELD_IS_HOLDER = "isHolder";
 	

@@ -14,10 +14,12 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilter
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoiceOne;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AutoComplete;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.controller.Arguments;
 import org.cyk.utility.controller.EntityReader;
+import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.ActivityCategoryController;
@@ -30,6 +32,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.ActivityCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ExpenditureNature;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.client.controller.impl.ActivitySelectionController;
@@ -38,6 +41,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExpenditureNatureQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -46,7 +50,8 @@ import lombok.experimental.Accessors;
 public class AssignmentsFilterController extends AbstractFilterController implements Serializable {
 
 	private SelectOneCombo sectionSelectOne,administrativeUnitSelectOne,budgetSpecializationUnitSelectOne,actionSelectOne,activitySelectOne,activityCategorySelectOne
-		,expenditureNatureSelectOne,creditManagerHolderSelectOne;
+		,expenditureNatureSelectOne,functionSelectOne;
+	private AutoComplete scopeFunctionAutoComplete;
 	private ActivitySelectionController activitySelectionController;
 	
 	private Section sectionInitial;
@@ -55,7 +60,8 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 	private ActivityCategory activityCategoryInitial;
 	private ExpenditureNature expenditureNatureInitial;
 	private Activity activityInitial;
-	private ScopeFunction creditManagerHolderInitial,authorizingOfficerHolderInitial,financialControllerHolderInitial,accountingHolderInitial;
+	private Function functionInitial;
+	private ScopeFunction scopeFunctionInitial;
 	
 	public AssignmentsFilterController() {
 		activityInitial = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(Activity.class
@@ -95,6 +101,16 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 			activityCategoryInitial = __inject__(ActivityCategoryController.class).readBySystemIdentifier(activityInitial.getCategoryIdentifier());
 		if(activityCategoryInitial == null)
 			activityCategoryInitial = WebController.getInstance().getRequestParameterEntityAsParentBySystemIdentifier(ActivityCategory.class, null);
+		
+		if(scopeFunctionInitial == null)
+			scopeFunctionInitial = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(ScopeFunction.class
+					, ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI);	
+		/*	
+		if(functionInitial == null && scopeFunctionInitial != null)
+			functionInitial = scopeFunctionInitial.getFunction();
+		if(functionInitial == null)
+			functionInitial = WebController.getInstance().getRequestParameterEntityAsParentBySystemIdentifier(Function.class, null);
+		*/
 	}
 	
 	@Override
@@ -117,8 +133,10 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 			return activityCategoryInitial;
 		if(FIELD_ACTIVITY_SELECT_ONE.equals(fieldName))
 			return activityInitial;
-		if(FIELD_CREDIT_MANAGER_HOLDER_SELECT_ONE.equals(fieldName))
-			return creditManagerHolderInitial;
+		if(FIELD_FUNCTION_SELECT_ONE.equals(fieldName))
+			return functionInitial;
+		if(FIELD_SCOPE_FUNCTION_AUTO_COMPLETE.equals(fieldName))
+			return scopeFunctionInitial;
 		return super.getInputSelectOneInitialValue(fieldName, klass);
 	}
 	
@@ -130,7 +148,8 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 		buildInputSelectOne(FIELD_EXPENDITURE_NATURE_SELECT_ONE, ExpenditureNature.class);
 		buildInputSelectOne(FIELD_ACTIVITY_CATEGORY_SELECT_ONE, ActivityCategory.class);
 		buildInputSelectOne(FIELD_ACTIVITY_SELECT_ONE, Activity.class);
-		buildInputSelectOne(FIELD_CREDIT_MANAGER_HOLDER_SELECT_ONE, ScopeFunction.class);
+		//buildInputSelectOne(FIELD_FUNCTION_SELECT_ONE, ScopeFunction.class);
+		buildInputSelectOne(FIELD_SCOPE_FUNCTION_AUTO_COMPLETE, ScopeFunction.class);
 		enableValueChangeListeners();		
 		selectByValueSystemIdentifier();		
 	}
@@ -142,10 +161,11 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 		expenditureNatureSelectOne.enableValueChangeListener(List.of(activitySelectOne));
 		activityCategorySelectOne.enableValueChangeListener(List.of(activitySelectOne));
 		activitySelectOne.enableValueChangeListener(List.of());
+		//functionSelectOne.enableValueChangeListener(List.of());
 	}
 	
 	private void selectByValueSystemIdentifier() {
-		sectionSelectOne.selectByValueSystemIdentifier();		
+		sectionSelectOne.selectByValueSystemIdentifier();
 	}
 	
 	@Override
@@ -162,8 +182,10 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 			return buildActivityCategorySelectOne((ActivityCategory) value);
 		if(FIELD_ACTIVITY_SELECT_ONE.equals(fieldName))
 			return buildActivitySelectOne((Activity) value);
-		//if(FIELD_CREDIT_MANAGER_HOLDER_SELECT_ONE.equals(fieldName))
-		//	return buildCreditManagerHolderSelectOne((ScopeFunction) value);
+		if(FIELD_FUNCTION_SELECT_ONE.equals(fieldName))
+			return FunctionListPage.buildSelectOne((Function) value);
+		if(FIELD_SCOPE_FUNCTION_AUTO_COMPLETE.equals(fieldName))
+			return scopeFunctionAutoComplete = buildScopeFunctionAutoComplete((ScopeFunction) value);
 		return null;
 	}
 	
@@ -349,25 +371,32 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Activité");
 		return input;
 	}
-	/*
-	private SelectOneCombo buildCreditManagerHolderSelectOne(ScopeFunction creditManagerHolder) {		
-		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,creditManagerHolder,SelectOneCombo.FIELD_CHOICE_CLASS,Section.class,SelectOneCombo.FIELD_LISTENER
-				,new SelectOneCombo.Listener.AbstractImpl<ScopeFunction>() {
+	
+	private AutoComplete buildScopeFunctionAutoComplete(ScopeFunction scopeFunction) {
+		AutoComplete input = AutoComplete.build(AutoComplete.FIELD_ENTITY_CLASS,ScopeFunction.class,AutoComplete.FIELD_READER_USABLE,Boolean.TRUE
+				,AutoComplete.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Poste",AutoComplete.FIELD_VALUE,scopeFunction
+				,AutoComplete.FIELD_READ_QUERY_IDENTIFIER,ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTIONS_CODES
+				,AutoComplete.FIELD_LISTENER,new AutoComplete.Listener.AbstractImpl<ScopeFunction>() {
 			@Override
-			public Collection<ScopeFunction> computeChoices(AbstractInputChoice<ScopeFunction> input) {
-				Collection<ScopeFunction> choices = EntityReader.getInstance().readMany(ScopeFunction.class, ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI
-						, ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_CODE
-						,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER);
-				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
-				return choices;
+			public Filter.Dto instantiateFilter(AutoComplete autoComplete) {
+				return new Filter.Dto()
+						.addField(ScopeFunctionQuerier.PARAMETER_NAME_CODE, autoComplete.get__queryString__())
+						.addField(ScopeFunctionQuerier.PARAMETER_NAME_NAME, autoComplete.get__queryString__())
+						.addField(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTIONS_CODES, ci.gouv.dgbf.system.actor.server.persistence.entities.Function.EXECUTION_HOLDERS_CODES)
+						;
 			}
-		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"G.C.");
-		Function function = EntityReader.getInstance().readOne(Function.class, FunctionQuerier.QUERY_IDENTIFIER_READ_BY_CODE_FOR_UI
-				,FunctionQuerier.PARAMETER_NAME_CODE, ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER);
-		input.getOutputLabel().setTitle(function == null ? "Gestionnaire de crédits" : function.getName());
+			
+			@Override
+			public Arguments<ScopeFunction> instantiateArguments(AutoComplete autoComplete) {
+				Arguments<ScopeFunction> arguments = super.instantiateArguments(autoComplete);
+				arguments.getRepresentationArguments().getQueryExecutorArguments().addProcessableTransientFieldsNames(ScopeFunction.FIELD_FUNCTION_CODE);
+				return arguments;
+			}
+		});
+		input.enableAjaxItemSelect();
 		return input;
 	}
-	*/
+	
 	@Override
 	protected Collection<Map<Object, Object>> buildLayoutCells() {
 		Collection<Map<Object, Object>> cellsMaps = new ArrayList<>();
@@ -388,28 +417,28 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 		
 		if(expenditureNatureSelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,expenditureNatureSelectOne.getOutputLabel().setTitle("Nature de dépense"),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,expenditureNatureSelectOne,Cell.FIELD_WIDTH,5));	
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,expenditureNatureSelectOne,Cell.FIELD_WIDTH,3));	
 		}
 		
 		if(activityCategorySelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activityCategorySelectOne.getOutputLabel().setTitle("Catégorie d'activité"),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activityCategorySelectOne,Cell.FIELD_WIDTH,5));	
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activityCategorySelectOne,Cell.FIELD_WIDTH,7));	
 		}
 		
 		if(activitySelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activitySelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activitySelectOne,Cell.FIELD_WIDTH,9));	
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activitySelectOne,Cell.FIELD_WIDTH,10));	
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activitySelectionController.getShowDialogCommandButton(),Cell.FIELD_WIDTH,1));
 		}
 		/*	
-		if(creditManagerHolderSelectOne != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,creditManagerHolderSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,creditManagerHolderSelectOne,Cell.FIELD_WIDTH,10));	
-		}
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,functionSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,functionSelectOne,Cell.FIELD_WIDTH,3));
 		*/	
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeFunctionAutoComplete.getOutputLabel(),Cell.FIELD_WIDTH,1));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeFunctionAutoComplete,Cell.FIELD_WIDTH,10));
+		
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,filterCommandButton,Cell.FIELD_WIDTH,1));
-		
-		
+			
 		return cellsMaps;
 	}
 	
@@ -441,12 +470,20 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 		return (Activity) AbstractInput.getValue(activitySelectOne);
 	}
 	
+	public Function getFunction() {
+		return (Function) AbstractInput.getValue(functionSelectOne);
+	}
+	
+	public ScopeFunction getScopeFunction() {
+		return (ScopeFunction) AbstractInput.getValue(scopeFunctionAutoComplete);
+	}
+	
 	public static final String FIELD_SECTION_SELECT_ONE = "sectionSelectOne";
 	public static final String FIELD_ADMINISTRATIVE_UNIT_SELECT_ONE = "administrativeUnitSelectOne";
 	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT_SELECT_ONE = "budgetSpecializationUnitSelectOne";
 	public static final String FIELD_EXPENDITURE_NATURE_SELECT_ONE = "expenditureNatureSelectOne";
 	public static final String FIELD_ACTIVITY_CATEGORY_SELECT_ONE = "activityCategorySelectOne";
 	public static final String FIELD_ACTIVITY_SELECT_ONE = "activitySelectOne";
-	
-	public static final String FIELD_CREDIT_MANAGER_HOLDER_SELECT_ONE = "creditManagerHolderSelectOne";
+	public static final String FIELD_FUNCTION_SELECT_ONE = "functionSelectOne";
+	public static final String FIELD_SCOPE_FUNCTION_AUTO_COMPLETE = "scopeFunctionAutoComplete";
 }

@@ -11,17 +11,13 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.controller.Arguments;
-import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.__kernel__.random.RandomHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
-import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
@@ -32,23 +28,16 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.Comman
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AutoComplete;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntitySaver;
+import org.cyk.utility.persistence.query.Filter;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.FunctionController;
-import ci.gouv.dgbf.system.actor.client.controller.entities.Action;
-import ci.gouv.dgbf.system.actor.client.controller.entities.Activity;
-import ci.gouv.dgbf.system.actor.client.controller.entities.ActivityCategory;
-import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Assignments;
-import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
-import ci.gouv.dgbf.system.actor.client.controller.entities.ExpenditureNature;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
-import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.server.business.api.AssignmentsBusiness;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActivityQuerier;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import lombok.Getter;
 import lombok.Setter;
@@ -72,62 +61,16 @@ public class AssignmentsCollectionEditScopeFunctionsPage extends AbstractPageCon
 	private Map<String,Object[]> initialValues = new HashMap<>();
 	private CommandButton saveCommandButton;
 	
-	private Section section;
-	private AdministrativeUnit administrativeUnit;
-	private BudgetSpecializationUnit budgetSpecializationUnit;
-	private Action action;
-	private Activity activity;
-	private ExpenditureNature expenditureNature;
-	private ActivityCategory activityCategory;
+	private AssignmentsListPage.PageArguments pageArguments = new AssignmentsListPage.PageArguments();
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return AssignmentsListPage.buildWindowTitleValue("Modification des affectations", section,administrativeUnit, budgetSpecializationUnit,action, activity
-				,expenditureNature,activityCategory);
+		return AssignmentsListPage.buildWindowTitleValue("Modification des affectations", pageArguments);
 	}
 	
 	@Override
 	protected void __listenPostConstruct__() {
-		if(activity == null) {
-			activity = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(Activity.class
-					,ActivityQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI);
-			if(activity != null) {
-				section = activity.getSection();
-				budgetSpecializationUnit = activity.getBudgetSpecializationUnit();
-				administrativeUnit = activity.getAdministrativeUnit();
-				expenditureNature = activity.getExpenditureNature();
-				activityCategory = activity.getCategory();
-			}
-		}
-		
-		if(budgetSpecializationUnit == null) {
-			budgetSpecializationUnit = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(BudgetSpecializationUnit.class
-					,BudgetSpecializationUnitQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI);
-			if(budgetSpecializationUnit != null) {
-				section = budgetSpecializationUnit.getSection();
-			}
-		}
-		
-		if(administrativeUnit == null) {
-			administrativeUnit = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(AdministrativeUnit.class
-					,AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI);
-			if(administrativeUnit != null && section == null) {
-				section = administrativeUnit.getSection();
-			}
-		}
-		
-		if(section == null) {
-			section = WebController.getInstance().getRequestParameterEntityAsParent(Section.class);
-		}
-		
-		if(expenditureNature == null) {
-			expenditureNature = WebController.getInstance().getRequestParameterEntityAsParent(ExpenditureNature.class);
-		}
-		
-		if(activityCategory == null) {
-			activityCategory = WebController.getInstance().getRequestParameterEntityAsParent(ActivityCategory.class);
-		}
-		
+		pageArguments.initialize();
 		super.__listenPostConstruct__();
 		creditManagerHolderAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER
 				,FIELD_CREDIT_MANAGER_HOLDER_AUTO_COMPLETE,Assignments.FIELD_CREDIT_MANAGER_HOLDER);
@@ -154,11 +97,8 @@ public class AssignmentsCollectionEditScopeFunctionsPage extends AbstractPageCon
 	
 	private DataTable buildDataTable() {
 		assignmentsDataTable = AssignmentsListPage.buildDataTable(DataTable.FIELD_LISTENER,new DataTableListenerImpl()
-				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,AssignmentsListPage.DataTableListenerImpl.buildColumnsNames(section,administrativeUnit
-						, budgetSpecializationUnit, activity, expenditureNature, activityCategory)
-				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl()
-				.sectionCode(section).administrativeUnitCode(administrativeUnit).budgetSpecializationUnitCode(budgetSpecializationUnit).activityCode(activity)
-				.activityCategoryCode(activityCategory).expenditureNatureCode(expenditureNature)
+				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,AssignmentsListPage.DataTableListenerImpl.buildColumnsNames(pageArguments)
+				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl().applyPageArguments(pageArguments)
 				,DataTable.FIELD_RENDER_TYPE,org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection.RenderType.INPUT
 				);
 		return assignmentsDataTable;
