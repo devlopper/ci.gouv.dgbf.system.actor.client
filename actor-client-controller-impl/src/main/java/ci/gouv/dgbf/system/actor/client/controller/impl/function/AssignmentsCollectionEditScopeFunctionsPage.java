@@ -211,6 +211,13 @@ public class AssignmentsCollectionEditScopeFunctionsPage extends AbstractPageCon
 			//Disable tooltip while editing
 			return null;
 		}
+		
+		public Object getCellValueByRecordByColumn(Object record, Integer recordIndex, Column column, Integer columnIndex) {
+			Object value = super.getCellValueByRecordByColumn(record, recordIndex, column, columnIndex);		
+			if(value instanceof String)
+				return StringHelper.getFirstWord((String)value);			
+			return value;
+		}
 	}
 	
 	@Getter @Setter @Accessors(chain=true)

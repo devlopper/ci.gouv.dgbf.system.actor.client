@@ -12,11 +12,9 @@ import javax.inject.Named;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
-import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
@@ -46,19 +44,12 @@ import lombok.Setter;
 public class AffectationPage extends AbstractPageContainerManagedImpl implements Serializable {
 
 	private Layout layout;
-	private DataTable dataTable;
-	
-	private Cell assignmentsTabCell;
-	private TabMenu assignmentsTabMenu;
-	private Cell dataTableCell;
+	private DataTable dataTable;	
 	
 	private TabMenu tabMenu;
 	private Integer selectedAssignmentsTabIndex;
 	private TabMenu.Tab selectedTab,selectedAssignmentsTab;
-	private SelectOneCombo sectionSelectOne,administrativeUnitSelectOne,budgetSpecializationUnitSelectOne,activitySelectOne,activityCategorySelectOne
-		,expenditureNatureSelectOne,functionSelectOne;
-	private List<Function> functions;
-
+	
 	private ScopeFunctionFilterController scopeFunctionFilterController;
 	private AssignmentsFilterController assignmentsFilterController;
 	
@@ -148,16 +139,8 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	}
 	
 	public TabMenu buildAssignmentsTabMenu() {
-		String sectionCode = (String) FieldHelper.readBusinessIdentifier(assignmentsFilterController.getSection());
-		String administrativeUnitCode = (String) FieldHelper.readBusinessIdentifier(assignmentsFilterController.getAdministrativeUnit());
-		String budgetSpecializationUnitCode = (String) FieldHelper.readBusinessIdentifier(assignmentsFilterController.getBudgetSpecializationUnit());
-		String activityCategoryCode = (String) FieldHelper.readBusinessIdentifier(assignmentsFilterController.getActivityCategory());
-		String expenditureNatureCode = (String) FieldHelper.readBusinessIdentifier(assignmentsFilterController.getExpenditureNature());
-		String activityCode = (String) FieldHelper.readBusinessIdentifier(assignmentsFilterController.getActivity());
-		
 		Collection<MenuItem> items = new ArrayList<>();
-		Long total = count(TAB_ASSIGNMENTS_ALL, sectionCode,administrativeUnitCode, budgetSpecializationUnitCode, activityCategoryCode, expenditureNatureCode, activityCode
-				,assignmentsFilterController.getScopeFunction());
+		Long total = count(TAB_ASSIGNMENTS_ALL);
 		for(Integer index = 0; index < ASSIGNMENTS_TABS.size(); index = index + 1) {
 			TabMenu.Tab tab = ASSIGNMENTS_TABS.get(index);
 			MenuItem item = new MenuItem();
@@ -171,8 +154,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 				if(NumberHelper.isEqualToZero(total)) {
 					name = String.format("%s (%s)", tab.getName(),0);
 				}else {
-					count = count(tab.getParameterValue(), sectionCode, administrativeUnitCode, budgetSpecializationUnitCode, activityCategoryCode, expenditureNatureCode
-							, activityCode,assignmentsFilterController.getScopeFunction());
+					count = count(tab.getParameterValue());
 					name = String.format("%s (%s|%s)", tab.getName(),count,NumberHelper.computePercentageAsInteger(count, total)+"%");
 				}				
 			}
@@ -194,30 +176,14 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	}
 	
 	public DataTable buildAssignmentsDataTable() {
-		String sectionCode = (String) FieldHelper.readBusinessIdentifier(assignmentsFilterController.getSection());
-		String administrativeUnitCode = (String) FieldHelper.readBusinessIdentifier(assignmentsFilterController.getAdministrativeUnit());
-		String budgetSpecializationUnitCode = (String) FieldHelper.readBusinessIdentifier(assignmentsFilterController.getBudgetSpecializationUnit());
-		String activityCategoryCode = (String) FieldHelper.readBusinessIdentifier(assignmentsFilterController.getActivityCategory());
-		String expenditureNatureCode = (String) FieldHelper.readBusinessIdentifier(assignmentsFilterController.getExpenditureNature());
-		String activityCode = (String) FieldHelper.readBusinessIdentifier(assignmentsFilterController.getActivity());
-		
 		AssignmentsListPage.LazyDataModelListenerImpl lazyDataModelListener = new AssignmentsListPage.LazyDataModelListenerImpl();
-		lazyDataModelListener.setSectionCode(sectionCode);
-		lazyDataModelListener.setAdministrativeUnitCode(administrativeUnitCode);
-		lazyDataModelListener.setBudgetSpecializationUnitCode(budgetSpecializationUnitCode);
-		lazyDataModelListener.setActivityCategoryCode(activityCategoryCode);
-		lazyDataModelListener.setExpenditureNatureCode(expenditureNatureCode);
-		lazyDataModelListener.setActivityCode(activityCode);		
-		lazyDataModelListener.scopeFunctionCode(assignmentsFilterController.getScopeFunction());
-		
+		lazyDataModelListener.applyFilterController(assignmentsFilterController);
 		if(selectedAssignmentsTab.getParameterValue().equals(TAB_ASSIGNMENTS_FULLY_ASSIGNED)) {
 			lazyDataModelListener.setAllHoldersDefined(Boolean.TRUE);
 		}else if(selectedAssignmentsTab.getParameterValue().equals(TAB_ASSIGNMENTS_NOT_FULLY_ASSIGNED)) {
 			lazyDataModelListener.setSomeHoldersNotDefined(Boolean.TRUE);
-		}
-		
-		AssignmentsListPage.DataTableListenerImpl dataTableListener = new AssignmentsListPage.DataTableListenerImpl();
-		
+		}		
+		AssignmentsListPage.DataTableListenerImpl dataTableListener = new AssignmentsListPage.DataTableListenerImpl();		
 		DataTable dataTable = AssignmentsListPage.buildDataTable(AssignmentsListPage.class,Boolean.TRUE
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,lazyDataModelListener
 				,DataTable.ConfiguratorImpl.FIELD_LISTENER,dataTableListener
@@ -234,11 +200,10 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		return dataTable;
 	}
 	
-	private Long count(String value, String sectionCode, String administrativeUnitCode, String budgetSpecializationUnitCode, String activityCategoryCode
-			, String expenditureNatureCode, String activityCode,ScopeFunction scopeFunction) {
+	private Long count(String value) {
 		Arguments<Assignments> arguments = new Arguments<>();
 		arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setQueryExecutorArguments(
-				new QueryExecutorArguments.Dto().setQueryIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER)));
+				new QueryExecutorArguments.Dto().setQueryIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER_USING_IDENTIFIERS_ONLY)));
 		if(value.equals(TAB_ASSIGNMENTS_FULLY_ASSIGNED)) {
 			arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_ALL_HOLDERS_DEFINED,Boolean.TRUE);
 		}else if(value.equals(TAB_ASSIGNMENTS_NOT_FULLY_ASSIGNED)) {
@@ -246,26 +211,10 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		}else if(value.equals(TAB_ASSIGNMENTS_ALL)) {
 			
 		}
-		arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_SECTION, sectionCode);
-		arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT, administrativeUnitCode);
-		arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT, budgetSpecializationUnitCode);
-		arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_CATEGORY, activityCategoryCode);
-		arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_EXPENDITURE_NATURE, expenditureNatureCode);
-		arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY, activityCode);
-		if(scopeFunction != null && StringHelper.isNotBlank(scopeFunction.getFunctionCode())) {
-			if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER.equals(scopeFunction.getFunctionCode()))
-				arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER
-						, scopeFunction.getCode());
-			else if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_HOLDER.equals(scopeFunction.getFunctionCode()))
-				arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER
-						, scopeFunction.getCode());
-			else if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_HOLDER.equals(scopeFunction.getFunctionCode()))
-				arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER
-						, scopeFunction.getCode());
-			else if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_HOLDER.equals(scopeFunction.getFunctionCode()))
-				arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_ACCOUNTING_HOLDER
-						, scopeFunction.getCode());
-		}
+		AssignmentsListPage.LazyDataModelListenerImpl.addFieldIfValueNotNull(arguments.getRepresentationArguments().getQueryExecutorArguments().getFilter(Boolean.TRUE)
+				, assignmentsFilterController.getSection(), assignmentsFilterController.getAdministrativeUnit(), assignmentsFilterController.getBudgetSpecializationUnit()
+				, assignmentsFilterController.getAction(), assignmentsFilterController.getExpenditureNature(), assignmentsFilterController.getActivityCategory()
+				, assignmentsFilterController.getActivity(), null, assignmentsFilterController.getScopeFunction());
 		return EntityCounter.getInstance().count(Assignments.class,arguments);
 	}
 	
@@ -323,14 +272,4 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	);
 	
 	public static final String OUTCOME = "affectationView";
-	public static Map<String,Integer> FUNCTIONS_ORDERS_INDEXES = Map.of(
-		ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER,0
-		,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_ASSISTANT,1
-		,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_HOLDER,2
-		,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_ASSISTANT,3
-		,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_HOLDER,4
-		,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_ASSISTANT,5
-		,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_HOLDER,6
-		,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_ASSISTANT,7
-	);
 }

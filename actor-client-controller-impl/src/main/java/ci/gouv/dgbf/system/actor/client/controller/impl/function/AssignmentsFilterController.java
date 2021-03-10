@@ -209,6 +209,20 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 					budgetSpecializationUnitSelectOne.updateChoices();
 					//budgetSpecializationUnitSelectOne.selectByValueSystemIdentifier();
 				}
+				
+				if(expenditureNatureSelectOne != null) {
+					expenditureNatureSelectOne.updateChoices();
+					expenditureNatureSelectOne.selectFirstChoice();
+				}
+				if(activityCategorySelectOne != null) {
+					activityCategorySelectOne.updateChoices();
+					activityCategorySelectOne.selectFirstChoice();
+				}
+				
+				if(activitySelectOne != null) {
+					activitySelectOne.updateChoices();
+					activitySelectOne.selectFirstChoice();
+				}
 			}
 		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Section");
 		return input;

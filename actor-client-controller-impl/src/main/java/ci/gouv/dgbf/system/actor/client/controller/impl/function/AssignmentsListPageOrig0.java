@@ -13,13 +13,18 @@ import javax.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.constant.ConstantEmpty;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.__kernel__.session.SessionManager;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
+import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
@@ -34,9 +39,6 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.AbstractM
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
-import org.cyk.utility.controller.Arguments;
-import org.cyk.utility.controller.EntitySaver;
-import org.cyk.utility.persistence.query.Filter;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.FunctionController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Action;
@@ -45,7 +47,6 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.ActivityCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Assignments;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
-import ci.gouv.dgbf.system.actor.client.controller.entities.EconomicNature;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ExpenditureNature;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
@@ -63,7 +64,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Named @ViewScoped @Getter @Setter
-public class AssignmentsListPage extends AbstractEntityListPageContainerManagedImpl<Assignments> implements Serializable {
+public class AssignmentsListPageOrig0 extends AbstractEntityListPageContainerManagedImpl<Assignments> implements Serializable {
 
 	private Layout layout;
 	
@@ -335,7 +336,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		public Activity activity;
 		public ExpenditureNature expenditureNature;
 		public ActivityCategory activityCategory;
-		public ScopeFunction scopeFunction;
+		private ScopeFunction scopeFunction;
 		
 		public void initialize() {
 			if(activity == null) {
@@ -392,7 +393,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		private Function creditManagerHolder,creditManagerAssistant,authorizingOfficerHolder,authorizingOfficerAssistant
 			,financialControllerHolder,financialControllerAssistant,accountingHolder,accountingAssistant;
 		private String tooltipFormat;
-		private Boolean showTooltip,filterable = Boolean.FALSE;
+		private Boolean showTooltip;
 		
 		public DataTableListenerImpl() {
 			creditManagerHolder = __inject__(FunctionController.class).readByBusinessIdentifier(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER);
@@ -430,118 +431,86 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			map.put(Column.ConfiguratorImpl.FIELD_EDITABLE, Boolean.FALSE);			
 			if(Assignments.FIELD_ACTIVITY_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Activité");
-				if(Boolean.TRUE.equals(filterable)) {
-					map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,filterable);
-					map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_ACTIVITY);
-				}				
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_ACTIVITY);
 				map.put(Column.FIELD_WIDTH, "100");
 			}else if(Assignments.FIELD_ECONOMIC_NATURE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "NE");
-				if(Boolean.TRUE.equals(filterable)) {
-					map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,filterable);
-					map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_ECONOMIC_NATURE);
-				}				
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_ECONOMIC_NATURE);
 				map.put(Column.FIELD_WIDTH, "100");
 			}else if(Assignments.FIELD_CREDIT_MANAGER_HOLDER_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readBusinessIdentifier(creditManagerHolder));
-				if(Boolean.TRUE.equals(filterable)) {
-					map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,filterable);
-					map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER);
-				}
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER);
 			}else if(Assignments.FIELD_CREDIT_MANAGER_ASSISTANT_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readBusinessIdentifier(creditManagerAssistant));
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
-				if(Boolean.TRUE.equals(filterable)) {
-					map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_ASSISTANT);
-				}
+				map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_ASSISTANT);
 			}else if(Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readBusinessIdentifier(authorizingOfficerHolder));
-				if(Boolean.TRUE.equals(filterable)) {
-					map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,filterable);
-					map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER);
-				}
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER);
 			}else if(Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readBusinessIdentifier(authorizingOfficerAssistant));
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
-				if(Boolean.TRUE.equals(filterable)) {
-					map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_AUTHORIZING_OFFICER_ASSISTANT);
-				}
+				map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_AUTHORIZING_OFFICER_ASSISTANT);
 			}else if(Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readBusinessIdentifier(financialControllerHolder));
-				if(Boolean.TRUE.equals(filterable)) {
-					map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,filterable);
-					map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER);
-				}
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER);
 			}else if(Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readBusinessIdentifier(financialControllerAssistant));
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
-				if(Boolean.TRUE.equals(filterable)) {
-					map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_FINANCIAL_CONTROLLER_ASSISTANT);
-				}
+				map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_FINANCIAL_CONTROLLER_ASSISTANT);
 			}else if(Assignments.FIELD_ACCOUNTING_HOLDER_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readBusinessIdentifier(accountingHolder));
-				if(Boolean.TRUE.equals(filterable)) {
-					map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,filterable);
-					map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_ACCOUNTING_HOLDER);
-				}
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_ACCOUNTING_HOLDER);
 			}else if(Assignments.FIELD_ACCOUNTING_ASSISTANT_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readBusinessIdentifier(accountingAssistant));
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
-				if(Boolean.TRUE.equals(filterable)) {
-					map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_ACCOUNTING_ASSISTANT);
-				}
+				map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_ACCOUNTING_ASSISTANT);
 			}else if(Assignments.FIELD_SECTION_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Section");
 				map.put(Column.FIELD_WIDTH, "80");
 				//map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
-				if(Boolean.TRUE.equals(filterable)) {
-					map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,filterable);
-					map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_SECTION);
-				}
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_SECTION);
 			}else if(Assignments.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "USB");
 				map.put(Column.FIELD_WIDTH, "100");
 				//map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
-				if(Boolean.TRUE.equals(filterable)) {
-					map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,filterable);
-					map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT);
-				}
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT);
 			}else if(Assignments.FIELD_ACTION_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Action");
 				map.put(Column.FIELD_WIDTH, "120");
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
-				if(Boolean.TRUE.equals(filterable)) {
-					map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,filterable);
-					map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_ACTION);
-				}
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_ACTION);
 			}else if(Assignments.FIELD_ADMINISTRATIVE_UNIT_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "UA");
 				map.put(Column.FIELD_WIDTH, "100");
 				//map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
-				if(Boolean.TRUE.equals(filterable)) {
-					map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,filterable);
-					map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT);
-				}
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT);
 			}else if(Assignments.FIELD_ACTIVITY_CATEGORY_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "CA");
 				map.put(Column.FIELD_WIDTH, "100");
 				//map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
-				if(Boolean.TRUE.equals(filterable)) {
-					map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,filterable);
-					map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_CATEGORY);
-				}
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_CATEGORY);
 			}else if(Assignments.FIELD_EXPENDITURE_NATURE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "ND");
 				map.put(Column.FIELD_WIDTH, "80");
 				//map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
-				if(Boolean.TRUE.equals(filterable)) {
-					map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,filterable);
-					map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_EXPENDITURE_NATURE);
-				}
+				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,Boolean.TRUE);
+				map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_EXPENDITURE_NATURE);
 			}
 			return map;
 		}
-		/*
+		
 		public Object getCellValueByRecordByColumn(Object record, Integer recordIndex, Column column, Integer columnIndex) {
 			Object value = super.getCellValueByRecordByColumn(record, recordIndex, column, columnIndex);		
 			if(value instanceof String)
@@ -568,7 +537,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			}
 			return super.getTooltipByRecord(record, recordIndex);
 		}
-		*/
+		
 		public Class<? extends AbstractMenu> getRecordMenuClass(AbstractCollection collection) {
 			return ContextMenu.class;
 		}
@@ -620,89 +589,68 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 	
 	@Getter @Setter @Accessors(chain=true)
 	public static class LazyDataModelListenerImpl extends LazyDataModel.Listener.AbstractImpl<Assignments> implements Serializable {		
-		//private String sectionCode,budgetSpecializationUnitCode,actionCode,expenditureNatureCode,activityCategoryCode,activityCode,economicNatureCode,administrativeUnitCode;
+		private String sectionCode,budgetSpecializationUnitCode,actionCode,expenditureNatureCode,activityCategoryCode,activityCode,economicNatureCode,administrativeUnitCode;
 		private Boolean allHoldersDefined,someHoldersNotDefined;
-		
-		private Section section;
-		private AdministrativeUnit administrativeUnit;
-		private BudgetSpecializationUnit budgetSpecializationUnit;
-		private Action action;
-		private ExpenditureNature expenditureNature;
-		private ActivityCategory activityCategory;
-		private Activity activity;
-		private EconomicNature economicNature;
-		private ScopeFunction scopeFunction;		
-		
-		private HolderAndAssistant creditManager = new HolderAndAssistant(),authorizingOfficer = new HolderAndAssistant()
-				,financialController = new HolderAndAssistant(),accounting = new HolderAndAssistant();
-		
-		public LazyDataModelListenerImpl section(Section section) {
-			this.section = section;
-			return this;
-		}
-		
-		public LazyDataModelListenerImpl administrativeUnit(AdministrativeUnit administrativeUnit) {
-			this.administrativeUnit = administrativeUnit;
-			return this;
-		}
-		
-		public LazyDataModelListenerImpl budgetSpecializationUnit(BudgetSpecializationUnit budgetSpecializationUnit) {
-			this.budgetSpecializationUnit = budgetSpecializationUnit;
-			return this;
-		}
-		
-		public LazyDataModelListenerImpl action(Action action) {
-			return this;
-		}
-		
-		public LazyDataModelListenerImpl expenditureNature(ExpenditureNature expenditureNature) {
-			this.expenditureNature = expenditureNature;
-			return this;
-		}
-		
-		public LazyDataModelListenerImpl activityCategory(ActivityCategory activityCategory) {
-			this.activityCategory = activityCategory;
-			return this;
-		}
-		
-		public LazyDataModelListenerImpl activity(Activity activity) {
-			this.activity = activity;
-			return this;
-		}
-		
-		public LazyDataModelListenerImpl economicNature(EconomicNature economicNature) {
-			this.economicNature = economicNature;
-			return this;
-		}
+		private HolderAndAssistant creditManager = new HolderAndAssistant()
+				,authorizingOfficer = new HolderAndAssistant()
+				,financialController = new HolderAndAssistant()
+				,accounting = new HolderAndAssistant();
 		
 		public LazyDataModelListenerImpl applyPageArguments(PageArguments pageArguments){
-			section(pageArguments.section);
-			administrativeUnit(pageArguments.administrativeUnit);
-			budgetSpecializationUnit(pageArguments.budgetSpecializationUnit);
-			activity(pageArguments.activity);
-			activityCategory(pageArguments.activityCategory);
-			expenditureNature(pageArguments.expenditureNature);
-			scopeFunction(pageArguments.scopeFunction);
+			sectionCode(pageArguments.section);
+			administrativeUnitCode(pageArguments.administrativeUnit);
+			budgetSpecializationUnitCode(pageArguments.budgetSpecializationUnit);
+			activityCode(pageArguments.activity);
+			activityCategoryCode(pageArguments.activityCategory);
+			expenditureNatureCode(pageArguments.expenditureNature);
+			scopeFunctionCode(pageArguments.scopeFunction);
 			return this;
 		}
 		
-		public LazyDataModelListenerImpl applyFilterController(AssignmentsFilterController filterController){
-			if(filterController == null)
+		public LazyDataModelListenerImpl sectionCode(Section section) {
+			if(section == null)
 				return this;
-			section(filterController.getSection());
-			administrativeUnit(filterController.getAdministrativeUnit());
-			budgetSpecializationUnit(filterController.getBudgetSpecializationUnit());
-			action(filterController.getAction());
-			activity(filterController.getActivity());
-			expenditureNature(filterController.getExpenditureNature());
-			activityCategory(filterController.getActivityCategory());
-			scopeFunction(filterController.getScopeFunction());
+			setSectionCode(section.getCode());
 			return this;
 		}
 		
-		public LazyDataModelListenerImpl scopeFunction(ScopeFunction scopeFunction) {
-			this.scopeFunction = scopeFunction;
-			if(this.scopeFunction == null)
+		public LazyDataModelListenerImpl administrativeUnitCode(AdministrativeUnit administrativeUnit) {
+			if(administrativeUnit == null)
+				return this;
+			setAdministrativeUnitCode(administrativeUnit.getCode());
+			return this;
+		}
+		
+		public LazyDataModelListenerImpl budgetSpecializationUnitCode(BudgetSpecializationUnit budgetSpecializationUnit) {
+			if(budgetSpecializationUnit == null)
+				return this;
+			setBudgetSpecializationUnitCode(budgetSpecializationUnit.getCode());
+			return this;
+		}
+		
+		public LazyDataModelListenerImpl activityCode(Activity activity) {
+			if(activity == null)
+				return this;
+			setActivityCode(activity.getCode());
+			return this;
+		}
+		
+		public LazyDataModelListenerImpl activityCategoryCode(ActivityCategory activityCategory) {
+			if(activityCategory == null)
+				return this;
+			setActivityCategoryCode(activityCategory.getCode());
+			return this;
+		}
+		
+		public LazyDataModelListenerImpl expenditureNatureCode(ExpenditureNature expenditureNature) {
+			if(expenditureNature == null)
+				return this;
+			setExpenditureNatureCode(expenditureNature.getCode());
+			return this;
+		}
+		
+		public LazyDataModelListenerImpl scopeFunctionCode(ScopeFunction scopeFunction) {
+			if(scopeFunction == null)
 				return this;
 			if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER.equals(scopeFunction.getFunctionCode()))
 				getCreditManager().getHolder().setFilter(scopeFunction.getCode());
@@ -722,53 +670,37 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		
 		@Override
 		public String getReadQueryIdentifier(LazyDataModel<Assignments> lazyDataModel) {
-			return AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY;
+			return AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI;
 		}
 		
 		@Override
 		public Filter.Dto instantiateFilter(LazyDataModel<Assignments> lazyDataModel) {
 			Filter.Dto filter = super.instantiateFilter(lazyDataModel);
-			filter = addFieldIfValueNotNull(filter, section, administrativeUnit, budgetSpecializationUnit, action, expenditureNature, activityCategory, activity, economicNature
-					, scopeFunction);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER, creditManager.holder.filter, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER_IS_NULL, creditManager.holder.isNull, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER_IS_NOT_NULL, creditManager.holder.isNotNull, filter);
+			
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER, authorizingOfficer.holder.filter, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_IS_NULL, authorizingOfficer.holder.isNull, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_IS_NOT_NULL, authorizingOfficer.holder.isNotNull, filter);
+			
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER, financialController.holder.filter, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_IS_NULL, financialController.holder.isNull, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_IS_NOT_NULL, financialController.holder.isNotNull, filter);
+			
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACCOUNTING_HOLDER, accounting.holder.filter, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACCOUNTING_HOLDER_IS_NULL, accounting.holder.isNull, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACCOUNTING_HOLDER_IS_NOT_NULL, accounting.holder.isNotNull, filter);
+			
 			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ALL_HOLDERS_DEFINED, allHoldersDefined, filter);
 			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_SOME_HOLDERS_NOT_DEFINED, someHoldersNotDefined, filter);
 			
-			return filter;
-		}
-		
-		public static Filter.Dto addFieldIfValueNotNull(Filter.Dto filter,Section section,AdministrativeUnit administrativeUnit,BudgetSpecializationUnit budgetSpecializationUnit
-				,Action action,ExpenditureNature expenditureNature,ActivityCategory activityCategory,Activity activity,EconomicNature economicNature,ScopeFunction scopeFunction) {
-			
-			/* Identifiers */
-			
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_SECTION_IDENTIFIER, FieldHelper.readSystemIdentifier(section), filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT_IDENTIFIER, FieldHelper.readSystemIdentifier(administrativeUnit), filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER, FieldHelper.readSystemIdentifier(budgetSpecializationUnit), filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACTION_IDENTIFIER, FieldHelper.readSystemIdentifier(action), filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_EXPENDITURE_NATURE_IDENTIFIER, FieldHelper.readSystemIdentifier(expenditureNature), filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_CATEGORY_IDENTIFIER, FieldHelper.readSystemIdentifier(activityCategory), filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_IDENTIFIER, FieldHelper.readSystemIdentifier(activity), filter);
-			
-			if(scopeFunction != null) {
-				if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER.equals(scopeFunction.getFunctionCode()))
-					filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER_IDENTIFIER, FieldHelper.readSystemIdentifier(scopeFunction), filter);
-				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_HOLDER.equals(scopeFunction.getFunctionCode()))
-					filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_IDENTIFIER, FieldHelper.readSystemIdentifier(scopeFunction), filter);
-				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_HOLDER.equals(scopeFunction.getFunctionCode()))
-					filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_IDENTIFIER, FieldHelper.readSystemIdentifier(scopeFunction), filter);
-				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_HOLDER.equals(scopeFunction.getFunctionCode()))
-					filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACCOUNTING_HOLDER_IDENTIFIER, FieldHelper.readSystemIdentifier(scopeFunction), filter);	
-			}
-			
-			/* Codes */ // This is used because some functionalities still use codes for filtering. Think to a better way to handled it.
-			
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_SECTION, FieldHelper.readBusinessIdentifier(section), filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT, FieldHelper.readBusinessIdentifier(administrativeUnit), filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT, FieldHelper.readBusinessIdentifier(budgetSpecializationUnit), filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACTION, FieldHelper.readBusinessIdentifier(action), filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_EXPENDITURE_NATURE, FieldHelper.readBusinessIdentifier(expenditureNature), filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_CATEGORY, FieldHelper.readBusinessIdentifier(activityCategory), filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY, FieldHelper.readBusinessIdentifier(activity), filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_SECTION, sectionCode, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT, administrativeUnitCode, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT, budgetSpecializationUnitCode, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_EXPENDITURE_NATURE, expenditureNatureCode, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_CATEGORY, activityCategoryCode, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY, activityCode, filter);
 			
 			return filter;
 		}
