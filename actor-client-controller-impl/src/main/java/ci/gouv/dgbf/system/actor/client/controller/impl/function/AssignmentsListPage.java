@@ -316,6 +316,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 				*/
 			}
 
+			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("assignmentsReadView", CommandButton.FIELD_VALUE,"Détails",CommandButton.FIELD_ICON,"fa fa-eye");
 			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("assignmentsEditView", CommandButton.FIELD_VALUE,"Modifier",CommandButton.FIELD_ICON,"fa fa-pencil");
 		}
 		return dataTable;

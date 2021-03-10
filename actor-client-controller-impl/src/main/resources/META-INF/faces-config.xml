@@ -632,6 +632,12 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>assignmentsReadView</from-outcome>
+			<to-view-id>/private/assignments/read.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>assignmentsEditView</from-outcome>
 			<to-view-id>/private/assignments/editscopefunctions.jsf</to-view-id>
 			<redirect />
