@@ -135,7 +135,8 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 			public Object buildControl(Cell cell) {
 				return buildAssignmentsDataTable();
 			}
-		},Cell.FIELD_WIDTH,12));		
+		},Cell.FIELD_WIDTH,12));
+		
 	}
 	
 	public TabMenu buildAssignmentsTabMenu() {
@@ -205,9 +206,9 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setQueryExecutorArguments(
 				new QueryExecutorArguments.Dto().setQueryIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER_USING_IDENTIFIERS_ONLY)));
 		if(value.equals(TAB_ASSIGNMENTS_FULLY_ASSIGNED)) {
-			arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_ALL_HOLDERS_DEFINED,Boolean.TRUE);
+			arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_ALL_HOLDERS_DEFINED_NULLABLE,Boolean.FALSE);
 		}else if(value.equals(TAB_ASSIGNMENTS_NOT_FULLY_ASSIGNED)) {
-			arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_SOME_HOLDERS_NOT_DEFINED,Boolean.TRUE);
+			arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_SOME_HOLDERS_NOT_DEFINED_NULLABLE,Boolean.FALSE);
 		}else if(value.equals(TAB_ASSIGNMENTS_ALL)) {
 			
 		}

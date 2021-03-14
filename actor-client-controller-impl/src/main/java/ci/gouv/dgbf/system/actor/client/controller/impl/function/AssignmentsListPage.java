@@ -731,8 +731,10 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			Filter.Dto filter = super.instantiateFilter(lazyDataModel);
 			filter = addFieldIfValueNotNull(filter, section, administrativeUnit, budgetSpecializationUnit, action, expenditureNature, activityCategory, activity, economicNature
 					, scopeFunction);
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ALL_HOLDERS_DEFINED, allHoldersDefined, filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_SOME_HOLDERS_NOT_DEFINED, someHoldersNotDefined, filter);
+			if(allHoldersDefined != null && Boolean.TRUE.equals(allHoldersDefined))
+				filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ALL_HOLDERS_DEFINED_NULLABLE, Boolean.FALSE, filter);
+			if(someHoldersNotDefined != null && Boolean.TRUE.equals(someHoldersNotDefined))
+				filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_SOME_HOLDERS_NOT_DEFINED_NULLABLE, Boolean.FALSE, filter);
 			
 			return filter;
 		}
