@@ -214,6 +214,10 @@ public class AssignmentsEditScopeFunctionsByModelPage extends AbstractPageContai
 	@Getter @Setter @Accessors(chain=true)
 	public class DataTableListenerImpl extends AssignmentsListPage.DataTableListenerImpl implements Serializable {
 		
+		public DataTableListenerImpl() {
+			filterable = Boolean.TRUE;
+		}
+		
 	}
 	
 	@Getter @Setter @Accessors(chain=true)

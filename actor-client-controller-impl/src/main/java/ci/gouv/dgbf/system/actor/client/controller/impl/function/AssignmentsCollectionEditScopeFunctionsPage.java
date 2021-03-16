@@ -184,6 +184,11 @@ public class AssignmentsCollectionEditScopeFunctionsPage extends AbstractPageCon
 	
 	@Getter @Setter @Accessors(chain=true)
 	public class DataTableListenerImpl extends AssignmentsListPage.DataTableListenerImpl implements Serializable {
+		
+		public DataTableListenerImpl() {
+			filterable = Boolean.TRUE;
+		}
+		
 		@Override
 		public Map<Object, Object> getColumnArguments(AbstractDataTable dataTable, String fieldName) {
 			Map<Object, Object> map = super.getColumnArguments(dataTable, fieldName);

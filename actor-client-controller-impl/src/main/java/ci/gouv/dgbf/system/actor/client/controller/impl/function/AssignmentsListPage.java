@@ -390,10 +390,10 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 	@Getter @Setter @Accessors(chain=true)
 	public static class DataTableListenerImpl extends DataTable.Listener.AbstractImpl implements Serializable {
 		
-		private Function creditManagerHolder,creditManagerAssistant,authorizingOfficerHolder,authorizingOfficerAssistant
+		protected Function creditManagerHolder,creditManagerAssistant,authorizingOfficerHolder,authorizingOfficerAssistant
 			,financialControllerHolder,financialControllerAssistant,accountingHolder,accountingAssistant;
-		private String tooltipFormat;
-		private Boolean showTooltip,filterable = Boolean.FALSE;
+		protected String tooltipFormat;
+		protected Boolean showTooltip,filterable = Boolean.FALSE;
 		
 		public DataTableListenerImpl() {
 			creditManagerHolder = __inject__(FunctionController.class).readByBusinessIdentifier(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER);
