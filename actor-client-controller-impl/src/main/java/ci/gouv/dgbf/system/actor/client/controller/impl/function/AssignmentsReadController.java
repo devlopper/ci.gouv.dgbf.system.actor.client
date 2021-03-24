@@ -57,7 +57,7 @@ public class AssignmentsReadController implements Serializable {
 		addLabelValue(cellsMaps, "Comptable", assignments.getAccountingHolderAsString());
 		addLabelValue(cellsMaps, "Assistant comptable", assignments.getAccountingAssistantAsString());
 		
-		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_LABEL_VALUE,Boolean.TRUE
+		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_LABEL_VALUE,Boolean.TRUE
 				,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
 		return this;
 	}
