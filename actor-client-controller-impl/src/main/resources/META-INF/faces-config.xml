@@ -494,6 +494,12 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>scopeFunctionCreateView</from-outcome>
+			<to-view-id>/private/scopefunction/create.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>scopeFunctionEditView</from-outcome>
 			<to-view-id>/private/scopefunction/edit.jsf</to-view-id>
 			<redirect />

@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
+	
 	<name>Controller Implementation based on Primefaces</name>
 
 	<parent>
@@ -53,27 +52,16 @@
 			<version>1.7</version>
 		</dependency>
 		
-		<!-- Integration Test -->
-		
 		<dependency>
-			<groupId>ci.gouv.dgbf.system.actor.server.representation</groupId>
-			<artifactId>actor-server-representation-impl</artifactId>
+			<groupId>org.cyk.jee.utility.client.deployment</groupId>
+			<artifactId>jee-utility-client-deployment</artifactId>
 			<version>0.1.0</version>
-			<scope>provided</scope>
 		</dependency>
-		
+				
 		<dependency>
-			<groupId>org.cyk.jee.utility.server.deployment</groupId>
-			<artifactId>jee-utility-server-deployment</artifactId>
-			<version>0.1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		
-        <dependency>
 			<groupId>org.cyk.jee.utility.test.arquillian.bootablejar</groupId>
 			<artifactId>jee-utility-test-arquillian-bootablejar</artifactId>
 			<version>0.1.0</version>
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>

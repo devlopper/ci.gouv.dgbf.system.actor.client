@@ -31,4 +31,11 @@ public interface AdministrativeUnitController extends ControllerEntity<Administr
 		return readVisiblesBySectionIdentifierByActorCodeForUI(sectionIdentifier,SessionHelper.getUserName());
 	}
 	
+	default Collection<AdministrativeUnit> readBySectionIdentifier(String sectionIdentifier) {
+		if(StringHelper.isBlank(sectionIdentifier))
+			return null;
+		return EntityReader.getInstance().readMany(AdministrativeUnit.class
+				,AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_FOR_UI,ScopeQuerier.PARAMETER_NAME_SECTION_IDENTIFIER, sectionIdentifier);
+	}
+	
 }

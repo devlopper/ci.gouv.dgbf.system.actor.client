@@ -24,19 +24,25 @@ import lombok.experimental.Accessors;
 @Getter @Setter @NoArgsConstructor @Accessors(chain=true)
 public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableAuditedImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
+
+	@Input @InputChoice @InputChoiceOne @InputChoiceOneCombo private String codePrefix;
 	
 	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceOneAutoComplete private Scope scope;
+	private String scopeIdentifier;
 	private String scopeAsString;
 	@Input @InputChoice @InputChoiceOne @InputChoiceOneRadio private ScopeType scopeType;	
 	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceManyAutoComplete private Collection<Scope> scopes;
 	
 	@Input @InputChoice @InputChoiceOne @InputChoiceOneCombo private Function function;
+	private String functionIdentifier;
+	@Input @InputChoice @InputChoiceOne @InputChoiceOneCombo private String subFunctionCode;
 	private String functionCode;
 	private String functionAsString;
 	private Collection<String> functionsIdentifiers;
 	private Boolean isHolder;
 	
 	@Input @InputChoice @InputChoiceOne @InputChoiceOneCombo private Locality locality;
+	private String localityIdentifier;
 	private String localityAsString;
 	
 	private Integer numberOfActor;
@@ -61,6 +67,10 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	private String actorAsString;	
 	private String assignmentToActorMessage;
 	
+	@Input @InputChoice @InputChoiceOne @InputChoiceOneCombo private Section section;
+	@Input @InputChoice @InputChoiceOne @InputChoiceOneCombo private AdministrativeUnit administrativeUnit;
+	@Input @InputChoice @InputChoiceOne @InputChoiceOneCombo private BudgetSpecializationUnit budgetSpecializationUnit;
+	
 	/**/
 	
 	private String signatureSpecimenReadReportURIQuery;
@@ -69,6 +79,8 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	public String toString() {
 		return code+" "+name;
 	}
+	
+	public static final String FIELD_CODE_PREFIX = "codePrefix";
 	
 	public static final String FIELD_SCOPE = "scope";
 	public static final String FIELD_SCOPES = "scopes";
@@ -79,6 +91,7 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	public static final String FIELD_FUNCTION_CODE = "functionCode";
 	public static final String FIELD_FUNCTION_AS_STRING = "functionAsString";
 	public static final String FIELD_IS_HOLDER = "isHolder";
+	public static final String FIELD_SUB_FUNCTION_CODE = "subFunctionCode";
 	
 	public static final String FIELD_LOCALITY = "locality";
 	public static final String FIELD_LOCALITY_AS_STRING = "localityAsString";
@@ -103,4 +116,8 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	
 	public static final String FIELD_ACTOR_AS_STRING = "actorAsString";
 	public static final String FIELD_ASSIGNMENT_TO_ACTOR_MESSAGE = "assignmentToActorMessage";
+	
+	public static final String FIELD_SECTION = "section";
+	public static final String FIELD_ADMINISTRATIVE_UNIT = "administrativeUnit";
+	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT = "budgetSpecializationUnit";
 }

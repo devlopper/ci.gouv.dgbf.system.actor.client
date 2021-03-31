@@ -31,6 +31,14 @@ public interface FunctionController extends ControllerEntity<Function> {
 		return functions;
 	}
 	
+	default Collection<Function> readHolders() {
+		return EntityReader.getInstance().readMany(Function.class,FunctionQuerier.QUERY_IDENTIFIER_READ_EXECUTION_HOLDERS);
+	}
+	
+	default Collection<Function> readHoldersAndAssistants() {
+		return EntityReader.getInstance().readMany(Function.class,FunctionQuerier.QUERY_IDENTIFIER_READ_EXECUTION_HOLDERS_AND_ASSISTANTS);
+	}
+	
 	default Collection<Function> readCreditManagersAuthorizingOfficers() {
 		List<Function> functions = (List<Function>) EntityReader.getInstance().readMany(Function.class, FunctionQuerier.QUERY_IDENTIFIER_READ_BY_CODES_FOR_UI
 				,FunctionQuerier.PARAMETER_NAME_CODES,List.of(
