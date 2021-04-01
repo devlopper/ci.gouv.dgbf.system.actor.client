@@ -47,6 +47,7 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	
 	private Integer numberOfActor;
 	private Collection<String> actorsNames;
+	private Collection<String> actorsCodes;
 	private Collection<String> actorsAsStrings;
 	
 	@Input @InputBoolean @InputBooleanButton private Boolean shared;	
@@ -98,6 +99,7 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	
 	public static final String FIELD_NUMBER_OF_ACTOR = "numberOfActor";
 	public static final String FIELD_ACTORS_NAMES = "actorsNames";
+	public static final String FIELD_ACTORS_CODES = "actorsCodes";
 	public static final String FIELD_ACTORS_AS_STRINGS = "actorsAsStrings";
 	
 	public static final String FIELD_SHARED = "shared";

@@ -110,7 +110,7 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 			}
 		}
 		columnsNames.addAll(List.of(ScopeFunction.FIELD_SHARED_AS_STRING,ScopeFunction.FIELD_REQUESTED_AS_STRING,ScopeFunction.FIELD_GRANTED_AS_STRING
-				,ScopeFunction.FIELD_ACTORS_AS_STRINGS));
+				,ScopeFunction.FIELD_ACTORS_CODES));
 		
 		//Function function = StringHelper.isBlank(functionIdentifier) ? null : __inject__(FunctionController.class).readBySystemIdentifier(functionIdentifier);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, columnsNames);
@@ -265,6 +265,10 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 				map.put(Column.FIELD_HEADER_TEXT, "Utilisateur(s)");
 				map.put(Column.FIELD_WIDTH, "400");
 				map.put(Column.FIELD_VISIBLE, Boolean.TRUE);
+			}else if(ScopeFunction.FIELD_ACTORS_CODES.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Utilisateur(s)");
+				map.put(Column.FIELD_WIDTH, "400");
+				map.put(Column.FIELD_VISIBLE, Boolean.TRUE);
 			}
 			return map;
 		}
@@ -284,10 +288,10 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 				if(StringHelper.isBlank(((ScopeFunction)record).getParentAsString()))
 					return null;
 				return StringUtils.substringBefore(((ScopeFunction)record).getParentAsString(), " ");
-			}else if(ScopeFunction.FIELD_ACTORS_AS_STRINGS.equals(column.getFieldName())) {
-				if(CollectionHelper.isEmpty(((ScopeFunction)record).getActorsNames()))
+			}else if(ScopeFunction.FIELD_ACTORS_CODES.equals(column.getFieldName())) {
+				if(CollectionHelper.isEmpty(((ScopeFunction)record).getActorsCodes()))
 					return null;
-				return StringHelper.concatenate(((ScopeFunction)record).getActorsNames().stream().map(x -> StringUtils.substringBefore(x, " "))
+				return StringHelper.concatenate(((ScopeFunction)record).getActorsCodes().stream().map(x -> StringUtils.substringBefore(x, " "))
 						.collect(Collectors.toList()),",");
 			}
 			return super.getCellValueByRecordByColumn(record, recordIndex, column, columnIndex);
@@ -336,7 +340,7 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 		public Arguments<ScopeFunction> instantiateArguments(LazyDataModel<ScopeFunction> lazyDataModel) {
 			Arguments<ScopeFunction> arguments = super.instantiateArguments(lazyDataModel);
 			ArrayList<String> list = new ArrayList<>();
-			list.addAll(List.of(ScopeFunction.FIELD_REQUESTED,ScopeFunction.FIELD_GRANTED,ScopeFunction.FIELD_ACTORS_AS_STRINGS));
+			list.addAll(List.of(ScopeFunction.FIELD_REQUESTED,ScopeFunction.FIELD_GRANTED,ScopeFunction.FIELD_ACTORS_CODES));
 			arguments.getRepresentationArguments().getQueryExecutorArguments().setProcessableTransientFieldsNames(list);
 			return arguments;
 		}
