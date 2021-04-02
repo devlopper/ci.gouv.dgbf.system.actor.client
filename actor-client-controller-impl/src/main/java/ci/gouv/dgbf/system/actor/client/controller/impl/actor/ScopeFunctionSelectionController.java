@@ -284,23 +284,23 @@ public class ScopeFunctionSelectionController implements Serializable {
 					return null;
 				Function function = (Function)functionSelectOne.getValue();
 				String functionIdentifier = function.getIdentifier();
-				String scopeCode = null;
+				Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>();
+				arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments());
+				arguments.getRepresentationArguments().setQueryExecutorArguments(new QueryExecutorArguments.Dto());
 				if(Boolean.TRUE.equals(function.isCreditManager())) {
 					if(administrativeUnitSelectOne == null || administrativeUnitSelectOne.getValue() ==  null)
 						return null;
-					scopeCode = ((AdministrativeUnit)administrativeUnitSelectOne.getValue()).getCode();
+					arguments.getRepresentationArguments().getQueryExecutorArguments().setQueryIdentifier(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI);
+					arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterFieldsValues(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER
+							,functionIdentifier,ScopeFunctionQuerier.PARAMETER_NAME_SCOPE_CODE_NAME,((AdministrativeUnit)administrativeUnitSelectOne.getValue()).getCode());
 				}
 				if(Boolean.TRUE.equals(function.isAuthorizingOfficer())) {
 					if(budgetSpecializationUnitSelectOne == null || budgetSpecializationUnitSelectOne.getValue() ==  null)
 						return null;
-					scopeCode = ((BudgetSpecializationUnit)budgetSpecializationUnitSelectOne.getValue()).getCode();
+					arguments.getRepresentationArguments().getQueryExecutorArguments().setQueryIdentifier(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_BY_FUNCTION_IDENTIFIER_BY_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER);
+					arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterFieldsValues(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER
+							,functionIdentifier,ScopeFunctionQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER,((BudgetSpecializationUnit)budgetSpecializationUnitSelectOne.getValue()).getIdentifier());
 				}
-				Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>();
-				arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments());
-				arguments.getRepresentationArguments().setQueryExecutorArguments(new QueryExecutorArguments.Dto());
-				arguments.getRepresentationArguments().getQueryExecutorArguments().setQueryIdentifier(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI);
-				arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterFieldsValues(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER
-						,functionIdentifier,ScopeFunctionQuerier.PARAMETER_NAME_SCOPE_CODE_NAME,scopeCode);
 				ArrayList<String> list = new ArrayList<>();
 				list.addAll(List.of(ScopeFunction.FIELD_REQUESTED,ScopeFunction.FIELD_GRANTED,ScopeFunction.FIELD_IS_HOLDER));
 				arguments.getRepresentationArguments().getQueryExecutorArguments().setProcessableTransientFieldsNames(list);
