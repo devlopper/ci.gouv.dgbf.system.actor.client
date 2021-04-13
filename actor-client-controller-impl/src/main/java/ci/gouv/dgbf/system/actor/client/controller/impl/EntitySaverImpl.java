@@ -162,6 +162,8 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				arguments.setRepresentation(AssignmentsRepresentation.getProxy());
 			else if(AssignmentsBusiness.IMPORT.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(AssignmentsRepresentation.getProxy());
+			else if(AssignmentsBusiness.IMPORT_NEWS.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(AssignmentsRepresentation.getProxy());
 			else if(AssignmentsBusiness.EXPORT.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(AssignmentsRepresentation.getProxy());
 			
@@ -484,6 +486,10 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 		}
 		if(arguments != null && AssignmentsBusiness.IMPORT.equals(arguments.getActionIdentifier()))
 			return ((AssignmentsRepresentation)representation).import_(SessionHelper.getUserName());
+		
+		if(arguments != null && AssignmentsBusiness.IMPORT_NEWS.equals(arguments.getActionIdentifier()))
+			return ((AssignmentsRepresentation)representation).importNews(SessionHelper.getUserName());
+		
 		if(arguments != null && AssignmentsBusiness.EXPORT.equals(arguments.getActionIdentifier()))
 			return ((AssignmentsRepresentation)representation).export(SessionHelper.getUserName());
 		

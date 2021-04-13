@@ -159,7 +159,22 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		if(Boolean.TRUE.equals(MapHelper.readByKey(arguments, AssignmentsListPage.class))) {
 			Boolean isAdministrationActionsVisible = !Boolean.TRUE.equals(SessionManager.getInstance().isUserLogged()) 
 					|| Boolean.TRUE.equals(SessionManager.getInstance().isUserHasOneOfRoles(Profile.CODE_ADMINISTRATEUR));
-			if(isAdministrationActionsVisible) {
+			if(isAdministrationActionsVisible) {				
+				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Importer les nouvelles lignes",MenuItem.FIELD_USER_INTERFACE_ACTION
+						,UserInterfaceAction.EXECUTE_FUNCTION,MenuItem.FIELD_ICON,"fa fa-download"
+						,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
+						,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+							@Override
+							protected Object __runExecuteFunction__(AbstractAction action) {
+								Assignments assignments = new Assignments();
+								assignments.setOverridable(Boolean.FALSE);
+								Arguments<Assignments> arguments = new Arguments<Assignments>().addCreatablesOrUpdatables(assignments);
+								arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
+										.setActionIdentifier(AssignmentsBusiness.IMPORT_NEWS));
+								EntitySaver.getInstance().save(Assignments.class, arguments);
+								return null;
+							}
+						});
 				/*
 				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Initialiser",MenuItem.FIELD_USER_INTERFACE_ACTION
 						,UserInterfaceAction.EXECUTE_FUNCTION,MenuItem.FIELD_ICON,"fa fa-download"
@@ -176,7 +191,8 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 								return null;
 							}
 						});
-				
+				*/
+				/*
 				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Dériver les valeurs",MenuItem.FIELD_USER_INTERFACE_ACTION
 						,UserInterfaceAction.EXECUTE_FUNCTION,MenuItem.FIELD_ICON,"fa fa-gear"
 						,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
