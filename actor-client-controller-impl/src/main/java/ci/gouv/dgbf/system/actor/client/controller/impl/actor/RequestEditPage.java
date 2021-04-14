@@ -303,9 +303,10 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 			writeBudgetariesScopeFunctionsIdentifiers();
 			
 			String actionIdentifier = null;
-			if(Action.CREATE.equals(form.getAction()))
+			if(Action.CREATE.equals(form.getAction())) {
 				actionIdentifier = RequestBusiness.INITIALIZE;
-			else if(Action.UPDATE.equals(form.getAction()))
+				request.setElectronicMailAddress(RequestBusiness.normalizeElectronicMailAddress(request.getElectronicMailAddress()));
+			}else if(Action.UPDATE.equals(form.getAction()))
 				actionIdentifier = RequestBusiness.RECORD;
 			else
 				throw new RuntimeException("Action "+form.getAction()+" not yet handled");
