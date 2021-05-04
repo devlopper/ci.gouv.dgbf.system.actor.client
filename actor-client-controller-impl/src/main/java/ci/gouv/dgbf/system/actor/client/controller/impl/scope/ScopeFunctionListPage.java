@@ -120,12 +120,17 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 				.setFunctionIdentifier(functionIdentifier));
 		DataTable dataTable = DataTable.build(arguments);
 		dataTable.set__parentElement__(scopeFunction);
-		if(Boolean.TRUE.equals(SessionManager.getInstance().isUserHasRole(Profile.CODE_ADMINISTRATEUR))) {
+		if(Boolean.TRUE.equals(SessionManager.getInstance().isUserHasOneOfRoles(Profile.CODE_ADMINISTRATEUR,Profile.CODE_CHARGE_ETUDE_DAS))) {
 			if(scopeFunction == null) {
 				dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();
 			}else {
-				dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog(ScopeFunctionAssistantEditPage.OUTCOME,CommandButton.FIELD___ACTION__,Action.CREATE);
+				if(Boolean.TRUE.equals(SessionManager.getInstance().isUserHasOneOfRoles(Profile.CODE_ADMINISTRATEUR))) {
+					dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog(ScopeFunctionAssistantEditPage.OUTCOME,CommandButton.FIELD___ACTION__,Action.CREATE);
+				}
 			}
+		}
+		
+		if(Boolean.TRUE.equals(SessionManager.getInstance().isUserHasRole(Profile.CODE_ADMINISTRATEUR))) {
 			if(Boolean.TRUE.equals(MapHelper.readByKey(arguments, ScopeFunctionListPage.class))) {
 				//dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();
 				

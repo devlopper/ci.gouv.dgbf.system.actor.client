@@ -26,11 +26,11 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.InputTex
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityEditPageContainerManagedImpl;
 import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntityReader;
 import org.cyk.utility.controller.EntitySaver;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.AdministrativeUnitController;
 import ci.gouv.dgbf.system.actor.client.controller.api.BudgetSpecializationUnitController;
-import ci.gouv.dgbf.system.actor.client.controller.api.LocalityController;
 import ci.gouv.dgbf.system.actor.client.controller.api.ScopeFunctionController;
 import ci.gouv.dgbf.system.actor.client.controller.api.SectionController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
@@ -39,6 +39,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.Locality;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionBusiness;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.LocalityQuerier;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -148,7 +149,8 @@ public class ScopeFunctionCreatePage extends AbstractEntityEditPageContainerMana
 		localitySelectOneCombo.setListener(new SelectOneCombo.Listener.AbstractImpl<Locality>() {
 			@Override
 			protected Collection<Locality> __computeChoices__(AbstractInputChoice<Locality> input,Class<?> entityClass) {
-				List<Locality> choices = (List<Locality>) __inject__(LocalityController.class).read();
+				Collection<Locality> choices = EntityReader.getInstance().readMany(Locality.class, new Arguments<Locality>()
+						.queryIdentifier(LocalityQuerier.QUERY_IDENTIFIER_READ_DYNAMIC)); //(List<Locality>) __inject__(LocalityController.class).read();
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
 			}
