@@ -9,10 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.controller.Arguments;
-import org.cyk.utility.controller.EntityReader;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.random.RandomHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
@@ -23,6 +20,9 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOn
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputText;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntityReader;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.primefaces.PrimeFaces;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.FunctionComparator;
@@ -301,6 +301,21 @@ public class ScopeFunctionSelectionController implements Serializable {
 					arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterFieldsValues(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER
 							,functionIdentifier,ScopeFunctionQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER,((BudgetSpecializationUnit)budgetSpecializationUnitSelectOne.getValue()).getIdentifier());
 				}
+				if(Boolean.TRUE.equals(function.isFinancialController())) {
+					//if(AbstractInput.getValue(financialControllerServiceSelectOne) == null)
+					//	return null;
+					arguments.getRepresentationArguments().getQueryExecutorArguments().setQueryIdentifier(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI);
+					arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterFieldsValues(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER
+							,functionIdentifier);
+				}
+				if(Boolean.TRUE.equals(function.isAccounting())) {
+					//if(AbstractInput.getValue(accountingServiceSelectOne) == null)
+					//	return null;
+					arguments.getRepresentationArguments().getQueryExecutorArguments().setQueryIdentifier(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI);
+					arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterFieldsValues(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER
+							,functionIdentifier);
+				}
+				
 				ArrayList<String> list = new ArrayList<>();
 				list.addAll(List.of(ScopeFunction.FIELD_REQUESTED,ScopeFunction.FIELD_GRANTED,ScopeFunction.FIELD_IS_HOLDER));
 				arguments.getRepresentationArguments().getQueryExecutorArguments().setProcessableTransientFieldsNames(list);

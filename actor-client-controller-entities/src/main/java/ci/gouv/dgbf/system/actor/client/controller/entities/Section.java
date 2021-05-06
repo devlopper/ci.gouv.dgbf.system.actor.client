@@ -16,5 +16,5 @@ public class Section extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	@Override
 	public String toString() {
 		return code+" "+name;
-	}	
+	}
 }
