@@ -48,6 +48,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecialization
 import ci.gouv.dgbf.system.actor.client.controller.entities.EconomicNature;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ExpenditureNature;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Locality;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.client.controller.impl.Helper;
@@ -56,6 +57,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetSpecializationUnitQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.LocalityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 import lombok.Getter;
@@ -90,11 +92,12 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 	
 	public static String buildWindowTitleValue(String prefix,PageArguments pageArguments) {
 		return buildWindowTitleValue(prefix, pageArguments.section, pageArguments.administrativeUnit, pageArguments.budgetSpecializationUnit, pageArguments.action
-				, pageArguments.activity, pageArguments.expenditureNature, pageArguments.activityCategory,pageArguments.scopeFunction);
+				, pageArguments.activity, pageArguments.expenditureNature, pageArguments.activityCategory,pageArguments.scopeFunction,pageArguments.region
+				,pageArguments.department,pageArguments.subPrefecture);
 	}
 	
 	public static String buildWindowTitleValue(String prefix,Section section,AdministrativeUnit administrativeUnit,BudgetSpecializationUnit budgetSpecializationUnit,Action action,Activity activity
-			,ExpenditureNature expenditureNature,ActivityCategory activityCategory,ScopeFunction scopeFunction) {
+			,ExpenditureNature expenditureNature,ActivityCategory activityCategory,ScopeFunction scopeFunction,Locality region,Locality department,Locality subPrefecture) {
 		Collection<String> strings = new ArrayList<>();
 		strings.add(prefix);
 		if(section != null) {
@@ -127,6 +130,15 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		}else {
 			strings.add(activity.toString());
 		}
+		
+		if(region != null && department == null && subPrefecture == null)
+			strings.add(region.toString());
+		
+		if(department != null && subPrefecture == null)
+			strings.add(department.toString());
+		
+		if(subPrefecture != null)
+			strings.add(subPrefecture.toString());
 		
 		if(scopeFunction == null) {
 				
@@ -353,6 +365,9 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		public ExpenditureNature expenditureNature;
 		public ActivityCategory activityCategory;
 		public ScopeFunction scopeFunction;
+		public Locality region;
+		public Locality department;
+		public Locality subPrefecture;
 		
 		public void initialize() {
 			if(activity == null) {
@@ -379,8 +394,38 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 				administrativeUnit = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(AdministrativeUnit.class
 						,AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI);
 				if(administrativeUnit != null && section == null) {
-					section = administrativeUnit.getSection();
+					section = administrativeUnit.getSection();			
 				}
+			}
+			
+			if(administrativeUnit != null && subPrefecture == null)
+				subPrefecture = administrativeUnit.getLocality();			
+			
+			if(administrativeUnit != null && department == null)
+				department = administrativeUnit.getLocalityDepartment();
+			
+			if(administrativeUnit != null && region == null)
+				region = administrativeUnit.getLocalityRegion();
+			
+			if(subPrefecture == null) {
+				subPrefecture = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(Locality.class
+						,LocalityQuerier.QUERY_IDENTIFIER_READ_SUB_PREFECTURE_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI);
+				if(subPrefecture != null) {
+					region = subPrefecture.getRegion();
+					department = subPrefecture.getDepartment();
+				}
+			}
+			
+			if(department == null) {
+				department = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(Locality.class
+						,LocalityQuerier.QUERY_IDENTIFIER_READ_DEPARTMENT_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI);
+				if(department != null) {
+					region = department.getRegion();
+				}
+			}
+			
+			if(region == null) {
+				region = WebController.getInstance().getRequestParameterEntityAsParent(Locality.class);
 			}
 			
 			if(section == null) {
@@ -648,7 +693,10 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		private ActivityCategory activityCategory;
 		private Activity activity;
 		private EconomicNature economicNature;
-		private ScopeFunction scopeFunction;		
+		private ScopeFunction scopeFunction;
+		private Locality region;
+		private Locality department;
+		private Locality subPrefecture;
 		
 		private HolderAndAssistant creditManager = new HolderAndAssistant(),authorizingOfficer = new HolderAndAssistant()
 				,financialController = new HolderAndAssistant(),accounting = new HolderAndAssistant();
@@ -692,6 +740,21 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			return this;
 		}
 		
+		public LazyDataModelListenerImpl region(Locality region) {
+			this.region = region;
+			return this;
+		}
+		
+		public LazyDataModelListenerImpl department(Locality department) {
+			this.department = department;
+			return this;
+		}
+		
+		public LazyDataModelListenerImpl subPrefecture(Locality subPrefecture) {
+			this.subPrefecture = subPrefecture;
+			return this;
+		}
+		
 		public LazyDataModelListenerImpl applyPageArguments(PageArguments pageArguments){
 			section(pageArguments.section);
 			administrativeUnit(pageArguments.administrativeUnit);
@@ -700,6 +763,9 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			activityCategory(pageArguments.activityCategory);
 			expenditureNature(pageArguments.expenditureNature);
 			scopeFunction(pageArguments.scopeFunction);
+			region(pageArguments.region);
+			department(pageArguments.department);
+			subPrefecture(pageArguments.subPrefecture);
 			return this;
 		}
 		
@@ -714,6 +780,9 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			expenditureNature(filterController.getExpenditureNature());
 			activityCategory(filterController.getActivityCategory());
 			scopeFunction(filterController.getScopeFunction());
+			region(filterController.getRegion());
+			department(filterController.getDepartment());
+			subPrefecture(filterController.getSubPrefecture());
 			return this;
 		}
 		
@@ -746,7 +815,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		public Filter.Dto instantiateFilter(LazyDataModel<Assignments> lazyDataModel) {
 			Filter.Dto filter = super.instantiateFilter(lazyDataModel);
 			filter = addFieldIfValueNotNull(filter, section, administrativeUnit, budgetSpecializationUnit, action, expenditureNature, activityCategory, activity, economicNature
-					, scopeFunction);
+					, scopeFunction,region,department,subPrefecture);
 			if(allHoldersDefined != null && Boolean.TRUE.equals(allHoldersDefined))
 				filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ALL_HOLDERS_DEFINED_NULLABLE, Boolean.FALSE, filter);
 			if(someHoldersNotDefined != null && Boolean.TRUE.equals(someHoldersNotDefined))
@@ -756,7 +825,8 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		}
 		
 		public static Filter.Dto addFieldIfValueNotNull(Filter.Dto filter,Section section,AdministrativeUnit administrativeUnit,BudgetSpecializationUnit budgetSpecializationUnit
-				,Action action,ExpenditureNature expenditureNature,ActivityCategory activityCategory,Activity activity,EconomicNature economicNature,ScopeFunction scopeFunction) {
+				,Action action,ExpenditureNature expenditureNature,ActivityCategory activityCategory,Activity activity,EconomicNature economicNature,ScopeFunction scopeFunction
+				,Locality region,Locality department,Locality subPrefecture) {
 			
 			/* Identifiers */
 			
@@ -767,6 +837,10 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_EXPENDITURE_NATURE_IDENTIFIER, FieldHelper.readSystemIdentifier(expenditureNature), filter);
 			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_CATEGORY_IDENTIFIER, FieldHelper.readSystemIdentifier(activityCategory), filter);
 			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_IDENTIFIER, FieldHelper.readSystemIdentifier(activity), filter);
+			
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_REGION_IDENTIFIER, FieldHelper.readSystemIdentifier(region), filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_DEPARTMENT_IDENTIFIER, FieldHelper.readSystemIdentifier(department), filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_SUB_PREFECTURE_IDENTIFIER, FieldHelper.readSystemIdentifier(subPrefecture), filter);
 			
 			if(scopeFunction != null) {
 				if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER.equals(scopeFunction.getFunctionCode()))

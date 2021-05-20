@@ -170,6 +170,16 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 			item.addParameterFromInstanceIfConditionIsTrue(assignmentsFilterController.getActivityCategory(),assignmentsFilterController.getActivity() == null);
 			item.addParameterFromInstanceIfConditionIsTrue(assignmentsFilterController.getFunction(),assignmentsFilterController.getScopeFunction() == null);
 			item.addParameterFromInstance(assignmentsFilterController.getScopeFunction());
+			if(assignmentsFilterController.getSubPrefecture() == null) {
+				if(assignmentsFilterController.getDepartment() == null) {
+					if(assignmentsFilterController.getRegion() == null) {
+						
+					}else
+						item.addParameterFromInstance(assignmentsFilterController.getRegion());
+				}else
+					item.addParameterFromInstance(assignmentsFilterController.getDepartment());
+			}else
+				item.addParameterFromInstance(assignmentsFilterController.getSubPrefecture());
 		}		
 		TabMenu tabMenu = TabMenu.build(TabMenu.ConfiguratorImpl.FIELD_ITEMS_OUTCOME,OUTCOME,TabMenu.FIELD_ACTIVE_INDEX,selectedAssignmentsTabIndex
 				,TabMenu.ConfiguratorImpl.FIELD_ITEMS,items);
@@ -215,7 +225,8 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		AssignmentsListPage.LazyDataModelListenerImpl.addFieldIfValueNotNull(arguments.getRepresentationArguments().getQueryExecutorArguments().getFilter(Boolean.TRUE)
 				, assignmentsFilterController.getSection(), assignmentsFilterController.getAdministrativeUnit(), assignmentsFilterController.getBudgetSpecializationUnit()
 				, assignmentsFilterController.getAction(), assignmentsFilterController.getExpenditureNature(), assignmentsFilterController.getActivityCategory()
-				, assignmentsFilterController.getActivity(), null, assignmentsFilterController.getScopeFunction());
+				, assignmentsFilterController.getActivity(), null, assignmentsFilterController.getScopeFunction(),assignmentsFilterController.getRegion()
+				,assignmentsFilterController.getDepartment(),assignmentsFilterController.getSubPrefecture());
 		return EntityCounter.getInstance().count(Assignments.class,arguments);
 	}
 	
@@ -233,7 +244,8 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 			return AssignmentsListPage.buildWindowTitleValue(selectedAssignmentsTab.getName(), assignmentsFilterController.getSection()
 					,assignmentsFilterController.getAdministrativeUnit(), assignmentsFilterController.getBudgetSpecializationUnit()
 					,assignmentsFilterController.getAction(), assignmentsFilterController.getActivity(),assignmentsFilterController.getExpenditureNature()
-					,assignmentsFilterController.getActivityCategory(),assignmentsFilterController.getScopeFunction());
+					,assignmentsFilterController.getActivityCategory(),assignmentsFilterController.getScopeFunction(),assignmentsFilterController.getRegion()
+					,assignmentsFilterController.getDepartment(),assignmentsFilterController.getSubPrefecture());
 		return "Affectation";
 	}
 	

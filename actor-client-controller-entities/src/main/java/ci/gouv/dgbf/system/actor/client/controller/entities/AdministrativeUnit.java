@@ -13,10 +13,14 @@ import lombok.experimental.Accessors;
 public class AdministrativeUnit extends AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	private Section section;
+	private Section section;	
 	private String sectionCodeName;
 	private String sectionAsString;
 	private String sectionIdentifier;
+	
+	private Locality locality;
+	private Locality localityRegion;
+	private Locality localityDepartment;
 	
 	@Override
 	public String toString() {
@@ -26,4 +30,6 @@ public class AdministrativeUnit extends AbstractDataIdentifiableSystemStringIden
 	public static final String FIELD_SECTION = "section";
 	public static final String FIELD_SECTION_CODE_NAME = "sectionCodeName";
 	public static final String FIELD_SECTION_AS_STRING = "sectionAsString";
+	
+	public static final String FIELD_LOCALITY = "locality";
 }

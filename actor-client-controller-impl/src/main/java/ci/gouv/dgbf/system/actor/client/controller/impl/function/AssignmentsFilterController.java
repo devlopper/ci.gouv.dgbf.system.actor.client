@@ -25,6 +25,7 @@ import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import ci.gouv.dgbf.system.actor.client.controller.api.ActivityCategoryController;
 import ci.gouv.dgbf.system.actor.client.controller.api.BudgetSpecializationUnitController;
 import ci.gouv.dgbf.system.actor.client.controller.api.ExpenditureNatureController;
+import ci.gouv.dgbf.system.actor.client.controller.api.LocalityController;
 import ci.gouv.dgbf.system.actor.client.controller.api.SectionController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Action;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Activity;
@@ -33,6 +34,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ExpenditureNature;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Locality;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.client.controller.impl.ActivitySelectionController;
@@ -41,6 +43,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExpenditureNatureQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.LocalityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import lombok.Getter;
 import lombok.Setter;
@@ -50,7 +53,7 @@ import lombok.experimental.Accessors;
 public class AssignmentsFilterController extends AbstractFilterController implements Serializable {
 
 	private SelectOneCombo sectionSelectOne,administrativeUnitSelectOne,budgetSpecializationUnitSelectOne,actionSelectOne,activitySelectOne,activityCategorySelectOne
-		,expenditureNatureSelectOne,functionSelectOne;
+		,expenditureNatureSelectOne,functionSelectOne,regionSelectOne,departmentSelectOne,subPrefectureSelectOne;
 	private AutoComplete scopeFunctionAutoComplete;
 	private ActivitySelectionController activitySelectionController;
 	
@@ -61,6 +64,9 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 	private ExpenditureNature expenditureNatureInitial;
 	private Activity activityInitial;
 	private Function functionInitial;
+	private Locality regionInitial;
+	private Locality departmentInitial;
+	private Locality subPrefectureInitial;
 	private ScopeFunction scopeFunctionInitial;
 	
 	public AssignmentsFilterController() {
@@ -86,6 +92,36 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 					, AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI);		
 		if(administrativeUnitInitial != null && sectionInitial == null) {
 			sectionInitial = administrativeUnitInitial.getSection();
+		}
+		
+		if(administrativeUnitInitial != null && regionInitial == null)
+			regionInitial = administrativeUnitInitial.getLocalityRegion();
+		
+		if(administrativeUnitInitial != null && departmentInitial == null)
+			departmentInitial = administrativeUnitInitial.getLocalityDepartment();
+		
+		if(administrativeUnitInitial != null && subPrefectureInitial == null)
+			subPrefectureInitial = administrativeUnitInitial.getLocality();
+		
+		if(subPrefectureInitial == null) {
+			subPrefectureInitial = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(Locality.class
+					,LocalityQuerier.QUERY_IDENTIFIER_READ_SUB_PREFECTURE_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI);
+			if(subPrefectureInitial != null) {
+				regionInitial = subPrefectureInitial.getRegion();
+				departmentInitial = subPrefectureInitial.getDepartment();
+			}
+		}
+		
+		if(departmentInitial == null) {
+			departmentInitial = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(Locality.class
+					,LocalityQuerier.QUERY_IDENTIFIER_READ_DEPARTMENT_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI);
+			if(departmentInitial != null) {
+				regionInitial = departmentInitial.getRegion();
+			}
+		}
+		
+		if(regionInitial == null) {
+			regionInitial = WebController.getInstance().getRequestParameterEntityAsParent(Locality.class);
 		}
 		
 		if(sectionInitial == null)
@@ -137,6 +173,16 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 			return functionInitial;
 		if(FIELD_SCOPE_FUNCTION_AUTO_COMPLETE.equals(fieldName))
 			return scopeFunctionInitial;
+		
+		if(FIELD_REGION_SELECT_ONE.equals(fieldName))
+			return regionInitial;
+		
+		if(FIELD_DEPARTMENT_SELECT_ONE.equals(fieldName))
+			return departmentInitial;
+		
+		if(FIELD_SUB_PREFECTURE_SELECT_ONE.equals(fieldName))
+			return subPrefectureInitial;
+		
 		return super.getInputSelectOneInitialValue(fieldName, klass);
 	}
 	
@@ -150,6 +196,11 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 		buildInputSelectOne(FIELD_ACTIVITY_SELECT_ONE, Activity.class);
 		//buildInputSelectOne(FIELD_FUNCTION_SELECT_ONE, ScopeFunction.class);
 		buildInputSelectOne(FIELD_SCOPE_FUNCTION_AUTO_COMPLETE, ScopeFunction.class);
+		
+		buildInputSelectOne(FIELD_REGION_SELECT_ONE, ScopeFunction.class);
+		buildInputSelectOne(FIELD_DEPARTMENT_SELECT_ONE, ScopeFunction.class);
+		buildInputSelectOne(FIELD_SUB_PREFECTURE_SELECT_ONE, ScopeFunction.class);
+		
 		enableValueChangeListeners();		
 		selectByValueSystemIdentifier();		
 	}
@@ -162,6 +213,10 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 		activityCategorySelectOne.enableValueChangeListener(List.of(activitySelectOne));
 		activitySelectOne.enableValueChangeListener(List.of());
 		//functionSelectOne.enableValueChangeListener(List.of());
+		
+		regionSelectOne.enableValueChangeListener(List.of(departmentSelectOne,subPrefectureSelectOne));
+		departmentSelectOne.enableValueChangeListener(List.of(subPrefectureSelectOne));
+		subPrefectureSelectOne.enableValueChangeListener(List.of());
 	}
 	
 	private void selectByValueSystemIdentifier() {
@@ -186,6 +241,14 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 			return FunctionListPage.buildSelectOne((Function) value);
 		if(FIELD_SCOPE_FUNCTION_AUTO_COMPLETE.equals(fieldName))
 			return scopeFunctionAutoComplete = buildScopeFunctionAutoComplete((ScopeFunction) value);
+		
+		if(FIELD_REGION_SELECT_ONE.equals(fieldName))
+			return buildLocalityRegionSelectOne((Locality) value);
+		if(FIELD_DEPARTMENT_SELECT_ONE.equals(fieldName))
+			return buildLocalityDepartmentSelectOne((Locality) value);
+		if(FIELD_SUB_PREFECTURE_SELECT_ONE.equals(fieldName))
+			return buildLocalitySousPrefectureSelectOne((Locality) value);
+		
 		return null;
 	}
 	
@@ -411,6 +474,70 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 		return input;
 	}
 	
+	private SelectOneCombo buildLocalityRegionSelectOne(Locality region) {		
+		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,region,SelectOneCombo.FIELD_CHOICE_CLASS,Locality.class,SelectOneCombo.FIELD_LISTENER
+				,new SelectOneCombo.Listener.AbstractImpl<Locality>() {
+			@Override
+			public Collection<Locality> computeChoices(AbstractInputChoice<Locality> input) {
+				Collection<Locality> choices = __inject__(LocalityController.class).readRegions();
+				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
+				return choices;
+			}
+			@Override
+			public void select(AbstractInputChoiceOne input, Locality locality) {
+				super.select(input, locality);
+				if(departmentSelectOne != null) {
+					departmentSelectOne.updateChoices();
+					//administrativeUnitSelectOne.selectByValueSystemIdentifier();
+				}
+				if(subPrefectureSelectOne != null) {
+					subPrefectureSelectOne.updateChoices();
+					//budgetSpecializationUnitSelectOne.selectByValueSystemIdentifier();
+				}
+			}
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Région");
+		return input;
+	}
+	
+	private SelectOneCombo buildLocalityDepartmentSelectOne(Locality department) {		
+		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,department,SelectOneCombo.FIELD_CHOICE_CLASS,Locality.class
+				,SelectOneCombo.FIELD_LISTENER,new SelectOneCombo.Listener.AbstractImpl<Locality>() {
+			public Collection<Locality> computeChoices(AbstractInputChoice<Locality> input) {
+				Collection<Locality> choices = null;
+				if(regionSelectOne == null || regionSelectOne.getValue() == null)
+					return null;
+				choices = __inject__(LocalityController.class).readByParent((Locality)regionSelectOne.getValue());
+				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
+				return choices;
+			}
+			
+			public void select(AbstractInputChoiceOne input, Locality locality) {
+				super.select(input, locality);
+				if(subPrefectureSelectOne != null) {
+					subPrefectureSelectOne.updateChoices();
+					//expenditureNatureSelectOne.selectFirstChoice();
+				}
+			}
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Département");
+		return input;
+	}
+	
+	private SelectOneCombo buildLocalitySousPrefectureSelectOne(Locality sousPrefecture) {		
+		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,sousPrefecture,SelectOneCombo.FIELD_CHOICE_CLASS,Locality.class
+				,SelectOneCombo.FIELD_LISTENER,new SelectOneCombo.Listener.AbstractImpl<Locality>() {
+			public Collection<Locality> computeChoices(AbstractInputChoice<Locality> input) {
+				Collection<Locality> choices = null;
+				if(departmentSelectOne == null || departmentSelectOne.getValue() == null)
+					return null;
+				choices = __inject__(LocalityController.class).readByParent((Locality)departmentSelectOne.getValue());
+				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
+				return choices;
+			}
+			
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"S.P.");
+		return input;
+	}
+	
 	@Override
 	protected Collection<Map<Object, Object>> buildLayoutCells() {
 		Collection<Map<Object, Object>> cellsMaps = new ArrayList<>();
@@ -449,7 +576,16 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,functionSelectOne,Cell.FIELD_WIDTH,3));
 		*/	
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeFunctionAutoComplete.getOutputLabel(),Cell.FIELD_WIDTH,1));
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeFunctionAutoComplete,Cell.FIELD_WIDTH,10));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeFunctionAutoComplete,Cell.FIELD_WIDTH,11));
+		
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,regionSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,regionSelectOne,Cell.FIELD_WIDTH,2));
+		
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,departmentSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,departmentSelectOne,Cell.FIELD_WIDTH,3));
+		
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,subPrefectureSelectOne.getOutputLabel().setTitle("Sous-Préfecture"),Cell.FIELD_WIDTH,1));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,subPrefectureSelectOne,Cell.FIELD_WIDTH,3));
 		
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,filterCommandButton,Cell.FIELD_WIDTH,1));
 			
@@ -492,6 +628,27 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 		return (ScopeFunction) AbstractInput.getValue(scopeFunctionAutoComplete);
 	}
 	
+	public Locality getRegion() {
+		return (Locality) AbstractInput.getValue(regionSelectOne);
+	}
+	
+	public Locality getDepartment() {
+		return (Locality) AbstractInput.getValue(departmentSelectOne);
+	}
+	
+	public Locality getSubPrefecture() {
+		return (Locality) AbstractInput.getValue(subPrefectureSelectOne);
+	}
+	
+	@Override
+	protected Boolean isSelectRedirectorArgumentsParameter(Class<?> klass, AbstractInput<?> input) {
+		if(Locality.class.equals(klass) && input == regionSelectOne)
+			return AbstractInput.getValue(departmentSelectOne) == null && AbstractInput.getValue(subPrefectureSelectOne) == null;
+		if(Locality.class.equals(klass) && input == departmentSelectOne)
+			return AbstractInput.getValue(subPrefectureSelectOne) == null;
+		return super.isSelectRedirectorArgumentsParameter(klass, input);
+	}
+	
 	public static final String FIELD_SECTION_SELECT_ONE = "sectionSelectOne";
 	public static final String FIELD_ADMINISTRATIVE_UNIT_SELECT_ONE = "administrativeUnitSelectOne";
 	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT_SELECT_ONE = "budgetSpecializationUnitSelectOne";
@@ -500,4 +657,7 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 	public static final String FIELD_ACTIVITY_SELECT_ONE = "activitySelectOne";
 	public static final String FIELD_FUNCTION_SELECT_ONE = "functionSelectOne";
 	public static final String FIELD_SCOPE_FUNCTION_AUTO_COMPLETE = "scopeFunctionAutoComplete";
+	public static final String FIELD_REGION_SELECT_ONE = "regionSelectOne";
+	public static final String FIELD_DEPARTMENT_SELECT_ONE = "departmentSelectOne";
+	public static final String FIELD_SUB_PREFECTURE_SELECT_ONE = "subPrefectureSelectOne";
 }
