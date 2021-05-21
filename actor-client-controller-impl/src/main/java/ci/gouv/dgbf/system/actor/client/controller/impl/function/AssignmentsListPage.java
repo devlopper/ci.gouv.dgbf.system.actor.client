@@ -20,6 +20,7 @@ import org.cyk.utility.__kernel__.session.SessionManager;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
+import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
@@ -131,14 +132,16 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			strings.add(activity.toString());
 		}
 		
-		if(region != null && department == null && subPrefecture == null)
-			strings.add(region.toString());
-		
-		if(department != null && subPrefecture == null)
-			strings.add(department.toString());
-		
-		if(subPrefecture != null)
-			strings.add(subPrefecture.toString());
+		if(ValueHelper.isNotBlank(WebController.getInstance().getRequestParameter(ParameterName.stringify(Locality.class)))) {
+			if(region != null && department == null && subPrefecture == null)
+				strings.add(region.toString());
+			
+			if(department != null && subPrefecture == null)
+				strings.add(department.toString());
+			
+			if(subPrefecture != null)
+				strings.add(subPrefecture.toString());
+		}
 		
 		if(scopeFunction == null) {
 				
@@ -269,10 +272,11 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 				parameters.put(ParameterName.stringify(ActivityCategory.class), List.of((String)FieldHelper.readSystemIdentifier(MapHelper.readByKey(arguments, ActivityCategory.class))));
 			if(MapHelper.readByKey(arguments, ScopeFunction.class) != null)
 				parameters.put(ParameterName.stringify(ScopeFunction.class), List.of((String)FieldHelper.readSystemIdentifier(MapHelper.readByKey(arguments, ScopeFunction.class))));
-			
-			
-			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog("assignmentsEditManyView",MenuItem.FIELD___PARAMETERS__,parameters
-					, MenuItem.FIELD_VALUE,"Modifier",MenuItem.FIELD_ICON,"fa fa-pencil",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.OPEN_VIEW_IN_DIALOG);
+			if(MapHelper.readByKey(arguments, Locality.class) != null)
+				parameters.put(ParameterName.stringify(Locality.class), List.of((String)FieldHelper.readSystemIdentifier(MapHelper.readByKey(arguments, Locality.class))));
+						
+			//dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog("assignmentsEditManyView",MenuItem.FIELD___PARAMETERS__,parameters
+			//		, MenuItem.FIELD_VALUE,"Modifier",MenuItem.FIELD_ICON,"fa fa-pencil",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.OPEN_VIEW_IN_DIALOG);
 	
 			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog("assignmentsEditManyByModelView",MenuItem.FIELD___PARAMETERS__,parameters
 					, MenuItem.FIELD_VALUE,"Modifier par modèle",MenuItem.FIELD_ICON,"fa fa-cubes",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.OPEN_VIEW_IN_DIALOG);
@@ -399,13 +403,13 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			}
 			
 			if(administrativeUnit != null && subPrefecture == null)
-				subPrefecture = administrativeUnit.getLocality();			
+				subPrefecture = administrativeUnit.getSubPrefecture();			
 			
 			if(administrativeUnit != null && department == null)
-				department = administrativeUnit.getLocalityDepartment();
+				department = administrativeUnit.getDepartment();
 			
 			if(administrativeUnit != null && region == null)
-				region = administrativeUnit.getLocalityRegion();
+				region = administrativeUnit.getRegion();
 			
 			if(subPrefecture == null) {
 				subPrefecture = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(Locality.class
@@ -427,7 +431,6 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			if(region == null) {
 				region = WebController.getInstance().getRequestParameterEntityAsParent(Locality.class);
 			}
-			
 			if(section == null) {
 				section = WebController.getInstance().getRequestParameterEntityAsParent(Section.class);
 			}

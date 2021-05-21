@@ -95,13 +95,13 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 		}
 		
 		if(administrativeUnitInitial != null && regionInitial == null)
-			regionInitial = administrativeUnitInitial.getLocalityRegion();
+			regionInitial = administrativeUnitInitial.getRegion();
 		
 		if(administrativeUnitInitial != null && departmentInitial == null)
-			departmentInitial = administrativeUnitInitial.getLocalityDepartment();
+			departmentInitial = administrativeUnitInitial.getDepartment();
 		
 		if(administrativeUnitInitial != null && subPrefectureInitial == null)
-			subPrefectureInitial = administrativeUnitInitial.getLocality();
+			subPrefectureInitial = administrativeUnitInitial.getSubPrefecture();
 		
 		if(subPrefectureInitial == null) {
 			subPrefectureInitial = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(Locality.class
@@ -638,6 +638,16 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 	
 	public Locality getSubPrefecture() {
 		return (Locality) AbstractInput.getValue(subPrefectureSelectOne);
+	}
+	
+	public Locality getLocality() {
+		Locality locality = getSubPrefecture();
+		if(locality != null)
+			return locality;
+		locality = getDepartment();
+		if(locality != null)
+			return locality;
+		return getRegion();
 	}
 	
 	@Override

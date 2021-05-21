@@ -18,9 +18,9 @@ public class AdministrativeUnit extends AbstractDataIdentifiableSystemStringIden
 	private String sectionAsString;
 	private String sectionIdentifier;
 	
-	private Locality locality;
-	private Locality localityRegion;
-	private Locality localityDepartment;
+	private Locality subPrefecture;
+	private Locality department;
+	private Locality region;
 	
 	@Override
 	public String toString() {
@@ -31,5 +31,4 @@ public class AdministrativeUnit extends AbstractDataIdentifiableSystemStringIden
 	public static final String FIELD_SECTION_CODE_NAME = "sectionCodeName";
 	public static final String FIELD_SECTION_AS_STRING = "sectionAsString";
 	
-	public static final String FIELD_LOCALITY = "locality";
 }

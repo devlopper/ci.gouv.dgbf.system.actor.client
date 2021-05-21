@@ -10,8 +10,10 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.field.FieldHelper;
+import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
@@ -31,6 +33,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.Assignments;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ExpenditureNature;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Locality;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.client.controller.impl.function.AssignmentsFilterController;
@@ -142,6 +145,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	public TabMenu buildAssignmentsTabMenu() {
 		Collection<MenuItem> items = new ArrayList<>();
 		Long total = count(TAB_ASSIGNMENTS_ALL);
+		String localityIdentifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(Locality.class));
 		for(Integer index = 0; index < ASSIGNMENTS_TABS.size(); index = index + 1) {
 			TabMenu.Tab tab = ASSIGNMENTS_TABS.get(index);
 			MenuItem item = new MenuItem();
@@ -169,17 +173,9 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 			item.addParameterFromInstanceIfConditionIsTrue(assignmentsFilterController.getExpenditureNature(),assignmentsFilterController.getActivity() == null);
 			item.addParameterFromInstanceIfConditionIsTrue(assignmentsFilterController.getActivityCategory(),assignmentsFilterController.getActivity() == null);
 			item.addParameterFromInstanceIfConditionIsTrue(assignmentsFilterController.getFunction(),assignmentsFilterController.getScopeFunction() == null);
-			item.addParameterFromInstance(assignmentsFilterController.getScopeFunction());
-			if(assignmentsFilterController.getSubPrefecture() == null) {
-				if(assignmentsFilterController.getDepartment() == null) {
-					if(assignmentsFilterController.getRegion() == null) {
-						
-					}else
-						item.addParameterFromInstance(assignmentsFilterController.getRegion());
-				}else
-					item.addParameterFromInstance(assignmentsFilterController.getDepartment());
-			}else
-				item.addParameterFromInstance(assignmentsFilterController.getSubPrefecture());
+			item.addParameterFromInstance(assignmentsFilterController.getScopeFunction());			
+			if(StringHelper.isNotBlank(localityIdentifier))
+				item.addParameterFromInstance(assignmentsFilterController.getLocality());
 		}		
 		TabMenu tabMenu = TabMenu.build(TabMenu.ConfiguratorImpl.FIELD_ITEMS_OUTCOME,OUTCOME,TabMenu.FIELD_ACTIVE_INDEX,selectedAssignmentsTabIndex
 				,TabMenu.ConfiguratorImpl.FIELD_ITEMS,items);
@@ -207,6 +203,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 				,Action.class,assignmentsFilterController.getAction(),Activity.class,assignmentsFilterController.getActivity()
 				,ExpenditureNature.class,assignmentsFilterController.getExpenditureNature(),ActivityCategory.class,assignmentsFilterController.getActivityCategory()
 				,ScopeFunction.class,assignmentsFilterController.getScopeFunction()
+				,Locality.class,assignmentsFilterController.getLocality()
 				);
 		return dataTable;
 	}
