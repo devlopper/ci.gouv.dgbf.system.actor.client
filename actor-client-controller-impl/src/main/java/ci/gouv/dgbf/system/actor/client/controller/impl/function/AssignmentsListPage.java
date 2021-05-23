@@ -275,8 +275,8 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			if(MapHelper.readByKey(arguments, Locality.class) != null)
 				parameters.put(ParameterName.stringify(Locality.class), List.of((String)FieldHelper.readSystemIdentifier(MapHelper.readByKey(arguments, Locality.class))));
 						
-			//dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog("assignmentsEditManyView",MenuItem.FIELD___PARAMETERS__,parameters
-			//		, MenuItem.FIELD_VALUE,"Modifier",MenuItem.FIELD_ICON,"fa fa-pencil",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.OPEN_VIEW_IN_DIALOG);
+			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog("assignmentsEditManyView",MenuItem.FIELD___PARAMETERS__,parameters
+					, MenuItem.FIELD_VALUE,"Modifier",MenuItem.FIELD_ICON,"fa fa-pencil",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.OPEN_VIEW_IN_DIALOG);
 	
 			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog("assignmentsEditManyByModelView",MenuItem.FIELD___PARAMETERS__,parameters
 					, MenuItem.FIELD_VALUE,"Modifier par modèle",MenuItem.FIELD_ICON,"fa fa-cubes",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.OPEN_VIEW_IN_DIALOG);
