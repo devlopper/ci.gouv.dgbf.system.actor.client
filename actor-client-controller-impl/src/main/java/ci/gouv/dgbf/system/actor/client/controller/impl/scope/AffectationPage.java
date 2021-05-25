@@ -56,8 +56,12 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	private ScopeFunctionFilterController scopeFunctionFilterController;
 	private AssignmentsFilterController assignmentsFilterController;
 	
+	private String localityIdentifier;
+	
 	@Override
 	protected void __listenBeforePostConstruct__() {
+		localityIdentifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(Locality.class));
+		System.out.println("AffectationPage.__listenBeforePostConstruct__() : "+localityIdentifier);
 		super.__listenBeforePostConstruct__();
 		selectedTab = TabMenu.Tab.getSelectedByRequestParameter(TABS);
 		if(selectedTab != null && TAB_SCOPE_FUNCTION.equals(selectedTab.getParameterValue()))
@@ -145,7 +149,6 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	public TabMenu buildAssignmentsTabMenu() {
 		Collection<MenuItem> items = new ArrayList<>();
 		Long total = count(TAB_ASSIGNMENTS_ALL);
-		String localityIdentifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(Locality.class));
 		for(Integer index = 0; index < ASSIGNMENTS_TABS.size(); index = index + 1) {
 			TabMenu.Tab tab = ASSIGNMENTS_TABS.get(index);
 			MenuItem item = new MenuItem();
@@ -161,7 +164,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 				}else {
 					count = count(tab.getParameterValue());
 					name = String.format("%s (%s|%s)", tab.getName(),count,NumberHelper.computePercentageAsInteger(count, total)+"%");
-				}				
+				}
 			}
 			item.setValue(name).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_ASSIGNMENTS).addParameter(TAB_ASSIGNMENTS_PARAMETER_NAME, tab.getParameterValue());			
 			item.addParameterFromInstanceIfConditionIsTrue(assignmentsFilterController.getSection(),assignmentsFilterController.getAdministrativeUnit() == null 
