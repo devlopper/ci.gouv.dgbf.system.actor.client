@@ -14,7 +14,6 @@ import javax.inject.Named;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.__kernel__.session.SessionManager;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
@@ -67,7 +66,9 @@ public class ScopeFunctionCreatePage extends AbstractEntityEditPageContainerMana
 				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_O2.equals(choice))
 					form.getLayout().setCellsRenderedByIndexes(Boolean.TRUE,2,3,6,7,10,11);	
 				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_O3.equals(choice))
-					form.getLayout().setCellsRenderedByIndexes(Boolean.TRUE,2,3,6,7,8,9,10,11);	
+					form.getLayout().setCellsRenderedByIndexes(Boolean.TRUE,2,3,6,7,8,9,10,11);
+				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_O9.equals(choice))
+					form.getLayout().setCellsRenderedByIndexes(Boolean.TRUE,2,3,6,7,10,11);	
 			}
 		});
 		initializeCellsRenderedByIndexes();
@@ -92,8 +93,9 @@ public class ScopeFunctionCreatePage extends AbstractEntityEditPageContainerMana
 						administrativeUnitSelectOneCombo.updateChoices();
 						administrativeUnitSelectOneCombo.selectFirstChoice();
 					}
-				}else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_O2.equals(codePrefix) || 
-						ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_O3.equals(codePrefix)) {
+				}else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_O2.equals(codePrefix)
+						|| ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_O3.equals(codePrefix)
+						|| ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_O9.equals(codePrefix)) {
 					if(budgetSpecializationUnitSelectOneCombo != null) {				
 						budgetSpecializationUnitSelectOneCombo.setChoicesInitialized(Boolean.FALSE);
 						budgetSpecializationUnitSelectOneCombo.updateChoices();
@@ -141,7 +143,7 @@ public class ScopeFunctionCreatePage extends AbstractEntityEditPageContainerMana
 			@Override
 			public void select(AbstractInputChoiceOne input, BudgetSpecializationUnit budgetSpecializationUnit) {
 				super.select(input, budgetSpecializationUnit);
-				setAuthorizingOfficerName(nameInputText, budgetSpecializationUnitSelectOneCombo, localitySelectOneCombo);
+				setAuthorizingOfficerName(nameInputText,subFunctionCodeSelectOneCombo, budgetSpecializationUnitSelectOneCombo, localitySelectOneCombo);
 			}
 		});
 		budgetSpecializationUnitSelectOneCombo.enableValueChangeListener(List.of(nameInputText));
@@ -158,7 +160,7 @@ public class ScopeFunctionCreatePage extends AbstractEntityEditPageContainerMana
 			@Override
 			public void select(AbstractInputChoiceOne input, Locality locality) {
 				super.select(input, locality);
-				setAuthorizingOfficerName(nameInputText, budgetSpecializationUnitSelectOneCombo, localitySelectOneCombo);
+				setAuthorizingOfficerName(nameInputText,subFunctionCodeSelectOneCombo, budgetSpecializationUnitSelectOneCombo, localitySelectOneCombo);
 			}
 		});
 		localitySelectOneCombo.enableValueChangeListener(List.of(nameInputText));
@@ -169,16 +171,27 @@ public class ScopeFunctionCreatePage extends AbstractEntityEditPageContainerMana
 		form.getLayout().setCellsRenderedByIndexes(Boolean.FALSE,2,3,4,5,6,7,8,9,10,11);
 	}
 	
-	private void setAuthorizingOfficerName(InputText nameInputText,SelectOneCombo budgetSpecializationUnitSelectOneCombo,SelectOneCombo localitySelectOneCombo) {
+	private void setAuthorizingOfficerName(InputText nameInputText,SelectOneCombo subFunctionCodeSelectOneCombo,SelectOneCombo budgetSpecializationUnitSelectOneCombo,SelectOneCombo localitySelectOneCombo) {
+		String subFunctionCode = (String) AbstractInput.getValue(subFunctionCodeSelectOneCombo);
 		BudgetSpecializationUnit budgetSpecializationUnit = (BudgetSpecializationUnit) AbstractInput.getValue(budgetSpecializationUnitSelectOneCombo);
-		Locality locality = (Locality) AbstractInput.getValue(localitySelectOneCombo);		
-		if(budgetSpecializationUnit == null || locality == null)
-			nameInputText.setValue(null);
-		else {
-			nameInputText.setValue(__inject__(ScopeFunctionController.class)
-					.computeAuthorizingOfficerHolderNameByBudgetSpecializationUnitIdentifierByLocalityIdentifier(budgetSpecializationUnit.getIdentifier()
-							, locality.getIdentifier()));
-		}
+		if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_O2.equals(subFunctionCode)
+				|| ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_O9.equals(subFunctionCode)) {
+			if(budgetSpecializationUnit == null)
+				nameInputText.setValue(null);
+			else {
+				nameInputText.setValue(__inject__(ScopeFunctionController.class)
+						.computeAuthorizingOfficerHolderNameByBudgetSpecializationUnitIdentifierByLocalityIdentifier(budgetSpecializationUnit.getIdentifier(), null));
+			}
+		}else {			
+			Locality locality = (Locality) AbstractInput.getValue(localitySelectOneCombo);		
+			if(budgetSpecializationUnit == null || locality == null)
+				nameInputText.setValue(null);
+			else {
+				nameInputText.setValue(__inject__(ScopeFunctionController.class)
+						.computeAuthorizingOfficerHolderNameByBudgetSpecializationUnitIdentifierByLocalityIdentifier(budgetSpecializationUnit.getIdentifier()
+								, locality.getIdentifier()));
+			}
+		}		
 	}
 	
 	private void setCreditManagerName(InputText nameInputText,SelectOneCombo administrativeUnitSelectOneCombo) {
@@ -225,9 +238,16 @@ public class ScopeFunctionCreatePage extends AbstractEntityEditPageContainerMana
 			if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_G1.equals(scopeFunction.getCodePrefix()) && 
 					scopeFunction.getAdministrativeUnit() != null)
 				scopeFunction.setScopeIdentifier(scopeFunction.getAdministrativeUnit().getIdentifier());
+			else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_O2.equals(scopeFunction.getCodePrefix()) && 
+					scopeFunction.getBudgetSpecializationUnit() != null)
+				scopeFunction.setScopeIdentifier(scopeFunction.getBudgetSpecializationUnit().getIdentifier());
 			else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_O3.equals(scopeFunction.getCodePrefix()) && 
 					scopeFunction.getBudgetSpecializationUnit() != null)
 				scopeFunction.setScopeIdentifier(scopeFunction.getBudgetSpecializationUnit().getIdentifier());
+			else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_O9.equals(scopeFunction.getCodePrefix()) && 
+					scopeFunction.getBudgetSpecializationUnit() != null)
+				scopeFunction.setScopeIdentifier(scopeFunction.getBudgetSpecializationUnit().getIdentifier());
+			
 			scopeFunction.setFunctionCode(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.getFunctionCodeFromCategoryCode(scopeFunction.getCodePrefix()));
 			if(scopeFunction.getLocality() != null)
 				scopeFunction.setLocalityIdentifier(scopeFunction.getLocality().getIdentifier());
@@ -257,11 +277,12 @@ public class ScopeFunctionCreatePage extends AbstractEntityEditPageContainerMana
 				choices.add(new SelectItem(null, "-- Aucune sélection --"));
 				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_G1
 						, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_NAME_G1));
-				if(Boolean.TRUE.equals(SessionManager.getInstance().isUserHasRole(ci.gouv.dgbf.system.actor.server.persistence.entities.Profile.CODE_ADMINISTRATEUR)))
-					choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_O2
+				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_O2
 							, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_NAME_O2));
 				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_O3
 						, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_NAME_O3));
+				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_O9
+						, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_NAME_O9));
 				map.put(AbstractInputChoice.FIELD_CHOICES, choices);
 			}else if(ScopeFunction.FIELD_SECTION.equals(fieldName)) {
 				
