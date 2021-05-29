@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
+import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController;
@@ -69,8 +70,12 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 	private Locality subPrefectureInitial;
 	private ScopeFunction scopeFunctionInitial;
 	
+	private Collection<String> activitiesIdentifiers;
+	
 	public AssignmentsFilterController() {
-		activityInitial = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(Activity.class
+		activitiesIdentifiers = WebController.getInstance().getRequestParameters(ParameterName.stringifyMany(Activity.class));
+		if(CollectionHelper.isEmpty(activitiesIdentifiers)) {
+			activityInitial = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(Activity.class
 					, ActivityQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI);		
 		if(activityInitial != null) {
 			sectionInitial = activityInitial.getSection();
@@ -147,11 +152,14 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 		if(functionInitial == null)
 			functionInitial = WebController.getInstance().getRequestParameterEntityAsParentBySystemIdentifier(Function.class, null);
 		*/
+		}		
 	}
 	
 	@Override
 	public AssignmentsFilterController build() {
 		activitySelectionController = new ActivitySelectionController();
+		activitySelectionController.setIsMultiple(Boolean.TRUE);
+		activitySelectionController.build();
 		return (AssignmentsFilterController) super.build();
 	}
 	

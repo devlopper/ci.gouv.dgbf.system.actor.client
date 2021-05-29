@@ -61,7 +61,6 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	@Override
 	protected void __listenBeforePostConstruct__() {
 		localityIdentifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(Locality.class));
-		System.out.println("AffectationPage.__listenBeforePostConstruct__() : "+localityIdentifier);
 		super.__listenBeforePostConstruct__();
 		selectedTab = TabMenu.Tab.getSelectedByRequestParameter(TABS);
 		if(selectedTab != null && TAB_SCOPE_FUNCTION.equals(selectedTab.getParameterValue()))
