@@ -155,11 +155,11 @@ public class AssignmentsEditScopeFunctionsByModelPage extends AbstractPageContai
 								.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 								.setActionIdentifier(AssignmentsBusiness.APPLY_MODEL)).setUpdatables(List.of(model));
 						EntitySaver.getInstance().save(Assignments.class, arguments);
+						//Long n = NumberHelper.getLong(arguments.get__response__().getHeaderString(Action.UPDATE.name()));
+						Object value = arguments.get__response__().readEntity(String.class);
 						System.out.println(
-								"AssignmentsEditScopeFunctionsByModelPage.buildSaveCommandButton().new AbstractImpl() {...}.__runExecuteFunction__()");
-						System.out.println(arguments.get__response__().getHeaders());
-						Long n = NumberHelper.getLong(arguments.get__response__().getHeaderString(Action.UPDATE.name()));
-						return String.format("%s affectation(s) modifiée(s)", n);
+								"AssignmentsEditScopeFunctionsByModelPage.buildSaveCommandButton().new AbstractImpl() {...}.__runExecuteFunction__() : "+value);
+						return value; //String.format("%s affectation(s) modifiée(s)", n);
 					}
 				},CommandButton.FIELD_STYLE_CLASS,"cyk-float-right");
 		saveCommandButton.addUpdates(":form:"+assignmentsDataTableCellIdentifier);

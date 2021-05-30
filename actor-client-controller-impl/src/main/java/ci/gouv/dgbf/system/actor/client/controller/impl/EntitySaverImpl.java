@@ -477,8 +477,8 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 			Boolean assistantsSettable = assignments == null ? null : assignments.getAssistantsSettable();
 			return ((AssignmentsRepresentation)representation).deriveAllValues(holdersSettable,assistantsSettable,overridable,SessionHelper.getUserName());
 		}
-		if(arguments != null && AssignmentsBusiness.DELETE_ALL.equals(arguments.getActionIdentifier()))
-			return ((AssignmentsRepresentation)representation).deleteAll();
+		//if(arguments != null && AssignmentsBusiness.DELETE_ALL.equals(arguments.getActionIdentifier()))
+		//	return ((AssignmentsRepresentation)representation).deleteAll();
 		
 		if(arguments != null && AssignmentsBusiness.CLEAN.equals(arguments.getActionIdentifier())) {
 			//AssignmentsDto assignments = (AssignmentsDto) CollectionHelper.getFirst(creatables);
