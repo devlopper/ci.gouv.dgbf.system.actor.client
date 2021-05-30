@@ -814,7 +814,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		
 		@Override
 		public String getReadQueryIdentifier(LazyDataModel<Assignments> lazyDataModel) {
-			return AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY;
+			return AssignmentsQuerier.QUERY_IDENTIFIER_READ_DYNAMIC;
 		}
 		
 		@Override

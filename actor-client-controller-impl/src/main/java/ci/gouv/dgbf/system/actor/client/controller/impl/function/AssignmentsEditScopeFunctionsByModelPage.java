@@ -15,11 +15,10 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.controller.Arguments;
-import org.cyk.utility.controller.EntitySaver;
+import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.persistence.query.Filter;
+import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.random.RandomHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
@@ -32,6 +31,9 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AutoComp
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectBooleanButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntitySaver;
+import org.cyk.utility.persistence.query.Filter;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.business.api.AssignmentsBusiness;
@@ -148,10 +150,16 @@ public class AssignmentsEditScopeFunctionsByModelPage extends AbstractPageContai
 						//copyToModel(Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT);
 						copyToModel(Assignments.FIELD_ACCOUNTING_HOLDER);
 						//copyToModel(Assignments.FIELD_ACCOUNTING_ASSISTANT);
-						EntitySaver.getInstance().save(Assignments.class, new Arguments<Assignments>()
+						
+						Arguments<Assignments> arguments = new Arguments<Assignments>()
 								.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
-								.setActionIdentifier(AssignmentsBusiness.APPLY_MODEL)).setUpdatables(List.of(model)));							
-						return null;
+								.setActionIdentifier(AssignmentsBusiness.APPLY_MODEL)).setUpdatables(List.of(model));
+						EntitySaver.getInstance().save(Assignments.class, arguments);
+						System.out.println(
+								"AssignmentsEditScopeFunctionsByModelPage.buildSaveCommandButton().new AbstractImpl() {...}.__runExecuteFunction__()");
+						System.out.println(arguments.get__response__().getHeaders());
+						Long n = NumberHelper.getLong(arguments.get__response__().getHeaderString(Action.UPDATE.name()));
+						return String.format("%s affectation(s) modifiée(s)", n);
 					}
 				},CommandButton.FIELD_STYLE_CLASS,"cyk-float-right");
 		saveCommandButton.addUpdates(":form:"+assignmentsDataTableCellIdentifier);

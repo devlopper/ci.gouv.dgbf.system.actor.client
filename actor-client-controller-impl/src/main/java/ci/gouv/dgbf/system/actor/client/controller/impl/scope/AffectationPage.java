@@ -213,7 +213,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	private Long count(String value) {
 		Arguments<Assignments> arguments = new Arguments<>();
 		arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setQueryExecutorArguments(
-				new QueryExecutorArguments.Dto().setQueryIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER_USING_IDENTIFIERS_ONLY)));
+				new QueryExecutorArguments.Dto().setQueryIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_DYNAMIC)));
 		if(value.equals(TAB_ASSIGNMENTS_FULLY_ASSIGNED)) {
 			arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_ALL_HOLDERS_DEFINED_NULLABLE,Boolean.FALSE);
 		}else if(value.equals(TAB_ASSIGNMENTS_NOT_FULLY_ASSIGNED)) {
