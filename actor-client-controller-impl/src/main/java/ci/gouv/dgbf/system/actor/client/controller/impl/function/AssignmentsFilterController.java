@@ -64,95 +64,97 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 	private ActivityCategory activityCategoryInitial;
 	private ExpenditureNature expenditureNatureInitial;
 	private Activity activityInitial;
+	private Collection<Activity> activitiesInitial;
 	private Function functionInitial;
 	private Locality regionInitial;
 	private Locality departmentInitial;
 	private Locality subPrefectureInitial;
 	private ScopeFunction scopeFunctionInitial;
 	
-	private Collection<String> activitiesIdentifiers;
-	
 	public AssignmentsFilterController() {
-		activitiesIdentifiers = WebController.getInstance().getRequestParameters(ParameterName.stringifyMany(Activity.class));
+		Collection<String> activitiesIdentifiers = WebController.getInstance().getRequestParameters(ParameterName.stringifyMany(Activity.class));
 		if(CollectionHelper.isEmpty(activitiesIdentifiers)) {
 			activityInitial = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(Activity.class
 					, ActivityQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI);		
-		if(activityInitial != null) {
-			sectionInitial = activityInitial.getSection();
-			administrativeUnitInitial = activityInitial.getAdministrativeUnit();
-			budgetSpecializationUnitInitial = activityInitial.getBudgetSpecializationUnit();
-			expenditureNatureInitial = activityInitial.getExpenditureNature();
-			activityCategoryInitial = activityInitial.getCategory();
-		}
-		
-		if(budgetSpecializationUnitInitial == null)
-			budgetSpecializationUnitInitial = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(BudgetSpecializationUnit.class
-					, BudgetSpecializationUnitQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI);		
-		if(budgetSpecializationUnitInitial != null && sectionInitial == null) {
-			sectionInitial = budgetSpecializationUnitInitial.getSection();
-		}
-		
-		if(administrativeUnitInitial == null)
-			administrativeUnitInitial = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(AdministrativeUnit.class
-					, AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI);		
-		if(administrativeUnitInitial != null && sectionInitial == null) {
-			sectionInitial = administrativeUnitInitial.getSection();
-		}
-		
-		if(administrativeUnitInitial != null && regionInitial == null)
-			regionInitial = administrativeUnitInitial.getRegion();
-		
-		if(administrativeUnitInitial != null && departmentInitial == null)
-			departmentInitial = administrativeUnitInitial.getDepartment();
-		
-		if(administrativeUnitInitial != null && subPrefectureInitial == null)
-			subPrefectureInitial = administrativeUnitInitial.getSubPrefecture();
-		
-		if(subPrefectureInitial == null) {
-			subPrefectureInitial = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(Locality.class
-					,LocalityQuerier.QUERY_IDENTIFIER_READ_SUB_PREFECTURE_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI);
-			if(subPrefectureInitial != null) {
-				regionInitial = subPrefectureInitial.getRegion();
-				departmentInitial = subPrefectureInitial.getDepartment();
+			if(activityInitial != null) {
+				sectionInitial = activityInitial.getSection();
+				administrativeUnitInitial = activityInitial.getAdministrativeUnit();
+				budgetSpecializationUnitInitial = activityInitial.getBudgetSpecializationUnit();
+				expenditureNatureInitial = activityInitial.getExpenditureNature();
+				activityCategoryInitial = activityInitial.getCategory();
 			}
-		}
-		
-		if(departmentInitial == null) {
-			departmentInitial = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(Locality.class
-					,LocalityQuerier.QUERY_IDENTIFIER_READ_DEPARTMENT_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI);
-			if(departmentInitial != null) {
-				regionInitial = departmentInitial.getRegion();
+			
+			if(budgetSpecializationUnitInitial == null)
+				budgetSpecializationUnitInitial = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(BudgetSpecializationUnit.class
+						, BudgetSpecializationUnitQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI);		
+			if(budgetSpecializationUnitInitial != null && sectionInitial == null) {
+				sectionInitial = budgetSpecializationUnitInitial.getSection();
 			}
+			
+			if(administrativeUnitInitial == null)
+				administrativeUnitInitial = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(AdministrativeUnit.class
+						, AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI);		
+			if(administrativeUnitInitial != null && sectionInitial == null) {
+				sectionInitial = administrativeUnitInitial.getSection();
+			}
+			
+			if(administrativeUnitInitial != null && regionInitial == null)
+				regionInitial = administrativeUnitInitial.getRegion();
+			
+			if(administrativeUnitInitial != null && departmentInitial == null)
+				departmentInitial = administrativeUnitInitial.getDepartment();
+			
+			if(administrativeUnitInitial != null && subPrefectureInitial == null)
+				subPrefectureInitial = administrativeUnitInitial.getSubPrefecture();
+			
+			if(subPrefectureInitial == null) {
+				subPrefectureInitial = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(Locality.class
+						,LocalityQuerier.QUERY_IDENTIFIER_READ_SUB_PREFECTURE_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI);
+				if(subPrefectureInitial != null) {
+					regionInitial = subPrefectureInitial.getRegion();
+					departmentInitial = subPrefectureInitial.getDepartment();
+				}
+			}
+			
+			if(departmentInitial == null) {
+				departmentInitial = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(Locality.class
+						,LocalityQuerier.QUERY_IDENTIFIER_READ_DEPARTMENT_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI);
+				if(departmentInitial != null) {
+					regionInitial = departmentInitial.getRegion();
+				}
+			}
+			
+			if(regionInitial == null) {
+				regionInitial = WebController.getInstance().getRequestParameterEntityAsParent(Locality.class);
+			}
+			
+			if(sectionInitial == null)
+				sectionInitial = WebController.getInstance().getRequestParameterEntityAsParentBySystemIdentifier(Section.class, null);
+			
+			if(expenditureNatureInitial == null && activityInitial != null)
+				expenditureNatureInitial = __inject__(ExpenditureNatureController.class).readBySystemIdentifier(activityInitial.getExpenditureNatureIdentifier());
+			if(expenditureNatureInitial == null)
+				expenditureNatureInitial = WebController.getInstance().getRequestParameterEntityAsParentBySystemIdentifier(ExpenditureNature.class, null);
+			
+			
+			if(activityCategoryInitial == null && activityInitial != null)
+				activityCategoryInitial = __inject__(ActivityCategoryController.class).readBySystemIdentifier(activityInitial.getCategoryIdentifier());
+			if(activityCategoryInitial == null)
+				activityCategoryInitial = WebController.getInstance().getRequestParameterEntityAsParentBySystemIdentifier(ActivityCategory.class, null);
+			
+			if(scopeFunctionInitial == null)
+				scopeFunctionInitial = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(ScopeFunction.class
+						, ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI);	
+			/*	
+			if(functionInitial == null && scopeFunctionInitial != null)
+				functionInitial = scopeFunctionInitial.getFunction();
+			if(functionInitial == null)
+				functionInitial = WebController.getInstance().getRequestParameterEntityAsParentBySystemIdentifier(Function.class, null);
+			*/
+		}else {
+			activitiesInitial = EntityReader.getInstance().readMany(Activity.class, new Arguments<Activity>().queryIdentifier(ActivityQuerier.QUERY_IDENTIFIER_READ_DYNAMIC)
+					.filterByIdentifiers(activitiesIdentifiers));
 		}
-		
-		if(regionInitial == null) {
-			regionInitial = WebController.getInstance().getRequestParameterEntityAsParent(Locality.class);
-		}
-		
-		if(sectionInitial == null)
-			sectionInitial = WebController.getInstance().getRequestParameterEntityAsParentBySystemIdentifier(Section.class, null);
-		
-		if(expenditureNatureInitial == null && activityInitial != null)
-			expenditureNatureInitial = __inject__(ExpenditureNatureController.class).readBySystemIdentifier(activityInitial.getExpenditureNatureIdentifier());
-		if(expenditureNatureInitial == null)
-			expenditureNatureInitial = WebController.getInstance().getRequestParameterEntityAsParentBySystemIdentifier(ExpenditureNature.class, null);
-		
-		
-		if(activityCategoryInitial == null && activityInitial != null)
-			activityCategoryInitial = __inject__(ActivityCategoryController.class).readBySystemIdentifier(activityInitial.getCategoryIdentifier());
-		if(activityCategoryInitial == null)
-			activityCategoryInitial = WebController.getInstance().getRequestParameterEntityAsParentBySystemIdentifier(ActivityCategory.class, null);
-		
-		if(scopeFunctionInitial == null)
-			scopeFunctionInitial = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(ScopeFunction.class
-					, ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI);	
-		/*	
-		if(functionInitial == null && scopeFunctionInitial != null)
-			functionInitial = scopeFunctionInitial.getFunction();
-		if(functionInitial == null)
-			functionInitial = WebController.getInstance().getRequestParameterEntityAsParentBySystemIdentifier(Function.class, null);
-		*/
-		}		
 	}
 	
 	@Override
@@ -626,6 +628,10 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 	
 	public Activity getActivity() {
 		return (Activity) AbstractInput.getValue(activitySelectOne);
+	}
+	
+	public Collection<Activity> getActivities() {
+		return activitiesInitial;
 	}
 	
 	public Function getFunction() {

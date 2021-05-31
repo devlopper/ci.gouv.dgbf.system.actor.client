@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
@@ -178,6 +179,12 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 			item.addParameterFromInstance(assignmentsFilterController.getScopeFunction());			
 			if(StringHelper.isNotBlank(localityIdentifier))
 				item.addParameterFromInstance(assignmentsFilterController.getLocality());
+			if(CollectionHelper.isNotEmpty(assignmentsFilterController.getActivities())) {
+				assignmentsFilterController.getActivities().forEach(x -> {
+					item.addParameter(ParameterName.stringifyMany(Activity.class), (String)FieldHelper.readSystemIdentifier(x));
+				});
+				
+			}
 		}		
 		TabMenu tabMenu = TabMenu.build(TabMenu.ConfiguratorImpl.FIELD_ITEMS_OUTCOME,OUTCOME,TabMenu.FIELD_ACTIVE_INDEX,selectedAssignmentsTabIndex
 				,TabMenu.ConfiguratorImpl.FIELD_ITEMS,items);
@@ -206,6 +213,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 				,ExpenditureNature.class,assignmentsFilterController.getExpenditureNature(),ActivityCategory.class,assignmentsFilterController.getActivityCategory()
 				,ScopeFunction.class,assignmentsFilterController.getScopeFunction()
 				,Locality.class,assignmentsFilterController.getLocality()
+				,ParameterName.stringifyMany(Activity.class),FieldHelper.readSystemIdentifiersAsStrings(assignmentsFilterController.getActivities())
 				);
 		return dataTable;
 	}
@@ -224,8 +232,8 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		AssignmentsListPage.LazyDataModelListenerImpl.addFieldIfValueNotNull(arguments.getRepresentationArguments().getQueryExecutorArguments().getFilter(Boolean.TRUE)
 				, assignmentsFilterController.getSection(), assignmentsFilterController.getAdministrativeUnit(), assignmentsFilterController.getBudgetSpecializationUnit()
 				, assignmentsFilterController.getAction(), assignmentsFilterController.getExpenditureNature(), assignmentsFilterController.getActivityCategory()
-				, assignmentsFilterController.getActivity(), null, assignmentsFilterController.getScopeFunction(),assignmentsFilterController.getRegion()
-				,assignmentsFilterController.getDepartment(),assignmentsFilterController.getSubPrefecture());
+				, assignmentsFilterController.getActivity(),assignmentsFilterController.getActivities(), null, assignmentsFilterController.getScopeFunction()
+				,assignmentsFilterController.getRegion(),assignmentsFilterController.getDepartment(),assignmentsFilterController.getSubPrefecture());
 		return EntityCounter.getInstance().count(Assignments.class,arguments);
 	}
 	
@@ -242,7 +250,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		else if(TAB_ASSIGNMENTS.equals(selectedTab.getParameterValue()))
 			return AssignmentsListPage.buildWindowTitleValue(selectedAssignmentsTab.getName(), assignmentsFilterController.getSection()
 					,assignmentsFilterController.getAdministrativeUnit(), assignmentsFilterController.getBudgetSpecializationUnit()
-					,assignmentsFilterController.getAction(), assignmentsFilterController.getActivity(),assignmentsFilterController.getExpenditureNature()
+					,assignmentsFilterController.getAction(), assignmentsFilterController.getActivity(),assignmentsFilterController.getActivities(),assignmentsFilterController.getExpenditureNature()
 					,assignmentsFilterController.getActivityCategory(),assignmentsFilterController.getScopeFunction(),assignmentsFilterController.getRegion()
 					,assignmentsFilterController.getDepartment(),assignmentsFilterController.getSubPrefecture());
 		return "Affectation";
