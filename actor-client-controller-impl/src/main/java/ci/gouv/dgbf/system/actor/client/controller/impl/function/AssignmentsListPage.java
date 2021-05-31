@@ -845,6 +845,19 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		}
 		
 		@Override
+		public Arguments<Assignments> instantiateArguments(LazyDataModel<Assignments> lazyDataModel) {
+			Arguments<Assignments> arguments = super.instantiateArguments(lazyDataModel);
+			ArrayList<String> list = new ArrayList<>();
+			list.addAll(List.of(getFieldsAllStringsCodesOnly()));
+			arguments.getRepresentationArguments().getQueryExecutorArguments().setProcessableTransientFieldsNames(list);
+			return arguments;
+		}
+		
+		protected String getFieldsAllStringsCodesOnly() {
+			return ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments.FIELDS_ALL_STRINGS_CODES_ONLY;
+		}
+		
+		@Override
 		public Filter.Dto instantiateFilter(LazyDataModel<Assignments> lazyDataModel) {
 			Filter.Dto filter = super.instantiateFilter(lazyDataModel);
 			filter = addFieldIfValueNotNull(filter, section, administrativeUnit, budgetSpecializationUnit, action, expenditureNature, activityCategory, activity,activities

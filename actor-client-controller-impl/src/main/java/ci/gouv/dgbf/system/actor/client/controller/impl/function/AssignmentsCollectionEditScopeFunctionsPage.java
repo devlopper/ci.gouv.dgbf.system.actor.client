@@ -252,7 +252,21 @@ public class AssignmentsCollectionEditScopeFunctionsPage extends AbstractPageCon
 		
 		@Override
 		public String getReadQueryIdentifier(LazyDataModel<Assignments> lazyDataModel) {
-			return AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_EDIT;
+			return AssignmentsQuerier.QUERY_IDENTIFIER_READ_DYNAMIC;
+		}
+		
+		@Override
+		protected String getFieldsAllStringsCodesOnly() {
+			return ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments.FIELDS_ALL_STRINGS_CODES_ONLY_WITHOUT_SCOPE_FUNCTIONS;
+		}
+		
+		@Override
+		public Arguments<Assignments> instantiateArguments(LazyDataModel<Assignments> lazyDataModel) {
+			Arguments<Assignments> arguments = super.instantiateArguments(lazyDataModel);
+			ArrayList<String> list = new ArrayList<>();
+			list.addAll(List.of(ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments.FIELDS_HOLDERS));
+			arguments.getRepresentationArguments().getQueryExecutorArguments().addProcessableTransientFieldsNames(list);
+			return arguments;
 		}
 	}
 	
