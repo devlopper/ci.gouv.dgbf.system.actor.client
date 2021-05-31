@@ -15,10 +15,8 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.random.RandomHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
@@ -151,15 +149,11 @@ public class AssignmentsEditScopeFunctionsByModelPage extends AbstractPageContai
 						copyToModel(Assignments.FIELD_ACCOUNTING_HOLDER);
 						//copyToModel(Assignments.FIELD_ACCOUNTING_ASSISTANT);
 						
-						Arguments<Assignments> arguments = new Arguments<Assignments>()
+						Arguments<Assignments> arguments = new Arguments<Assignments>().setResponseEntityClass(String.class)
 								.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
 								.setActionIdentifier(AssignmentsBusiness.APPLY_MODEL)).setUpdatables(List.of(model));
 						EntitySaver.getInstance().save(Assignments.class, arguments);
-						//Long n = NumberHelper.getLong(arguments.get__response__().getHeaderString(Action.UPDATE.name()));
-						Object value = arguments.get__response__().readEntity(String.class);
-						System.out.println(
-								"AssignmentsEditScopeFunctionsByModelPage.buildSaveCommandButton().new AbstractImpl() {...}.__runExecuteFunction__() : "+value);
-						return value; //String.format("%s affectation(s) modifiée(s)", n);
+						return arguments.get__responseEntity__();
 					}
 				},CommandButton.FIELD_STYLE_CLASS,"cyk-float-right");
 		saveCommandButton.addUpdates(":form:"+assignmentsDataTableCellIdentifier);

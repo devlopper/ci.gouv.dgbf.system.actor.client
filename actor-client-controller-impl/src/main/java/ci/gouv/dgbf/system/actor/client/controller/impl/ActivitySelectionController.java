@@ -12,5 +12,4 @@ import lombok.experimental.Accessors;
 @Getter @Setter @Accessors(chain=true)
 public class ActivitySelectionController extends AbstractSelectionController<Activity> implements Serializable {
 
-
 }
