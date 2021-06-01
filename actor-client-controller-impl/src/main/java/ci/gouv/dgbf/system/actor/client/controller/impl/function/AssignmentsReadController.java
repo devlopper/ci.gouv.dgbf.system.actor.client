@@ -13,6 +13,7 @@ import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputText;
+import org.cyk.utility.controller.Arguments;
 import org.cyk.utility.controller.EntityReader;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Assignments;
@@ -28,10 +29,12 @@ public class AssignmentsReadController implements Serializable {
 	private Layout layout;
 	
 	public AssignmentsReadController initialize() {
-		if(assignments == null)
-			assignments = EntityReader.getInstance().readOne(Assignments.class, AssignmentsQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI
-					, new String[] {ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments.FIELDS_ALL_STRINGS_CODES_ONLY}
-			, AssignmentsQuerier.PARAMETER_NAME_IDENTIFIER,WebController.getInstance().getRequestParameter(ParameterName.ENTITY_IDENTIFIER));			
+		if(assignments == null) {
+			Arguments<Assignments> arguments = new Arguments<Assignments>().queryIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
+				.filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.ENTITY_IDENTIFIER))
+				.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments.FIELDS_ALL_STRINGS_CODES_NAMES_WITH_ASSISTANTS);
+			assignments = EntityReader.getInstance().readOne(Assignments.class, arguments);
+		}
 		return this;
 	}
 	

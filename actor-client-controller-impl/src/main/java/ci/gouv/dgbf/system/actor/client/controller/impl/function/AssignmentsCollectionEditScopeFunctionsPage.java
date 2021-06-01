@@ -124,13 +124,14 @@ public class AssignmentsCollectionEditScopeFunctionsPage extends AbstractPageCon
 						}
 						if(CollectionHelper.isEmpty(updatables)) {
 							LogHelper.logInfo("Nothing to update", getClass());
-							return null;
+							return "Aucune modification";
 						}
 						LogHelper.logInfo("Update "+updatables.size()+" assignments", getClass());
-						EntitySaver.getInstance().save(Assignments.class, new Arguments<Assignments>()
-								.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
-								.setActionIdentifier(AssignmentsBusiness.SAVE_SCOPE_FUNCTIONS)).setUpdatables(updatables));	
-						return null;
+						Arguments<Assignments> arguments = new Arguments<Assignments>().setResponseEntityClass(String.class)
+						.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
+						.setActionIdentifier(AssignmentsBusiness.SAVE_SCOPE_FUNCTIONS)).setUpdatables(updatables);
+						EntitySaver.getInstance().save(Assignments.class, arguments);	
+						return arguments.get__responseEntity__();
 					}
 				},CommandButton.FIELD_STYLE_CLASS,"cyk-float-right");
 		//saveCommandButton.addUpdates(":form:"+assignmentsDataTableCellIdentifier);
