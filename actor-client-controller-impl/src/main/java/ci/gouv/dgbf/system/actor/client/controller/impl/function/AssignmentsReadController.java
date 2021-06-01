@@ -30,7 +30,7 @@ public class AssignmentsReadController implements Serializable {
 	public AssignmentsReadController initialize() {
 		if(assignments == null)
 			assignments = EntityReader.getInstance().readOne(Assignments.class, AssignmentsQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI
-					, new String[] {ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments.FIELD___ALL__}
+					, new String[] {ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments.FIELDS_ALL_STRINGS_CODES_ONLY}
 			, AssignmentsQuerier.PARAMETER_NAME_IDENTIFIER,WebController.getInstance().getRequestParameter(ParameterName.ENTITY_IDENTIFIER));			
 		return this;
 	}
