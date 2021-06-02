@@ -63,12 +63,16 @@ public class ScopeFunctionCreatePage extends AbstractEntityEditPageContainerMana
 				initializeCellsRenderedByIndexes();				
 				if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_G1.equals(choice))
 					form.getLayout().setCellsRenderedByIndexes(Boolean.TRUE,2,3,4,5,10,11);
+				
 				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_O2.equals(choice))
 					form.getLayout().setCellsRenderedByIndexes(Boolean.TRUE,2,3,6,7,10,11);	
 				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_O3.equals(choice))
 					form.getLayout().setCellsRenderedByIndexes(Boolean.TRUE,2,3,6,7,8,9,10,11);
 				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_O9.equals(choice))
-					form.getLayout().setCellsRenderedByIndexes(Boolean.TRUE,2,3,6,7,10,11);	
+					form.getLayout().setCellsRenderedByIndexes(Boolean.TRUE,2,3,6,7,10,11);
+				
+				//else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_C1.equals(choice))
+				//	form.getLayout().setCellsRenderedByIndexes(Boolean.TRUE,2,3,6,7,10,11);
 			}
 		});
 		initializeCellsRenderedByIndexes();
