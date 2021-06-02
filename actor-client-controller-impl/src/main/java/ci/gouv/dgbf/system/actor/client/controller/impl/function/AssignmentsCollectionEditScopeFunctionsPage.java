@@ -112,7 +112,7 @@ public class AssignmentsCollectionEditScopeFunctionsPage extends AbstractPageCon
 					@Override
 					protected Object __runExecuteFunction__(AbstractAction action) {
 						if(CollectionHelper.isEmpty(assignmentsCollection))
-							return null;
+							return "Aucune modification";
 						Collection<Assignments> updatables = null;
 						for(Assignments executionImputation : assignmentsCollection) {
 							if(!Boolean.TRUE.equals(isHasBeenEdited(executionImputation)))							
