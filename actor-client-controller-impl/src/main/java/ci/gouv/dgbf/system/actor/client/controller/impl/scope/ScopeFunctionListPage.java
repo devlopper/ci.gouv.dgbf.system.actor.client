@@ -19,6 +19,7 @@ import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.session.SessionManager;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
@@ -33,12 +34,15 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 import org.cyk.utility.controller.Arguments;
 import org.cyk.utility.controller.EntityReader;
+import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.persistence.query.Filter;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
+import ci.gouv.dgbf.system.actor.client.controller.entities.RequestScopeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeTypeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.impl.Helper;
+import ci.gouv.dgbf.system.actor.server.business.api.RequestScopeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
@@ -196,6 +200,26 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 				dataTable.addRecordMenuItemByArgumentsOpenViewInDialogUpdate();
 				dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
 			}
+			
+			dataTable.addRecordMenuItemByArgumentsExecuteFunction("Libérer","fa fa-trash",new AbstractAction.Listener.AbstractImpl() {
+				@Override
+				protected Object __runExecuteFunction__(AbstractAction action) {
+					ScopeFunction scopeFunction = (ScopeFunction)action.readArgument();
+					if(scopeFunction == null)
+						throw new RuntimeException("Sélectionner un poste");
+					if(scopeFunction.getCode().startsWith("A"))
+						throw new RuntimeException(String.format("%s est un poste d'assistant. Veuillez sélectionner un poste de titulaire",scopeFunction.getCode()));
+					RequestScopeFunction requestScopeFunction = new RequestScopeFunction();
+					requestScopeFunction.setScopeFunctionsIdentifiers(List.of(scopeFunction.getIdentifier()));
+					requestScopeFunction.set__auditWho__(SessionManager.getInstance().getUserName());
+					Arguments<RequestScopeFunction> arguments = new Arguments<RequestScopeFunction>().setResponseEntityClass(String.class)
+							.addCreatablesOrUpdatables(requestScopeFunction);
+					arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(RequestScopeFunctionBusiness
+							.UPDATE_GRANTED_TO_FALSE_WHERE_TRUE_BY_SCOPE_FUNCTIONS_IDENTIFIERS));					
+					EntitySaver.getInstance().save(RequestScopeFunction.class, arguments);
+					return arguments.get__responseEntity__();
+				}
+			});
 		}
 		
 		if(Boolean.TRUE.equals(MapHelper.readByKey(arguments, ScopeFunctionListPage.class))) {

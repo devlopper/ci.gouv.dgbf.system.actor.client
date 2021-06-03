@@ -8,11 +8,11 @@ import java.util.List;
 import javax.ws.rs.core.Response;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.session.SessionHelper;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.controller.Arguments;
 import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.representation.RepresentationProxyGetter;
-import org.cyk.utility.__kernel__.session.SessionHelper;
-import org.cyk.utility.__kernel__.string.StringHelper;
 
 import ci.gouv.dgbf.system.actor.server.business.api.AccountRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorBusiness;
@@ -26,6 +26,7 @@ import ci.gouv.dgbf.system.actor.server.business.api.ProfileFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestDispatchSlipBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.RequestScopeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeTypeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ServiceBusiness;
@@ -41,6 +42,7 @@ import ci.gouv.dgbf.system.actor.server.representation.api.ProfilePrivilegeRepre
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfileRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.RequestDispatchSlipRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.RequestRepresentation;
+import ci.gouv.dgbf.system.actor.server.representation.api.RequestScopeFunctionRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ScopeFunctionRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ScopeTypeFunctionRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ServiceRepresentation;
@@ -56,6 +58,7 @@ import ci.gouv.dgbf.system.actor.server.representation.entities.ProfileFunctionD
 import ci.gouv.dgbf.system.actor.server.representation.entities.ProfilePrivilegeDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.RequestDispatchSlipDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.RequestDto;
+import ci.gouv.dgbf.system.actor.server.representation.entities.RequestScopeFunctionDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ScopeDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ScopeFunctionDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ScopeTypeFunctionDto;
@@ -170,6 +173,8 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 			else if(ExecutionImputationBusiness.REFRESH_MATERIALIZED_VIEW.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ExecutionImputationRepresentation.getProxy());
 			
+			else if(RequestScopeFunctionBusiness.UPDATE_GRANTED_TO_FALSE_WHERE_TRUE_BY_SCOPE_FUNCTIONS_IDENTIFIERS.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(RequestScopeFunctionRepresentation.getProxy());
 		}
 		
 		if(arguments.getRepresentation() == null && StringHelper.isNotBlank(arguments.getRepresentationArguments().getActionIdentifier())) {
@@ -563,6 +568,12 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 		
 		if(arguments != null && IdentificationFormAttributeBusiness.SAVE.equals(arguments.getActionIdentifier())) {
 			return ((IdentificationFormAttributeRepresentation)representation).save(CollectionHelper.cast(IdentificationFormAttributeDto.class, updatables));
+		}
+		
+		if(arguments != null && RequestScopeFunctionBusiness.UPDATE_GRANTED_TO_FALSE_WHERE_TRUE_BY_SCOPE_FUNCTIONS_IDENTIFIERS.equals(arguments.getActionIdentifier())) {
+			RequestScopeFunctionDto requestScopeFunctionDto = (RequestScopeFunctionDto) CollectionHelper.getFirst(creatables);
+			return ((RequestScopeFunctionRepresentation)representation).updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(
+					requestScopeFunctionDto.getScopeFunctionsIdentifiers(),requestScopeFunctionDto.get__auditWho__());
 		}
 		
 		return super.save(representation, creatables, updatables, deletables, arguments);
