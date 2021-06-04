@@ -18,14 +18,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.controller.Arguments;
-import org.cyk.utility.controller.EntityReader;
-import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.object.ReadListener;
-import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.__kernel__.value.ValueHelper;
@@ -45,6 +41,10 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputLabel;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputText;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityEditPageContainerManagedImpl;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntityReader;
+import org.cyk.utility.controller.EntitySaver;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.primefaces.PrimeFaces;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.ActorController;
@@ -61,6 +61,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.RequestType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.client.controller.impl.identification.PublicRequestOpenPage;
+import ci.gouv.dgbf.system.actor.server.business.api.ActorBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.CivilityQuerier;
@@ -305,7 +306,7 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 			String actionIdentifier = null;
 			if(Action.CREATE.equals(form.getAction())) {
 				actionIdentifier = RequestBusiness.INITIALIZE;
-				request.setElectronicMailAddress(RequestBusiness.normalizeElectronicMailAddress(request.getElectronicMailAddress()));
+				request.setElectronicMailAddress(ActorBusiness.normalizeElectronicMailAddress(request.getElectronicMailAddress()));
 			}else if(Action.UPDATE.equals(form.getAction()))
 				actionIdentifier = RequestBusiness.RECORD;
 			else
