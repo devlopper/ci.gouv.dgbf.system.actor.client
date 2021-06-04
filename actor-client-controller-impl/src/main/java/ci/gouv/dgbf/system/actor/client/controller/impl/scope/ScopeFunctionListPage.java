@@ -199,6 +199,13 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 			if(Boolean.TRUE.equals(MapHelper.readByKey(arguments, ScopeFunctionListPage.class)) || RenderType.LIST.equals(renderType) || scopeFunction != null) {
 				dataTable.addRecordMenuItemByArgumentsOpenViewInDialogUpdate();
 				dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
+			}	
+		}
+		
+		if(Boolean.TRUE.equals(MapHelper.readByKey(arguments, ScopeFunctionListPage.class))) {
+			if(!Boolean.TRUE.equals(SessionManager.getInstance().isUserHasOneOfRoles(Profile.CODE_ADMINISTRATEUR)) 
+					&&  Boolean.TRUE.equals(SessionManager.getInstance().isUserHasOneOfRoles(Profile.CODE_CHARGE_ETUDE_DAS))) {
+				dataTable.addRecordMenuItemByArgumentsOpenViewInDialog(ScopeFunctionEditNamePage.OUTCOME, MenuItem.FIELD_VALUE,"Modifier le libellé",MenuItem.FIELD_ICON,"fa fa-edit");
 			}
 			
 			dataTable.addRecordMenuItemByArgumentsExecuteFunction("Libérer","fa fa-trash",new AbstractAction.Listener.AbstractImpl() {
@@ -220,13 +227,6 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 					return arguments.get__responseEntity__();
 				}
 			});
-		}
-		
-		if(Boolean.TRUE.equals(MapHelper.readByKey(arguments, ScopeFunctionListPage.class))) {
-			if(!Boolean.TRUE.equals(SessionManager.getInstance().isUserHasOneOfRoles(Profile.CODE_ADMINISTRATEUR)) 
-					&&  Boolean.TRUE.equals(SessionManager.getInstance().isUserHasOneOfRoles(Profile.CODE_CHARGE_ETUDE_DAS))) {
-				dataTable.addRecordMenuItemByArgumentsOpenViewInDialog(ScopeFunctionEditNamePage.OUTCOME, MenuItem.FIELD_VALUE,"Modifier le libellé",MenuItem.FIELD_ICON,"fa fa-edit");
-			}
 		}
 		
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);
