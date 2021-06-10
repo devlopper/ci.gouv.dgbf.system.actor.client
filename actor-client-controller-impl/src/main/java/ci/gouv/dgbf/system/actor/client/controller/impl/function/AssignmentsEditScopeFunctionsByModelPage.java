@@ -151,7 +151,7 @@ public class AssignmentsEditScopeFunctionsByModelPage extends AbstractPageContai
 						
 						Arguments<Assignments> arguments = new Arguments<Assignments>().setResponseEntityClass(String.class)
 								.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
-								.setActionIdentifier(AssignmentsBusiness.APPLY_MODEL)).setUpdatables(List.of(model));
+								.setActionIdentifier(AssignmentsBusiness.APPLY_MODEL_THEN_EXPORT)).setUpdatables(List.of(model));
 						EntitySaver.getInstance().save(Assignments.class, arguments);
 						return arguments.get__responseEntity__();
 					}

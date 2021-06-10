@@ -107,7 +107,7 @@ public class AssignmentsEditScopeFunctionsPage extends AbstractPageContainerMana
 						//assignments.setAccountingAssistantAsString((String) FieldHelper.readSystemIdentifier(accountingAssistantAutoComplete.getValue()));
 						Arguments<Assignments> arguments = new Arguments<Assignments>();
 						arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
-								.setActionIdentifier(AssignmentsBusiness.SAVE_SCOPE_FUNCTIONS));
+								.setActionIdentifier(AssignmentsBusiness.SAVE_SCOPE_FUNCTIONS_THEN_EXPORT));
 						arguments.setUpdatables(List.of(assignments));
 						if(CollectionHelper.isNotEmpty(arguments.getUpdatables())) {
 							EntitySaver.getInstance().save(Assignments.class, arguments);

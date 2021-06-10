@@ -155,7 +155,11 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				arguments.setRepresentation(AssignmentsRepresentation.getProxy());
 			else if(AssignmentsBusiness.APPLY_MODEL.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(AssignmentsRepresentation.getProxy());
+			else if(AssignmentsBusiness.APPLY_MODEL_THEN_EXPORT.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(AssignmentsRepresentation.getProxy());
 			else if(AssignmentsBusiness.SAVE_SCOPE_FUNCTIONS.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(AssignmentsRepresentation.getProxy());
+			else if(AssignmentsBusiness.SAVE_SCOPE_FUNCTIONS_THEN_EXPORT.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(AssignmentsRepresentation.getProxy());
 			else if(AssignmentsBusiness.DELETE_ALL.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(AssignmentsRepresentation.getProxy());
@@ -467,6 +471,12 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 			AssignmentsDto assignments = (AssignmentsDto) updatables.iterator().next();
 			return ((AssignmentsRepresentation)representation).applyModel(assignments,SessionHelper.getUserName());
 		}
+		if(arguments != null && AssignmentsBusiness.APPLY_MODEL_THEN_EXPORT.equals(arguments.getActionIdentifier())) {
+			if(CollectionHelper.isEmpty(updatables))
+				throw new RuntimeException("Model obligatoire");
+			AssignmentsDto assignments = (AssignmentsDto) updatables.iterator().next();
+			return ((AssignmentsRepresentation)representation).applyModelThenExport(assignments,SessionHelper.getUserName());
+		}
 		if(arguments != null && AssignmentsBusiness.SAVE_SCOPE_FUNCTIONS.equals(arguments.getActionIdentifier())) {
 			if(CollectionHelper.isEmpty(updatables))
 				throw new RuntimeException("Affectations obligatoire");
@@ -474,6 +484,14 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 			if(CollectionHelper.isEmpty(collection))
 				throw new RuntimeException("Affectations obligatoire");
 			return ((AssignmentsRepresentation)representation).saveScopeFunctions((List<AssignmentsDto>) collection);
+		}
+		if(arguments != null && AssignmentsBusiness.SAVE_SCOPE_FUNCTIONS_THEN_EXPORT.equals(arguments.getActionIdentifier())) {
+			if(CollectionHelper.isEmpty(updatables))
+				throw new RuntimeException("Affectations obligatoire");
+			Collection<AssignmentsDto> collection = CollectionHelper.cast(AssignmentsDto.class, updatables);
+			if(CollectionHelper.isEmpty(collection))
+				throw new RuntimeException("Affectations obligatoire");
+			return ((AssignmentsRepresentation)representation).saveScopeFunctionsThenExport((List<AssignmentsDto>) collection);
 		}
 		if(arguments != null && AssignmentsBusiness.DERIVE_ALL_VALUES.equals(arguments.getActionIdentifier())) {
 			AssignmentsDto assignments = (AssignmentsDto) CollectionHelper.getFirst(creatables);

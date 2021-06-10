@@ -129,7 +129,7 @@ public class AssignmentsCollectionEditScopeFunctionsPage extends AbstractPageCon
 						LogHelper.logInfo("Update "+updatables.size()+" assignments", getClass());
 						Arguments<Assignments> arguments = new Arguments<Assignments>().setResponseEntityClass(String.class)
 						.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
-						.setActionIdentifier(AssignmentsBusiness.SAVE_SCOPE_FUNCTIONS)).setUpdatables(updatables);
+						.setActionIdentifier(AssignmentsBusiness.SAVE_SCOPE_FUNCTIONS_THEN_EXPORT)).setUpdatables(updatables);
 						EntitySaver.getInstance().save(Assignments.class, arguments);	
 						return arguments.get__responseEntity__();
 					}
