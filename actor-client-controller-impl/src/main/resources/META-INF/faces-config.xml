@@ -644,6 +644,12 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>assignmentsReadHistoryView</from-outcome>
+			<to-view-id>/private/assignments/history.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>assignmentsEditView</from-outcome>
 			<to-view-id>/private/assignments/editscopefunctions.jsf</to-view-id>
 			<redirect />

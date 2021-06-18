@@ -24,5 +24,10 @@ public class Locality extends AbstractDataIdentifiableSystemStringIdentifiableBu
 	private String departmentCodeName;
 	
 	private Locality region;
-	private Locality department;	
+	private Locality department;
+	
+	@Override
+	public String toString() {
+		return code+" "+name;
+	}
 }

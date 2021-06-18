@@ -53,6 +53,8 @@ public class Assignments extends AbstractDataIdentifiableSystemStringAuditedImpl
 	private Collection<Function> functions;
 	private Boolean overridable,holdersSettable,assistantsSettable;
 	
+	private Collection<Assignments> __auditRecords__;
+	
 	/**/
 	
 	public Collection<String> getOverridablesFieldsNames(Boolean injectIfNull) {
