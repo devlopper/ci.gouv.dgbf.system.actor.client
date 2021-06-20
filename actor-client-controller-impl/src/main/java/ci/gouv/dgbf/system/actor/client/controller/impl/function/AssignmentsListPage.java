@@ -376,6 +376,28 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		return buildDataTable(ArrayHelper.isEmpty(objects) ? null : MapHelper.instantiate(objects));
 	}
 
+	public static DataTable buildHistoryDataTable(Map<Object,Object> arguments) {
+		Assignments assignments = (Assignments) MapHelper.readByKey(arguments, Assignments.class);
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,List.of(Assignments.FIELD_CREDIT_MANAGER_HOLDER_AS_STRING
+				,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER_AS_STRING,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER_AS_STRING
+				,Assignments.FIELD_ACCOUNTING_HOLDER_AS_STRING,Assignments.FIELD___AUDIT_FUNCTIONALITY__,Assignments.FIELD___AUDIT_WHAT__
+				,Assignments.FIELD___AUDIT_WHO__,Assignments.FIELD___AUDIT_WHEN_AS_STRING__));
+		
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY,Boolean.FALSE);
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_VALUE,assignments.get__auditRecords__());
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_RENDER_TYPE,org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection.RenderType.OUTPUT_UNSELECTABLE);
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl().setIsShowHolderCodeOnly(Boolean.TRUE).setIsAuditRecord(Boolean.TRUE));
+				
+		DataTable dataTable = DataTable.build(arguments);
+		dataTable.setAreColumnsChoosable(Boolean.TRUE);
+		return dataTable;
+	}
+	
+	public static DataTable buildHistoryDataTable(Object...objects) {
+		return buildHistoryDataTable(ArrayHelper.isEmpty(objects) ? null : MapHelper.instantiate(objects));
+	}
+	
 	/**/
 	
 	public static class PageArguments implements Serializable{
@@ -483,6 +505,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			,financialControllerHolder,financialControllerAssistant,accountingHolder,accountingAssistant;
 		protected String tooltipFormat;
 		protected Boolean showTooltip,filterable = Boolean.FALSE;
+		protected Boolean isShowHolderCodeOnly;
 		
 		public DataTableListenerImpl() {
 			creditManagerHolder = __inject__(FunctionController.class).readByBusinessIdentifier(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER);
@@ -538,6 +561,9 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 					map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,filterable);
 					map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER);
 				}
+				if(Boolean.TRUE.equals(isShowHolderCodeOnly)) {
+					map.put(Column.FIELD_WIDTH, "80");
+				}
 			}else if(Assignments.FIELD_CREDIT_MANAGER_ASSISTANT_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readBusinessIdentifier(creditManagerAssistant));
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
@@ -549,6 +575,9 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 				if(Boolean.TRUE.equals(filterable)) {
 					map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,filterable);
 					map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER);
+				}
+				if(Boolean.TRUE.equals(isShowHolderCodeOnly)) {
+					map.put(Column.FIELD_WIDTH, "80");
 				}
 			}else if(Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readBusinessIdentifier(authorizingOfficerAssistant));
@@ -562,6 +591,9 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 					map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,filterable);
 					map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER);
 				}
+				if(Boolean.TRUE.equals(isShowHolderCodeOnly)) {
+					map.put(Column.FIELD_WIDTH, "80");
+				}
 			}else if(Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readBusinessIdentifier(financialControllerAssistant));
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
@@ -573,6 +605,9 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 				if(Boolean.TRUE.equals(filterable)) {
 					map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,filterable);
 					map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_ACCOUNTING_HOLDER);
+				}
+				if(Boolean.TRUE.equals(isShowHolderCodeOnly)) {
+					map.put(Column.FIELD_WIDTH, "80");
 				}
 			}else if(Assignments.FIELD_ACCOUNTING_ASSISTANT_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, FieldHelper.readBusinessIdentifier(accountingAssistant));

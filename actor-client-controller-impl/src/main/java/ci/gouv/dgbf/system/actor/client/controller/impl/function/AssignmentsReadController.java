@@ -3,7 +3,6 @@ package ci.gouv.dgbf.system.actor.client.controller.impl.function;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -11,7 +10,6 @@ import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.web.WebController;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection.RenderType;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
@@ -49,6 +47,21 @@ public class AssignmentsReadController implements Serializable {
 		if(assignments == null)
 			return this;
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
+		Layout labelValueLayout = buildLabelValueLayout();
+		if(labelValueLayout != null)
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,labelValueLayout,Cell.FIELD_WIDTH,12));
+		
+		Layout auditsRecordsLayout = buildAuditsRecordsLayout();
+		if(auditsRecordsLayout != null)
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,auditsRecordsLayout,Cell.FIELD_WIDTH,12));
+				
+		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_LABEL_VALUE,Boolean.TRUE
+				,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
+		return this;
+	}
+	
+	private Layout buildLabelValueLayout() {
+		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
 		addLabelValue(cellsMaps, "Section", assignments.getSectionAsString());
 		addLabelValue(cellsMaps, "Unité administrative", assignments.getAdministrativeUnitAsString());
 		addLabelValue(cellsMaps, "Dotation/Programme", assignments.getBudgetSpecializationUnitAsString());
@@ -67,22 +80,19 @@ public class AssignmentsReadController implements Serializable {
 		addLabelValue(cellsMaps, "Comptable", assignments.getAccountingHolderAsString());
 		addLabelValue(cellsMaps, "Assistant comptable", assignments.getAccountingAssistantAsString());
 		
-		if(historyDataTable == null && Boolean.TRUE.equals(historyReadable)) {
-			historyDataTable = DataTable.build(DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,List.of(Assignments.FIELD_CREDIT_MANAGER_HOLDER_AS_STRING
-					,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER_AS_STRING,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER_AS_STRING
-					,Assignments.FIELD_ACCOUNTING_HOLDER_AS_STRING,Assignments.FIELD___AUDIT_FUNCTIONALITY__,Assignments.FIELD___AUDIT_WHAT__
-					,Assignments.FIELD___AUDIT_WHEN_AS_STRING__,Assignments.FIELD___AUDIT_WHO__)
-					,DataTable.FIELD_LAZY,Boolean.FALSE,DataTable.FIELD_VALUE,assignments.get__auditRecords__()
-					,DataTable.FIELD_RENDER_TYPE,RenderType.OUTPUT_UNSELECTABLE
-					,DataTable.FIELD_LISTENER,new AssignmentsListPage.DataTableListenerImpl());
-		}
-		
-		if(historyDataTable != null)
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,historyDataTable,Cell.FIELD_WIDTH,12));
-		
-		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_LABEL_VALUE,Boolean.TRUE
+		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_LABEL_VALUE,Boolean.TRUE
 				,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
-		return this;
+	}
+	
+	private Layout buildAuditsRecordsLayout() {
+		if(historyDataTable != null || !Boolean.TRUE.equals(historyReadable))
+			return null;
+		historyDataTable = AssignmentsListPage.buildHistoryDataTable(Assignments.class,assignments);
+		if(historyDataTable == null)
+			return null;
+		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,historyDataTable,Cell.FIELD_WIDTH,12));
+		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
 	}
 	
 	protected void addLabelValue(Collection<Map<Object,Object>> cellsMaps,String label,String value) {
