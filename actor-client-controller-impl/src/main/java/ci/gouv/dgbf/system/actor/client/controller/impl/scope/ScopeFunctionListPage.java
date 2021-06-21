@@ -203,11 +203,13 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 		}
 		
 		if(Boolean.TRUE.equals(MapHelper.readByKey(arguments, ScopeFunctionListPage.class))) {
+			/*
 			if(!Boolean.TRUE.equals(SessionManager.getInstance().isUserHasOneOfRoles(Profile.CODE_ADMINISTRATEUR)) 
 					&&  Boolean.TRUE.equals(SessionManager.getInstance().isUserHasOneOfRoles(Profile.CODE_CHARGE_ETUDE_DAS))) {
 				dataTable.addRecordMenuItemByArgumentsOpenViewInDialog(ScopeFunctionEditNamePage.OUTCOME, MenuItem.FIELD_VALUE,"Modifier le libellé",MenuItem.FIELD_ICON,"fa fa-edit");
 			}
-			
+			*/
+			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog(ScopeFunctionEditNamePage.OUTCOME, MenuItem.FIELD_VALUE,"Modifier le libellé",MenuItem.FIELD_ICON,"fa fa-edit");
 			dataTable.addRecordMenuItemByArgumentsExecuteFunction("Libérer","fa fa-trash",new AbstractAction.Listener.AbstractImpl() {
 				@Override
 				protected Object __runExecuteFunction__(AbstractAction action) {
@@ -229,6 +231,73 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 			});
 		}
 		
+		if(Boolean.TRUE.equals(SessionManager.getInstance().isUserHasRole(Profile.CODE_ADMINISTRATEUR))) {
+			if(Boolean.TRUE.equals(MapHelper.readByKey(arguments, ScopeFunctionListPage.class))) {
+				//dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();
+				
+				/*
+				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Initialiser",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
+						,MenuItem.FIELD_ICON,"fa fa-database"
+						,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
+						,List.of(org.cyk.utility.__kernel__.user.interface_.message.RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+							@Override
+							protected Object __runExecuteFunction__(AbstractAction action) {
+								@SuppressWarnings("unchecked")
+								LazyDataModelListenerImpl listener = (LazyDataModelListenerImpl) ((LazyDataModel<ScopeFunction>)dataTable.getValue()).getListener();
+								Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>().addCreatablesOrUpdatables(new ScopeFunction()
+										.setFunctionsIdentifiers(List.of(listener.getFunctionIdentifier())));
+								arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
+										.setActionIdentifier(ScopeFunctionBusiness.DERIVE_BY_FUNCTIONS_IDENTIFIERS));					
+								EntitySaver.getInstance().save(ScopeFunction.class, arguments);
+								return null;
+							}
+						});
+				
+				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Recodifier",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
+						,MenuItem.FIELD_ICON,"fa fa-cubes"
+						,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
+						,List.of(org.cyk.utility.__kernel__.user.interface_.message.RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+							@Override
+							protected Object __runExecuteFunction__(AbstractAction action) {
+								@SuppressWarnings("unchecked")
+								LazyDataModelListenerImpl listener = (LazyDataModelListenerImpl) ((LazyDataModel<ScopeFunction>)dataTable.getValue()).getListener();
+								Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>().addCreatablesOrUpdatables(new ScopeFunction()
+										.setFunctionsIdentifiers(List.of(listener.getFunctionIdentifier())));
+								arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
+										.setActionIdentifier(ScopeFunctionBusiness.CODIFY_BY_FUNCTIONS_IDENTIFIERS));					
+								EntitySaver.getInstance().save(ScopeFunction.class, arguments);
+								return null;
+							}
+						});
+				
+				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Supprimer",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
+						,MenuItem.FIELD_ICON,"fa fa-trash"
+						,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
+						,List.of(org.cyk.utility.__kernel__.user.interface_.message.RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+							@Override
+							protected Object __runExecuteFunction__(AbstractAction action) {
+								@SuppressWarnings("unchecked")
+								LazyDataModelListenerImpl listener = (LazyDataModelListenerImpl) ((LazyDataModel<ScopeFunction>)dataTable.getValue()).getListener();
+								Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>().addCreatablesOrUpdatables(new ScopeFunction()
+										.setFunctionsIdentifiers(List.of(listener.getFunctionIdentifier())));
+								arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
+										.setActionIdentifier(ScopeFunctionBusiness.DELETE_BY_FUNCTIONS_IDENTIFIERS));					
+								EntitySaver.getInstance().save(ScopeFunction.class, arguments);
+								return null;
+							}
+						});
+				*/
+				dataTable.addRecordMenuItemByArgumentsOpenViewInDialog(ScopeFunctionReadAssistantsPage.OUTCOME, MenuItem.FIELD_VALUE,"Assistants",MenuItem.FIELD_ICON,"fa fa-user");
+				
+				//dataTable.addRecordMenuItemByArgumentsOpenViewInDialogUpdate();
+				//dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
+			}
+			
+			if(Boolean.TRUE.equals(MapHelper.readByKey(arguments, ScopeFunctionListPage.class)) || RenderType.LIST.equals(renderType) || scopeFunction != null) {
+				dataTable.addRecordMenuItemByArgumentsOpenViewInDialog(ScopeFunctionReadHistoryPage.OUTCOME, CommandButton.FIELD_VALUE,"Historique",CommandButton.FIELD_ICON,"fa fa-list-alt");
+			}	
+		}
+				
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);
 		return dataTable;
 	}
@@ -236,6 +305,28 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 	public static DataTable buildDataTable(Object...objects) {
 		return buildDataTable(ArrayHelper.isEmpty(objects) ? null : MapHelper.instantiate(objects));
 	}
+	
+	public static DataTable buildHistoryDataTable(Map<Object,Object> arguments) {
+		ScopeFunction scopeFunction = (ScopeFunction) MapHelper.readByKey(arguments, ScopeFunction.class);
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,List.of(ScopeFunction.FIELD_NAME
+			,ScopeFunction.FIELD___AUDIT_FUNCTIONALITY__,ScopeFunction.FIELD___AUDIT_WHAT__,ScopeFunction.FIELD___AUDIT_WHO__,ScopeFunction.FIELD___AUDIT_WHEN_AS_STRING__));
+		
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY,Boolean.FALSE);
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_VALUE,scopeFunction.get__auditRecords__());
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_RENDER_TYPE,org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection.RenderType.OUTPUT_UNSELECTABLE);
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl().setIsAuditRecord(Boolean.TRUE));
+		
+		DataTable dataTable = DataTable.build(arguments);
+		dataTable.setAreColumnsChoosable(Boolean.TRUE);
+		return dataTable;
+	}
+	
+	public static DataTable buildHistoryDataTable(Object...objects) {
+		return buildHistoryDataTable(ArrayHelper.isEmpty(objects) ? null : MapHelper.instantiate(objects));
+	}
+	
+	/**/
 	
 	@Getter @Setter @Accessors(chain=true)
 	public static class DataTableListenerImpl extends DataTable.Listener.AbstractImpl implements Serializable {
@@ -248,10 +339,14 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 			if(ScopeFunction.FIELD_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Code");
 				map.put(Column.FIELD_WIDTH, "75");
-				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
+				if(!Boolean.TRUE.equals(isAuditRecord)) {
+					map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
+				}				
 			}else if(ScopeFunction.FIELD_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Libellé");
-				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
+				if(!Boolean.TRUE.equals(isAuditRecord)) {
+					map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
+				}
 			}else if(ScopeFunction.FIELD_SHARED_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Partagé");
 				map.put(Column.FIELD_WIDTH, "100");

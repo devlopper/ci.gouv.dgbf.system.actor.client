@@ -23,4 +23,6 @@ public class AssignmentsReadHistoryPage extends AbstractAssignmentsReadPage impl
 	protected String __getWindowTitleValue__() {
 		return "Historique - "+super.__getWindowTitleValue__();
 	}
+	
+	public static final String OUTCOME = "assignmentsReadHistoryView";
 }

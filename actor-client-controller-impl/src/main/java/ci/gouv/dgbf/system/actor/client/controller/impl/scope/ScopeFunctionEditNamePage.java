@@ -56,7 +56,7 @@ public class ScopeFunctionEditNamePage extends AbstractEntityEditPageContainerMa
 		@Override
 		public void act(Form form) {
 			Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>().addCreatablesOrUpdatables((ScopeFunction)form.getEntity());
-			arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(ScopeFunctionBusiness.SAVE));
+			arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(ScopeFunctionBusiness.SAVE_NAME));
 			EntitySaver.getInstance().save(ScopeFunction.class, arguments);
 		}
 	}

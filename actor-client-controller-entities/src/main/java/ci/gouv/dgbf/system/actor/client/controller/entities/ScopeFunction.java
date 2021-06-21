@@ -75,6 +75,7 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	/**/
 	
 	private String signatureSpecimenReadReportURIQuery;
+	private Collection<ScopeFunction> __auditRecords__;
 	
 	@Override
 	public String toString() {

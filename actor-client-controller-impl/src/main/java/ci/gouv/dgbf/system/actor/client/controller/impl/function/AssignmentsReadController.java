@@ -47,16 +47,15 @@ public class AssignmentsReadController implements Serializable {
 		if(assignments == null)
 			return this;
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
-		Layout labelValueLayout = buildLabelValueLayout();
-		if(labelValueLayout != null)
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,labelValueLayout,Cell.FIELD_WIDTH,12));
-		
 		Layout auditsRecordsLayout = buildAuditsRecordsLayout();
 		if(auditsRecordsLayout != null)
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,auditsRecordsLayout,Cell.FIELD_WIDTH,12));
+		
+		Layout labelValueLayout = buildLabelValueLayout();
+		if(labelValueLayout != null)
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,labelValueLayout,Cell.FIELD_WIDTH,12));
 				
-		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_LABEL_VALUE,Boolean.TRUE
-				,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
+		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
 		return this;
 	}
 	

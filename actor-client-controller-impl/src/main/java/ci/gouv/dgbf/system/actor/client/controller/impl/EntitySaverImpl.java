@@ -147,6 +147,8 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 			
 			else if(ScopeFunctionBusiness.SAVE.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ScopeFunctionRepresentation.getProxy());
+			else if(ScopeFunctionBusiness.SAVE_NAME.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ScopeFunctionRepresentation.getProxy());
 			
 			else if(ScopeTypeFunctionBusiness.SAVE.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ScopeTypeFunctionRepresentation.getProxy());
@@ -460,6 +462,20 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				scopeFunctionDtos.addAll(CollectionHelper.cast(ScopeFunctionDto.class, creatables));
 			if(CollectionHelper.isNotEmpty(updatables))
 				scopeFunctionDtos.addAll(CollectionHelper.cast(ScopeFunctionDto.class, updatables));
+			return ((ScopeFunctionRepresentation)representation).save(scopeFunctionDtos);
+		}
+		
+		if(arguments != null && ScopeFunctionBusiness.SAVE_NAME.equals(arguments.getActionIdentifier())) {
+			if(CollectionHelper.isEmpty(creatables) && CollectionHelper.isEmpty(updatables))
+				throw new RuntimeException("Poste à enregistrer obligatoire");
+			Collection<ScopeFunctionDto> scopeFunctionDtos = new ArrayList<>();
+			if(CollectionHelper.isNotEmpty(creatables))
+				scopeFunctionDtos.addAll(CollectionHelper.cast(ScopeFunctionDto.class, creatables));
+			if(CollectionHelper.isNotEmpty(updatables))
+				scopeFunctionDtos.addAll(CollectionHelper.cast(ScopeFunctionDto.class, updatables));
+			scopeFunctionDtos.forEach(dto -> {
+				dto.set__auditFunctionality__("Modification de libellé");
+			});
 			return ((ScopeFunctionRepresentation)representation).save(scopeFunctionDtos);
 		}
 		

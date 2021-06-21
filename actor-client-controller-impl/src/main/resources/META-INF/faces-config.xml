@@ -512,6 +512,12 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>scopeFunctionReadHistoryView</from-outcome>
+			<to-view-id>/private/scopefunction/readhistory.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>scopeFunctionReadAssistantsView</from-outcome>
 			<to-view-id>/private/scopefunction/assistants.jsf</to-view-id>
 			<redirect />
