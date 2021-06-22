@@ -232,67 +232,6 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 		}
 		
 		if(Boolean.TRUE.equals(SessionManager.getInstance().isUserHasRole(Profile.CODE_ADMINISTRATEUR))) {
-			if(Boolean.TRUE.equals(MapHelper.readByKey(arguments, ScopeFunctionListPage.class))) {
-				//dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();
-				
-				/*
-				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Initialiser",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
-						,MenuItem.FIELD_ICON,"fa fa-database"
-						,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
-						,List.of(org.cyk.utility.__kernel__.user.interface_.message.RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
-							@Override
-							protected Object __runExecuteFunction__(AbstractAction action) {
-								@SuppressWarnings("unchecked")
-								LazyDataModelListenerImpl listener = (LazyDataModelListenerImpl) ((LazyDataModel<ScopeFunction>)dataTable.getValue()).getListener();
-								Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>().addCreatablesOrUpdatables(new ScopeFunction()
-										.setFunctionsIdentifiers(List.of(listener.getFunctionIdentifier())));
-								arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
-										.setActionIdentifier(ScopeFunctionBusiness.DERIVE_BY_FUNCTIONS_IDENTIFIERS));					
-								EntitySaver.getInstance().save(ScopeFunction.class, arguments);
-								return null;
-							}
-						});
-				
-				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Recodifier",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
-						,MenuItem.FIELD_ICON,"fa fa-cubes"
-						,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
-						,List.of(org.cyk.utility.__kernel__.user.interface_.message.RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
-							@Override
-							protected Object __runExecuteFunction__(AbstractAction action) {
-								@SuppressWarnings("unchecked")
-								LazyDataModelListenerImpl listener = (LazyDataModelListenerImpl) ((LazyDataModel<ScopeFunction>)dataTable.getValue()).getListener();
-								Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>().addCreatablesOrUpdatables(new ScopeFunction()
-										.setFunctionsIdentifiers(List.of(listener.getFunctionIdentifier())));
-								arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
-										.setActionIdentifier(ScopeFunctionBusiness.CODIFY_BY_FUNCTIONS_IDENTIFIERS));					
-								EntitySaver.getInstance().save(ScopeFunction.class, arguments);
-								return null;
-							}
-						});
-				
-				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Supprimer",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
-						,MenuItem.FIELD_ICON,"fa fa-trash"
-						,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
-						,List.of(org.cyk.utility.__kernel__.user.interface_.message.RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
-							@Override
-							protected Object __runExecuteFunction__(AbstractAction action) {
-								@SuppressWarnings("unchecked")
-								LazyDataModelListenerImpl listener = (LazyDataModelListenerImpl) ((LazyDataModel<ScopeFunction>)dataTable.getValue()).getListener();
-								Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>().addCreatablesOrUpdatables(new ScopeFunction()
-										.setFunctionsIdentifiers(List.of(listener.getFunctionIdentifier())));
-								arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
-										.setActionIdentifier(ScopeFunctionBusiness.DELETE_BY_FUNCTIONS_IDENTIFIERS));					
-								EntitySaver.getInstance().save(ScopeFunction.class, arguments);
-								return null;
-							}
-						});
-				*/
-				dataTable.addRecordMenuItemByArgumentsOpenViewInDialog(ScopeFunctionReadAssistantsPage.OUTCOME, MenuItem.FIELD_VALUE,"Assistants",MenuItem.FIELD_ICON,"fa fa-user");
-				
-				//dataTable.addRecordMenuItemByArgumentsOpenViewInDialogUpdate();
-				//dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
-			}
-			
 			if(Boolean.TRUE.equals(MapHelper.readByKey(arguments, ScopeFunctionListPage.class)) || RenderType.LIST.equals(renderType) || scopeFunction != null) {
 				dataTable.addRecordMenuItemByArgumentsOpenViewInDialog(ScopeFunctionReadHistoryPage.OUTCOME, CommandButton.FIELD_VALUE,"Historique",CommandButton.FIELD_ICON,"fa fa-list-alt");
 			}	
