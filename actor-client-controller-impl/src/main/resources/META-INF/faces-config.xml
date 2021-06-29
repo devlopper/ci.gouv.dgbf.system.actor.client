@@ -488,6 +488,12 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>scopeFunctionAuditListView</from-outcome>
+			<to-view-id>/private/scopefunction/audit/list.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>scopeFunctionListView</from-outcome>
 			<to-view-id>/private/scopefunction/list.jsf</to-view-id>
 			<redirect />
@@ -652,6 +658,12 @@
 		<navigation-case>
 			<from-outcome>assignmentsReadHistoryView</from-outcome>
 			<to-view-id>/private/assignments/history.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>assignmentsAuditListView</from-outcome>
+			<to-view-id>/private/assignments/audit/list.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		

@@ -71,7 +71,8 @@ public class ScopeFunctionAuditListPage extends AbstractEntityListPageContainerM
 		
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, columnsNames);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
-		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl().setFunctionIdentifier(functionIdentifier));
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl().setFunctionIdentifier(functionIdentifier)
+				.setIsAuditRecord(Boolean.TRUE));
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl()
 				.setFunctionIdentifier(functionIdentifier));
 		DataTable dataTable = DataTable.build(arguments);
@@ -102,7 +103,6 @@ public class ScopeFunctionAuditListPage extends AbstractEntityListPageContainerM
 			Arguments<ScopeFunction> arguments = super.instantiateArguments(lazyDataModel);
 			arguments.getRepresentationArguments().getQueryExecutorArguments().setIsProcessableAsAuditByDates(Boolean.TRUE).addProjectionsFromStrings(
 					ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionAudit.FIELD_IDENTIFIER
-					,ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionAudit.FIELD___AUDIT_REVISION__
 					,ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.FIELD___AUDIT_FUNCTIONALITY__
 					,ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.FIELD___AUDIT_WHAT__
 					,ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.FIELD___AUDIT_WHO__
@@ -114,4 +114,6 @@ public class ScopeFunctionAuditListPage extends AbstractEntityListPageContainerM
 			return arguments;
 		}
 	}
+	
+	public static final String OUTCOME = "scopeFunctionAuditListView";
 }

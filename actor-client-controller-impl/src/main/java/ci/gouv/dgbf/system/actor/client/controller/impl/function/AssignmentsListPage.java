@@ -203,6 +203,9 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			
 			if(isAdministrationActionsVisible) {				
 				
+				dataTable.addHeaderToolbarLeftCommandsByArguments(CommandButton.FIELD_VALUE,"Historique",CommandButton.FIELD_USER_INTERFACE_ACTION
+						,UserInterfaceAction.NAVIGATE_TO_VIEW,CommandButton.FIELD___OUTCOME__,AssignmentsAuditListPage.OUTCOME,CommandButton.FIELD_ICON,"fa fa-history");
+				
 				/*
 				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Initialiser",MenuItem.FIELD_USER_INTERFACE_ACTION
 						,UserInterfaceAction.EXECUTE_FUNCTION,MenuItem.FIELD_ICON,"fa fa-download"

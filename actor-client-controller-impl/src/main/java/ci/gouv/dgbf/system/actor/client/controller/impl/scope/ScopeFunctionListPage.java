@@ -19,6 +19,7 @@ import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.session.SessionManager;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
@@ -232,11 +233,13 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 		}
 		
 		if(Boolean.TRUE.equals(SessionManager.getInstance().isUserHasRole(Profile.CODE_ADMINISTRATEUR))) {
+			dataTable.addHeaderToolbarLeftCommandsByArguments(CommandButton.FIELD_VALUE,"Historique",CommandButton.FIELD_USER_INTERFACE_ACTION
+					,UserInterfaceAction.NAVIGATE_TO_VIEW,CommandButton.FIELD___OUTCOME__,ScopeFunctionAuditListPage.OUTCOME,CommandButton.FIELD_ICON,"fa fa-history");
 			if(Boolean.TRUE.equals(MapHelper.readByKey(arguments, ScopeFunctionListPage.class)) || RenderType.LIST.equals(renderType) || scopeFunction != null) {
 				dataTable.addRecordMenuItemByArgumentsOpenViewInDialog(ScopeFunctionReadHistoryPage.OUTCOME, CommandButton.FIELD_VALUE,"Historique",CommandButton.FIELD_ICON,"fa fa-list-alt");
 			}	
 		}
-				
+
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);
 		return dataTable;
 	}
