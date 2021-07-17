@@ -8,10 +8,11 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:cyk="http://primefaces.jsf.web.utility.cyk.org">
 	
-    <cyk:page value="#{scopeListPage}">
+    <cyk:page value="#{scopeListPageOLD}">
     	<ui:define name="centerCenter">
-    		<ui:decorate template="#{primefacesHelper.getModelTemplate(scopeListPage.dataTable)}">
-    			<ui:param name="dataTable" value="#{scopeListPage.dataTable}"/>   			
+    		<p:tabMenu model="#{scopeListPageOLD.tabMenu}" activeIndex="#{scopeListPageOLD.tabMenuActiveIndex}"/>
+    		<ui:decorate template="#{primefacesHelper.getModelTemplate(scopeListPageOLD.dataTable)}">
+    			<ui:param name="dataTable" value="#{scopeListPageOLD.dataTable}"/>   			
     		</ui:decorate>
     	</ui:define>
     </cyk:page>
