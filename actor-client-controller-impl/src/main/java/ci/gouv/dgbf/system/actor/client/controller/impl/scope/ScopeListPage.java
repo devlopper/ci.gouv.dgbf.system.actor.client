@@ -182,6 +182,9 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 				map.put(Column.FIELD_HEADER_TEXT, "Nature économique");
 				//map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
 				//map.put(Column.FIELD_FILTER_BY, ScopeQuerier.PARAMETER_NAME_ECONOMIC_NATURE_CODE_NAME);
+			}else if(Scope.FIELD_VISIBLE_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Visible");
+				map.put(Column.FIELD_WIDTH, "70");
 			}
 			return map;
 		}
@@ -210,7 +213,8 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 		
 		@Override
 		public Arguments<Scope> instantiateArguments(LazyDataModel<Scope> lazyDataModel) {
-			return super.instantiateArguments(lazyDataModel).transientFieldsNames(Scope.FIELD_VISIBLE);
+			return super.instantiateArguments(lazyDataModel)
+					.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Scope.FIELDS_VISIBLE_AND_VISIBLE_AS_STRING);
 		}
 	
 		public LazyDataModelListenerImpl enableFilterController(){

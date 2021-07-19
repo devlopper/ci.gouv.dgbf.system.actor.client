@@ -16,7 +16,7 @@ public class Scope extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 	private ScopeType type;	
 	private Scope section;
 	private Boolean visible;
-	private String sectionAsString,budgetSpecializationUnitAsString,actionAsString,activityAsString,activityCategoryAsString,economicNatureAsString;
+	private String sectionAsString,budgetSpecializationUnitAsString,actionAsString,activityAsString,activityCategoryAsString,economicNatureAsString,visibleAsString;
 	
 	@Override
 	public String toString() {
@@ -32,4 +32,5 @@ public class Scope extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 	public static final String FIELD_ACTIVITY_CATEGORY_AS_STRING = "activityCategoryAsString";
 	public static final String FIELD_ECONOMIC_NATURE_AS_STRING = "economicNatureAsString";
 	public static final String FIELD_VISIBLE = "visible";
+	public static final String FIELD_VISIBLE_AS_STRING = "visibleAsString";
 }
