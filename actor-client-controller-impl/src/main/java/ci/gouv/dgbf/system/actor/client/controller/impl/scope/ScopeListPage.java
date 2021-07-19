@@ -22,6 +22,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.Abstract
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoiceOne;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
+import org.cyk.utility.controller.Arguments;
 import org.cyk.utility.persistence.query.Filter;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.SectionController;
@@ -205,6 +206,11 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 			Filter.Dto filter = super.instantiateFilter(lazyDataModel);			
 			filter = ScopeFilterController.populateFilter(filter, (ScopeFilterController) filterController,Boolean.FALSE);
 			return filter;
+		}
+		
+		@Override
+		public Arguments<Scope> instantiateArguments(LazyDataModel<Scope> lazyDataModel) {
+			return super.instantiateArguments(lazyDataModel).transientFieldsNames(Scope.FIELD_VISIBLE);
 		}
 	
 		public LazyDataModelListenerImpl enableFilterController(){

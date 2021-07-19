@@ -168,7 +168,7 @@ public class ScopeFilterController extends AbstractFilterController implements S
 	
 	public Collection<String> generateColumnsNames() {
 		Collection<String> columnsFieldsNames = new ArrayList<>();
-		columnsFieldsNames.addAll(List.of(Scope.FIELD_CODE,Scope.FIELD_NAME));
+		columnsFieldsNames.addAll(List.of(Scope.FIELD_CODE,Scope.FIELD_NAME,Scope.FIELD_VISIBLE));
 		return columnsFieldsNames;
 	}
 	
