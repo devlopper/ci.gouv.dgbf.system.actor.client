@@ -55,7 +55,7 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 	protected String __getWindowTitleValue__() {
 		if(filterController == null)
 			return super.__getWindowTitleValue__();
-		return filterController.generateWindowTitleValue("Visibilités");
+		return filterController.generateWindowTitleValue("Domaines");
 	}
 		
 	public static DataTable buildDataTable(Map<Object,Object> arguments) {
@@ -185,6 +185,9 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 			}else if(Scope.FIELD_VISIBLE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Visible");
 				map.put(Column.FIELD_WIDTH, "70");
+			}else if(Scope.FIELD_TYPE_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Type");
+				map.put(Column.FIELD_WIDTH, "120");
 			}
 			return map;
 		}
@@ -213,8 +216,10 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 		
 		@Override
 		public Arguments<Scope> instantiateArguments(LazyDataModel<Scope> lazyDataModel) {
-			return super.instantiateArguments(lazyDataModel)
-					.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Scope.FIELDS_VISIBLE_AND_VISIBLE_AS_STRING);
+			Arguments<Scope> arguments = super.instantiateArguments(lazyDataModel);
+			if( ((ScopeFilterController)filterController).getVisible() == null )
+				arguments.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Scope.FIELDS_VISIBLE_AND_VISIBLE_AS_STRING);
+			return arguments;
 		}
 	
 		public LazyDataModelListenerImpl enableFilterController(){

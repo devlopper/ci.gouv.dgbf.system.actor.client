@@ -183,12 +183,19 @@ public class ScopeFilterController extends AbstractFilterController implements S
 		if(scopeTypeInitial != null) {
 			strings.add(scopeTypeInitial.getName());
 		}
+		if(visibleInitial != null) {
+			strings.add(visibleInitial ? "Visible" : "Non visible");
+		}
 		return StringHelper.concatenate(strings, " | ");
 	}
 	
 	public Collection<String> generateColumnsNames() {
 		Collection<String> columnsFieldsNames = new ArrayList<>();
-		columnsFieldsNames.addAll(List.of(Scope.FIELD_CODE,Scope.FIELD_NAME,Scope.FIELD_VISIBLE_AS_STRING));
+		if(scopeTypeInitial == null)
+			columnsFieldsNames.add(Scope.FIELD_TYPE_AS_STRING);
+		columnsFieldsNames.addAll(List.of(Scope.FIELD_CODE,Scope.FIELD_NAME));
+		if(visibleInitial == null)
+			columnsFieldsNames.add(Scope.FIELD_VISIBLE_AS_STRING);
 		return columnsFieldsNames;
 	}
 	
