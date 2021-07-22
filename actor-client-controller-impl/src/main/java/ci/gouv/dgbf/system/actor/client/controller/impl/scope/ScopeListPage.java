@@ -14,6 +14,7 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.value.ValueHelper;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
@@ -26,9 +27,12 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.AbstractM
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.persistence.query.Filter;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.SectionController;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
+import ci.gouv.dgbf.system.actor.client.controller.entities.ActorScope;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Scope;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
@@ -88,39 +92,44 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);
 		dataTable.getOrderNumberColumn().setWidth("60");
 		
-		
-		
-		/*
-		ScopeType scopeType = (ScopeType) MapHelper.readByKey(arguments, ScopeType.class);
-		Collection<String> columnsNames = CollectionHelper.listOf(Scope.FIELD_CODE,Scope.FIELD_NAME);
-		
-		if(ScopeType.isCodeEqualsUSB(scopeType)) {
-			columnsNames.add(Scope.FIELD_SECTION_AS_STRING);
-		}
-		if(ScopeType.isCodeEqualsACTION(scopeType)) {
-			columnsNames.addAll(List.of(Scope.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING,Scope.FIELD_SECTION_AS_STRING));
-		}
-		if(ScopeType.isCodeEqualsACTIVITE(scopeType)) {
-			columnsNames.addAll(List.of(Scope.FIELD_ACTIVITY_CATEGORY_AS_STRING,Scope.FIELD_ACTION_AS_STRING,Scope.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING,Scope.FIELD_SECTION_AS_STRING));
-		}
-		if(ScopeType.isCodeEqualsCATEGORIE_ACTIVITE(scopeType)) {
-			
-		}
-		if(ScopeType.isCodeEqualsIMPUTATION(scopeType)) {
-			columnsNames.addAll(List.of(Scope.FIELD_ACTIVITY_AS_STRING,Scope.FIELD_ACTION_AS_STRING,Scope.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING,Scope.FIELD_SECTION_AS_STRING));
-		}
-		if(ScopeType.isCodeEqualsUA(scopeType)) {
-			columnsNames.add(Scope.FIELD_SECTION_AS_STRING);
-		}			
-				
-		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
-		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, Scope.class);
-		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, columnsNames);
-		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
-		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl().setScopeType(scopeType));
-		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl().setScopeType(scopeType));
-		DataTable dataTable = DataTable.build(arguments);
-		*/
+		final ScopeFilterController finalFilterController = filterController;
+		if(filterController.getVisible() == null) {
+			if(filterController.getVisible()) {
+				dataTable.addRecordMenuItemByArgumentsExecuteFunction("Retirer","fa fa-minus",new AbstractAction.Listener.AbstractImpl() {
+					@Override
+					protected Object __runExecuteFunction__(AbstractAction action) {
+						Scope scope = (Scope)action.readArgument();
+						if(scope == null)
+							throw new RuntimeException("Sélectionner un domaine");
+						if(finalFilterController.getActor() == null)
+							throw new RuntimeException("Sélectionner un acteur");						
+						Arguments<ActorScope> arguments = new Arguments<ActorScope>().addCreatablesOrUpdatables(new ActorScope().setActor(finalFilterController.getActor())
+								.setScope(scope));
+						//arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(CreditMovementBusiness.INCLUDE));					
+						EntitySaver.getInstance().save(ActorScope.class, arguments);
+						return null;
+					}
+				});
+			}else {
+				dataTable.addRecordMenuItemByArgumentsExecuteFunction("Assigner","fa fa-plus",new AbstractAction.Listener.AbstractImpl() {
+					@Override
+					protected Object __runExecuteFunction__(AbstractAction action) {
+						Scope scope = (Scope)action.readArgument();
+						if(scope == null)
+							throw new RuntimeException("Sélectionner un domaine");
+						/*
+						if(budgetaryActVersion == null || StringHelper.isBlank(budgetaryActVersion.getIdentifier()))
+							throw new RuntimeException("Sélectionner une version d'acte budgétaire");
+						creditMovement.setBudgetaryActVersionIdentifier(budgetaryActVersion.getIdentifier());
+						Arguments<CreditMovement> arguments = new Arguments<CreditMovement>().addCreatablesOrUpdatables(creditMovement);
+						arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(CreditMovementBusiness.INCLUDE));					
+						EntitySaver.getInstance().save(CreditMovement.class, arguments);
+						*/
+						return null;
+					}
+				});
+			}
+		}		
 		return dataTable;
 	}
 	
