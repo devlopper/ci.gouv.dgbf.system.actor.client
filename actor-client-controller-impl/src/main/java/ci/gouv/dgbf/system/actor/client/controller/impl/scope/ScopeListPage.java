@@ -14,6 +14,7 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.value.ValueHelper;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
@@ -21,6 +22,8 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Laz
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoiceOne;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.AbstractMenu;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 import org.cyk.utility.controller.Arguments;
 import org.cyk.utility.persistence.query.Filter;
@@ -190,6 +193,19 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 				map.put(Column.FIELD_WIDTH, "120");
 			}
 			return map;
+		}
+		
+		@Override
+		public Class<? extends AbstractMenu> getRecordMenuClass(AbstractCollection collection) {
+			return ContextMenu.class;
+		}
+		
+		public String getStyleClassByRecord(Object record, Integer recordIndex) {
+			if(record == null || recordIndex == null)
+				return null;
+			if(filterController.getVisible() == null && Boolean.TRUE.equals(((Scope)record).getVisible()))
+				return "cyk-background-highlight";
+			return null;
 		}
 	}
 	

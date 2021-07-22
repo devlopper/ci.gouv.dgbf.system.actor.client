@@ -10,6 +10,7 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.object.ReadListener;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.ValueConverter;
 import org.cyk.utility.client.controller.web.WebController;
@@ -59,6 +60,7 @@ public class ScopeFilterController extends AbstractFilterController implements S
 		if(actorInitial == null) {
 			actorInitial = EntityReader.getInstance().readOneBySystemIdentifierAsParent(Actor.class, new Arguments<Actor>()
 				.queryIdentifier(ActorQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
+				.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Actor.FIELDS_CODE_NAMES_ELECTRONIC_MAIL_ADDRESS)
 				.filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.stringify(Actor.class))));
 		}
 		visibleInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(Scope.FIELD_VISIBLE));
@@ -77,7 +79,7 @@ public class ScopeFilterController extends AbstractFilterController implements S
 	}
 	
 	private void enableValueChangeListeners() {
-		
+		actorSelectOne.enableAjaxItemSelect();
 	}
 	
 	private void selectByValueSystemIdentifier() {
@@ -153,7 +155,7 @@ public class ScopeFilterController extends AbstractFilterController implements S
 				super.select(input, scopeType);
 				
 			}
-		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Domaine");
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Type");
 		input.setValueAsFirstChoiceIfNull();
 		return input;
 	}
@@ -171,11 +173,21 @@ public class ScopeFilterController extends AbstractFilterController implements S
 			@Override
 			public Collection<Actor> complete(AutoComplete autoComplete) {
 				Collection<Actor> choices = EntityReader.getInstance().readMany(Actor.class, new Arguments<Actor>()
-						.queryIdentifier(ActorQuerier.QUERY_IDENTIFIER_READ_DYNAMIC));
-				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
+						.queryIdentifier(ActorQuerier.QUERY_IDENTIFIER_READ_DYNAMIC).flags(ActorQuerier.FLAG_SEARCH)
+						.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Actor.FIELDS_CODE_NAMES_ELECTRONIC_MAIL_ADDRESS)
+						.filterFieldsValues(ActorQuerier.PARAMETER_NAME_SEARCH,autoComplete.get__queryString__()));
 				return choices;
 			}
+						
 		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Acteur");
+		input.setReadItemLabelListener(new ReadListener() {		
+			@Override
+			public Object read(Object object) {
+				if(object == null)
+					return null;
+				return ((Actor)object).getCode()+" - "+((Actor)object).getNames();
+			}
+		});
 		//input.setValueAsFirstChoiceIfNull();
 		return input;
 	}
