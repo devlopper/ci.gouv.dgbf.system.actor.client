@@ -1,6 +1,7 @@
 package ci.gouv.dgbf.system.actor.client.controller.entities;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 import org.cyk.utility.client.controller.data.AbstractDataIdentifiableSystemStringImpl;
 
@@ -18,6 +19,8 @@ public class ActorScope extends AbstractDataIdentifiableSystemStringImpl impleme
 	private Scope scope;
 	private String scopeAsString;
 	private Boolean visible;
+	private Collection<String> actorsIdentifiers;
+	private Collection<String> scopesIdentifiers;
 	
 	public static final String FIELD_ACTOR = "actor";
 	public static final String FIELD_SCOPE = "scope";

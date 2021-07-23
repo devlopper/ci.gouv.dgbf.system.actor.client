@@ -92,6 +92,10 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				arguments.setRepresentation(ActorScopeRepresentation.getProxy());
 			else if(ActorScopeBusiness.DELETE_BY_ACTORS_BY_SCOPES.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ActorScopeRepresentation.getProxy());
+			else if(ActorScopeBusiness.VISIBLE.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ActorScopeRepresentation.getProxy());
+			else if(ActorScopeBusiness.UNVISIBLE.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ActorScopeRepresentation.getProxy());
 			else if(AccountRequestBusiness.RECORD.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(AccountRequestRepresentation.getProxy());
 			else if(AccountRequestBusiness.SUBMIT.equals(arguments.getRepresentationArguments().getActionIdentifier()))
@@ -280,6 +284,16 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 					scopes.add(scope.setActor(actor));
 				}
 			return ((ActorScopeRepresentation)representation).deleteByScopes(scopes);
+		}
+		
+		if(arguments != null && ActorScopeBusiness.VISIBLE.equals(arguments.getActionIdentifier())) {
+			ActorScopeDto actorScope = (ActorScopeDto) CollectionHelper.getFirst(creatables);
+			return ((ActorScopeRepresentation)representation).visible(actorScope.getActorsIdentifiers(), actorScope.getScopesIdentifiers(), actorScope.getActorAsString());
+		}
+		
+		if(arguments != null && ActorScopeBusiness.UNVISIBLE.equals(arguments.getActionIdentifier())) {
+			ActorScopeDto actorScope = (ActorScopeDto) CollectionHelper.getFirst(creatables);
+			return ((ActorScopeRepresentation)representation).unvisible(actorScope.getActorsIdentifiers(), actorScope.getScopesIdentifiers(), actorScope.getActorAsString());
 		}
 		
 		if(arguments != null && ActorBusiness.CREATE_SCOPES.equals(arguments.getActionIdentifier()))
