@@ -12,6 +12,7 @@
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Scope</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Section</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Action</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Activity</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityCategory</class>
