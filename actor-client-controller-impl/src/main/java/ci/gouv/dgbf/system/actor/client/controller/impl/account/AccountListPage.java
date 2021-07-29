@@ -64,7 +64,7 @@ public class AccountListPage extends AbstractPageContainerManagedImpl implements
 				continue;
 			String name = tab.name;
 			if(Tab.ACTOR.equals(tab))
-				name += "("+EntityCounter.getInstance().count(Actor.class,ActorQuerier.QUERY_IDENTIFIER_COUNT_ALL_01)+")";
+				name += "("+EntityCounter.getInstance().count(Actor.class,ActorQuerier.QUERY_IDENTIFIER_COUNT_DYNAMIC)+")";
 			else if(Tab.REQUEST.equals(tab))
 				name += "("+EntityCounter.getInstance().count(AccountRequest.class,AccountRequestQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER)+" | "+
 						EntityCounter.getInstance().count(RejectedAccountRequest.class,RejectedAccountRequestQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER)+")";

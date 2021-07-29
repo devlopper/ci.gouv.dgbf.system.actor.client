@@ -93,7 +93,7 @@ public class AssignationPage extends AbstractPageContainerManagedImpl implements
 				((AbstractActorListPage.LazyDataModelListenerImpl)((LazyDataModel<Actor>)dataTable.getValue()).getListener())
 					.setProfileCode((String)FieldHelper.readBusinessIdentifier(value));
 			}
-		}, List.of(dataTable));		
+		}, List.of(dataTable));
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,profileSelectOneCombo,Cell.FIELD_WIDTH,12));		
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
 	}

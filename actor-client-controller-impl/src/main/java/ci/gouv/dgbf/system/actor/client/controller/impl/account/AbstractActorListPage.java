@@ -28,6 +28,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.AbstractM
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
+import org.cyk.utility.controller.Arguments;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.ActivityCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
@@ -277,6 +278,13 @@ public abstract class AbstractActorListPage extends AbstractEntityListPageContai
 			//return ActorQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER;
 			//return ActorQuerier.QUERY_IDENTIFIER_READ_WITH_FUNCTIONS_WHERE_FILTER;
 			return ActorQuerier.QUERY_IDENTIFIER_READ_WITH_ALL_WHERE_FILTER;
+			//return ActorQuerier.QUERY_IDENTIFIER_READ_DYNAMIC;
+		}
+		
+		@Override
+		public Arguments<Actor> instantiateArguments(LazyDataModel<Actor> lazyDataModel) {
+			return super.instantiateArguments(lazyDataModel).transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Actor
+					.FIELDS_REGISTRATION_NUMBER_FIRST_NAME_LAST_NAMES_ELECTRONIC_MAIL_ADDRESS_ADMINISTRATIVE_FUNCTION_CIVILITY_IDENTITY_GROUP_ADMINISTRATIVE_UNIT_SECTION);
 		}
 		
 		@Override
