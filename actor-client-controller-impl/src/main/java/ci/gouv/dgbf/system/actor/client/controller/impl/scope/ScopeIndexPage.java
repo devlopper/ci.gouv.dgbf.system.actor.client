@@ -20,7 +20,6 @@ import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.Redirector;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoiceOne;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
@@ -32,7 +31,6 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputT
 import ci.gouv.dgbf.system.actor.client.controller.api.FunctionController;
 import ci.gouv.dgbf.system.actor.client.controller.api.SectionController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
-import ci.gouv.dgbf.system.actor.client.controller.entities.RequestDispatchSlip;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 import lombok.Getter;
@@ -157,7 +155,7 @@ public class ScopeIndexPage extends AbstractPageContainerManagedImpl implements 
 		*/
 	}
 	
-	private Collection<String> buildRequestDataTableColumnsFieldsNames(Boolean sent,Boolean processed) {
+	/*private Collection<String> buildRequestDataTableColumnsFieldsNames(Boolean sent,Boolean processed) {
 		Collection<String> columnsFieldsNames = new ArrayList<>();
 		columnsFieldsNames.add(RequestDispatchSlip.FIELD_CODE);
 		if(StringHelper.isBlank(sectionIdentifier))
@@ -170,7 +168,7 @@ public class ScopeIndexPage extends AbstractPageContainerManagedImpl implements 
 		if(Boolean.TRUE.equals(processed))
 			columnsFieldsNames.add(RequestDispatchSlip.FIELD_PROCESSING_DATE_AS_STRING);
 		return columnsFieldsNames;
-	}
+	}*/
 	/*
 	private void buildTabRequestDispatchSlipsToSend(Collection<Map<Object,Object>> cellsMaps) {
 		DataTable dataTable = RequestDispatchSlipListPage.buildDataTable(
