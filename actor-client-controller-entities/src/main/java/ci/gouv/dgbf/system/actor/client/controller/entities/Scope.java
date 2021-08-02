@@ -17,13 +17,14 @@ public class Scope extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 	private Scope section;
 	private Boolean visible;
 	private String sectionAsString,budgetSpecializationUnitAsString,actionAsString,activityAsString,activityCategoryAsString,economicNatureAsString,visibleAsString
-		,typeAsString,actorAsString;
+		,typeAsString,actorAsString,search;
 	
 	@Override
 	public String toString() {
 		return code+" "+name;
 	}
 	
+	public static final String FIELD_SEARCH = "search";
 	public static final String FIELD_TYPE = "type";
 	public static final String FIELD_TYPE_AS_STRING = "typeAsString";
 	public static final String FIELD_SECTION = "section";
