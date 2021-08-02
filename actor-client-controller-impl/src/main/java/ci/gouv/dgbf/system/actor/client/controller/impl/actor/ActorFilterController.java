@@ -87,7 +87,8 @@ public class ActorFilterController extends AbstractFilterController implements S
 	
 	private void enableValueChangeListeners() {
 		profileSelectOne.enableValueChangeListener(List.of());
-		scopeSelectOne.enableAjaxItemSelect();		
+		scopeTypeSelectOne.enableValueChangeListener(List.of());
+		scopeSelectOne.enableAjaxItemSelect();
 	}
 	
 	private void selectByValueSystemIdentifier() {
@@ -195,9 +196,13 @@ public class ActorFilterController extends AbstractFilterController implements S
 				,new AutoComplete.Listener.AbstractImpl<Scope>() {
 			@Override
 			public Collection<Scope> complete(AutoComplete autoComplete) {
-				Collection<Scope> choices = EntityReader.getInstance().readMany(Scope.class, new Arguments<Scope>()
+				Arguments<Scope> arguments = new Arguments<Scope>()
 						.queryIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC).flags(ScopeQuerier.FLAG_SEARCH)
-						.filterFieldsValues(ScopeQuerier.PARAMETER_NAME_SEARCH,autoComplete.get__queryString__()));
+						.filterFieldsValues(ScopeQuerier.PARAMETER_NAME_SEARCH,autoComplete.get__queryString__());
+				if(AbstractInput.getValue(scopeTypeSelectOne) != null) {
+					arguments.filterFieldsValues(ScopeQuerier.PARAMETER_NAME_TYPE_IDENTIFIER,FieldHelper.readSystemIdentifier(scopeTypeSelectOne.getValue()));
+				}
+				Collection<Scope> choices = EntityReader.getInstance().readMany(Scope.class, arguments);
 				return choices;
 			}
 						
@@ -222,12 +227,12 @@ public class ActorFilterController extends AbstractFilterController implements S
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeSelectOne,Cell.FIELD_WIDTH,11));
 		}
-		
+		/*
 		if(visibleSelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,visibleSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,visibleSelectOne,Cell.FIELD_WIDTH,11));
 		}
-		
+		*/
 		if(searchInputText != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,searchInputText.getOutputLabel(),Cell.FIELD_WIDTH,1));
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,searchInputText,Cell.FIELD_WIDTH,11));	
@@ -300,6 +305,7 @@ public class ActorFilterController extends AbstractFilterController implements S
 	
 	public static Filter.Dto populateFilter(Filter.Dto filter,ActorFilterController controller,Boolean initial) {
 		filter = Filter.Dto.addFieldIfValueNotNull(ActorQuerier.PARAMETER_NAME_PROFILE_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.profileInitial : controller.getProfile()), filter);
+		filter = Filter.Dto.addFieldIfValueNotNull(ActorQuerier.PARAMETER_NAME_VISIBLE_SCOPE_TYPE_CODE, FieldHelper.readBusinessIdentifier(Boolean.TRUE.equals(initial) ? controller.scopeTypeInitial : controller.getScopeType()), filter);
 		filter = Filter.Dto.addFieldIfValueNotNull(ActorQuerier.PARAMETER_NAME_VISIBLE_SCOPE_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.scopeInitial : controller.getScope()), filter);
 		filter = Filter.Dto.addFieldIfValueNotBlank(ActorQuerier.PARAMETER_NAME_SEARCH, Boolean.TRUE.equals(initial) ? controller.searchInitial : controller.getSearch(), filter);
 		
