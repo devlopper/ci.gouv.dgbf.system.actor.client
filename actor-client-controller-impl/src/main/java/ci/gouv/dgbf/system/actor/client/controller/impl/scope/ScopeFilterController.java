@@ -52,11 +52,7 @@ public class ScopeFilterController extends AbstractFilterController implements S
 	public ScopeFilterController() {
 		codeInitial = WebController.getInstance().getRequestParameter(buildParameterName(FIELD_CODE_INPUT_TEXT));
 		nameInitial = WebController.getInstance().getRequestParameter(buildParameterName(FIELD_NAME_INPUT_TEXT));
-		if(scopeTypeInitial == null) {
-			scopeTypeInitial = EntityReader.getInstance().readOneBySystemIdentifierAsParent(ScopeType.class, new Arguments<ScopeType>()
-				.queryIdentifier(ScopeTypeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
-				.filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.stringify(ScopeType.class))));
-		}
+		scopeTypeInitial = getScopeTypeFromRequestParameter(null);
 		if(actorInitial == null) {
 			actorInitial = EntityReader.getInstance().readOneBySystemIdentifierAsParent(Actor.class, new Arguments<Actor>()
 				.queryIdentifier(ActorQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
@@ -64,6 +60,21 @@ public class ScopeFilterController extends AbstractFilterController implements S
 				.filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.stringify(Actor.class))));
 		}
 		visibleInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(Scope.FIELD_VISIBLE));
+	}
+	
+	public static Scope getScopeFromRequestParameter() {
+		return EntityReader.getInstance().readOneBySystemIdentifierAsParent(Scope.class, new Arguments<Scope>()
+				.queryIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
+				.projections(Scope.FIELD_IDENTIFIER,Scope.FIELD_CODE,Scope.FIELD_NAME,Scope.FIELD_TYPE)
+				.filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.stringify(Scope.class))));
+	}
+	
+	public static ScopeType getScopeTypeFromRequestParameter(Scope scope) {
+		if(scope == null || scope.getType() == null)
+			return EntityReader.getInstance().readOneBySystemIdentifierAsParent(ScopeType.class, new Arguments<ScopeType>()
+				.queryIdentifier(ScopeTypeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
+				.filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.stringify(ScopeType.class))));
+		return scope.getType();
 	}
 	
 	@Override

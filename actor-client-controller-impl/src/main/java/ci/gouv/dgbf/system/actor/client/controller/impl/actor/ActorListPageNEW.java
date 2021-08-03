@@ -20,6 +20,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Dat
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.AbstractMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMenu;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 import org.cyk.utility.controller.Arguments;
 import org.cyk.utility.controller.EntitySaver;
@@ -82,9 +83,14 @@ public class ActorListPageNEW extends AbstractEntityListPageContainerManagedImpl
 		
 		DataTable dataTable = DataTable.build(arguments);
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);
-		dataTable.getOrderNumberColumn().setWidth("60");
 		
 		final ActorFilterController finalFilterController = filterController;
+		Map<String,List<String>> parameters = finalFilterController.asMap();
+		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog(ActorScopeCreatePage.OUTCOME, MenuItem.FIELD_VALUE,"Rendre visible"
+				,MenuItem.FIELD___PARAMETERS__,parameters,MenuItem.FIELD_ICON,"fa fa-plus-square");
+		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog(ActorScopeDeletePage.OUTCOME, MenuItem.FIELD_VALUE,"Rendre invisible"
+				,MenuItem.FIELD___PARAMETERS__,parameters,MenuItem.FIELD_ICON,"fa fa-minus-square");
+		
 		if(filterController.getVisible() != null) {
 			if(filterController.getVisible()) {
 				addVisibleRecordMenuItem(dataTable, finalFilterController, Boolean.TRUE);

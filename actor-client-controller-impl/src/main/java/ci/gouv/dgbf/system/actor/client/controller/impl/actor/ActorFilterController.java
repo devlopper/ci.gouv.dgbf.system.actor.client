@@ -3,6 +3,7 @@ package ci.gouv.dgbf.system.actor.client.controller.impl.actor;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +30,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Profile;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Scope;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
+import ci.gouv.dgbf.system.actor.client.controller.impl.scope.ScopeFilterController;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
@@ -57,19 +59,10 @@ public class ActorFilterController extends AbstractFilterController implements S
 				.queryIdentifier(ProfileQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
 				.filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.stringify(Profile.class))));
 		}
-		
-		if(scopeTypeInitial == null) {
-			scopeTypeInitial = EntityReader.getInstance().readOneBySystemIdentifierAsParent(ScopeType.class, new Arguments<ScopeType>()
-				.queryIdentifier(ScopeTypeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
-				.filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.stringify(ScopeType.class))));
-		}
-		
-		if(scopeInitial == null) {
-			scopeInitial = EntityReader.getInstance().readOneBySystemIdentifierAsParent(Scope.class, new Arguments<Scope>()
-				.queryIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
-				.filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.stringify(Scope.class))));
-		}
-		
+
+		scopeInitial = ScopeFilterController.getScopeFromRequestParameter();
+		if(scopeTypeInitial == null)
+			scopeTypeInitial = ScopeFilterController.getScopeTypeFromRequestParameter(scopeInitial);
 		visibleInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(Scope.FIELD_VISIBLE));
 	}
 	
@@ -179,7 +172,7 @@ public class ActorFilterController extends AbstractFilterController implements S
 				super.select(input, scopeType);
 				
 			}
-		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Type de domaine");
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Domaine");
 		input.setValueAsFirstChoiceIfNull();
 		return input;
 	}
@@ -212,31 +205,25 @@ public class ActorFilterController extends AbstractFilterController implements S
 	
 	@Override
 	protected Collection<Map<Object, Object>> buildLayoutCells() {
-		Collection<Map<Object, Object>> cellsMaps = new ArrayList<>();
-		if(profileSelectOne != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,profileSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,profileSelectOne,Cell.FIELD_WIDTH,11));
-		}
+		Collection<Map<Object, Object>> cellsMaps = new ArrayList<>();		
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,profileSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,profileSelectOne,Cell.FIELD_WIDTH,11));
 		
-		if(scopeTypeSelectOne != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeTypeSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeTypeSelectOne,Cell.FIELD_WIDTH,11));
-		}
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeTypeSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeTypeSelectOne,Cell.FIELD_WIDTH,3));
 		
-		if(scopeSelectOne != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeSelectOne,Cell.FIELD_WIDTH,11));
-		}
+		//cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeSelectOne,Cell.FIELD_WIDTH,8));
+		
 		/*
 		if(visibleSelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,visibleSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,visibleSelectOne,Cell.FIELD_WIDTH,11));
 		}
 		*/
-		if(searchInputText != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,searchInputText.getOutputLabel(),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,searchInputText,Cell.FIELD_WIDTH,11));	
-		}
+		
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,searchInputText.getOutputLabel(),Cell.FIELD_WIDTH,1));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,searchInputText,Cell.FIELD_WIDTH,11));	
 		
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,filterCommandButton,Cell.FIELD_WIDTH,12));	
 		return cellsMaps;
@@ -248,11 +235,11 @@ public class ActorFilterController extends AbstractFilterController implements S
 		if(profileInitial != null) {
 			strings.add(profileInitial.toString());
 		}
-		if(scopeTypeInitial != null) {
+		/*if(scopeTypeInitial != null) {
 			strings.add(scopeTypeInitial.getName());
-		}
+		}*/
 		if(scopeInitial != null) {
-			strings.add(scopeInitial.toString());
+			strings.add((/*scopeTypeInitial == null ? "" : scopeTypeInitial.getName()+*/"Domaine ")+scopeInitial.toString());
 		}
 		/*
 		if(visibleInitial != null) {
@@ -301,12 +288,24 @@ public class ActorFilterController extends AbstractFilterController implements S
 		return super.buildParameterName(input);
 	}
 	
+	public Map<String, List<String>> asMap() {
+		Map<String, List<String>> map = new HashMap<>();		
+		if(scopeInitial != null)
+			map.put(ParameterName.stringify(Scope.class), List.of((String)FieldHelper.readSystemIdentifier(scopeInitial)));		
+		if(scopeTypeInitial != null && scopeInitial == null)
+			map.put(ParameterName.stringify(ScopeType.class), List.of((String)FieldHelper.readSystemIdentifier(scopeTypeInitial)));
+		return map;
+	}
+	
 	/**/
 	
 	public static Filter.Dto populateFilter(Filter.Dto filter,ActorFilterController controller,Boolean initial) {
 		filter = Filter.Dto.addFieldIfValueNotNull(ActorQuerier.PARAMETER_NAME_PROFILE_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.profileInitial : controller.getProfile()), filter);
-		filter = Filter.Dto.addFieldIfValueNotNull(ActorQuerier.PARAMETER_NAME_VISIBLE_SCOPE_TYPE_CODE, FieldHelper.readBusinessIdentifier(Boolean.TRUE.equals(initial) ? controller.scopeTypeInitial : controller.getScopeType()), filter);
-		filter = Filter.Dto.addFieldIfValueNotNull(ActorQuerier.PARAMETER_NAME_VISIBLE_SCOPE_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.scopeInitial : controller.getScope()), filter);
+		Object scopeIdentifier = FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.scopeInitial : controller.getScope());	
+		if(scopeIdentifier != null) {
+			filter = Filter.Dto.addFieldIfValueNotNull(ActorQuerier.PARAMETER_NAME_VISIBLE_SCOPE_IDENTIFIER, scopeIdentifier, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(ActorQuerier.PARAMETER_NAME_VISIBLE_SCOPE_TYPE_CODE, FieldHelper.readBusinessIdentifier(Boolean.TRUE.equals(initial) ? controller.scopeTypeInitial : controller.getScopeType()), filter);
+		}
 		filter = Filter.Dto.addFieldIfValueNotBlank(ActorQuerier.PARAMETER_NAME_SEARCH, Boolean.TRUE.equals(initial) ? controller.searchInitial : controller.getSearch(), filter);
 		
 		//filter = Filter.Dto.addFieldIfValueNotNull(ActorQuerier.PARAMETER_NAME_PROFILE_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.scopeTypeInitial : controller.getScopeType()), filter);

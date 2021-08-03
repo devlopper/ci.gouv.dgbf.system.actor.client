@@ -434,6 +434,18 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>actorScopeCreateView</from-outcome>
+			<to-view-id>/private/actor/scope/create.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>actorScopeDeleteView</from-outcome>
+			<to-view-id>/private/actor/scope/delete.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>actorScopeCreateManySectionsView</from-outcome>
 			<to-view-id>/private/actor/scope/createsections.jsf</to-view-id>
 			<redirect />
