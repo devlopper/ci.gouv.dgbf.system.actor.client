@@ -334,7 +334,8 @@ public class ActorFilterController extends AbstractFilterController implements S
 		Collection<String> columnsFieldsNames = new ArrayList<>();
 		//if(scopeTypeInitial == null)
 		//	columnsFieldsNames.add(Actor.FIELD_CODE);
-		columnsFieldsNames.addAll(List.of(Actor.FIELD_CODE,Actor.FIELD_FIRST_NAME,Actor.FIELD_LAST_NAMES));
+		columnsFieldsNames.addAll(List.of(Actor.FIELD_CODE,Actor.FIELD_FIRST_NAME,Actor.FIELD_LAST_NAMES,Actor.FIELD_SECTION_AS_STRING
+				,Actor.FIELD_ADMINISTRATIVE_UNIT_AS_STRING,Actor.FIELD_ADMINISTRATIVE_FUNCTION,Actor.FIELD_PROFILES_CODES));
 		//if(visibleInitial == null)
 		//	columnsFieldsNames.add(Scope.FIELD_VISIBLE_AS_STRING);
 		return columnsFieldsNames;

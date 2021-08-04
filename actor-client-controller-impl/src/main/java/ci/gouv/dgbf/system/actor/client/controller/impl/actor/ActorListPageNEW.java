@@ -11,6 +11,7 @@ import javax.inject.Named;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
@@ -26,6 +27,7 @@ import org.cyk.utility.controller.Arguments;
 import org.cyk.utility.persistence.query.Filter;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
+import ci.gouv.dgbf.system.actor.client.controller.impl.privilege.ActorEditProfilesPage;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import lombok.Getter;
@@ -83,12 +85,16 @@ public class ActorListPageNEW extends AbstractEntityListPageContainerManagedImpl
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);
 		dataTable.getOrderNumberColumn().setWidth("15");
 		
+		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();
+		
 		final ActorFilterController finalFilterController = filterController;
 		Map<String,List<String>> parameters = finalFilterController.asMap();
-		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog(ActorScopeCreatePage.OUTCOME, MenuItem.FIELD_VALUE,"Rendre visible"
+		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog(ActorScopeCreatePage.OUTCOME, MenuItem.FIELD_VALUE,"Assigner domaine"
 				,MenuItem.FIELD___PARAMETERS__,parameters,MenuItem.FIELD_ICON,"fa fa-plus-square");
-		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog(ActorScopeDeletePage.OUTCOME, MenuItem.FIELD_VALUE,"Rendre invisible"
+		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog(ActorScopeDeletePage.OUTCOME, MenuItem.FIELD_VALUE,"Retirer domaine"
 				,MenuItem.FIELD___PARAMETERS__,parameters,MenuItem.FIELD_ICON,"fa fa-minus-square");
+		
+		dataTable.addRecordMenuItemByArgumentsOpenViewInDialog(ActorEditProfilesPage.OUTCOME, MenuItem.FIELD_VALUE,"Modifier Profile(s)", MenuItem.FIELD_ICON,"fa fa-lock");
 		
 		if(filterController.getVisible() != null) {
 			if(filterController.getVisible()) {
@@ -104,7 +110,7 @@ public class ActorListPageNEW extends AbstractEntityListPageContainerManagedImpl
 	}
 	
 	private static void addVisibleRecordMenuItem(DataTable dataTable,ActorFilterController filterController,Boolean visible) {
-		dataTable.addRecordMenuItemByArgumentsExecuteFunction(Boolean.TRUE.equals(visible) ? "Retirer" : "Assigner"
+		dataTable.addRecordMenuItemByArgumentsExecuteFunction(Boolean.TRUE.equals(visible) ? "Retirer domaine" : "Assigner domaine"
 			,Boolean.TRUE.equals(visible) ? "fa fa-minus" : "fa fa-plus",new AbstractAction.Listener.AbstractImpl() {
 			@Override
 			protected Object __runExecuteFunction__(AbstractAction action) {
@@ -153,7 +159,16 @@ public class ActorListPageNEW extends AbstractEntityListPageContainerManagedImpl
 				map.put(Column.FIELD_WIDTH, "300");
 			}else if(Actor.FIELD_SECTION_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Section");
-				map.put(Column.FIELD_WIDTH, "50");
+				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
+			}else if(Actor.FIELD_PROFILES_CODES.equals(fieldName) || Actor.FIELD_PROFILES_CODES_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Profile(s)");
+				map.put(Column.FIELD_WIDTH, "150");
+			}else if(Actor.FIELD_ADMINISTRATIVE_UNIT_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Unité administrative");
+				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
+			}else if(Actor.FIELD_ADMINISTRATIVE_FUNCTION.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Fonction administrative");
+				map.put(Column.FIELD_WIDTH, "200");
 			}
 			return map;
 		}
@@ -162,6 +177,14 @@ public class ActorListPageNEW extends AbstractEntityListPageContainerManagedImpl
 		public Class<? extends AbstractMenu> getRecordMenuClass(AbstractCollection collection) {
 			return ContextMenu.class;
 		}
+		
+		@Override
+		public Object getCellValueByRecordByColumn(Object record, Integer recordIndex, Column column,Integer columnIndex) {
+			if(record != null && CollectionHelper.isNotEmpty(((Actor)record).getProfilesCodes()) && column != null && Actor.FIELD_PROFILES_CODES.equals(column.getFieldName()))
+				return StringHelper.concatenate(((Actor)record).getProfilesCodes(),",");
+			return super.getCellValueByRecordByColumn(record, recordIndex, column, columnIndex);
+		}
+		
 		/*
 		public String getStyleClassByRecord(Object record, Integer recordIndex) {
 			if(record == null || recordIndex == null)
@@ -195,7 +218,9 @@ public class ActorListPageNEW extends AbstractEntityListPageContainerManagedImpl
 		@Override
 		public Arguments<Actor> instantiateArguments(LazyDataModel<Actor> lazyDataModel) {
 			Arguments<Actor> arguments = super.instantiateArguments(lazyDataModel);
-			arguments.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Actor.FIELDS_CODE_FIRST_NAME_LAST_NAMES);
+			arguments.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities
+					.Actor.FIELDS_CODE_FIRST_NAME_LAST_NAMES_SECTION_ADMINISTRATIVE_UNIT_ADMINISTRATIVE_FUNCTION,ci.gouv.dgbf.system.actor.server.persistence.entities
+					.Actor.FIELD_PROFILES_CODES);
 			return arguments;
 		}
 	

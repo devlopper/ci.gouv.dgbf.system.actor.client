@@ -129,4 +129,6 @@ public class ActorEditProfilesPage extends AbstractPageContainerManagedImpl impl
 		
 		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
 	}
+	
+	public static final String OUTCOME = "actorEditProfilesView";
 }

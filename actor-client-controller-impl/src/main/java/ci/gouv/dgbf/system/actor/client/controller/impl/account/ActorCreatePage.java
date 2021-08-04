@@ -30,6 +30,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Civility;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentityGroup;
+import ci.gouv.dgbf.system.actor.client.controller.impl.actor.ActorListPageNEW;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.CivilityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentityGroupQuerier;
 import lombok.Getter;
@@ -72,6 +73,7 @@ public class ActorCreatePage extends AbstractEntityEditPageContainerManagedImpl<
 						}
 					});
 				}else if(Actor.FIELD_ELECTRONIC_MAIL_ADDRESS.equals(fieldName)) {
+					map.put(InputText.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Email");
 					map.put(InputText.FIELD_LISTENER, new InputText.Listener.AbstractImpl() {
 						@Override
 						public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
@@ -133,7 +135,7 @@ public class ActorCreatePage extends AbstractEntityEditPageContainerManagedImpl<
 		arguments.put(Form.FIELD_LISTENER, new Form.Listener.AbstractImpl() {
 			@Override
 			public void redirect(Form form, Object request) {
-				JsfController.getInstance().redirect("actorListView");
+				JsfController.getInstance().redirect(ActorListPageNEW.OUTCOME);
 			}
 		});
 		return arguments;

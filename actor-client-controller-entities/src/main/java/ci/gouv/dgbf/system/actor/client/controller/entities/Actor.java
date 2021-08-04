@@ -63,6 +63,7 @@ public class Actor extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 	
 	private Collection<String> sectionsIdentifiers;
 	private Collection<String> profilesCodes;
+	private String profilesCodesAsString;
 	private Collection<String> functionsCodes;
 	private Collection<Privilege> privileges;
 	private Collection<Privilege> visibleModules;
@@ -141,6 +142,8 @@ public class Actor extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 	public static final String FIELD_PASSWORD_CONFIRMATION = "passwordConfirmation";
 	public static final String FIELD_FUNCTIONS = "functions";
 	public static final String FIELD_PROFILES = "profiles";
+	public static final String FIELD_PROFILES_CODES = "profilesCodes";
+	public static final String FIELD_PROFILES_CODES_AS_STRING = "profilesCodesAsString";
 	public static final String FIELD_VISIBLE_MODULES = "visibleModules";
 	public static final String FIELD_VISIBLE_SECTIONS = "visibleSections";
 	public static final String FIELD_ACT_OF_APPOINTMENT_REFERENCE = "actOfAppointmentReference";
