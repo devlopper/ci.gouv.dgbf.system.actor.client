@@ -19,6 +19,7 @@ public class ActorScope extends AbstractDataIdentifiableSystemStringImpl impleme
 	private Scope scope;
 	private String scopeAsString;
 	private Boolean visible;
+	private Boolean ignoreExisting;
 	private Collection<String> actorsIdentifiers;
 	private Collection<String> scopesIdentifiers;
 	

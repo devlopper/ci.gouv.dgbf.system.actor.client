@@ -2,11 +2,13 @@ package ci.gouv.dgbf.system.actor.client.controller.impl.actor;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.object.ReadListener;
+import org.cyk.utility.__kernel__.session.SessionHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
@@ -49,7 +51,9 @@ public abstract class AbstractActorScopeCreateOrDeletePage extends AbstractPageC
 		Scope scope = ScopeFilterController.getScopeFromRequestParameter();		
 		scopeTypeSelectOne = buildScopeTypeSelectOne(ScopeFilterController.getScopeTypeFromRequestParameter(scope));
 		actorsAutoComplete = buildActorsAutoComplete();
-		scopesAutoComplete = buildScopesAutoComplete(CollectionHelper.listOf(scope));
+		scopesAutoComplete = buildScopesAutoComplete(scope == null ? null : CollectionHelper.listOf(scope));
+		
+		scopeTypeSelectOne.enableValueChangeListener(List.of(scopesAutoComplete));
 		
 		saveCommandButton = CommandButton.build(CommandButton.FIELD_VALUE,ActorScopeBusiness.VISIBLE.equals(getActionIdentifier()) ? "Affecter" : "Retirer"
 			,CommandButton.FIELD_ICON,"fa fa-floppy-o"
@@ -57,7 +61,7 @@ public abstract class AbstractActorScopeCreateOrDeletePage extends AbstractPageC
 				,CommandButton.FIELD_LISTENER,new CommandButton.Listener.AbstractImpl() {
 					@Override
 					protected Object __runExecuteFunction__(AbstractAction action) {
-						@SuppressWarnings("unchecked")
+						/*@SuppressWarnings("unchecked")
 						Collection<Actor> actors = (Collection<Actor>) actorsAutoComplete.getValue();
 						if(CollectionHelper.isEmpty(actors))
 							throw new RuntimeException("Sélectionner au moins un acteur");
@@ -67,10 +71,12 @@ public abstract class AbstractActorScopeCreateOrDeletePage extends AbstractPageC
 							throw new RuntimeException("Sélectionner au moins un domaine");												
 						Arguments<ActorScope> arguments = new Arguments<ActorScope>().setResponseEntityClass(String.class).addCreatablesOrUpdatables(new ActorScope()
 								.setActorsIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(actors))
-								.setScopesIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(scopes)));
+								.setScopesIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(scopes))
+								.setIgnoreExisting(Boolean.TRUE));
 						arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(getActionIdentifier()));							
 						EntitySaver.getInstance().save(ActorScope.class, arguments);
-						return arguments.get__responseEntity__();
+						*/
+						return save(getActionIdentifier(), actorsAutoComplete, scopesAutoComplete);
 					}
 				});
 		
@@ -85,6 +91,25 @@ public abstract class AbstractActorScopeCreateOrDeletePage extends AbstractPageC
 				
 				,MapHelper.instantiate(Cell.FIELD_CONTROL,saveCommandButton,Cell.FIELD_WIDTH,12)
 			));
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static Object save(String actionIdentifier,AutoComplete actorsAutoComplete,AutoComplete scopesAutoComplete) {
+		return save(actionIdentifier, (Collection<Actor>) actorsAutoComplete.getValue(), (Collection<Scope>) scopesAutoComplete.getValue());
+	}
+	
+	public static Object save(String actionIdentifier,Collection<Actor> actors,Collection<Scope> scopes) {
+		if(CollectionHelper.isEmpty(actors))
+			throw new RuntimeException("Sélectionner au moins un acteur");
+		if(CollectionHelper.isEmpty(scopes))
+			throw new RuntimeException("Sélectionner au moins un domaine");
+		Arguments<ActorScope> arguments = new Arguments<ActorScope>().setResponseEntityClass(String.class).addCreatablesOrUpdatables(new ActorScope()
+				.setActorsIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(actors))
+				.setScopesIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(scopes))
+				.setIgnoreExisting(Boolean.TRUE).setActorAsString(SessionHelper.getUserName()));
+		arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(actionIdentifier));
+		EntitySaver.getInstance().save(ActorScope.class, arguments);
+		return arguments.get__responseEntity__();
 	}
 	
 	protected abstract String getActionIdentifier();
@@ -131,7 +156,7 @@ public abstract class AbstractActorScopeCreateOrDeletePage extends AbstractPageC
 			@Override
 			public void select(AbstractInputChoiceOne input, ScopeType scopeType) {
 				super.select(input, scopeType);
-				
+				scopesAutoComplete.setValue(null);
 			}
 		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Domaine");
 		input.setValueAsFirstChoiceIfNull();

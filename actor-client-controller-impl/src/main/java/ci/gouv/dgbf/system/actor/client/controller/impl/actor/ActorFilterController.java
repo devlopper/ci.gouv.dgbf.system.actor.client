@@ -27,14 +27,18 @@ import org.cyk.utility.controller.EntityReader;
 import org.cyk.utility.persistence.query.Filter;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
+import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Profile;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Scope;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.client.controller.impl.scope.ScopeFilterController;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -43,27 +47,43 @@ import lombok.experimental.Accessors;
 public class ActorFilterController extends AbstractFilterController implements Serializable {
 
 	private InputText searchInputText;
-	private SelectOneCombo profileSelectOne,scopeTypeSelectOne,visibleSelectOne;
-	private AutoComplete scopeSelectOne;
+	private SelectOneCombo profileSelectOne,scopeTypeSelectOne,visibleSelectOne,sectionSelectOne;
+	private AutoComplete scopeSelectOne,administrativeUnitSelectOne;
 	
 	private ScopeType scopeTypeInitial;
 	private Boolean visibleInitial;
 	private String searchInitial;
 	private Scope scopeInitial;
 	private Profile profileInitial;
+	private Section sectionInitial;
+	private AdministrativeUnit administrativeUnitInitial;
 	
 	public ActorFilterController() {
-		searchInitial = WebController.getInstance().getRequestParameter(buildParameterName(FIELD_SEARCH_INPUT_TEXT));
-		if(profileInitial == null) {
-			profileInitial = EntityReader.getInstance().readOneBySystemIdentifierAsParent(Profile.class, new Arguments<Profile>()
-				.queryIdentifier(ProfileQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
-				.filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.stringify(Profile.class))));
-		}
-
+		administrativeUnitInitial = getAdministrativeUnitFromRequestParameter();
+		sectionInitial = getSectionFromRequestParameter(administrativeUnitInitial);
+		
+		searchInitial = WebController.getInstance().getRequestParameter(buildParameterName(FIELD_SEARCH_INPUT_TEXT));		
+		profileInitial = EntityReader.getInstance().readOneBySystemIdentifierAsParent(Profile.class, new Arguments<Profile>()
+			.queryIdentifier(ProfileQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
+			.filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.stringify(Profile.class))));
+		
 		scopeInitial = ScopeFilterController.getScopeFromRequestParameter();
-		if(scopeTypeInitial == null)
-			scopeTypeInitial = ScopeFilterController.getScopeTypeFromRequestParameter(scopeInitial);
+		scopeTypeInitial = ScopeFilterController.getScopeTypeFromRequestParameter(scopeInitial);
 		visibleInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(Scope.FIELD_VISIBLE));
+	}
+	
+	public static AdministrativeUnit getAdministrativeUnitFromRequestParameter() {
+		return EntityReader.getInstance().readOneBySystemIdentifierAsParent(AdministrativeUnit.class, new Arguments<AdministrativeUnit>()
+				.queryIdentifier(AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
+				.filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.stringify(AdministrativeUnit.class))));
+	}
+	
+	public static Section getSectionFromRequestParameter(AdministrativeUnit administrativeUnit) {
+		if(administrativeUnit == null || administrativeUnit.getSection() == null)
+			return EntityReader.getInstance().readOneBySystemIdentifierAsParent(Section.class, new Arguments<Section>()
+				.queryIdentifier(SectionQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
+				.filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.stringify(Section.class))));
+		return administrativeUnit.getSection();
 	}
 	
 	@Override
@@ -73,14 +93,20 @@ public class ActorFilterController extends AbstractFilterController implements S
 		buildInputSelectOne(FIELD_VISIBLE_SELECT_ONE, Boolean.class);
 		buildInputSelectOne(FIELD_PROFILE_SELECT_ONE, Profile.class);
 		buildInputSelectOne(FIELD_SCOPE_SELECT_ONE, Scope.class);
+		buildInputSelectOne(FIELD_SECTION_SELECT_ONE, Section.class);
+		buildInputSelectOne(FIELD_ADMINISTRATIVE_UNIT_SELECT_ONE, AdministrativeUnit.class);
 		
 		enableValueChangeListeners();
 		selectByValueSystemIdentifier();		
 	}
 	
 	private void enableValueChangeListeners() {
+		sectionSelectOne.enableValueChangeListener(List.of(administrativeUnitSelectOne));		
+		administrativeUnitSelectOne.enableAjaxItemSelect();
+		
 		profileSelectOne.enableValueChangeListener(List.of());
-		scopeTypeSelectOne.enableValueChangeListener(List.of());
+		
+		scopeTypeSelectOne.enableValueChangeListener(List.of(scopeSelectOne));
 		scopeSelectOne.enableAjaxItemSelect();
 	}
 	
@@ -98,6 +124,10 @@ public class ActorFilterController extends AbstractFilterController implements S
 			return scopeTypeInitial;
 		if(FIELD_SCOPE_SELECT_ONE.equals(fieldName))
 			return scopeInitial;
+		if(FIELD_SECTION_SELECT_ONE.equals(fieldName))
+			return sectionInitial;
+		if(FIELD_ADMINISTRATIVE_UNIT_SELECT_ONE.equals(fieldName))
+			return administrativeUnitInitial;
 		return super.getInputSelectOneInitialValue(fieldName, klass);
 	}
 	
@@ -129,6 +159,10 @@ public class ActorFilterController extends AbstractFilterController implements S
 			return buildScopeSelectOne((Scope) value);
 		if(FIELD_PROFILE_SELECT_ONE.equals(fieldName))
 			return buildProfileSelectOne((Profile) value);
+		if(FIELD_SECTION_SELECT_ONE.equals(fieldName))
+			return buildSectionSelectOne((Section) value);
+		if(FIELD_ADMINISTRATIVE_UNIT_SELECT_ONE.equals(fieldName))
+			return buildAdministrativeUnitSelectOne((AdministrativeUnit) value);
 		return null;
 	}
 	
@@ -170,7 +204,7 @@ public class ActorFilterController extends AbstractFilterController implements S
 			@Override
 			public void select(AbstractInputChoiceOne input, ScopeType scopeType) {
 				super.select(input, scopeType);
-				
+				scopeSelectOne.setValue(null);
 			}
 		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Domaine");
 		input.setValueAsFirstChoiceIfNull();
@@ -203,24 +237,64 @@ public class ActorFilterController extends AbstractFilterController implements S
 		return input;
 	}
 	
+	private SelectOneCombo buildSectionSelectOne(Section section) {
+		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,section,SelectOneCombo.FIELD_CHOICE_CLASS,Section.class,SelectOneCombo.FIELD_LISTENER
+				,new SelectOneCombo.Listener.AbstractImpl<Section>() {
+			@Override
+			protected Collection<Section> __computeChoices__(AbstractInputChoice<Section> input,Class<?> entityClass) {
+				Collection<Section> choices = EntityReader.getInstance().readMany(Section.class, new Arguments<Section>()
+						.queryIdentifier(SectionQuerier.QUERY_IDENTIFIER_READ_DYNAMIC));
+				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
+				return choices;
+			}
+			@Override
+			public void select(AbstractInputChoiceOne input, Section section) {
+				super.select(input, section);
+				administrativeUnitSelectOne.setValue(null);
+			}
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Section");
+		input.setValueAsFirstChoiceIfNull();
+		return input;
+	}
+	
+	private AutoComplete buildAdministrativeUnitSelectOne(AdministrativeUnit administrativeUnit) {
+		AutoComplete input = AutoComplete.build(AutoComplete.FIELD_VALUE,administrativeUnit,AutoComplete.FIELD_ENTITY_CLASS,AdministrativeUnit.class,AutoComplete.FIELD_LISTENER
+				,new AutoComplete.Listener.AbstractImpl<AdministrativeUnit>() {
+			@Override
+			public Collection<AdministrativeUnit> complete(AutoComplete autoComplete) {
+				Arguments<AdministrativeUnit> arguments = new Arguments<AdministrativeUnit>().queryIdentifier(AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_DYNAMIC);
+				if(StringHelper.isNotBlank(autoComplete.get__queryString__()))
+					arguments.filterFieldsValues(AdministrativeUnitQuerier.PARAMETER_NAME_SEARCH,autoComplete.get__queryString__());
+				if(AbstractInput.getValue(sectionSelectOne) != null)
+					arguments.filterFieldsValues(AdministrativeUnitQuerier.PARAMETER_NAME_SECTION_IDENTIFIER,FieldHelper.readSystemIdentifier(sectionSelectOne.getValue()));
+				Collection<AdministrativeUnit> choices = EntityReader.getInstance().readMany(AdministrativeUnit.class, arguments);
+				return choices;
+			}
+						
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Unité administrative");
+		return input;
+	}
+	
 	@Override
 	protected Collection<Map<Object, Object>> buildLayoutCells() {
 		Collection<Map<Object, Object>> cellsMaps = new ArrayList<>();		
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,sectionSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,sectionSelectOne,Cell.FIELD_WIDTH,11));	
+		
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,administrativeUnitSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,administrativeUnitSelectOne,Cell.FIELD_WIDTH,11));	
+		
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,profileSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,profileSelectOne,Cell.FIELD_WIDTH,11));
 		
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeTypeSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeTypeSelectOne,Cell.FIELD_WIDTH,3));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeTypeSelectOne,Cell.FIELD_WIDTH,2));
 		
 		//cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeSelectOne,Cell.FIELD_WIDTH,8));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeSelectOne,Cell.FIELD_WIDTH,7));
 		
-		/*
-		if(visibleSelectOne != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,visibleSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,visibleSelectOne,Cell.FIELD_WIDTH,11));
-		}
-		*/
+		//cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,visibleSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,visibleSelectOne,Cell.FIELD_WIDTH,2));
 		
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,searchInputText.getOutputLabel(),Cell.FIELD_WIDTH,1));
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,searchInputText,Cell.FIELD_WIDTH,11));	
@@ -232,20 +306,27 @@ public class ActorFilterController extends AbstractFilterController implements S
 	public String generateWindowTitleValue(String prefix) {
 		Collection<String> strings = new ArrayList<>();
 		strings.add(prefix);
-		if(profileInitial != null) {
+		
+		if(sectionInitial != null && administrativeUnitInitial == null)
+			strings.add(sectionInitial.toString());
+		
+		if(administrativeUnitInitial != null)
+			strings.add(administrativeUnitInitial.toString());
+		
+		if(profileInitial != null)
 			strings.add(profileInitial.toString());
-		}
+		
 		/*if(scopeTypeInitial != null) {
 			strings.add(scopeTypeInitial.getName());
 		}*/
 		if(scopeInitial != null) {
 			strings.add((/*scopeTypeInitial == null ? "" : scopeTypeInitial.getName()+*/"Domaine ")+scopeInitial.toString());
 		}
-		/*
+		
 		if(visibleInitial != null) {
 			strings.add(visibleInitial ? "Visible" : "Non visible");
 		}
-		*/
+		
 		return StringHelper.concatenate(strings, " | ");
 	}
 	
@@ -279,6 +360,14 @@ public class ActorFilterController extends AbstractFilterController implements S
 		return (Profile) AbstractInput.getValue(profileSelectOne);
 	}
 	
+	public Section getSection() {
+		return (Section) AbstractInput.getValue(sectionSelectOne);
+	}
+	
+	public AdministrativeUnit getAdministrativeUnit() {
+		return (AdministrativeUnit) AbstractInput.getValue(administrativeUnitSelectOne);
+	}
+	
 	@Override
 	protected String buildParameterName(AbstractInput<?> input) {
 		if(searchInputText == input)
@@ -289,7 +378,11 @@ public class ActorFilterController extends AbstractFilterController implements S
 	}
 	
 	public Map<String, List<String>> asMap() {
-		Map<String, List<String>> map = new HashMap<>();		
+		Map<String, List<String>> map = new HashMap<>();
+		if(sectionInitial != null && administrativeUnitInitial == null)
+			map.put(ParameterName.stringify(Section.class), List.of((String)FieldHelper.readSystemIdentifier(sectionInitial)));
+		if(administrativeUnitInitial != null)
+			map.put(ParameterName.stringify(AdministrativeUnit.class), List.of((String)FieldHelper.readSystemIdentifier(administrativeUnitInitial)));	
 		if(scopeInitial != null)
 			map.put(ParameterName.stringify(Scope.class), List.of((String)FieldHelper.readSystemIdentifier(scopeInitial)));		
 		if(scopeTypeInitial != null && scopeInitial == null)
@@ -301,13 +394,20 @@ public class ActorFilterController extends AbstractFilterController implements S
 	
 	public static Filter.Dto populateFilter(Filter.Dto filter,ActorFilterController controller,Boolean initial) {
 		filter = Filter.Dto.addFieldIfValueNotNull(ActorQuerier.PARAMETER_NAME_PROFILE_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.profileInitial : controller.getProfile()), filter);
+		Object administrativeUnitIdentifier = FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.administrativeUnitInitial : controller.getAdministrativeUnit());
+		if(administrativeUnitIdentifier == null) {
+			filter = Filter.Dto.addFieldIfValueNotNull(ActorQuerier.PARAMETER_NAME_SECTION_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.sectionInitial : controller.getSection()), filter);
+		}else {
+			filter = Filter.Dto.addFieldIfValueNotNull(ActorQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT_IDENTIFIER, administrativeUnitIdentifier, filter);
+		}
+		
 		Object scopeIdentifier = FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.scopeInitial : controller.getScope());	
 		if(scopeIdentifier != null) {
 			filter = Filter.Dto.addFieldIfValueNotNull(ActorQuerier.PARAMETER_NAME_VISIBLE_SCOPE_IDENTIFIER, scopeIdentifier, filter);
 			filter = Filter.Dto.addFieldIfValueNotNull(ActorQuerier.PARAMETER_NAME_VISIBLE_SCOPE_TYPE_CODE, FieldHelper.readBusinessIdentifier(Boolean.TRUE.equals(initial) ? controller.scopeTypeInitial : controller.getScopeType()), filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(ActorQuerier.PARAMETER_NAME_SCOPE_VISIBLE, Boolean.TRUE.equals(initial) ? controller.visibleInitial : controller.getVisible(), filter);
 		}
-		filter = Filter.Dto.addFieldIfValueNotBlank(ActorQuerier.PARAMETER_NAME_SEARCH, Boolean.TRUE.equals(initial) ? controller.searchInitial : controller.getSearch(), filter);
-		
+		filter = Filter.Dto.addFieldIfValueNotBlank(ActorQuerier.PARAMETER_NAME_SEARCH, Boolean.TRUE.equals(initial) ? controller.searchInitial : controller.getSearch(), filter);	
 		//filter = Filter.Dto.addFieldIfValueNotNull(ActorQuerier.PARAMETER_NAME_PROFILE_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.scopeTypeInitial : controller.getScopeType()), filter);
 		/*filter = Filter.Dto.addFieldIfValueNotNull(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, FieldHelper.readBusinessIdentifier(Boolean.TRUE.equals(initial) ? controller.scopeInitial : controller.getActor()), filter);
 		filter = Filter.Dto.addFieldIfValueNotNull(ScopeQuerier.PARAMETER_NAME_VISIBLE, Boolean.TRUE.equals(initial) ? controller.visibleInitial : controller.getVisible(), filter);
@@ -328,4 +428,6 @@ public class ActorFilterController extends AbstractFilterController implements S
 	public static final String FIELD_VISIBLE_SELECT_ONE = "visibleSelectOne";
 	public static final String FIELD_SCOPE_SELECT_ONE = "scopeSelectOne";
 	public static final String FIELD_PROFILE_SELECT_ONE = "profileSelectOne";
+	public static final String FIELD_ADMINISTRATIVE_UNIT_SELECT_ONE = "administrativeUnitSelectOne";
+	public static final String FIELD_SECTION_SELECT_ONE = "sectionSelectOne";
 }

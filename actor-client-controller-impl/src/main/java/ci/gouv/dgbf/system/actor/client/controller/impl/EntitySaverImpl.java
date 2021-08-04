@@ -288,12 +288,14 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 		
 		if(arguments != null && ActorScopeBusiness.VISIBLE.equals(arguments.getActionIdentifier())) {
 			ActorScopeDto actorScope = (ActorScopeDto) CollectionHelper.getFirst(creatables);
-			return ((ActorScopeRepresentation)representation).visible(actorScope.getActorsIdentifiers(), actorScope.getScopesIdentifiers(), actorScope.getActorAsString());
+			return ((ActorScopeRepresentation)representation).visible(actorScope.getActorsIdentifiers(), actorScope.getScopesIdentifiers(),actorScope.getIgnoreExisting()
+					, actorScope.getActorAsString());
 		}
 		
 		if(arguments != null && ActorScopeBusiness.UNVISIBLE.equals(arguments.getActionIdentifier())) {
 			ActorScopeDto actorScope = (ActorScopeDto) CollectionHelper.getFirst(creatables);
-			return ((ActorScopeRepresentation)representation).unvisible(actorScope.getActorsIdentifiers(), actorScope.getScopesIdentifiers(), actorScope.getActorAsString());
+			return ((ActorScopeRepresentation)representation).unvisible(actorScope.getActorsIdentifiers(), actorScope.getScopesIdentifiers(),actorScope.getIgnoreExisting()
+					, actorScope.getActorAsString());
 		}
 		
 		if(arguments != null && ActorBusiness.CREATE_SCOPES.equals(arguments.getActionIdentifier()))

@@ -9,8 +9,8 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.__kernel__.session.SessionManager;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
@@ -23,11 +23,9 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMe
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 import org.cyk.utility.controller.Arguments;
-import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.persistence.query.Filter;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
-import ci.gouv.dgbf.system.actor.client.controller.entities.ActorScope;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import lombok.Getter;
@@ -83,6 +81,7 @@ public class ActorListPageNEW extends AbstractEntityListPageContainerManagedImpl
 		
 		DataTable dataTable = DataTable.build(arguments);
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);
+		dataTable.getOrderNumberColumn().setWidth("15");
 		
 		final ActorFilterController finalFilterController = filterController;
 		Map<String,List<String>> parameters = finalFilterController.asMap();
@@ -94,40 +93,8 @@ public class ActorListPageNEW extends AbstractEntityListPageContainerManagedImpl
 		if(filterController.getVisible() != null) {
 			if(filterController.getVisible()) {
 				addVisibleRecordMenuItem(dataTable, finalFilterController, Boolean.TRUE);
-				/*dataTable.addRecordMenuItemByArgumentsExecuteFunction("Retirer","fa fa-minus",new AbstractAction.Listener.AbstractImpl() {
-					@Override
-					protected Object __runExecuteFunction__(AbstractAction action) {
-						if(finalFilterController.getActor() == null)
-							throw new RuntimeException("Sélectionner un acteur");
-						Scope scope = (Scope)action.readArgument();						
-						if(scope == null)
-							throw new RuntimeException("Sélectionner un domaine");												
-						Arguments<ActorScope> arguments = new Arguments<ActorScope>().setResponseEntityClass(String.class).addCreatablesOrUpdatables(new ActorScope()
-								.setActorsIdentifiers(List.of(finalFilterController.getActor().getIdentifier()))
-								.setScopesIdentifiers(List.of(scope.getIdentifier())).setActorAsString(SessionManager.getInstance().getUserName()));
-						arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(ActorScopeBusiness.UNVISIBLE));					
-						EntitySaver.getInstance().save(ActorScope.class, arguments);
-						return arguments.get__responseEntity__();
-					}
-				});*/
 			}else {
 				addVisibleRecordMenuItem(dataTable, finalFilterController, Boolean.FALSE);
-				/*dataTable.addRecordMenuItemByArgumentsExecuteFunction("Assigner","fa fa-plus",new AbstractAction.Listener.AbstractImpl() {
-					@Override
-					protected Object __runExecuteFunction__(AbstractAction action) {
-						if(finalFilterController.getActor() == null)
-							throw new RuntimeException("Sélectionner un acteur");
-						Scope scope = (Scope)action.readArgument();						
-						if(scope == null)
-							throw new RuntimeException("Sélectionner un domaine");												
-						Arguments<ActorScope> arguments = new Arguments<ActorScope>().setResponseEntityClass(String.class).addCreatablesOrUpdatables(new ActorScope()
-								.setActorsIdentifiers(List.of(finalFilterController.getActor().getIdentifier()))
-								.setScopesIdentifiers(List.of(scope.getIdentifier())).setActorAsString(SessionManager.getInstance().getUserName()));
-						arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(ActorScopeBusiness.VISIBLE));					
-						EntitySaver.getInstance().save(ActorScope.class, arguments);
-						return arguments.get__responseEntity__();
-					}
-				});*/
 			}
 		}else {
 			addVisibleRecordMenuItem(dataTable, finalFilterController, Boolean.TRUE);
@@ -141,18 +108,8 @@ public class ActorListPageNEW extends AbstractEntityListPageContainerManagedImpl
 			,Boolean.TRUE.equals(visible) ? "fa fa-minus" : "fa fa-plus",new AbstractAction.Listener.AbstractImpl() {
 			@Override
 			protected Object __runExecuteFunction__(AbstractAction action) {
-				if(filterController.getScope() == null)
-					throw new RuntimeException("Sélectionner un domaine");
-				Actor actor = (Actor)action.readArgument();						
-				if(actor == null)
-					throw new RuntimeException("Sélectionner un acteur");												
-				Arguments<ActorScope> arguments = new Arguments<ActorScope>().setResponseEntityClass(String.class).addCreatablesOrUpdatables(new ActorScope()
-						.setActorsIdentifiers(List.of(actor.getIdentifier()))
-						.setScopesIdentifiers(List.of(filterController.getScope().getIdentifier())).setActorAsString(SessionManager.getInstance().getUserName()));
-				arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
-						.setActionIdentifier(Boolean.TRUE.equals(visible) ? ActorScopeBusiness.UNVISIBLE : ActorScopeBusiness.VISIBLE));					
-				EntitySaver.getInstance().save(ActorScope.class, arguments);
-				return arguments.get__responseEntity__();
+				return AbstractActorScopeCreateOrDeletePage.save(Boolean.TRUE.equals(visible) ? ActorScopeBusiness.UNVISIBLE : ActorScopeBusiness.VISIBLE
+						, CollectionHelper.listOf(Boolean.TRUE, (Actor)action.readArgument()), CollectionHelper.listOf(Boolean.TRUE, filterController.getScope()));
 			}
 		});
 	}
