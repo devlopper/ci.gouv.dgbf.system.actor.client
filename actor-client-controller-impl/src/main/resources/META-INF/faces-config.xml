@@ -434,6 +434,18 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>actorScopeRequestRecordView</from-outcome>
+			<to-view-id>/private/actor/scope/request/record.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>actorScopeRequestListView</from-outcome>
+			<to-view-id>/private/actor/scope/request/list.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>actorScopeCreateView</from-outcome>
 			<to-view-id>/private/actor/scope/create.jsf</to-view-id>
 			<redirect />

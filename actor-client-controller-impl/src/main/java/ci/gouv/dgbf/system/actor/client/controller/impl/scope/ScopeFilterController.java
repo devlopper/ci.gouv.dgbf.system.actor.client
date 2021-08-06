@@ -53,12 +53,8 @@ public class ScopeFilterController extends AbstractFilterController implements S
 		codeInitial = WebController.getInstance().getRequestParameter(buildParameterName(FIELD_CODE_INPUT_TEXT));
 		nameInitial = WebController.getInstance().getRequestParameter(buildParameterName(FIELD_NAME_INPUT_TEXT));
 		scopeTypeInitial = getScopeTypeFromRequestParameter(null);
-		if(actorInitial == null) {
-			actorInitial = EntityReader.getInstance().readOneBySystemIdentifierAsParent(Actor.class, new Arguments<Actor>()
-				.queryIdentifier(ActorQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
-				.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Actor.FIELDS_CODE_NAMES_ELECTRONIC_MAIL_ADDRESS)
-				.filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.stringify(Actor.class))));
-		}
+		if(actorInitial == null)
+			actorInitial = getActorFromRequestParameter();
 		visibleInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(Scope.FIELD_VISIBLE));
 	}
 	
@@ -75,6 +71,13 @@ public class ScopeFilterController extends AbstractFilterController implements S
 				.queryIdentifier(ScopeTypeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
 				.filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.stringify(ScopeType.class))));
 		return scope.getType();
+	}
+	
+	public static Actor getActorFromRequestParameter() {
+		return EntityReader.getInstance().readOneBySystemIdentifierAsParent(Actor.class, new Arguments<Actor>()
+				.queryIdentifier(ActorQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
+				.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Actor.FIELDS_CODE_NAMES_ELECTRONIC_MAIL_ADDRESS)
+				.filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.stringify(Actor.class))));
 	}
 	
 	@Override

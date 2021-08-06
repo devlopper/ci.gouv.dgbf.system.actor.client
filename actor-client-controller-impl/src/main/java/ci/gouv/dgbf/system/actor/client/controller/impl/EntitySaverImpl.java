@@ -18,6 +18,7 @@ import ci.gouv.dgbf.system.actor.server.business.api.AccountRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.AssignmentsBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ExecutionImputationBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.IdentificationFormAttributeBusiness;
@@ -34,6 +35,7 @@ import ci.gouv.dgbf.system.actor.server.representation.api.AccountRequestReprese
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorProfileRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorScopeRepresentation;
+import ci.gouv.dgbf.system.actor.server.representation.api.ActorScopeRequestRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.AssignmentsRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ExecutionImputationRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.IdentificationFormAttributeRepresentation;
@@ -50,6 +52,7 @@ import ci.gouv.dgbf.system.actor.server.representation.entities.AccountRequestDt
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorProfileDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorScopeDto;
+import ci.gouv.dgbf.system.actor.server.representation.entities.ActorScopeRequestDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.AssignmentsDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.FunctionDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.IdentificationFormAttributeDto;
@@ -96,6 +99,8 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				arguments.setRepresentation(ActorScopeRepresentation.getProxy());
 			else if(ActorScopeBusiness.UNVISIBLE.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ActorScopeRepresentation.getProxy());
+			else if(ActorScopeRequestBusiness.RECORD.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ActorScopeRequestRepresentation.getProxy());
 			else if(AccountRequestBusiness.RECORD.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(AccountRequestRepresentation.getProxy());
 			else if(AccountRequestBusiness.SUBMIT.equals(arguments.getRepresentationArguments().getActionIdentifier()))
@@ -296,6 +301,12 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 			ActorScopeDto actorScope = (ActorScopeDto) CollectionHelper.getFirst(creatables);
 			return ((ActorScopeRepresentation)representation).unvisible(actorScope.getActorsIdentifiers(), actorScope.getScopesIdentifiers(),actorScope.getIgnoreExisting()
 					, actorScope.getActorAsString());
+		}
+		
+		if(arguments != null && ActorScopeRequestBusiness.RECORD.equals(arguments.getActionIdentifier())) {
+			ActorScopeRequestDto actorScopeRequest = (ActorScopeRequestDto) CollectionHelper.getFirst(creatables);
+			return ((ActorScopeRequestRepresentation)representation).record(actorScopeRequest.getActorsIdentifiers(), actorScopeRequest.getScopesIdentifiers()
+					, actorScopeRequest.getActorAsString(),actorScopeRequest.getIgnoreExisting());
 		}
 		
 		if(arguments != null && ActorBusiness.CREATE_SCOPES.equals(arguments.getActionIdentifier()))
