@@ -99,8 +99,14 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				arguments.setRepresentation(ActorScopeRepresentation.getProxy());
 			else if(ActorScopeBusiness.UNVISIBLE.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ActorScopeRepresentation.getProxy());
+			
 			else if(ActorScopeRequestBusiness.RECORD.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ActorScopeRequestRepresentation.getProxy());
+			else if(ActorScopeRequestBusiness.CANCEL.equals(arguments.getRepresentationArguments().getActionIdentifier()))				
+				arguments.setRepresentation(ActorScopeRequestRepresentation.getProxy());
+			else if(ActorScopeRequestBusiness.PROCESS.equals(arguments.getRepresentationArguments().getActionIdentifier()))				
+				arguments.setRepresentation(ActorScopeRequestRepresentation.getProxy());
+			
 			else if(AccountRequestBusiness.RECORD.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(AccountRequestRepresentation.getProxy());
 			else if(AccountRequestBusiness.SUBMIT.equals(arguments.getRepresentationArguments().getActionIdentifier()))
@@ -307,6 +313,18 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 			ActorScopeRequestDto actorScopeRequest = (ActorScopeRequestDto) CollectionHelper.getFirst(creatables);
 			return ((ActorScopeRequestRepresentation)representation).record(actorScopeRequest.getActorsIdentifiers(), actorScopeRequest.getScopesIdentifiers()
 					, actorScopeRequest.getActorAsString(),actorScopeRequest.getIgnoreExisting());
+		}
+		
+		if(arguments != null && ActorScopeRequestBusiness.CANCEL.equals(arguments.getActionIdentifier())) {
+			ActorScopeRequestDto actorScopeRequest = (ActorScopeRequestDto) CollectionHelper.getFirst(updatables);
+			return ((ActorScopeRequestRepresentation)representation).cancel(actorScopeRequest.getActorsIdentifiers()
+					, actorScopeRequest.getActorAsString(),actorScopeRequest.getIgnoreExisting());
+		}
+		
+		if(arguments != null && ActorScopeRequestBusiness.PROCESS.equals(arguments.getActionIdentifier())) {
+			ActorScopeRequestDto actorScopeRequest = (ActorScopeRequestDto) CollectionHelper.getFirst(updatables);
+			return ((ActorScopeRequestRepresentation)representation).process((List<ActorScopeRequestDto>) CollectionHelper.cast(ActorScopeRequestDto.class, updatables)
+					, actorScopeRequest == null ? null : actorScopeRequest.getActorAsString());
 		}
 		
 		if(arguments != null && ActorBusiness.CREATE_SCOPES.equals(arguments.getActionIdentifier()))

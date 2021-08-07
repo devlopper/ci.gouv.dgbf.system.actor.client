@@ -89,16 +89,19 @@ public class ActorScopeRequestListPage extends AbstractEntityListPageContainerMa
 	
 	private static void addProcessRecordMenuItem(DataTable dataTable,ActorScopeRequestFilterController filterController,Boolean accept) {
 		dataTable.addRecordMenuItemByArgumentsExecuteFunction(Boolean.TRUE.equals(accept) ? "Accepter" : "Rejeter"
-			,Boolean.TRUE.equals(accept) ? "fa fa-minus" : "fa fa-plus",new AbstractAction.Listener.AbstractImpl() {
+			,Boolean.TRUE.equals(accept) ? "fa fa-check" : "fa fa-minus",new AbstractAction.Listener.AbstractImpl() {
 			@Override
 			protected Object __runExecuteFunction__(AbstractAction action) {
 				ActorScopeRequest actorScopeRequest = (ActorScopeRequest)action.readArgument();						
 				if(actorScopeRequest == null)
-					throw new RuntimeException("Sélectionner une demande de domaine");												
+					throw new RuntimeException("Sélectionner une demande de domaine");
+				actorScopeRequest.setGranted(Boolean.TRUE.equals(accept));
+				//if(!Boolean.TRUE.equals(accept))
+				//	actorScopeRequest.setProcessingComments(Map.of(actorScopeRequest.getIdentifier(),""));
 				Arguments<ActorScopeRequest> arguments = new Arguments<ActorScopeRequest>().setResponseEntityClass(String.class)
 						.addCreatablesOrUpdatables(actorScopeRequest.setActorAsString(SessionManager.getInstance().getUserName()));
 				arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
-						.setActionIdentifier(ActorScopeRequestBusiness.PROCESS));					
+						.setActionIdentifier(ActorScopeRequestBusiness.PROCESS));
 				EntitySaver.getInstance().save(ActorScopeRequest.class, arguments);
 				return arguments.get__responseEntity__();
 			}

@@ -22,6 +22,8 @@ public abstract class AbstractActorRequest extends AbstractDataIdentifiableSyste
 	
 	protected String comment;
 	
+	protected String processingComment;
+	
 	protected Boolean ignoreExisting;
 	
 	public static final String FIELD_ACTOR = "actor";
