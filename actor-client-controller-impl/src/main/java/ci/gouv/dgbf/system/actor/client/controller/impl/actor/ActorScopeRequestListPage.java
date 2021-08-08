@@ -42,12 +42,13 @@ public class ActorScopeRequestListPage extends AbstractEntityListPageContainerMa
 	@Override
 	protected void __listenBeforePostConstruct__() {
 		super.__listenBeforePostConstruct__();
-		filterController = new ActorScopeRequestFilterController();
+		filterController = new ActorScopeRequestFilterController();	
 	}
 	
 	@Override
 	protected DataTable __buildDataTable__() {
-		DataTable dataTable = buildDataTable(ActorScopeRequestFilterController.class,filterController);
+		DataTable dataTable = buildDataTable(ActorScopeRequestFilterController.class,filterController,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER
+				,new LazyDataModelListenerImpl().setFilterController(filterController));
 		return dataTable;
 	}
 	
