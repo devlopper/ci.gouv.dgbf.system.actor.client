@@ -2,6 +2,7 @@ package ci.gouv.dgbf.system.actor.client.controller.impl.actor;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.faces.view.ViewScoped;
@@ -19,6 +20,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Dat
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.AbstractMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMenu;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 import org.cyk.utility.controller.Arguments;
 import org.cyk.utility.controller.EntitySaver;
@@ -81,33 +83,28 @@ public class ActorScopeRequestListPage extends AbstractEntityListPageContainerMa
 		
 		DataTable dataTable = DataTable.build(arguments);
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);
-		dataTable.getOrderNumberColumn().setWidth("10");		
-		addProcessRecordMenuItem(dataTable, filterController, Boolean.TRUE);
-		addProcessRecordMenuItem(dataTable, filterController, Boolean.FALSE);		
-		return dataTable;
-	}
-	
-	private static void addProcessRecordMenuItem(DataTable dataTable,ActorScopeRequestFilterController filterController,Boolean accept) {
-		dataTable.addRecordMenuItemByArgumentsExecuteFunction(Boolean.TRUE.equals(accept) ? "Accepter" : "Rejeter"
-			,Boolean.TRUE.equals(accept) ? "fa fa-check" : "fa fa-minus",new AbstractAction.Listener.AbstractImpl() {
+		dataTable.getOrderNumberColumn().setWidth("10");
+		dataTable.addRecordMenuItemByArgumentsOpenViewInDialog(ActorScopeRequestProcessPage.OUTCOME, MenuItem.FIELD_VALUE,"Traiter", MenuItem.FIELD_ICON,"fa fa-eye");
+		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Accepter","fa fa-check",new AbstractAction.Listener.AbstractImpl() {
 			@Override
 			protected Object __runExecuteFunction__(AbstractAction action) {
 				ActorScopeRequest actorScopeRequest = (ActorScopeRequest)action.readArgument();						
 				if(actorScopeRequest == null)
 					throw new RuntimeException("Sélectionner une demande de domaine");
-				actorScopeRequest.setGranted(Boolean.TRUE.equals(accept));
-				//if(!Boolean.TRUE.equals(accept))
-				//	actorScopeRequest.setProcessingComments(Map.of(actorScopeRequest.getIdentifier(),""));
+				actorScopeRequest.setGranted(Boolean.TRUE);
+				actorScopeRequest.setActorAsString(SessionManager.getInstance().getUserName());
 				Arguments<ActorScopeRequest> arguments = new Arguments<ActorScopeRequest>().setResponseEntityClass(String.class)
-						.addCreatablesOrUpdatables(actorScopeRequest.setActorAsString(SessionManager.getInstance().getUserName()));
-				arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
-						.setActionIdentifier(ActorScopeRequestBusiness.PROCESS));
+						.addCreatablesOrUpdatables(actorScopeRequest);
+				arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(ActorScopeRequestBusiness.PROCESS));
 				EntitySaver.getInstance().save(ActorScopeRequest.class, arguments);
 				return arguments.get__responseEntity__();
 			}
 		});
+		dataTable.addRecordMenuItemByArgumentsOpenViewInDialog(ActorScopeRequestProcessPage.OUTCOME, MenuItem.FIELD_VALUE,"Rejeter", MenuItem.FIELD_ICON,"fa fa-close"
+				,MenuItem.FIELD___PARAMETERS__,Map.of(ActorScopeRequest.FIELD_GRANTED,List.of(Boolean.FALSE.toString())));	
+		return dataTable;
 	}
-	
+		
 	public static DataTable buildDataTable(Object...objects) {
 		return buildDataTable(ArrayHelper.isEmpty(objects) ? null : MapHelper.instantiate(objects));
 	}

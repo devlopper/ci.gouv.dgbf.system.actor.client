@@ -446,6 +446,18 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>actorScopeRequestProcessView</from-outcome>
+			<to-view-id>/private/actor/scope/request/process.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>actorScopeRequestRejectOneView</from-outcome>
+			<to-view-id>/private/actor/scope/request/rejectone.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>actorScopeCreateView</from-outcome>
 			<to-view-id>/private/actor/scope/create.jsf</to-view-id>
 			<redirect />
