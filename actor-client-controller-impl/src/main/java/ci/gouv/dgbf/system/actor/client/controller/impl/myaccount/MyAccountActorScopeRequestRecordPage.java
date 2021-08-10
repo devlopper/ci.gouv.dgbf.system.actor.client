@@ -1,4 +1,4 @@
-package ci.gouv.dgbf.system.actor.client.controller.impl.account;
+package ci.gouv.dgbf.system.actor.client.controller.impl.myaccount;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -24,7 +24,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter @Setter @Named @ViewScoped
-public class LoggedInUserActorScopeRequestRecordPage extends AbstractEntityEditPageContainerManagedImpl<ActorScopeRequest> implements Serializable {
+public class MyAccountActorScopeRequestRecordPage extends AbstractEntityEditPageContainerManagedImpl<ActorScopeRequest> implements MyAccountTheme,Serializable {
 
 	@Override
 	protected void __listenPostConstruct__() {
@@ -46,7 +46,7 @@ public class LoggedInUserActorScopeRequestRecordPage extends AbstractEntityEditP
 	
 	@Override
 	protected Form __buildForm__() {
-		return buildForm(Form.FIELD_ACTION,action,LoggedInUserActorScopeRequestRecordPage.class,this);
+		return buildForm(Form.FIELD_ACTION,action,MyAccountActorScopeRequestRecordPage.class,this);
 	}
 	
 	public static Form buildForm(Map<Object, Object> arguments) {
@@ -55,7 +55,7 @@ public class LoggedInUserActorScopeRequestRecordPage extends AbstractEntityEditP
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_INPUTS_FIELDS_NAMES, List.of(ActorScopeRequest.FIELD_SCOPE_TYPE
 				,ActorScopeRequest.FIELD_SCOPES,ActorScopeRequest.FIELD_COMMENT));
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_LISTENER, new FormConfiguratorListener()
-				.setPageContainerManaged(MapHelper.readByKey(arguments, LoggedInUserActorScopeRequestRecordPage.class)));		
+				.setPageContainerManaged(MapHelper.readByKey(arguments, MyAccountActorScopeRequestRecordPage.class)));		
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_LISTENER, new FormListener());
 		Form form = ActorScopeRequestRecordPage.buildForm(arguments);
 		return form;
@@ -78,5 +78,5 @@ public class LoggedInUserActorScopeRequestRecordPage extends AbstractEntityEditP
 
 	}
 	
-	public static final String OUTCOME = "loggedInUserActorScopeRequestRecordView";
+	public static final String OUTCOME = "myAccountActorScopeRequestRecordView";
 }

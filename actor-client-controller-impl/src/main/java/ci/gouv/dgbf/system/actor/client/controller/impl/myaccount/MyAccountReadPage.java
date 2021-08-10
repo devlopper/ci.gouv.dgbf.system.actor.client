@@ -1,4 +1,4 @@
-package ci.gouv.dgbf.system.actor.client.controller.impl.account;
+package ci.gouv.dgbf.system.actor.client.controller.impl.myaccount;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Named @ViewScoped @Getter @Setter
-public class LoggedInUserAccountReadPage extends AbstractPageContainerManagedImpl implements Serializable {
+public class MyAccountReadPage extends AbstractPageContainerManagedImpl implements MyAccountTheme,Serializable {
 
 	private Actor actor;
 	private Layout layout;

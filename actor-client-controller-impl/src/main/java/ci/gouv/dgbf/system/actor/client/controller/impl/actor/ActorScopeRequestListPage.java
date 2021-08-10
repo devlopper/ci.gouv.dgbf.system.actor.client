@@ -27,8 +27,8 @@ import org.cyk.utility.persistence.query.Filter;
 import ci.gouv.dgbf.system.actor.client.controller.api.ActorScopeRequestController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ActorScopeRequest;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
-import ci.gouv.dgbf.system.actor.client.controller.impl.account.LoggedInUserActorScopeRequestListPage;
-import ci.gouv.dgbf.system.actor.client.controller.impl.account.LoggedInUserActorScopeRequestRecordPage;
+import ci.gouv.dgbf.system.actor.client.controller.impl.myaccount.MyAccountActorScopeRequestListPage;
+import ci.gouv.dgbf.system.actor.client.controller.impl.myaccount.MyAccountActorScopeRequestRecordPage;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorScopeRequestQuerier;
 import lombok.Getter;
 import lombok.Setter;
@@ -87,8 +87,8 @@ public class ActorScopeRequestListPage extends AbstractEntityListPageContainerMa
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);
 		dataTable.getOrderNumberColumn().setWidth("10");
 		
-		if(LoggedInUserActorScopeRequestListPage.class.equals(pageClass)) {
-			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog(LoggedInUserActorScopeRequestRecordPage.OUTCOME, MenuItem.FIELD_VALUE,"Demander"
+		if(MyAccountActorScopeRequestListPage.class.equals(pageClass)) {
+			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog(MyAccountActorScopeRequestRecordPage.OUTCOME, MenuItem.FIELD_VALUE,"Demander"
 					, MenuItem.FIELD_ICON,"fa fa-plus");
 			dataTable.addRecordMenuItemByArgumentsExecuteFunction("Annuler","fa fa-trash",new AbstractAction.Listener.AbstractImpl() {
 				@Override

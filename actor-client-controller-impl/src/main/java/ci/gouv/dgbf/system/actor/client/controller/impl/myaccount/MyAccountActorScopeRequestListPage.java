@@ -1,4 +1,4 @@
-package ci.gouv.dgbf.system.actor.client.controller.impl.account;
+package ci.gouv.dgbf.system.actor.client.controller.impl.myaccount;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -22,7 +22,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Named @ViewScoped @Getter @Setter
-public class LoggedInUserActorScopeRequestListPage extends AbstractEntityListPageContainerManagedImpl<ActorScopeRequest> implements Serializable{
+public class MyAccountActorScopeRequestListPage extends AbstractEntityListPageContainerManagedImpl<ActorScopeRequest> implements MyAccountTheme,Serializable{
 
 	private ActorScopeRequestFilterController filterController;
 	
@@ -37,7 +37,7 @@ public class LoggedInUserActorScopeRequestListPage extends AbstractEntityListPag
 	@Override
 	protected DataTable __buildDataTable__() {
 		DataTable dataTable = buildDataTable(ActorScopeRequestFilterController.class,filterController,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER
-				,new LazyDataModelListenerImpl().setFilterController(filterController),ActorScopeRequestListPage.class,LoggedInUserActorScopeRequestListPage.class);
+				,new LazyDataModelListenerImpl().setFilterController(filterController),ActorScopeRequestListPage.class,MyAccountActorScopeRequestListPage.class);
 		return dataTable;
 	}
 	
@@ -71,5 +71,5 @@ public class LoggedInUserActorScopeRequestListPage extends AbstractEntityListPag
 
 	/**/
 		
-	public static final String OUTCOME = "loggedInUserActorScopeRequestListView";
+	public static final String OUTCOME = "myAccountActorScopeRequestListView";
 }

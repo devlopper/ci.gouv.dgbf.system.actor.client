@@ -440,20 +440,8 @@
 		</navigation-case>
 		
 		<navigation-case>
-			<from-outcome>loggedInUserActorScopeRequestRecordView</from-outcome>
-			<to-view-id>/private/actor/scope/request/record/loggedinuser.jsf</to-view-id>
-			<redirect />
-		</navigation-case>
-		
-		<navigation-case>
 			<from-outcome>actorScopeRequestListView</from-outcome>
 			<to-view-id>/private/actor/scope/request/list.jsf</to-view-id>
-			<redirect />
-		</navigation-case>
-		
-		<navigation-case>
-			<from-outcome>loggedInUserActorScopeRequestListView</from-outcome>
-			<to-view-id>/private/actor/scope/request/list/loggedinuser.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		
@@ -778,6 +766,18 @@
 		
 		
 		<!-- My Account  -->
+		
+		<navigation-case>
+			<from-outcome>myAccountActorScopeRequestRecordView</from-outcome>
+			<to-view-id>/private/myaccount/request/scope/record.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>myAccountActorScopeRequestListView</from-outcome>
+			<to-view-id>/private/myaccount/request/scope/list.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
 		
 		<navigation-case>
 			<from-outcome>myAccountIndexView</from-outcome>
