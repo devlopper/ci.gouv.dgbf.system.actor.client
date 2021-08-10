@@ -27,8 +27,8 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOn
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import org.cyk.utility.controller.Arguments;
-import org.cyk.utility.controller.EntitySaver;
 
+import ci.gouv.dgbf.system.actor.client.controller.api.ActorScopeRequestController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ActorScopeRequest;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorScopeRequestQuerier;
@@ -52,6 +52,7 @@ public class ActorScopeRequestProcessManyPage extends AbstractPageContainerManag
 	protected void __listenBeforePostConstruct__() {
 		super.__listenBeforePostConstruct__();
 		filterController = new ActorScopeRequestFilterController().setActionIdentifier(ActorScopeRequestBusiness.PROCESS);
+		filterController.ignore(ActorScopeRequestFilterController.FIELD_PROCESSED_SELECT_ONE,ActorScopeRequestFilterController.FIELD_GRANTED_SELECT_ONE);
 	}
 	
 	@Override
@@ -83,25 +84,7 @@ public class ActorScopeRequestProcessManyPage extends AbstractPageContainerManag
 				,CommandButton.FIELD_LISTENER,new CommandButton.Listener.AbstractImpl() {
 					@Override
 					protected Object __runExecuteFunction__(AbstractAction action) {
-						Collection<ActorScopeRequest> actorScopeRequests = dataTable.getList(ActorScopeRequest.class);
-						if(CollectionHelper.isEmpty(actorScopeRequests))
-							throw new RuntimeException("Aucune demandes de domaines à traiter");
-						Collection<ActorScopeRequest> processables = null;
-						for(ActorScopeRequest actorScopeRequest : actorScopeRequests) {
-							if(GRANTED_CHOICE_IGNORE.equals(actorScopeRequest.getGrantedAsString()))							
-								continue;
-							actorScopeRequest.setGranted(GRANTED_CHOICE_YES.equals(actorScopeRequest.getGrantedAsString()));
-							ActorScopeRequestBusiness.validate(actorScopeRequest.getGranted(), actorScopeRequest.getProcessingComment());
-							if(processables == null)
-								processables = new ArrayList<>();
-							processables.add(actorScopeRequest);
-						}
-						if(CollectionHelper.isEmpty(processables))
-							throw new RuntimeException("Vous n'avez fait aucune modification");
-						EntitySaver.getInstance().save(ActorScopeRequest.class, new Arguments<ActorScopeRequest>()
-								.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
-								.setActionIdentifier(ActorScopeRequestBusiness.PROCESS)).setUpdatables(processables));	
-						return null;
+						return __inject__(ActorScopeRequestController.class).process(dataTable.getList(ActorScopeRequest.class), GRANTED_CHOICE_IGNORE, GRANTED_CHOICE_YES);
 					}
 				},CommandButton.FIELD_STYLE_CLASS,"cyk-float-right");
 		saveCommandButton.addUpdates(":form:"+dataTableCellIdentifier);
@@ -133,7 +116,6 @@ public class ActorScopeRequestProcessManyPage extends AbstractPageContainerManag
 	
 	public static InputTextarea buildProcessingCommentInput(Class<?> klass,String inputFieldName) {
 		InputTextarea input = InputTextarea.build();
-		//System.out.println("ActorScopeRequestProcessManyPage.buildGrantedInput() ::::::::::::::::::::::::::::::::::::::::: "+input.getChoices());
 		input.setBindingByDerivation(StringHelper.getVariableNameFrom(klass.getSimpleName())+"."+inputFieldName, "record.processingComment");
 		return input;
 	}

@@ -10,7 +10,6 @@ import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.__kernel__.session.SessionManager;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
@@ -23,12 +22,13 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMe
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 import org.cyk.utility.controller.Arguments;
-import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.persistence.query.Filter;
 
+import ci.gouv.dgbf.system.actor.client.controller.api.ActorScopeRequestController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ActorScopeRequest;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
-import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeRequestBusiness;
+import ci.gouv.dgbf.system.actor.client.controller.impl.account.LoggedInUserActorScopeRequestListPage;
+import ci.gouv.dgbf.system.actor.client.controller.impl.account.LoggedInUserActorScopeRequestRecordPage;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorScopeRequestQuerier;
 import lombok.Getter;
 import lombok.Setter;
@@ -62,6 +62,7 @@ public class ActorScopeRequestListPage extends AbstractEntityListPageContainerMa
 	public static DataTable buildDataTable(Map<Object,Object> arguments) {
 		if(arguments == null)
 			arguments = new HashMap<>();
+		Class<?> pageClass = (Class<?>) arguments.get(ActorScopeRequestListPage.class);
 		ActorScopeRequestFilterController filterController = null;		
 		LazyDataModelListenerImpl lazyDataModelListenerImpl = (LazyDataModelListenerImpl) MapHelper.readByKey(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER);
 		if(lazyDataModelListenerImpl == null)
@@ -85,24 +86,29 @@ public class ActorScopeRequestListPage extends AbstractEntityListPageContainerMa
 		DataTable dataTable = DataTable.build(arguments);
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);
 		dataTable.getOrderNumberColumn().setWidth("10");
-		dataTable.addRecordMenuItemByArgumentsOpenViewInDialog(ActorScopeRequestProcessPage.OUTCOME, MenuItem.FIELD_VALUE,"Traiter", MenuItem.FIELD_ICON,"fa fa-eye");
-		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Accepter","fa fa-check",new AbstractAction.Listener.AbstractImpl() {
-			@Override
-			protected Object __runExecuteFunction__(AbstractAction action) {
-				ActorScopeRequest actorScopeRequest = (ActorScopeRequest)action.readArgument();						
-				if(actorScopeRequest == null)
-					throw new RuntimeException("Sélectionner une demande de domaine");
-				actorScopeRequest.setGranted(Boolean.TRUE);
-				actorScopeRequest.setActorAsString(SessionManager.getInstance().getUserName());
-				Arguments<ActorScopeRequest> arguments = new Arguments<ActorScopeRequest>().setResponseEntityClass(String.class)
-						.addCreatablesOrUpdatables(actorScopeRequest);
-				arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(ActorScopeRequestBusiness.PROCESS));
-				EntitySaver.getInstance().save(ActorScopeRequest.class, arguments);
-				return arguments.get__responseEntity__();
-			}
-		});
-		dataTable.addRecordMenuItemByArgumentsOpenViewInDialog(ActorScopeRequestProcessPage.OUTCOME, MenuItem.FIELD_VALUE,"Rejeter", MenuItem.FIELD_ICON,"fa fa-close"
-				,MenuItem.FIELD___PARAMETERS__,Map.of(ActorScopeRequest.FIELD_GRANTED,List.of(Boolean.FALSE.toString())));	
+		
+		if(LoggedInUserActorScopeRequestListPage.class.equals(pageClass)) {
+			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog(LoggedInUserActorScopeRequestRecordPage.OUTCOME, MenuItem.FIELD_VALUE,"Demander"
+					, MenuItem.FIELD_ICON,"fa fa-plus");
+			dataTable.addRecordMenuItemByArgumentsExecuteFunction("Annuler","fa fa-trash",new AbstractAction.Listener.AbstractImpl() {
+				@Override
+				protected Object __runExecuteFunction__(AbstractAction action) {
+					return __inject__(ActorScopeRequestController.class).cancel((ActorScopeRequest)action.readArgument());			
+				}
+			});
+		}else {
+			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate(MenuItem.FIELD___OUTCOME__,ActorScopeRequestRecordPage.OUTCOME);
+			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog(ActorScopeRequestProcessPage.OUTCOME, MenuItem.FIELD_VALUE,"Traiter", MenuItem.FIELD_ICON,"fa fa-eye");
+			dataTable.addRecordMenuItemByArgumentsExecuteFunction("Accepter","fa fa-check",new AbstractAction.Listener.AbstractImpl() {
+				@Override
+				protected Object __runExecuteFunction__(AbstractAction action) {
+					return __inject__(ActorScopeRequestController.class).processOne((ActorScopeRequest)action.readArgument());			
+				}
+			});
+			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog(ActorScopeRequestProcessPage.OUTCOME, MenuItem.FIELD_VALUE,"Rejeter", MenuItem.FIELD_ICON,"fa fa-close"
+					,MenuItem.FIELD___PARAMETERS__,Map.of(ActorScopeRequest.FIELD_GRANTED,List.of(Boolean.FALSE.toString())));	
+		}
+				
 		return dataTable;
 	}
 		
@@ -124,6 +130,8 @@ public class ActorScopeRequestListPage extends AbstractEntityListPageContainerMa
 				map.put(Column.FIELD_HEADER_TEXT, "Domaine");
 			}else if(ActorScopeRequest.FIELD_GRANTED_AS_STRING.equals(fieldName) || ActorScopeRequest.FIELD_GRANTED.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Accordé");
+			}else if(ActorScopeRequest.FIELD_PROCESSING_COMMENT.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Commentaire");
 			}
 			return map;
 		}

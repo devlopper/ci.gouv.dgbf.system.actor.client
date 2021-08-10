@@ -56,7 +56,7 @@ public class ActorScopeRequestFilterController extends AbstractFilterController 
 		scopeInitial = ScopeFilterController.getScopeFromRequestParameter();
 		scopeTypeInitial = ScopeFilterController.getScopeTypeFromRequestParameter(scopeInitial);			
 		processedInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(ActorScopeRequest.FIELD_PROCESSED));
-		grantedInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(ActorScopeRequest.FIELD_GRANTED));		
+		grantedInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(ActorScopeRequest.FIELD_GRANTED));	
 	}
 	
 	@Override
@@ -72,8 +72,10 @@ public class ActorScopeRequestFilterController extends AbstractFilterController 
 	}
 	
 	private void enableValueChangeListeners() {
-		actorSelectOne.enableAjaxItemSelect();
-		scopeSelectOne.enableAjaxItemSelect();
+		if(actorSelectOne != null)
+			actorSelectOne.enableAjaxItemSelect();
+		if(scopeSelectOne != null)
+			scopeSelectOne.enableAjaxItemSelect();
 	}
 	
 	private void selectByValueSystemIdentifier() {
@@ -207,17 +209,27 @@ public class ActorScopeRequestFilterController extends AbstractFilterController 
 	@Override
 	protected Collection<Map<Object, Object>> buildLayoutCells() {
 		Collection<Map<Object, Object>> cellsMaps = new ArrayList<>();
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,actorSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,actorSelectOne,Cell.FIELD_WIDTH,11));
+		if(actorSelectOne != null) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,actorSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,actorSelectOne,Cell.FIELD_WIDTH,11));
+		}
 		
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeTypeSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeTypeSelectOne,Cell.FIELD_WIDTH,3));	
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeSelectOne,Cell.FIELD_WIDTH,8));
+		if(scopeTypeSelectOne != null) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeTypeSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeTypeSelectOne,Cell.FIELD_WIDTH,3));	
+		}
+		if(scopeSelectOne != null) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeSelectOne,Cell.FIELD_WIDTH,8));
+		}		
 		
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,processedSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,processedSelectOne,Cell.FIELD_WIDTH,5));		
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,grantedSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,grantedSelectOne,Cell.FIELD_WIDTH,5));
+		if(processedSelectOne != null) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,processedSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,processedSelectOne,Cell.FIELD_WIDTH,5));		
+		}
+		if(grantedSelectOne != null) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,grantedSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,grantedSelectOne,Cell.FIELD_WIDTH,5));
+		}
 		
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,filterCommandButton,Cell.FIELD_WIDTH,12));	
 		return cellsMaps;

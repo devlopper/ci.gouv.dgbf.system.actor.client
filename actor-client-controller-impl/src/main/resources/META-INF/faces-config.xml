@@ -435,7 +435,13 @@
 		
 		<navigation-case>
 			<from-outcome>actorScopeRequestRecordView</from-outcome>
-			<to-view-id>/private/actor/scope/request/record.jsf</to-view-id>
+			<to-view-id>/private/actor/scope/request/record/index.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>loggedInUserActorScopeRequestRecordView</from-outcome>
+			<to-view-id>/private/actor/scope/request/record/loggedinuser.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		
@@ -446,8 +452,20 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>loggedInUserActorScopeRequestListView</from-outcome>
+			<to-view-id>/private/actor/scope/request/list/loggedinuser.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>actorScopeRequestProcessView</from-outcome>
 			<to-view-id>/private/actor/scope/request/process.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>actorScopeRequestProcessManyView</from-outcome>
+			<to-view-id>/private/actor/scope/request/process/index.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		

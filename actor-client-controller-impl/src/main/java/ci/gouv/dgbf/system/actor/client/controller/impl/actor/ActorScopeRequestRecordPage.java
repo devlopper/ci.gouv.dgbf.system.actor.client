@@ -14,7 +14,6 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.__kernel__.session.SessionHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
@@ -26,13 +25,12 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOn
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityEditPageContainerManagedImpl;
 import org.cyk.utility.controller.Arguments;
 import org.cyk.utility.controller.EntityReader;
-import org.cyk.utility.controller.EntitySaver;
 
+import ci.gouv.dgbf.system.actor.client.controller.api.ActorScopeRequestController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ActorScopeRequest;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Scope;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
-import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
@@ -47,6 +45,10 @@ public class ActorScopeRequestRecordPage extends AbstractEntityEditPageContainer
 	@Override
 	protected void __listenPostConstruct__() {
 		super.__listenPostConstruct__();
+		postConstruct(form);
+	}
+	
+	public static void postConstruct(Form form) {
 		form.getInput(SelectOneCombo.class, ActorScopeRequest.FIELD_SCOPE_TYPE)
 		.enableValueChangeListener(List.of(form.getInput(SelectOneCombo.class, ActorScopeRequest.FIELD_SCOPES)));
 	}
@@ -72,7 +74,8 @@ public class ActorScopeRequestRecordPage extends AbstractEntityEditPageContainer
 		if(arguments == null)
 			arguments = new HashMap<>();
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ENTITY_CLASS, ActorScopeRequest.class);
-		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_INPUTS_FIELDS_NAMES, List.of(ActorScopeRequest.FIELD_ACTORS,ActorScopeRequest.FIELD_SCOPE_TYPE,ActorScopeRequest.FIELD_SCOPES));
+		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_INPUTS_FIELDS_NAMES, List.of(ActorScopeRequest.FIELD_ACTORS
+				,ActorScopeRequest.FIELD_SCOPE_TYPE,ActorScopeRequest.FIELD_SCOPES,ActorScopeRequest.FIELD_COMMENT));
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_LISTENER, new FormConfiguratorListener()
 				.setPageContainerManaged(MapHelper.readByKey(arguments, ActorScopeRequestRecordPage.class)));		
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_LISTENER, new FormListener());
@@ -89,15 +92,7 @@ public class ActorScopeRequestRecordPage extends AbstractEntityEditPageContainer
 		
 		@Override
 		public void act(Form form) {
-			ActorScopeRequest actorScopeRequest = (ActorScopeRequest) form.getEntity();
-			actorScopeRequest.setActorsIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(actorScopeRequest.getActors()));
-			actorScopeRequest.setScopesIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(actorScopeRequest.getScopes()));
-			actorScopeRequest.setIgnoreExisting(Boolean.TRUE);
-			actorScopeRequest.setActorAsString(SessionHelper.getUserName());
-			Arguments<ActorScopeRequest> arguments = new Arguments<ActorScopeRequest>().setResponseEntityClass(String.class).addCreatablesOrUpdatables(actorScopeRequest);
-			arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(ActorScopeRequestBusiness.RECORD));
-			EntitySaver.getInstance().save(ActorScopeRequest.class, arguments);
-			//return arguments.get__responseEntity__();
+			__inject__(ActorScopeRequestController.class).record((ActorScopeRequest) form.getEntity());
 		}
 	}
 	
@@ -121,7 +116,8 @@ public class ActorScopeRequestRecordPage extends AbstractEntityEditPageContainer
 					@Override
 					public void select(AbstractInputChoiceOne input, ScopeType scopeType) {
 						super.select(input, scopeType);
-						((ActorScopeRequestRecordPage)pageContainerManaged).getForm().getInput(AutoComplete.class, ActorScopeRequest.FIELD_SCOPES).setValue(null);
+						((AbstractEntityEditPageContainerManagedImpl<?>)pageContainerManaged).getForm().getInput(AutoComplete.class, ActorScopeRequest.FIELD_SCOPES)
+							.setValue(null);
 					}
 				});
 			}else if(ActorScopeRequest.FIELD_SCOPES.equals(fieldName)) {
@@ -136,7 +132,7 @@ public class ActorScopeRequestRecordPage extends AbstractEntityEditPageContainer
 						Arguments<Scope> arguments = new Arguments<Scope>()
 								.queryIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC).flags(ScopeQuerier.FLAG_SEARCH)
 								.filterFieldsValues(ScopeQuerier.PARAMETER_NAME_SEARCH,autoComplete.get__queryString__());
-						Object typeIdentifier = FieldHelper.readSystemIdentifier(AbstractInput.getValue(((ActorScopeRequestRecordPage)pageContainerManaged)
+						Object typeIdentifier = FieldHelper.readSystemIdentifier(AbstractInput.getValue(((AbstractEntityEditPageContainerManagedImpl<?>)pageContainerManaged)
 								.getForm().getInput(SelectOneCombo.class, ActorScopeRequest.FIELD_SCOPE_TYPE)));
 						if(typeIdentifier != null)
 							arguments.filterFieldsValues(ScopeQuerier.PARAMETER_NAME_TYPE_IDENTIFIER,typeIdentifier);
@@ -164,6 +160,9 @@ public class ActorScopeRequestRecordPage extends AbstractEntityEditPageContainer
 					}
 								
 				});
+			}else if(ActorScopeRequest.FIELD_COMMENT.equals(fieldName)) {
+				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Commentaire");
+				
 			}
 			return map;
 		}

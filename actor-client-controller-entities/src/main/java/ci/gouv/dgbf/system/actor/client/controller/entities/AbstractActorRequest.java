@@ -16,7 +16,6 @@ import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputC
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceOneRadio;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputTextarea;
 
-import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -38,7 +37,7 @@ public abstract class AbstractActorRequest extends AbstractDataIdentifiableSyste
 	@Input @InputTextarea protected String comment;	
 	@Input @InputTextarea protected String processingComment;
 	
-	protected Boolean ignoreExisting,ignore;
+	protected Boolean ignoreExisting;
 	
 	public static final String FIELD_ACTOR = "actor";
 	public static final String FIELD_ACTORS = "actors";
