@@ -768,14 +768,20 @@
 		<!-- My Account  -->
 		
 		<navigation-case>
-			<from-outcome>myAccountActorScopeRequestRecordView</from-outcome>
-			<to-view-id>/private/myaccount/request/scope/record.jsf</to-view-id>
+			<from-outcome>myAccountScopeListView</from-outcome>
+			<to-view-id>/private/myaccount/scope/list.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		
 		<navigation-case>
 			<from-outcome>myAccountActorScopeRequestListView</from-outcome>
-			<to-view-id>/private/myaccount/request/scope/list.jsf</to-view-id>
+			<to-view-id>/private/myaccount/scope/request/list.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>myAccountActorScopeRequestRecordView</from-outcome>
+			<to-view-id>/private/myaccount/scope/request/record.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		

@@ -93,7 +93,8 @@ public class ScopeFilterController extends AbstractFilterController implements S
 	}
 	
 	private void enableValueChangeListeners() {
-		actorSelectOne.enableAjaxItemSelect();
+		if(actorSelectOne != null)
+			actorSelectOne.enableAjaxItemSelect();
 	}
 	
 	private void selectByValueSystemIdentifier() {

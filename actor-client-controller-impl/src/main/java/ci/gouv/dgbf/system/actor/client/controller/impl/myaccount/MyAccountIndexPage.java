@@ -1,6 +1,8 @@
 package ci.gouv.dgbf.system.actor.client.controller.impl.myaccount;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,9 +19,39 @@ import lombok.Setter;
 @Named @ViewScoped @Getter @Setter
 public class MyAccountIndexPage extends AbstractLoggedInUserPage implements MyAccountTheme, Serializable {
 
+	private Layout layout;
+	
+	@Override
+	protected void __listenPostConstruct__() {
+		super.__listenPostConstruct__();
+		buildLayout();
+	}
+	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Module de gestion de votre compte";
+		return actor.getCode()+" - "+actor.getNames();
+	}
+	
+	private void buildLayout() {
+		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
+		
+		cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE
+				,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
+			@Override
+			public Object buildControl(Cell cell) {
+				return MyAccountActorScopeRequestListPage.buildDataTable();
+			}
+		},Cell.FIELD_WIDTH,12));
+		
+		cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE
+				,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
+			@Override
+			public Object buildControl(Cell cell) {
+				return MyAccountActorScopeRequestListPage.buildDataTable();
+			}
+		},Cell.FIELD_WIDTH,12));		
+		
+		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
 	}
 	
 	/**/

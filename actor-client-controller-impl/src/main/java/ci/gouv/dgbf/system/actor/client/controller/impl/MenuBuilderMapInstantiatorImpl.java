@@ -45,7 +45,10 @@ public class MenuBuilderMapInstantiatorImpl extends org.cyk.utility.client.contr
 				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Bordereaux").setCommandableNavigationIdentifier("requestDispatchSlipIndexView"))
 				
 				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Demande domaines").setCommandableNavigationIdentifier("actorScopeRequestListView"))
-				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Demande domaines par acteur connecté").setCommandableNavigationIdentifier("myAccountActorScopeRequestListView"))
+				
+				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Mes visibilitiés").setCommandableNavigationIdentifier("myAccountScopeListView"))
+				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Mes Demandes de visibilités").setCommandableNavigationIdentifier("myAccountActorScopeRequestListView"))
+							
 				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Traiter Demandes domaines").setCommandableNavigationIdentifier("actorScopeRequestProcessManyView"))
 				
 				//.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Domaines d'administration").setCommandableNavigationIdentifier("clusterListView"))

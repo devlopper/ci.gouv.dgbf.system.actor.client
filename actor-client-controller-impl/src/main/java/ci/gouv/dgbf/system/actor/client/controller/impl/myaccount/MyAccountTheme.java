@@ -49,6 +49,14 @@ public interface MyAccountTheme {
 						item.setOutcome("myAccountProfileView");
 						model.addElement(item);
 						
+						item = new DefaultMenuItem("Mes visibilités");
+						item.setOutcome("myAccountScopeListView");
+						model.addElement(item);
+						
+						item = new DefaultMenuItem("Mes demandes de visibilités");
+						item.setOutcome("myAccountActorScopeRequestListView");
+						model.addElement(item);
+											
 						arguments.put(Tab.FIELD_MENU, Menu.build(Menu.FIELD_MODEL,model));
 					}
 					return arguments;

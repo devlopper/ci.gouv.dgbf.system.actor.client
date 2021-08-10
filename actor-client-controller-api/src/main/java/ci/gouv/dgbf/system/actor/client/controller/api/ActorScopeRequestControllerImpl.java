@@ -58,6 +58,7 @@ public class ActorScopeRequestControllerImpl extends AbstractControllerEntityImp
 				continue;
 			actorScopeRequest.setGranted(yesChoice.equals(actorScopeRequest.getGrantedAsString()));
 			ActorScopeRequestBusiness.validate(actorScopeRequest.getGranted(), actorScopeRequest.getProcessingComment());
+			actorScopeRequest.setActorAsString(SessionManager.getInstance().getUserName());
 			if(processables == null)
 				processables = new ArrayList<>();
 			processables.add(actorScopeRequest);
