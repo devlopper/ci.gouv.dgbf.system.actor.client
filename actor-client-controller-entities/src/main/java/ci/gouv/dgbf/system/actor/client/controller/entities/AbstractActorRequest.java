@@ -38,7 +38,7 @@ public abstract class AbstractActorRequest extends AbstractDataIdentifiableSyste
 	@Input @InputTextarea protected String comment;	
 	@Input @InputTextarea protected String processingComment;
 	
-	protected Boolean ignoreExisting;
+	protected Boolean ignoreExisting,ignore;
 	
 	public static final String FIELD_ACTOR = "actor";
 	public static final String FIELD_ACTORS = "actors";

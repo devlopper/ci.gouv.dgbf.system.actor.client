@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"      
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:cyk="http://primefaces.jsf.web.utility.cyk.org">
+	
+	<cyk:page value="#{actorScopeRequestProcessManyPage}">
+    	<ui:define name="centerCenter">
+    		<p:importConstants type="ci.gouv.dgbf.system.actor.client.controller.impl.actor.ActorScopeRequestProcessManyPage" var="ActorScopeRequestProcessManyPage"/>
+    		<ui:decorate template="#{primefacesHelper.getModelTemplate(actorScopeRequestProcessManyPage.layout)}">
+    			<ui:param name="layout" value="#{actorScopeRequestProcessManyPage.layout}"/>
+    			<ui:define name="cell0">
+    				<ui:decorate template="/layout/__cell__.xhtml">
+    					<ui:define name="cellControl">
+    						<ui:fragment rendered="#{actorScopeRequestProcessManyPage.dataTable == null}">
+    							<ui:decorate template="#{primefacesHelper.getModelTemplate(cell.builderRunningControl)}">
+		    						<ui:param name="graphicImage" value="#{cell.builderRunningControl}"/>
+		    					</ui:decorate>
+    							<!--
+    							<ui:include src="/layout/__cellControl__.xhtml"/>
+    							-->
+    						</ui:fragment>
+    						 						
+    						<ui:decorate template="#{primefacesHelper.getModelTemplate(actorScopeRequestProcessManyPage.dataTable)}">
+		    					<ui:param name="dataTable" value="#{actorScopeRequestProcessManyPage.dataTable}"/>
+		    					<ui:define name="collectionColumnsAfterRowIndexBodies">
+									<ui:fragment rendered="#{column.inputable}">
+										<ui:fragment rendered="#{column.fieldName eq 'grantedAsString'}">
+											<!--
+											<p:selectOneRadio binding="#{actorScopeRequestProcessManyPage.grantedInput.binding}" />
+											<p:message for="#{actorScopeRequestProcessManyPage.grantedInput.binding.id}" />
+											-->
+											<p:selectOneRadio id="grantedAsString" value="#{record.grantedAsString}">
+												<f:selectItem itemLabel="Oui" itemValue="#{ActorScopeRequestProcessManyPage.GRANTED_CHOICE_YES}"/>
+												<f:selectItem itemLabel="Non" itemValue="#{ActorScopeRequestProcessManyPage.GRANTED_CHOICE_NO}"/>
+												<f:selectItem itemLabel="Ignorer" itemValue="#{ActorScopeRequestProcessManyPage.GRANTED_CHOICE_IGNORE}"/>
+											</p:selectOneRadio>
+											<p:message for="grantedAsString" />
+			    						</ui:fragment>
+			    						
+									</ui:fragment>
+									<ui:fragment rendered="#{column.inputable}">
+										<ui:fragment rendered="#{column.fieldName eq 'processingComment'}">
+											<p:inputTextarea binding="#{actorScopeRequestProcessManyPage.processingCommentInput.binding}" />
+											<p:message for="#{actorScopeRequestProcessManyPage.processingCommentInput.binding.id}" />
+			    						</ui:fragment>
+			    						
+									</ui:fragment>
+		    						<ui:fragment rendered="#{not column.inputable}">
+		    							<ui:decorate template="/collection/datatable/__columns__bodies.xhtml" />
+		    						</ui:fragment>
+								</ui:define>
+							</ui:decorate>
+	
+    					</ui:define>
+    				</ui:decorate>	  					
+				</ui:define>				
+    		</ui:decorate>
+    	</ui:define>
+    </cyk:page>
+</html>

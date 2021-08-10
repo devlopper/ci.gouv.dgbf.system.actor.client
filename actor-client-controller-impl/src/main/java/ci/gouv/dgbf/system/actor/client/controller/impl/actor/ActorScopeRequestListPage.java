@@ -118,12 +118,11 @@ public class ActorScopeRequestListPage extends AbstractEntityListPageContainerMa
 		@Override
 		public Map<Object, Object> getColumnArguments(AbstractDataTable dataTable, String fieldName) {
 			Map<Object, Object> map = super.getColumnArguments(dataTable, fieldName);
-			map.put(Column.ConfiguratorImpl.FIELD_EDITABLE, Boolean.FALSE);
 			if(ActorScopeRequest.FIELD_ACTOR_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Acteur");
 			}else if(ActorScopeRequest.FIELD_SCOPE_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Domaine");
-			}else if(ActorScopeRequest.FIELD_GRANTED_AS_STRING.equals(fieldName)) {
+			}else if(ActorScopeRequest.FIELD_GRANTED_AS_STRING.equals(fieldName) || ActorScopeRequest.FIELD_GRANTED.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Accordé");
 			}
 			return map;

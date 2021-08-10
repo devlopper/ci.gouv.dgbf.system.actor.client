@@ -28,6 +28,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.ActorScopeRequest;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Scope;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
 import ci.gouv.dgbf.system.actor.client.controller.impl.scope.ScopeFilterController;
+import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorScopeRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
@@ -47,6 +48,8 @@ public class ActorScopeRequestFilterController extends AbstractFilterController 
 	private Scope scopeInitial;
 	private Boolean processedInitial;
 	private Boolean grantedInitial;
+	
+	private String actionIdentifier;
 	
 	public ActorScopeRequestFilterController() {
 		actorInitial = ScopeFilterController.getActorFromRequestParameter();
@@ -243,9 +246,12 @@ public class ActorScopeRequestFilterController extends AbstractFilterController 
 		if(actorInitial == null)
 			columnsFieldsNames.add(ActorScopeRequest.FIELD_ACTOR_STRING);
 		if(scopeInitial == null)
-			columnsFieldsNames.add(ActorScopeRequest.FIELD_SCOPE_STRING);
+			columnsFieldsNames.add(ActorScopeRequest.FIELD_SCOPE_STRING);		
 		//if(grantedInitial == null)
 			columnsFieldsNames.add(ActorScopeRequest.FIELD_GRANTED_AS_STRING);
+		if(ActorScopeRequestBusiness.PROCESS.equals(actionIdentifier)) {
+			columnsFieldsNames.add(ActorScopeRequest.FIELD_PROCESSING_COMMENT);
+		}
 		return columnsFieldsNames;
 	}
 	
