@@ -21,6 +21,8 @@ public class ActorScopeRequest extends AbstractActorRequest implements Serializa
 	
 	@Input @InputChoice(choices = @Choices(count = Count.ALL)) @InputChoiceOneCombo
 	private ScopeType scopeType;
+	private String scopeTypeAsString;	
+	
 	private Scope scope;
 	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceMany @InputChoiceManyAutoComplete
 	private Collection<Scope> scopes;
@@ -46,4 +48,6 @@ public class ActorScopeRequest extends AbstractActorRequest implements Serializa
 	public static final String FIELD_SCOPE = "scope";
 	public static final String FIELD_SCOPES = "scopes";
 	public static final String FIELD_SCOPE_STRING = "scopeAsString";
+	
+	public static final String FIELD_SCOPE_TYPE_AS_STRING = "scopeTypeAsString";
 }

@@ -90,6 +90,8 @@ public class ActorScopeRequestFilterController extends AbstractFilterController 
 			return grantedInitial;
 		if(FIELD_SCOPE_TYPE_SELECT_ONE.equals(fieldName))
 			return scopeTypeInitial;
+		if(FIELD_SCOPE_SELECT_ONE.equals(fieldName))
+			return scopeInitial;
 		if(FIELD_ACTOR_SELECT_ONE.equals(fieldName))
 			return actorInitial;
 		return super.getInputSelectOneInitialValue(fieldName, klass);
@@ -257,6 +259,8 @@ public class ActorScopeRequestFilterController extends AbstractFilterController 
 		Collection<String> columnsFieldsNames = new ArrayList<>();
 		if(actorInitial == null)
 			columnsFieldsNames.add(ActorScopeRequest.FIELD_ACTOR_STRING);
+		if(scopeTypeInitial == null)
+			columnsFieldsNames.add(ActorScopeRequest.FIELD_SCOPE_TYPE_AS_STRING);
 		if(scopeInitial == null)
 			columnsFieldsNames.add(ActorScopeRequest.FIELD_SCOPE_STRING);		
 		//if(grantedInitial == null)

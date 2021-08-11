@@ -787,7 +787,7 @@
 		
 		<navigation-case>
 			<from-outcome>myAccountIndexView</from-outcome>
-			<to-view-id>/mon_compte</to-view-id>
+			<to-view-id>/private/myaccount/index.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		

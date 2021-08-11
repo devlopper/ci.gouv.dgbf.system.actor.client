@@ -36,19 +36,16 @@ public interface MyAccountTheme {
 						model.addElement(item);
 						*/
 						
-						arguments.put(Tab.FIELD_MENU, Menu.build(Menu.FIELD_MODEL,model));
-					}else if(MENU_ITEM_REQUESTS.equals(name)) {
-						arguments.put(Tab.FIELD_ICON, "fa fa-file");
-						MenuModel model = new DefaultMenuModel();
+						DefaultMenuItem item = null;
 						
-						DefaultMenuItem item = new DefaultMenuItem("Demandes");
+						/*item = new DefaultMenuItem("Demandes");
 						item.setOutcome("myAccountRequestsView");
 						model.addElement(item);
 						
 						item = new DefaultMenuItem("Profile");
 						item.setOutcome("myAccountProfileView");
 						model.addElement(item);
-						
+						*/
 						item = new DefaultMenuItem("Mes visibilités");
 						item.setOutcome("myAccountScopeListView");
 						model.addElement(item);
@@ -56,6 +53,31 @@ public interface MyAccountTheme {
 						item = new DefaultMenuItem("Mes demandes de visibilités");
 						item.setOutcome("myAccountActorScopeRequestListView");
 						model.addElement(item);
+						
+						arguments.put(Tab.FIELD_MENU, Menu.build(Menu.FIELD_MODEL,model));
+					}else if(MENU_ITEM_REQUESTS.equals(name)) {
+						arguments.put(Tab.FIELD_ICON, "fa fa-file");
+						MenuModel model = new DefaultMenuModel();
+						
+						DefaultMenuItem item = null;
+						
+						/*item = new DefaultMenuItem("Demandes");
+						item.setOutcome("myAccountRequestsView");
+						model.addElement(item);
+						
+						item = new DefaultMenuItem("Profile");
+						item.setOutcome("myAccountProfileView");
+						model.addElement(item);
+						*/
+						/*
+						item = new DefaultMenuItem("Mes visibilités");
+						item.setOutcome("myAccountScopeListView");
+						model.addElement(item);
+						
+						item = new DefaultMenuItem("Mes demandes de visibilités");
+						item.setOutcome("myAccountActorScopeRequestListView");
+						model.addElement(item);
+						*/
 											
 						arguments.put(Tab.FIELD_MENU, Menu.build(Menu.FIELD_MODEL,model));
 					}

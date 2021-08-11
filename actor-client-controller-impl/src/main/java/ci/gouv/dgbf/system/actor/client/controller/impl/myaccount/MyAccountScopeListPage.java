@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
@@ -33,21 +34,27 @@ public class MyAccountScopeListPage extends AbstractEntityListPageContainerManag
 	@Override
 	protected void __listenBeforePostConstruct__() {
 		super.__listenBeforePostConstruct__();
-		filterController = new ScopeFilterController();
+		filterController = instantiateFilterController();
+	}
+	
+	public static ScopeFilterController instantiateFilterController() {
+		ScopeFilterController filterController = new ScopeFilterController();
 		filterController.setActorInitial(__inject__(ActorController.class).getLoggedIn());
-		filterController.setScopeTypeInitial(EntityReader.getInstance().readOne(ScopeType.class, new Arguments<ScopeType>()
+		if(filterController.getScopeTypeInitial() == null)
+			filterController.setScopeTypeInitial(EntityReader.getInstance().readOne(ScopeType.class, new Arguments<ScopeType>()
 				.queryIdentifier(ScopeTypeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE).filterFieldsValues(ScopeTypeQuerier.PARAMETER_NAME_CODE
 						,ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_SECTION)));
-		if( !((HttpServletRequest)__getRequest__()).getParameterMap().containsKey(Scope.FIELD_VISIBLE) )
+		HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+		if( !request.getParameterMap().containsKey(Scope.FIELD_VISIBLE) )
 			filterController.setVisibleInitial(Boolean.TRUE);
 		filterController.ignore(ScopeFilterController.FIELD_ACTOR_SELECT_ONE);
+		return filterController;
 	}
 	
 	@Override
 	protected DataTable __buildDataTable__() {
-		DataTable dataTable = buildDataTable(ScopeFilterController.class,filterController,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER
-				,new LazyDataModelListenerImpl().setFilterController(filterController),ScopeListPage.class,MyAccountScopeListPage.class
-				,ScopeListPage.OUTCOME,OUTCOME);
+		DataTable dataTable = buildDataTable(DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER
+				,new LazyDataModelListenerImpl().setFilterController(filterController));
 		return dataTable;
 	}
 	
@@ -61,6 +68,8 @@ public class MyAccountScopeListPage extends AbstractEntityListPageContainerManag
 	public static DataTable buildDataTable(Map<Object,Object> arguments) {
 		if(arguments == null)
 			arguments = new HashMap<>();
+		MapHelper.writeByKeyDoNotOverride(arguments, ScopeListPage.class,MyAccountScopeListPage.class);
+		MapHelper.writeByKeyDoNotOverride(arguments, ScopeListPage.OUTCOME,OUTCOME);
 		DataTable dataTable = ScopeListPage.buildDataTable(arguments);
 		return dataTable;
 	}

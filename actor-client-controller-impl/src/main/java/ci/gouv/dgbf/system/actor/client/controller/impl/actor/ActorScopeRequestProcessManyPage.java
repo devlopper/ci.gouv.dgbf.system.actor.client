@@ -57,7 +57,7 @@ public class ActorScopeRequestProcessManyPage extends AbstractPageContainerManag
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return filterController.generateWindowTitleValue("Traitement des demandes de domaines");
+		return filterController.generateWindowTitleValue("Traitement des demandes de visibilités");
 	}
 	
 	@Override

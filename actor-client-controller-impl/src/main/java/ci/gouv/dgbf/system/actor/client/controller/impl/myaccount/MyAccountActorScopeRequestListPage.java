@@ -29,15 +29,20 @@ public class MyAccountActorScopeRequestListPage extends AbstractEntityListPageCo
 	@Override
 	protected void __listenBeforePostConstruct__() {
 		super.__listenBeforePostConstruct__();
-		filterController = new ActorScopeRequestFilterController();
+		filterController = instantiateFilterController();
+	}
+	
+	public static ActorScopeRequestFilterController instantiateFilterController() {
+		ActorScopeRequestFilterController filterController = new ActorScopeRequestFilterController();
 		filterController.setActorInitial(__inject__(ActorController.class).getLoggedIn())/*.ignore(ActorScopeRequestFilterController.FIELD_ACTOR_SELECT_ONE)*/;
 		filterController.setRenderType(AbstractFilterController.RenderType.NONE);
+		return filterController;
 	}
 	
 	@Override
 	protected DataTable __buildDataTable__() {
 		DataTable dataTable = buildDataTable(ActorScopeRequestFilterController.class,filterController,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER
-				,new LazyDataModelListenerImpl().setFilterController(filterController),ActorScopeRequestListPage.class,MyAccountActorScopeRequestListPage.class);
+				,new LazyDataModelListenerImpl().setFilterController(filterController));
 		return dataTable;
 	}
 	
@@ -51,6 +56,7 @@ public class MyAccountActorScopeRequestListPage extends AbstractEntityListPageCo
 	public static DataTable buildDataTable(Map<Object,Object> arguments) {
 		if(arguments == null)
 			arguments = new HashMap<>();
+		MapHelper.writeByKeyDoNotOverride(arguments, ActorScopeRequestListPage.class,MyAccountActorScopeRequestListPage.class);
 		DataTable dataTable = ActorScopeRequestListPage.buildDataTable(arguments);
 		return dataTable;
 	}

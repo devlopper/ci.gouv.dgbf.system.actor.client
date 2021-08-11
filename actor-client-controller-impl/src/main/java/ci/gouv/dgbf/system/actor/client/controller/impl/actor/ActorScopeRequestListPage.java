@@ -126,8 +126,10 @@ public class ActorScopeRequestListPage extends AbstractEntityListPageContainerMa
 			Map<Object, Object> map = super.getColumnArguments(dataTable, fieldName);
 			if(ActorScopeRequest.FIELD_ACTOR_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Acteur");
+			}else if(ActorScopeRequest.FIELD_SCOPE_TYPE_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Type de visibilité");
 			}else if(ActorScopeRequest.FIELD_SCOPE_STRING.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Domaine");
+				map.put(Column.FIELD_HEADER_TEXT, "Visibilité");
 			}else if(ActorScopeRequest.FIELD_GRANTED_AS_STRING.equals(fieldName) || ActorScopeRequest.FIELD_GRANTED.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Accordé");
 			}else if(ActorScopeRequest.FIELD_PROCESSING_COMMENT.equals(fieldName)) {
@@ -167,7 +169,7 @@ public class ActorScopeRequestListPage extends AbstractEntityListPageContainerMa
 		public Arguments<ActorScopeRequest> instantiateArguments(LazyDataModel<ActorScopeRequest> lazyDataModel) {
 			Arguments<ActorScopeRequest> arguments = super.instantiateArguments(lazyDataModel);
 			//if( ((ActorScopeRequestFilterController)filterController).getGranted() == null )
-				arguments.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScopeRequest.FIELDS_ACTOR_AS_STRING_SCOPE_AS_STRING_GRANTED_AND_GRANTED_AS_STRING);
+				arguments.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScopeRequest.FIELDS_ACTOR_AS_STRING_SCOPE_TYPE_AS_STRING_SCOPE_AS_STRING_GRANTED_AND_GRANTED_AS_STRING);
 			return arguments;
 		}
 	
