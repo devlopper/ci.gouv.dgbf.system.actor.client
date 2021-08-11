@@ -56,7 +56,7 @@ public class ActorScopeRequestListPage extends AbstractEntityListPageContainerMa
 	protected String __getWindowTitleValue__() {
 		if(filterController == null)
 			return super.__getWindowTitleValue__();
-		return filterController.generateWindowTitleValue("Domaines");
+		return filterController.generateWindowTitleValue(ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScopeRequest.LABEL);
 	}
 		
 	public static DataTable buildDataTable(Map<Object,Object> arguments) {
@@ -125,11 +125,11 @@ public class ActorScopeRequestListPage extends AbstractEntityListPageContainerMa
 		public Map<Object, Object> getColumnArguments(AbstractDataTable dataTable, String fieldName) {
 			Map<Object, Object> map = super.getColumnArguments(dataTable, fieldName);
 			if(ActorScopeRequest.FIELD_ACTOR_STRING.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Acteur");
+				map.put(Column.FIELD_HEADER_TEXT, ci.gouv.dgbf.system.actor.server.persistence.entities.Actor.LABEL);
 			}else if(ActorScopeRequest.FIELD_SCOPE_TYPE_AS_STRING.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Type de visibilité");
+				map.put(Column.FIELD_HEADER_TEXT, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.LABEL);
 			}else if(ActorScopeRequest.FIELD_SCOPE_STRING.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Visibilité");
+				map.put(Column.FIELD_HEADER_TEXT, ci.gouv.dgbf.system.actor.server.persistence.entities.Scope.LABEL);
 			}else if(ActorScopeRequest.FIELD_GRANTED_AS_STRING.equals(fieldName) || ActorScopeRequest.FIELD_GRANTED.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Accordé");
 			}else if(ActorScopeRequest.FIELD_PROCESSING_COMMENT.equals(fieldName)) {
