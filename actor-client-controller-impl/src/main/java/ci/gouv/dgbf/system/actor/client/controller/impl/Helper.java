@@ -14,13 +14,19 @@ import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.object.ReadListener;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.JsfController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.ajax.Ajax;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoiceOne;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AutoComplete;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.InputText;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu;
@@ -29,20 +35,102 @@ import org.cyk.utility.controller.EntityReader;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 
+import ci.gouv.dgbf.system.actor.client.controller.api.ActorController;
 import ci.gouv.dgbf.system.actor.client.controller.api.FunctionController;
+import ci.gouv.dgbf.system.actor.client.controller.api.ScopeTypeController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.FunctionType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Profile;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ProfileType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestDispatchSlip;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Scope;
+import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Service;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileTypeQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 
 public interface Helper {
+	
+	static InputText buildSearchInputText(String string) {
+		InputText input = InputText.build(SelectOneCombo.FIELD_VALUE,string,InputText.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Rechercher");
+		return input;
+	}
+	
+	static AutoComplete buildActorAutoComplete(Actor actor) {
+		AutoComplete input = AutoComplete.build(AutoComplete.FIELD_VALUE,actor,AutoComplete.FIELD_ENTITY_CLASS,Actor.class,AutoComplete.FIELD_LISTENER
+				,new AutoComplete.Listener.AbstractImpl<Actor>() {
+			@Override
+			public Collection<Actor> complete(AutoComplete autoComplete) {
+				return __inject__(ActorController.class).search(autoComplete.get__queryString__());
+			}
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.Actor.LABEL);
+		input.setReadItemLabelListener(new ReadListener() {		
+			@Override
+			public Object read(Object object) {
+				if(object == null)
+					return null;
+				return ((Actor)object).getCode()+" - "+((Actor)object).getNames();
+			}
+		});
+		//input.setValueAsFirstChoiceIfNull();
+		return input;
+	}
+	
+	static SelectOneCombo buildScopeTypeSelectOneCombo(ScopeType scopeType,Object container,String scopeSelectOneFieldName) {
+		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,scopeType,SelectOneCombo.FIELD_CHOICE_CLASS,ScopeType.class,SelectOneCombo.FIELD_LISTENER
+				,new SelectOneCombo.Listener.AbstractImpl<ScopeType>() {
+			@Override
+			protected Collection<ScopeType> __computeChoices__(AbstractInputChoice<ScopeType> input,Class<?> entityClass) {
+				Collection<ScopeType> choices = __inject__(ScopeTypeController.class).readRequestable();
+				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
+				return choices;
+			}
+			@Override
+			public void select(AbstractInputChoiceOne input, ScopeType scopeType) {
+				super.select(input, scopeType);
+				if(container != null && StringHelper.isNotBlank(scopeSelectOneFieldName))
+					((AbstractInput<?>)FieldHelper.read(container, scopeSelectOneFieldName)).setValue(null);
+			}
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.Scope.LABEL);
+		input.setValueAsFirstChoiceIfNull();
+		return input;
+	}
+	
+	static AutoComplete buildScopeAutoComplete(Scope scope,Object container,String scopeSelectOneFieldName) {
+		AutoComplete input = AutoComplete.build(AutoComplete.FIELD_VALUE,scope,AutoComplete.FIELD_ENTITY_CLASS,Scope.class,AutoComplete.FIELD_LISTENER
+				,new AutoComplete.Listener.AbstractImpl<Scope>() {
+			@Override
+			public Collection<Scope> complete(AutoComplete autoComplete) {
+				if(container == null || StringHelper.isBlank(scopeSelectOneFieldName))
+					return null;
+				Object scopeType = AbstractInput.getValue((AbstractInput<?>) FieldHelper.read(container, scopeSelectOneFieldName));
+				if(scopeType == null)
+					return null;
+				Arguments<Scope> arguments = new Arguments<Scope>()
+					.queryIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC).flags(ScopeQuerier.FLAG_SEARCH)
+					.filterFieldsValues(ScopeQuerier.PARAMETER_NAME_SEARCH,autoComplete.get__queryString__()
+							,ScopeQuerier.PARAMETER_NAME_TYPE_IDENTIFIER,FieldHelper.readSystemIdentifier(scopeType));
+				return EntityReader.getInstance().readMany(Scope.class, arguments);
+			}
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.Scope.LABEL);
+		return input;
+	}
+	
+	static SelectOneCombo buildProcessedSelectOneCombo(Boolean processed) {
+		return SelectOneCombo.buildUnknownYesNoOnly((Boolean) processed, "Traité");
+	}
+	
+	static SelectOneCombo buildGrantedSelectOneCombo(Boolean granted) {
+		return SelectOneCombo.buildUnknownYesNoOnly((Boolean) granted, "Accordé");
+	}
+	
+	static SelectOneCombo buildVisibleSelectOneCombo(Boolean visible) {
+		return SelectOneCombo.buildUnknownYesNoOnly((Boolean) visible, "Visible");
+	}
 	
 	static String formatTitleRequestDispatchSlip(RequestDispatchSlip requestDispatchSlip,Action action) {
 		if(requestDispatchSlip == null)

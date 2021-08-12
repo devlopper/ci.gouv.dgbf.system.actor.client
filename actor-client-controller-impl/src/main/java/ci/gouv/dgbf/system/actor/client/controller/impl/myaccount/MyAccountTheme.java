@@ -59,7 +59,7 @@ public interface MyAccountTheme {
 						arguments.put(Tab.FIELD_ICON, "fa fa-file");
 						MenuModel model = new DefaultMenuModel();
 						
-						DefaultMenuItem item = null;
+						/*DefaultMenuItem item = null;
 						
 						/*item = new DefaultMenuItem("Demandes");
 						item.setOutcome("myAccountRequestsView");

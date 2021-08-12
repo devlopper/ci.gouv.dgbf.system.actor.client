@@ -96,7 +96,7 @@ public class ActorScopeRequestListPage extends AbstractEntityListPageContainerMa
 					return __inject__(ActorScopeRequestController.class).cancel((ActorScopeRequest)action.readArgument());			
 				}
 			});
-		}else {
+		}else if(ActorScopeRequestListPage.class.equals(pageClass)) {			
 			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate(MenuItem.FIELD___OUTCOME__,ActorScopeRequestRecordPage.OUTCOME);
 			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog(ActorScopeRequestProcessPage.OUTCOME, MenuItem.FIELD_VALUE,"Traiter", MenuItem.FIELD_ICON,"fa fa-eye");
 			dataTable.addRecordMenuItemByArgumentsExecuteFunction("Accepter","fa fa-check",new AbstractAction.Listener.AbstractImpl() {
@@ -128,6 +128,7 @@ public class ActorScopeRequestListPage extends AbstractEntityListPageContainerMa
 				map.put(Column.FIELD_HEADER_TEXT, ci.gouv.dgbf.system.actor.server.persistence.entities.Actor.LABEL);
 			}else if(ActorScopeRequest.FIELD_SCOPE_TYPE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.LABEL);
+				map.put(Column.FIELD_WIDTH, "300");
 			}else if(ActorScopeRequest.FIELD_SCOPE_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, ci.gouv.dgbf.system.actor.server.persistence.entities.Scope.LABEL);
 			}else if(ActorScopeRequest.FIELD_GRANTED_AS_STRING.equals(fieldName) || ActorScopeRequest.FIELD_GRANTED.equals(fieldName)) {

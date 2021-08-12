@@ -14,7 +14,6 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
@@ -26,14 +25,14 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityE
 import org.cyk.utility.controller.Arguments;
 import org.cyk.utility.controller.EntityReader;
 
+import ci.gouv.dgbf.system.actor.client.controller.api.ActorController;
 import ci.gouv.dgbf.system.actor.client.controller.api.ActorScopeRequestController;
+import ci.gouv.dgbf.system.actor.client.controller.api.ScopeTypeController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ActorScopeRequest;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Scope;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -55,7 +54,7 @@ public class ActorScopeRequestRecordPage extends AbstractEntityEditPageContainer
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Demande de domaines";
+		return ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScopeRequest.LABEL;
 	}
 	
 	/**/
@@ -103,13 +102,12 @@ public class ActorScopeRequestRecordPage extends AbstractEntityEditPageContainer
 		public Map<Object, Object> getInputArguments(Form form, String fieldName) {
 			Map<Object, Object> map = super.getInputArguments(form, fieldName);
 			if(ActorScopeRequest.FIELD_SCOPE_TYPE.equals(fieldName)) {
-				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Type de domaine");
+				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.LABEL);
 				map.put(SelectOneCombo.FIELD_CHOICE_CLASS,ScopeType.class);
 				map.put(SelectOneCombo.FIELD_LISTENER,new SelectOneCombo.Listener.AbstractImpl<ScopeType>() {
 					@Override
 					protected Collection<ScopeType> __computeChoices__(AbstractInputChoice<ScopeType> input,Class<?> entityClass) {
-						Collection<ScopeType> choices = EntityReader.getInstance().readMany(ScopeType.class, new Arguments<ScopeType>()
-								.queryIdentifier(ScopeTypeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC));
+						Collection<ScopeType> choices = __inject__(ScopeTypeController.class).readRequestable();
 						CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 						return choices;
 					}
@@ -121,7 +119,7 @@ public class ActorScopeRequestRecordPage extends AbstractEntityEditPageContainer
 					}
 				});
 			}else if(ActorScopeRequest.FIELD_SCOPES.equals(fieldName)) {
-				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Domaines");
+				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, ci.gouv.dgbf.system.actor.server.persistence.entities.Scope.LABEL);
 				map.put(AbstractInput.FIELD_REQUIRED, Boolean.TRUE);
 				map.put(AutoComplete.FIELD_MULTIPLE,Boolean.TRUE);
 				map.put(AutoComplete.FIELD_ENTITY_CLASS,Scope.class);
@@ -129,20 +127,20 @@ public class ActorScopeRequestRecordPage extends AbstractEntityEditPageContainer
 						,new AutoComplete.Listener.AbstractImpl<Scope>() {
 					@Override
 					public Collection<Scope> complete(AutoComplete autoComplete) {
-						Arguments<Scope> arguments = new Arguments<Scope>()
-								.queryIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC).flags(ScopeQuerier.FLAG_SEARCH)
-								.filterFieldsValues(ScopeQuerier.PARAMETER_NAME_SEARCH,autoComplete.get__queryString__());
 						Object typeIdentifier = FieldHelper.readSystemIdentifier(AbstractInput.getValue(((AbstractEntityEditPageContainerManagedImpl<?>)pageContainerManaged)
 								.getForm().getInput(SelectOneCombo.class, ActorScopeRequest.FIELD_SCOPE_TYPE)));
-						if(typeIdentifier != null)
-							arguments.filterFieldsValues(ScopeQuerier.PARAMETER_NAME_TYPE_IDENTIFIER,typeIdentifier);
-						Collection<Scope> choices = EntityReader.getInstance().readMany(Scope.class, arguments);
-						return choices;
+						if(typeIdentifier == null)
+							return null;
+						Arguments<Scope> arguments = new Arguments<Scope>()
+								.queryIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC).flags(ScopeQuerier.FLAG_SEARCH)
+								.filterFieldsValues(ScopeQuerier.PARAMETER_NAME_SEARCH,autoComplete.get__queryString__()
+										,ScopeQuerier.PARAMETER_NAME_TYPE_IDENTIFIER,typeIdentifier);
+						return EntityReader.getInstance().readMany(Scope.class, arguments);
 					}
 								
 				});
 			}else if(ActorScopeRequest.FIELD_ACTORS.equals(fieldName)) {
-				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Acteurs");
+				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, ci.gouv.dgbf.system.actor.server.persistence.entities.Actor.LABEL);
 				map.put(AbstractInput.FIELD_REQUIRED, Boolean.TRUE);
 				map.put(AutoComplete.FIELD_MULTIPLE,Boolean.TRUE);
 				map.put(AutoComplete.FIELD_ENTITY_CLASS,Actor.class);
@@ -150,13 +148,7 @@ public class ActorScopeRequestRecordPage extends AbstractEntityEditPageContainer
 						,new AutoComplete.Listener.AbstractImpl<Actor>() {
 					@Override
 					public Collection<Actor> complete(AutoComplete autoComplete) {
-						Arguments<Actor> arguments = new Arguments<Actor>()
-								.queryIdentifier(ActorQuerier.QUERY_IDENTIFIER_READ_DYNAMIC).flags(ActorQuerier.FLAG_SEARCH)
-								.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Actor.FIELDS_CODE_NAMES_ELECTRONIC_MAIL_ADDRESS);
-						if(StringHelper.isNotBlank(autoComplete.get__queryString__()))
-							arguments.filterFieldsValues(ActorQuerier.PARAMETER_NAME_SEARCH,autoComplete.get__queryString__());
-						Collection<Actor> choices = EntityReader.getInstance().readMany(Actor.class, arguments);
-						return choices;
+						return __inject__(ActorController.class).search(autoComplete.get__queryString__());
 					}
 								
 				});

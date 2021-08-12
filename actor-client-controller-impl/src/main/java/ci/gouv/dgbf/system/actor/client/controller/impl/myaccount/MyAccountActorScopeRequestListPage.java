@@ -33,8 +33,9 @@ public class MyAccountActorScopeRequestListPage extends AbstractEntityListPageCo
 	}
 	
 	public static ActorScopeRequestFilterController instantiateFilterController() {
-		ActorScopeRequestFilterController filterController = new ActorScopeRequestFilterController();
-		filterController.setActorInitial(__inject__(ActorController.class).getLoggedIn())/*.ignore(ActorScopeRequestFilterController.FIELD_ACTOR_SELECT_ONE)*/;
+		ActorScopeRequestFilterController filterController = ActorScopeRequestFilterController.instantiate(__inject__(ActorController.class).getLoggedIn()
+				, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_SECTION);
+		//filterController.setActorInitial()/*.ignore(ActorScopeRequestFilterController.FIELD_ACTOR_SELECT_ONE)*/;
 		filterController.setRenderType(AbstractFilterController.RenderType.NONE);
 		return filterController;
 	}
@@ -58,6 +59,7 @@ public class MyAccountActorScopeRequestListPage extends AbstractEntityListPageCo
 			arguments = new HashMap<>();
 		MapHelper.writeByKeyDoNotOverride(arguments, ActorScopeRequestListPage.class,MyAccountActorScopeRequestListPage.class);
 		DataTable dataTable = ActorScopeRequestListPage.buildDataTable(arguments);
+		dataTable.setAreColumnsChoosable(Boolean.FALSE);
 		return dataTable;
 	}
 		

@@ -219,7 +219,7 @@ public class ActorListPageNEW extends AbstractEntityListPageContainerManagedImpl
 		public Arguments<Actor> instantiateArguments(LazyDataModel<Actor> lazyDataModel) {
 			Arguments<Actor> arguments = super.instantiateArguments(lazyDataModel);
 			arguments.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities
-					.Actor.FIELDS_CODE_FIRST_NAME_LAST_NAMES_SECTION_ADMINISTRATIVE_UNIT_ADMINISTRATIVE_FUNCTION,ci.gouv.dgbf.system.actor.server.persistence.entities
+					.Actor.FIELDS_CODE_FIRST_NAME_LAST_NAMES_ELECTRONIC_MAIL_ADDRESS_SECTION_ADMINISTRATIVE_UNIT_ADMINISTRATIVE_FUNCTION,ci.gouv.dgbf.system.actor.server.persistence.entities
 					.Actor.FIELD_PROFILES_CODES);
 			return arguments;
 		}

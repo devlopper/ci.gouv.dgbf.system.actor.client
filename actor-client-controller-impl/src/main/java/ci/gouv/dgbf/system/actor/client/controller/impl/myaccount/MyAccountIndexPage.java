@@ -81,17 +81,8 @@ public class MyAccountIndexPage extends AbstractPageContainerManagedImpl impleme
 	}
 	
 	private void buildTabMyVisibilities(Collection<Map<Object,Object>> cellsMaps) {
-		scopeFilterController = MyAccountScopeListPage.instantiateFilterController();
-		scopeFilterController.build();
-		scopeFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(OUTCOME).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_MY_VISIBILITIES);			
-		cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
-			@Override
-			public Object buildControl(Cell cell) {
-				return MyAccountScopeListPage.buildDataTable(DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER
-						,new MyAccountScopeListPage.LazyDataModelListenerImpl().setFilterController(scopeFilterController),ScopeListPage.class,MyAccountScopeListPage.class
-						,ScopeListPage.OUTCOME,OUTCOME);
-			}
-		},Cell.FIELD_WIDTH,12));		
+		buildMyVisibilitiesDataTable(cellsMaps);
+		builMyRequestsDataTable(cellsMaps);	
 	}
 	
 	private void buildTabMyProfiles(Collection<Map<Object,Object>> cellsMaps) {
@@ -105,6 +96,30 @@ public class MyAccountIndexPage extends AbstractPageContainerManagedImpl impleme
 	}
 	
 	private void buildTabMyRequests(Collection<Map<Object,Object>> cellsMaps) {
+		builMyRequestsDataTable(cellsMaps);	
+	}
+	
+	private void buildLayout(Collection<Map<Object,Object>> cellsMaps) {
+		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
+	}
+	
+	/**/
+	
+	private void buildMyVisibilitiesDataTable(Collection<Map<Object,Object>> cellsMaps) {
+		scopeFilterController = MyAccountScopeListPage.instantiateFilterController();
+		scopeFilterController.build();
+		scopeFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(OUTCOME).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_MY_VISIBILITIES);			
+		cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
+			@Override
+			public Object buildControl(Cell cell) {
+				return MyAccountScopeListPage.buildDataTable(DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER
+						,new MyAccountScopeListPage.LazyDataModelListenerImpl().setFilterController(scopeFilterController),ScopeListPage.class,MyAccountScopeListPage.class
+						,ScopeListPage.OUTCOME,OUTCOME,DataTable.ConfiguratorImpl.FIELD_TITLE_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.Scope.LABEL);
+			}
+		},Cell.FIELD_WIDTH,12));
+	}
+	
+	private void builMyRequestsDataTable(Collection<Map<Object,Object>> cellsMaps) {
 		actorScopeRequestFilterController = MyAccountActorScopeRequestListPage.instantiateFilterController();
 		actorScopeRequestFilterController.build();
 		actorScopeRequestFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(OUTCOME).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_MY_VISIBILITIES);
@@ -112,14 +127,10 @@ public class MyAccountIndexPage extends AbstractPageContainerManagedImpl impleme
 			@Override
 			public Object buildControl(Cell cell) {
 				return MyAccountActorScopeRequestListPage.buildDataTable(DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER
-						,new MyAccountActorScopeRequestListPage.LazyDataModelListenerImpl().setFilterController(actorScopeRequestFilterController));
+						,new MyAccountActorScopeRequestListPage.LazyDataModelListenerImpl().setFilterController(actorScopeRequestFilterController)
+						,DataTable.ConfiguratorImpl.FIELD_TITLE_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScopeRequest.LABEL);
 			}
-		},Cell.FIELD_WIDTH,12));
-		
-	}
-	
-	private void buildLayout(Collection<Map<Object,Object>> cellsMaps) {
-		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
+		},Cell.FIELD_WIDTH,12));		
 	}
 	
 	/**/

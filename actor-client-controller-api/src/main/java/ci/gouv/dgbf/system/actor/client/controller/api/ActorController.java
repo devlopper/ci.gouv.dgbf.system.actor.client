@@ -1,12 +1,14 @@
 package ci.gouv.dgbf.system.actor.client.controller.api;
 
-import org.cyk.utility.controller.Arguments;
-import org.cyk.utility.controller.EntityReader;
+import java.util.Collection;
+
 import org.cyk.utility.__kernel__.mapping.MappingHelper;
-import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.session.SessionHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.ControllerEntity;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntityReader;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
@@ -43,4 +45,6 @@ public interface ActorController extends ControllerEntity<Actor> {
 		return EntityReader.getInstance().readOne(Actor.class, ActorQuerier.QUERY_IDENTIFIER_READ_BY_CODE, ActorQuerier.PARAMETER_NAME_CODE,username);
 		//readByBusinessIdentifier(username);
 	}
+	
+	Collection<Actor> search(String string);
 }
