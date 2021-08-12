@@ -28,7 +28,7 @@ public class MyAccountScopeListPage extends AbstractEntityListPageContainerManag
 	@Override
 	protected void __listenBeforePostConstruct__() {
 		super.__listenBeforePostConstruct__();
-		filterController = instantiateFilterController();
+		filterController = instantiateFilterController().setScopeTypeRequestable(Boolean.TRUE);
 	}
 	
 	public static ScopeFilterController instantiateFilterController() {

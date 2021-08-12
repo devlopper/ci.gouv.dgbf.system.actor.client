@@ -80,12 +80,13 @@ public interface Helper {
 		return input;
 	}
 	
-	static SelectOneCombo buildScopeTypeSelectOneCombo(ScopeType scopeType,Object container,String scopeSelectOneFieldName) {
+	static SelectOneCombo buildScopeTypeSelectOneCombo(ScopeType scopeType,Boolean scopeTypeRequestable,Object container,String scopeSelectOneFieldName) {
 		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,scopeType,SelectOneCombo.FIELD_CHOICE_CLASS,ScopeType.class,SelectOneCombo.FIELD_LISTENER
 				,new SelectOneCombo.Listener.AbstractImpl<ScopeType>() {
 			@Override
 			protected Collection<ScopeType> __computeChoices__(AbstractInputChoice<ScopeType> input,Class<?> entityClass) {
-				Collection<ScopeType> choices = __inject__(ScopeTypeController.class).readRequestable();
+				Collection<ScopeType> choices = Boolean.TRUE.equals(scopeTypeRequestable) ? __inject__(ScopeTypeController.class).readRequestable()
+						: __inject__(ScopeTypeController.class).read();
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
 			}

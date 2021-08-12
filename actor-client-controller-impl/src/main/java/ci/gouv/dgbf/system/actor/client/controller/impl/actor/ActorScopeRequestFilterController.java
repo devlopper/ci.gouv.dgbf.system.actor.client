@@ -45,6 +45,7 @@ public class ActorScopeRequestFilterController extends AbstractFilterController 
 	private Boolean processedInitial;
 	private Boolean grantedInitial;
 	
+	private Boolean scopeTypeRequestable;
 	private String actionIdentifier;
 	
 	public ActorScopeRequestFilterController() {
@@ -118,7 +119,7 @@ public class ActorScopeRequestFilterController extends AbstractFilterController 
 		if(FIELD_ACTOR_SELECT_ONE.equals(fieldName))
 			return Helper.buildActorAutoComplete((Actor) value);
 		if(FIELD_SCOPE_TYPE_SELECT_ONE.equals(fieldName))
-			return Helper.buildScopeTypeSelectOneCombo((ScopeType) value,this,FIELD_SCOPE_SELECT_ONE);
+			return Helper.buildScopeTypeSelectOneCombo((ScopeType) value,scopeTypeRequestable,this,FIELD_SCOPE_SELECT_ONE);
 		if(FIELD_SCOPE_SELECT_ONE.equals(fieldName))
 			return Helper.buildScopeAutoComplete((Scope) value,this,FIELD_SCOPE_TYPE_SELECT_ONE);
 		if(FIELD_PROCESSED_SELECT_ONE.equals(fieldName))

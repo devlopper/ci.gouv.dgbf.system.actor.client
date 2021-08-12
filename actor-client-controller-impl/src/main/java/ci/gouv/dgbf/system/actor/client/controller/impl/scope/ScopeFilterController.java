@@ -39,17 +39,21 @@ import lombok.experimental.Accessors;
 @Getter @Setter @Accessors(chain=true)
 public class ScopeFilterController extends AbstractFilterController implements Serializable {
 
-	private InputText codeInputText,nameInputText;
+	private InputText searchInputText,codeInputText,nameInputText;
 	private SelectOneCombo scopeTypeSelectOne,visibleSelectOne;
 	private AutoComplete actorSelectOne;
 	
 	private ScopeType scopeTypeInitial;
 	private Boolean visibleInitial;
+	private String searchInitial;
 	private String codeInitial;
 	private String nameInitial;
 	private Actor actorInitial;
 	
+	private Boolean scopeTypeRequestable;
+	
 	public ScopeFilterController() {
+		searchInitial = WebController.getInstance().getRequestParameter(buildParameterName(FIELD_SEARCH_INPUT_TEXT));
 		codeInitial = WebController.getInstance().getRequestParameter(buildParameterName(FIELD_CODE_INPUT_TEXT));
 		nameInitial = WebController.getInstance().getRequestParameter(buildParameterName(FIELD_NAME_INPUT_TEXT));
 		scopeTypeInitial = getScopeTypeFromRequestParameter(null);
@@ -82,8 +86,9 @@ public class ScopeFilterController extends AbstractFilterController implements S
 	
 	@Override
 	protected void buildInputs() {
-		buildInputText(FIELD_CODE_INPUT_TEXT);
-		buildInputText(FIELD_NAME_INPUT_TEXT);
+		buildInputText(FIELD_SEARCH_INPUT_TEXT);
+		//buildInputText(FIELD_CODE_INPUT_TEXT);
+		//buildInputText(FIELD_NAME_INPUT_TEXT);
 		buildInputSelectOne(FIELD_SCOPE_TYPE_SELECT_ONE, ScopeType.class);
 		buildInputSelectOne(FIELD_VISIBLE_SELECT_ONE, Boolean.class);
 		buildInputSelectOne(FIELD_ACTOR_SELECT_ONE, Actor.class);
@@ -114,6 +119,8 @@ public class ScopeFilterController extends AbstractFilterController implements S
 	
 	@Override
 	protected String buildParameterName(String fieldName, AbstractInput<?> input) {
+		if(FIELD_SEARCH_INPUT_TEXT.equals(fieldName) || input == searchInputText)
+			return Scope.FIELD_SEARCH;
 		if(FIELD_CODE_INPUT_TEXT.equals(fieldName) || input == codeInputText)
 			return Scope.FIELD_CODE;
 		if(FIELD_NAME_INPUT_TEXT.equals(fieldName) || input == nameInputText)
@@ -132,12 +139,10 @@ public class ScopeFilterController extends AbstractFilterController implements S
 	
 	@Override
 	protected AbstractInput<?> buildInput(String fieldName, Object value) {
-		if(FIELD_CODE_INPUT_TEXT.equals(fieldName))
-			return buildCodeInputText((String) value);
-		if(FIELD_NAME_INPUT_TEXT.equals(fieldName))
-			return buildNameInputText((String) value);
+		if(FIELD_SEARCH_INPUT_TEXT.equals(fieldName))
+			return Helper.buildSearchInputText((String) value);
 		if(FIELD_SCOPE_TYPE_SELECT_ONE.equals(fieldName))
-			return Helper.buildScopeTypeSelectOneCombo((ScopeType) value,null,null);
+			return Helper.buildScopeTypeSelectOneCombo((ScopeType) value,scopeTypeRequestable,null,null);
 		if(FIELD_VISIBLE_SELECT_ONE.equals(fieldName))
 			return Helper.buildVisibleSelectOneCombo((Boolean) value);
 		if(FIELD_ACTOR_SELECT_ONE.equals(fieldName))
@@ -145,74 +150,12 @@ public class ScopeFilterController extends AbstractFilterController implements S
 		return null;
 	}
 	
-	private InputText buildCodeInputText(String code) {
-		InputText input = InputText.build(SelectOneCombo.FIELD_VALUE,code,InputText.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Code");	
-		return input;
-	}
-	
-	private InputText buildNameInputText(String name) {
-		InputText input = InputText.build(SelectOneCombo.FIELD_VALUE,name,InputText.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Libellé");	
-		return input;
-	}
-	/*
-	private SelectOneCombo buildScopeTypeSelectOne(ScopeType scopeType) {
-		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,scopeType,SelectOneCombo.FIELD_CHOICE_CLASS,ScopeType.class,SelectOneCombo.FIELD_LISTENER
-				,new SelectOneCombo.Listener.AbstractImpl<ScopeType>() {
-			@Override
-			protected Collection<ScopeType> __computeChoices__(AbstractInputChoice<ScopeType> input,Class<?> entityClass) {
-				Collection<ScopeType> choices = EntityReader.getInstance().readMany(ScopeType.class, new Arguments<ScopeType>()
-						.queryIdentifier(ScopeTypeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC));
-				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
-				return choices;
-			}
-			@Override
-			public void select(AbstractInputChoiceOne input, ScopeType scopeType) {
-				super.select(input, scopeType);
-				
-			}
-		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Type");
-		input.setValueAsFirstChoiceIfNull();
-		return input;
-	}
-	
-	private SelectOneCombo buildVisibleSelectOne(Boolean visible) {
-		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,visible,SelectOneCombo.ConfiguratorImpl.FIELD_CHOICES_ARE_UNKNOWN_YES_NO_ONLY,Boolean.TRUE
-				,SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Visible");
-		//input.setValueAsFirstChoiceIfNull();
-		return input;
-	}
-	
-	private AutoComplete buildActorSelectOne(Actor actor) {
-		AutoComplete input = AutoComplete.build(AutoComplete.FIELD_VALUE,actor,AutoComplete.FIELD_ENTITY_CLASS,Actor.class,AutoComplete.FIELD_LISTENER
-				,new AutoComplete.Listener.AbstractImpl<Actor>() {
-			@Override
-			public Collection<Actor> complete(AutoComplete autoComplete) {
-				Collection<Actor> choices = EntityReader.getInstance().readMany(Actor.class, new Arguments<Actor>()
-						.queryIdentifier(ActorQuerier.QUERY_IDENTIFIER_READ_DYNAMIC).flags(ActorQuerier.FLAG_SEARCH)
-						.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Actor.FIELDS_CODE_NAMES_ELECTRONIC_MAIL_ADDRESS)
-						.filterFieldsValues(ActorQuerier.PARAMETER_NAME_SEARCH,autoComplete.get__queryString__()));
-				return choices;
-			}
-						
-		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Acteur");
-		input.setReadItemLabelListener(new ReadListener() {		
-			@Override
-			public Object read(Object object) {
-				if(object == null)
-					return null;
-				return ((Actor)object).getCode()+" - "+((Actor)object).getNames();
-			}
-		});
-		//input.setValueAsFirstChoiceIfNull();
-		return input;
-	}
-	*/
 	@Override
 	protected Collection<Map<Object, Object>> buildLayoutCells() {
 		Collection<Map<Object, Object>> cellsMaps = new ArrayList<>();
 		if(scopeTypeSelectOne != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeTypeSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeTypeSelectOne,Cell.FIELD_WIDTH,8));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeTypeSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,2));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeTypeSelectOne,Cell.FIELD_WIDTH,7));
 		}		
 		if(visibleSelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,visibleSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
@@ -220,18 +163,13 @@ public class ScopeFilterController extends AbstractFilterController implements S
 		}
 		
 		if(actorSelectOne != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,actorSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,actorSelectOne,Cell.FIELD_WIDTH,11));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,actorSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,2));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,actorSelectOne,Cell.FIELD_WIDTH,10));
 		}
 		
-		if(codeInputText != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,codeInputText.getOutputLabel(),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,codeInputText,Cell.FIELD_WIDTH,11));	
-		}
-		
-		if(nameInputText != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,nameInputText.getOutputLabel(),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,nameInputText,Cell.FIELD_WIDTH,11));
+		if(searchInputText != null) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,searchInputText.getOutputLabel(),Cell.FIELD_WIDTH,2));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,searchInputText,Cell.FIELD_WIDTH,10));	
 		}
 		
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,filterCommandButton,Cell.FIELD_WIDTH,12));	
@@ -263,6 +201,10 @@ public class ScopeFilterController extends AbstractFilterController implements S
 		return columnsFieldsNames;
 	}
 	
+	public String getSearch() {
+		return (String)AbstractInput.getValue(searchInputText);
+	}
+	
 	public String getCode() {
 		return (String)AbstractInput.getValue(codeInputText);
 	}
@@ -285,10 +227,8 @@ public class ScopeFilterController extends AbstractFilterController implements S
 	
 	@Override
 	protected String buildParameterName(AbstractInput<?> input) {
-		if(codeInputText == input)
-			return Scope.FIELD_CODE;
-		if(nameInputText == input)
-			return Scope.FIELD_NAME;
+		if(searchInputText == input)
+			return Scope.FIELD_SEARCH;
 		if(visibleSelectOne == input)
 			return Scope.FIELD_VISIBLE;
 		return super.buildParameterName(input);
@@ -300,8 +240,7 @@ public class ScopeFilterController extends AbstractFilterController implements S
 		filter = Filter.Dto.addFieldIfValueNotNull(ScopeQuerier.PARAMETER_NAME_TYPE_CODE, FieldHelper.readBusinessIdentifier(Boolean.TRUE.equals(initial) ? controller.scopeTypeInitial : controller.getScopeType()), filter);
 		filter = Filter.Dto.addFieldIfValueNotNull(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, FieldHelper.readBusinessIdentifier(Boolean.TRUE.equals(initial) ? controller.actorInitial : controller.getActor()), filter);
 		filter = Filter.Dto.addFieldIfValueNotNull(ScopeQuerier.PARAMETER_NAME_VISIBLE, Boolean.TRUE.equals(initial) ? controller.visibleInitial : controller.getVisible(), filter);
-		filter = Filter.Dto.addFieldIfValueNotBlank(ScopeQuerier.PARAMETER_NAME_CODE, Boolean.TRUE.equals(initial) ? controller.codeInitial : controller.getCode(), filter);
-		filter = Filter.Dto.addFieldIfValueNotBlank(ScopeQuerier.PARAMETER_NAME_NAME, Boolean.TRUE.equals(initial) ? controller.nameInitial : controller.getName(), filter);
+		filter = Filter.Dto.addFieldIfValueNotBlank(ScopeQuerier.PARAMETER_NAME_SEARCH, Boolean.TRUE.equals(initial) ? controller.searchInitial : controller.getSearch(), filter);
 		return filter;
 	}
 	
@@ -326,6 +265,7 @@ public class ScopeFilterController extends AbstractFilterController implements S
 	
 	/**/
 	
+	public static final String FIELD_SEARCH_INPUT_TEXT = "searchInputText";
 	public static final String FIELD_CODE_INPUT_TEXT = "codeInputText";
 	public static final String FIELD_NAME_INPUT_TEXT = "nameInputText";
 	public static final String FIELD_SCOPE_TYPE_SELECT_ONE = "scopeTypeSelectOne";

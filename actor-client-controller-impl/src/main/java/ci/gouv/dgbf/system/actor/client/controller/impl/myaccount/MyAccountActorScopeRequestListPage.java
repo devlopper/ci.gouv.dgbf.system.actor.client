@@ -29,13 +29,12 @@ public class MyAccountActorScopeRequestListPage extends AbstractEntityListPageCo
 	@Override
 	protected void __listenBeforePostConstruct__() {
 		super.__listenBeforePostConstruct__();
-		filterController = instantiateFilterController();
+		filterController = instantiateFilterController().setScopeTypeRequestable(Boolean.TRUE);
 	}
 	
 	public static ActorScopeRequestFilterController instantiateFilterController() {
 		ActorScopeRequestFilterController filterController = ActorScopeRequestFilterController.instantiate(__inject__(ActorController.class).getLoggedIn()
 				, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_SECTION);
-		//filterController.setActorInitial()/*.ignore(ActorScopeRequestFilterController.FIELD_ACTOR_SELECT_ONE)*/;
 		filterController.setRenderType(AbstractFilterController.RenderType.NONE);
 		return filterController;
 	}

@@ -247,6 +247,8 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 			Arguments<Scope> arguments = super.instantiateArguments(lazyDataModel);
 			if( ((ScopeFilterController)filterController).getVisible() == null )
 				arguments.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Scope.FIELDS_VISIBLE_AND_VISIBLE_AS_STRING);
+			if(((ScopeFilterController)filterController).getScopeType() == null )
+				arguments.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Scope.FIELD_TYPE_AS_STRING);
 			return arguments;
 		}
 	
