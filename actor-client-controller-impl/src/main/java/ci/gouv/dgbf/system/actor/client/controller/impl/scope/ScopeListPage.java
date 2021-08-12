@@ -36,6 +36,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.ActorScope;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Scope;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
+import ci.gouv.dgbf.system.actor.client.controller.impl.actor.ActorListPageNEW;
 import ci.gouv.dgbf.system.actor.client.controller.impl.myaccount.MyAccountScopeListPage;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
@@ -65,7 +66,7 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 	protected String __getWindowTitleValue__() {
 		if(filterController == null)
 			return super.__getWindowTitleValue__();
-		return filterController.generateWindowTitleValue("Domaines");
+		return filterController.generateWindowTitleValue(ci.gouv.dgbf.system.actor.server.persistence.entities.Scope.LABEL);
 	}
 		
 	public static DataTable buildDataTable(Map<Object,Object> arguments) {
@@ -98,6 +99,7 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 		
 		final ScopeFilterController finalFilterController = filterController;
 		if(pageClass == null || ScopeListPage.class.equals(pageClass)) {
+			ActorListPageNEW.addScopesRecordMenuItems(dataTable, finalFilterController.asMap());
 			if(filterController.getVisible() != null) {
 				if(filterController.getVisible()) {
 					addVisibleRecordMenuItem(dataTable, finalFilterController, Boolean.TRUE);

@@ -106,7 +106,7 @@ public class MyAccountIndexPage extends AbstractPageContainerManagedImpl impleme
 	/**/
 	
 	private void buildMyVisibilitiesDataTable(Collection<Map<Object,Object>> cellsMaps) {
-		scopeFilterController = MyAccountScopeListPage.instantiateFilterController();
+		scopeFilterController = MyAccountScopeListPage.instantiateFilterController().setScopeTypeRequestable(Boolean.TRUE);
 		scopeFilterController.build();
 		scopeFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(OUTCOME).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_MY_VISIBILITIES);			
 		cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
@@ -120,7 +120,7 @@ public class MyAccountIndexPage extends AbstractPageContainerManagedImpl impleme
 	}
 	
 	private void builMyRequestsDataTable(Collection<Map<Object,Object>> cellsMaps) {
-		actorScopeRequestFilterController = MyAccountActorScopeRequestListPage.instantiateFilterController();
+		actorScopeRequestFilterController = MyAccountActorScopeRequestListPage.instantiateFilterController().setScopeTypeRequestable(Boolean.TRUE);
 		actorScopeRequestFilterController.build();
 		actorScopeRequestFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(OUTCOME).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_MY_VISIBILITIES);
 		cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {

@@ -3,6 +3,7 @@ package ci.gouv.dgbf.system.actor.client.controller.impl.scope;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -232,6 +233,16 @@ public class ScopeFilterController extends AbstractFilterController implements S
 		if(visibleSelectOne == input)
 			return Scope.FIELD_VISIBLE;
 		return super.buildParameterName(input);
+	}
+	
+	@Override
+	public Map<String, List<String>> asMap() {
+		Map<String, List<String>> map = new HashMap<>();
+		if(scopeTypeInitial != null)
+			map.put(ParameterName.stringify(ScopeType.class), List.of((String)FieldHelper.readSystemIdentifier(scopeTypeInitial)));	
+		if(actorInitial != null)
+			map.put(ParameterName.stringify(Actor.class), List.of((String)FieldHelper.readSystemIdentifier(actorInitial)));		
+		return map;
 	}
 	
 	/**/

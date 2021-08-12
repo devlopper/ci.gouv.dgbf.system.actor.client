@@ -378,6 +378,7 @@ public class ActorFilterController extends AbstractFilterController implements S
 		return super.buildParameterName(input);
 	}
 	
+	@Override
 	public Map<String, List<String>> asMap() {
 		Map<String, List<String>> map = new HashMap<>();
 		if(sectionInitial != null && administrativeUnitInitial == null)

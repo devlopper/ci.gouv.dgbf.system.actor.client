@@ -55,7 +55,7 @@ public class ActorListPageNEW extends AbstractEntityListPageContainerManagedImpl
 	protected String __getWindowTitleValue__() {
 		if(filterController == null)
 			return super.__getWindowTitleValue__();
-		return filterController.generateWindowTitleValue("Acteurs");
+		return filterController.generateWindowTitleValue(ci.gouv.dgbf.system.actor.server.persistence.entities.Actor.LABEL);
 	}
 		
 	public static DataTable buildDataTable(Map<Object,Object> arguments) {
@@ -88,11 +88,7 @@ public class ActorListPageNEW extends AbstractEntityListPageContainerManagedImpl
 		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();
 		
 		final ActorFilterController finalFilterController = filterController;
-		Map<String,List<String>> parameters = finalFilterController.asMap();
-		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog(ActorScopeCreatePage.OUTCOME, MenuItem.FIELD_VALUE,"Assigner domaine"
-				,MenuItem.FIELD___PARAMETERS__,parameters,MenuItem.FIELD_ICON,"fa fa-plus-square");
-		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog(ActorScopeDeletePage.OUTCOME, MenuItem.FIELD_VALUE,"Retirer domaine"
-				,MenuItem.FIELD___PARAMETERS__,parameters,MenuItem.FIELD_ICON,"fa fa-minus-square");
+		addScopesRecordMenuItems(dataTable, finalFilterController.asMap());
 		
 		dataTable.addRecordMenuItemByArgumentsOpenViewInDialog(ActorEditProfilesPage.OUTCOME, MenuItem.FIELD_VALUE,"Modifier Profile(s)", MenuItem.FIELD_ICON,"fa fa-lock");
 		
@@ -107,6 +103,15 @@ public class ActorListPageNEW extends AbstractEntityListPageContainerManagedImpl
 			addVisibleRecordMenuItem(dataTable, finalFilterController, Boolean.FALSE);
 		}
 		return dataTable;
+	}
+	
+	public static void addScopesRecordMenuItems(DataTable dataTable,Map<String,List<String>> parameters) {
+		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog(ActorScopeCreatePage.OUTCOME, MenuItem.FIELD_VALUE
+				,"Assigner "+ci.gouv.dgbf.system.actor.server.persistence.entities.Scope.LABEL
+				,MenuItem.FIELD___PARAMETERS__,parameters,MenuItem.FIELD_ICON,"fa fa-plus-square");
+		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialog(ActorScopeDeletePage.OUTCOME, MenuItem.FIELD_VALUE
+				,"Retirer "+ci.gouv.dgbf.system.actor.server.persistence.entities.Scope.LABEL
+				,MenuItem.FIELD___PARAMETERS__,parameters,MenuItem.FIELD_ICON,"fa fa-minus-square");
 	}
 	
 	private static void addVisibleRecordMenuItem(DataTable dataTable,ActorFilterController filterController,Boolean visible) {
