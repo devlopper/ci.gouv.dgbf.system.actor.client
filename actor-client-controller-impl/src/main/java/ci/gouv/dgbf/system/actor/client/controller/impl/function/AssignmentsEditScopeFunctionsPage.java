@@ -136,7 +136,6 @@ public class AssignmentsEditScopeFunctionsPage extends AbstractPageContainerMana
 		if(StringHelper.isBlank(functionCode) || StringHelper.isBlank(fieldName))
 			return null;
 		Function function = EntityReader.getInstance().readOne(Function.class, FunctionQuerier.QUERY_IDENTIFIER_READ_BY_CODE_FOR_UI,FunctionQuerier.PARAMETER_NAME_CODE, functionCode);
-		//System.out.println("AssignmentsEditPage.buildScopeFunctionAutoComplete() "+functionCode+" ::: "+function);
 		//CollectionHelper.getFirst(assignments.getFunctions().stream().filter(x -> functionCode.equals(x.getCode())).collect(Collectors.toList()));
 		if(function == null)
 			return null;

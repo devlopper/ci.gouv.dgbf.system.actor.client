@@ -34,6 +34,7 @@ public class MyAccountScopeListPage extends AbstractEntityListPageContainerManag
 	public static ScopeFilterController instantiateFilterController() {
 		ScopeFilterController filterController = ScopeFilterController.instantiate(__inject__(ActorController.class).getLoggedIn()
 				, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_SECTION);
+		filterController.setPageClass(MyAccountScopeListPage.class);
 		filterController.ignore(ScopeFilterController.FIELD_ACTOR_SELECT_ONE);
 		return filterController;
 	}

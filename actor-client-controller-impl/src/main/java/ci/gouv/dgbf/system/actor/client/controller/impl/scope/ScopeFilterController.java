@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.cyk.utility.__kernel__.constant.ConstantEmpty;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
@@ -30,6 +31,8 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Scope;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
 import ci.gouv.dgbf.system.actor.client.controller.impl.Helper;
+import ci.gouv.dgbf.system.actor.client.controller.impl.myaccount.MyAccountIndexPage;
+import ci.gouv.dgbf.system.actor.client.controller.impl.myaccount.MyAccountScopeListPage;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
@@ -180,16 +183,26 @@ public class ScopeFilterController extends AbstractFilterController implements S
 	public String generateWindowTitleValue(String prefix) {
 		Collection<String> strings = new ArrayList<>();
 		strings.add(prefix);
-		if(scopeTypeInitial != null) {
-			strings.add(scopeTypeInitial.getName());
-		}
-		if(visibleInitial != null) {
-			strings.add(visibleInitial ? "Visible" : "Non visible");
-		}
-		if(actorInitial != null) {
-			strings.add(actorInitial.getCode()+" - "+actorInitial.getNames());
+		if(MyAccountScopeListPage.class.equals(pageClass) || MyAccountIndexPage.class.equals(pageClass)) {
+			addGenerateWindowTitleValueActorInitial(strings);
+			addGenerateWindowTitleValueScopeTypeInitial(strings);
+		}else {
+			addGenerateWindowTitleValueScopeTypeInitial(strings);
+			addGenerateWindowTitleValueActorInitial(strings);
 		}
 		return StringHelper.concatenate(strings, " | ");
+	}
+	
+	private void addGenerateWindowTitleValueScopeTypeInitial(Collection<String> strings) {
+		if(scopeTypeInitial == null)
+			return;
+		strings.add(scopeTypeInitial.getName()+(visibleInitial == null ? ConstantEmpty.STRING : " "+(visibleInitial ? "Visible" : "Non visible")));
+	}
+	
+	private void addGenerateWindowTitleValueActorInitial(Collection<String> strings) {
+		if(actorInitial == null)
+			return;		
+		strings.add(actorInitial.getCode()+" - "+actorInitial.getNames());		
 	}
 	
 	public Collection<String> generateColumnsNames() {
@@ -249,7 +262,7 @@ public class ScopeFilterController extends AbstractFilterController implements S
 	
 	public static Filter.Dto populateFilter(Filter.Dto filter,ScopeFilterController controller,Boolean initial) {
 		filter = Filter.Dto.addFieldIfValueNotNull(ScopeQuerier.PARAMETER_NAME_TYPE_CODE, FieldHelper.readBusinessIdentifier(Boolean.TRUE.equals(initial) ? controller.scopeTypeInitial : controller.getScopeType()), filter);
-		filter = Filter.Dto.addFieldIfValueNotNull(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, FieldHelper.readBusinessIdentifier(Boolean.TRUE.equals(initial) ? controller.actorInitial : controller.getActor()), filter);
+		filter = Filter.Dto.addFieldIfValueNotNull(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, FieldHelper.readBusinessIdentifier(controller.isIgnored(FIELD_ACTOR_SELECT_ONE) || Boolean.TRUE.equals(initial) ? controller.actorInitial : controller.getActor()), filter);
 		filter = Filter.Dto.addFieldIfValueNotNull(ScopeQuerier.PARAMETER_NAME_VISIBLE, Boolean.TRUE.equals(initial) ? controller.visibleInitial : controller.getVisible(), filter);
 		filter = Filter.Dto.addFieldIfValueNotBlank(ScopeQuerier.PARAMETER_NAME_SEARCH, Boolean.TRUE.equals(initial) ? controller.searchInitial : controller.getSearch(), filter);
 		return filter;

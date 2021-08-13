@@ -84,7 +84,6 @@ public abstract class AbstractRequestEditPage extends AbstractEntityEditPageCont
 	}
 	
 	public static Request getRequestFromParameter(Action action,String actorIdentifier) {
-		System.out.println("AbstractRequestEditPage.getRequestFromParameter() ---- Action : "+action);
 		if(Action.CREATE.equals(action)) {
 			String requestTypeIdentifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(RequestType.class));
 			if(StringHelper.isBlank(requestTypeIdentifier))

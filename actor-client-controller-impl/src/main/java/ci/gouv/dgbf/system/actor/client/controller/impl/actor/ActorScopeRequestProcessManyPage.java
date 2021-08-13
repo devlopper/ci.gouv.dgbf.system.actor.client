@@ -109,7 +109,6 @@ public class ActorScopeRequestProcessManyPage extends AbstractPageContainerManag
 	
 	public static SelectOneRadio buildGrantedInput(Class<?> klass,String inputFieldName) {
 		SelectOneRadio input = SelectOneRadio.build(SelectOneRadio.ConfiguratorImpl.FIELD_CHOICES_ARE_YES_NO_ONLY,Boolean.TRUE);
-		//System.out.println("ActorScopeRequestProcessManyPage.buildGrantedInput() ::::::::::::::::::::::::::::::::::::::::: "+input.getChoices());
 		input.setBindingByDerivation(StringHelper.getVariableNameFrom(klass.getSimpleName())+"."+inputFieldName, "record.granted");
 		return input;
 	}

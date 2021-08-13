@@ -9,7 +9,6 @@ import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 
@@ -29,13 +28,13 @@ public class MyAccountActorScopeRequestListPage extends AbstractEntityListPageCo
 	@Override
 	protected void __listenBeforePostConstruct__() {
 		super.__listenBeforePostConstruct__();
-		filterController = instantiateFilterController().setScopeTypeRequestable(Boolean.TRUE);
+		filterController = instantiateFilterController(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_SECTION).setScopeTypeRequestable(Boolean.TRUE);
 	}
 	
-	public static ActorScopeRequestFilterController instantiateFilterController() {
-		ActorScopeRequestFilterController filterController = ActorScopeRequestFilterController.instantiate(__inject__(ActorController.class).getLoggedIn()
-				, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_SECTION);
-		filterController.setRenderType(AbstractFilterController.RenderType.NONE);
+	public static ActorScopeRequestFilterController instantiateFilterController(String scopeTypeCode) {
+		ActorScopeRequestFilterController filterController = ActorScopeRequestFilterController.instantiate(__inject__(ActorController.class).getLoggedIn(), scopeTypeCode);
+		//filterController.setRenderType(AbstractFilterController.RenderType.NONE);
+		filterController.ignore(ActorScopeRequestFilterController.FIELD_ACTOR_SELECT_ONE);
 		return filterController;
 	}
 	

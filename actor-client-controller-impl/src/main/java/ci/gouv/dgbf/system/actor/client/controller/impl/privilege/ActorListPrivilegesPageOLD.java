@@ -112,7 +112,6 @@ public class ActorListPrivilegesPageOLD extends AbstractActorListPrivilegesOrSco
 						selectedPrivileges.addAll(privileges);
 						LogHelper.logInfo("adding created profile privileges to selected tree with root node "+selectedTree.getValue(), getClass());
 						profilePrivileges.forEach(profilePrivilege -> {
-							System.out.println("PP : "+profilePrivilege);
 							selectedTree.addNodeFromData(profilePrivilege);
 						});
 						LogHelper.logInfo("removing created profile privileges to available tree", getClass());
@@ -145,10 +144,8 @@ public class ActorListPrivilegesPageOLD extends AbstractActorListPrivilegesOrSco
 					
 					@Override
 					public void processSelection(Tree tree,Collection<ProfilePrivilege> profilePrivileges) {
-						System.out.println("ActorListPrivilegesPage.addDataComponent() : "+profilePrivileges);
 						if(CollectionHelper.isEmpty(profilePrivileges))
 							return;
-						System.out.println("IDs : "+profilePrivileges.stream().map(x -> x.getIdentifier()).collect(Collectors.toList()));
 						__inject__(ProfilePrivilegeController.class).deleteMany(profilePrivileges);
 						Collection<Privilege> privileges = profilePrivileges.stream().map(x->x.getPrivilege()).collect(Collectors.toList());
 						if(CollectionHelper.isNotEmpty(selectedPrivileges))							
@@ -157,8 +154,6 @@ public class ActorListPrivilegesPageOLD extends AbstractActorListPrivilegesOrSco
 							availableTree.addNodeFromData(privilege);
 						});
 						for(TreeNode index : tree.getSelection()) {
-							//System.out.println("DATA : "+index.getData());
-							//System.out.println("SELECTABLE ? : "+((Privilege)index.getData()).isSelectable(selectedPrivileges));
 							//if(Boolean.TRUE.equals(((Privilege)index.getData()).isSelectable(selectedPrivileges)))
 							//	continue;
 							index.getParent().getChildren().remove(index);

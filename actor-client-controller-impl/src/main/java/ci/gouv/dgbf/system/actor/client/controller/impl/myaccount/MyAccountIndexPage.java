@@ -11,6 +11,7 @@ import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
@@ -20,6 +21,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu;
 import ci.gouv.dgbf.system.actor.client.controller.api.ActorController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.impl.actor.ActorScopeRequestFilterController;
+import ci.gouv.dgbf.system.actor.client.controller.impl.actor.ActorScopeRequestListPage;
 import ci.gouv.dgbf.system.actor.client.controller.impl.scope.ScopeFilterController;
 import ci.gouv.dgbf.system.actor.client.controller.impl.scope.ScopeListPage;
 import lombok.Getter;
@@ -51,7 +53,14 @@ public class MyAccountIndexPage extends AbstractPageContainerManagedImpl impleme
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Mon compte utilisateur | "+actor.getCode()+" - "+actor.getNames();
+		String prefix = "Mon compte";
+		if(selectedTab.getParameterValue().equals(TAB_MY_VISIBILITIES))
+			return scopeFilterController.generateWindowTitleValue(prefix);
+		//else if(selectedTab.getParameterValue().equals(TAB_MY_PROFILES))
+		//	return "";
+		else if(selectedTab.getParameterValue().equals(TAB_MY_REQUESTS))
+			return actorScopeRequestFilterController.generateWindowTitleValue(prefix);
+		return prefix+" | "+actor.getCode()+" - "+actor.getNames();
 	}
 	
 	/**/
@@ -82,7 +91,7 @@ public class MyAccountIndexPage extends AbstractPageContainerManagedImpl impleme
 	
 	private void buildTabMyVisibilities(Collection<Map<Object,Object>> cellsMaps) {
 		buildMyVisibilitiesDataTable(cellsMaps);
-		builMyRequestsDataTable(cellsMaps);	
+		builMyRequestsDataTable(cellsMaps,ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_SECTION);	
 	}
 	
 	private void buildTabMyProfiles(Collection<Map<Object,Object>> cellsMaps) {
@@ -96,7 +105,7 @@ public class MyAccountIndexPage extends AbstractPageContainerManagedImpl impleme
 	}
 	
 	private void buildTabMyRequests(Collection<Map<Object,Object>> cellsMaps) {
-		builMyRequestsDataTable(cellsMaps);	
+		builMyRequestsDataTable(cellsMaps,null);	
 	}
 	
 	private void buildLayout(Collection<Map<Object,Object>> cellsMaps) {
@@ -119,16 +128,20 @@ public class MyAccountIndexPage extends AbstractPageContainerManagedImpl impleme
 		},Cell.FIELD_WIDTH,12));
 	}
 	
-	private void builMyRequestsDataTable(Collection<Map<Object,Object>> cellsMaps) {
-		actorScopeRequestFilterController = MyAccountActorScopeRequestListPage.instantiateFilterController().setScopeTypeRequestable(Boolean.TRUE);
+	private void builMyRequestsDataTable(Collection<Map<Object,Object>> cellsMaps,String scopeTypeCode) {
+		actorScopeRequestFilterController = MyAccountActorScopeRequestListPage.instantiateFilterController(scopeTypeCode).setScopeTypeRequestable(Boolean.TRUE);
 		actorScopeRequestFilterController.build();
-		actorScopeRequestFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(OUTCOME).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_MY_VISIBILITIES);
+		actorScopeRequestFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(OUTCOME).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_MY_REQUESTS);
 		cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
 			@Override
 			public Object buildControl(Cell cell) {
-				return MyAccountActorScopeRequestListPage.buildDataTable(DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER
+				DataTable dataTable = MyAccountActorScopeRequestListPage.buildDataTable(DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER
 						,new MyAccountActorScopeRequestListPage.LazyDataModelListenerImpl().setFilterController(actorScopeRequestFilterController)
+						,ActorScopeRequestListPage.OUTCOME,OUTCOME
 						,DataTable.ConfiguratorImpl.FIELD_TITLE_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScopeRequest.LABEL);
+				if(selectedTab.getParameterValue().equals(TAB_MY_VISIBILITIES))
+					dataTable.getFilterController().setRenderType(AbstractFilterController.RenderType.NONE);
+				return dataTable;
 			}
 		},Cell.FIELD_WIDTH,12));		
 	}

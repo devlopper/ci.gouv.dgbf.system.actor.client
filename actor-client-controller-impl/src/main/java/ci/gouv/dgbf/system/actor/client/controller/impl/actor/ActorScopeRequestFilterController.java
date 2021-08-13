@@ -225,7 +225,7 @@ public class ActorScopeRequestFilterController extends AbstractFilterController 
 	
 	public static Filter.Dto populateFilter(Filter.Dto filter,ActorScopeRequestFilterController controller,Boolean initial) {
 		filter = Filter.Dto.addFieldIfValueNotNull(ActorScopeRequestQuerier.PARAMETER_NAME_ACTORS_IDENTIFIERS
-				, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.actorInitial : controller.getActor())), filter);
+				, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(controller.isIgnored(FIELD_ACTOR_SELECT_ONE) || Boolean.TRUE.equals(initial) ? controller.actorInitial : controller.getActor())), filter);
 		
 		String scopeIdentifier = (String) FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.scopeInitial : controller.getScope());
 		if(StringHelper.isBlank(scopeIdentifier)) {
