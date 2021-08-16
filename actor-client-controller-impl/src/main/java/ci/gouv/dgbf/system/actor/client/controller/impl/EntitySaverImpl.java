@@ -160,6 +160,8 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 			else if(ScopeFunctionBusiness.DELETE_HOLDERS_AND_ASSISTANTS_BY_HOLDERS_FUNCTIONS_IDENTIFIERS.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ScopeFunctionRepresentation.getProxy());
 			
+			else if(ScopeFunctionBusiness.CREATE_BY_SCOPE_IDENTIFIER_BY_CATEGORY_CODE.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ScopeFunctionRepresentation.getProxy());
 			else if(ScopeFunctionBusiness.SAVE.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ScopeFunctionRepresentation.getProxy());
 			else if(ScopeFunctionBusiness.SAVE_NAME.equals(arguments.getRepresentationArguments().getActionIdentifier()))
@@ -498,6 +500,14 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 		
 		if(arguments != null && ScopeFunctionBusiness.DELETE_HOLDERS_AND_ASSISTANTS_BY_HOLDERS_FUNCTIONS_IDENTIFIERS.equals(arguments.getActionIdentifier()))
 			return ((ScopeFunctionRepresentation)representation).deleteHoldersAndAssistantsByHoldersFunctionsIdentifiers(((ScopeFunctionDto) CollectionHelper.getFirst(creatables)).getFunctionsIdentifiers());
+		
+		if(arguments != null && ScopeFunctionBusiness.CREATE_BY_SCOPE_IDENTIFIER_BY_CATEGORY_CODE.equals(arguments.getActionIdentifier())) {
+			if(CollectionHelper.isEmpty(creatables))
+				throw new RuntimeException("Poste à enregistrer obligatoire");
+			ScopeFunctionDto scopeFunctionDto = (ScopeFunctionDto) CollectionHelper.getFirst(creatables);
+			return ((ScopeFunctionRepresentation)representation).createByScopeIdentifierByCategoryCode(scopeFunctionDto.getScopeIdentifier()
+					, scopeFunctionDto.getCodePrefix(), scopeFunctionDto.getName(), scopeFunctionDto.get__auditWho__());
+		}
 		
 		if(arguments != null && ScopeFunctionBusiness.SAVE.equals(arguments.getActionIdentifier())) {
 			if(CollectionHelper.isEmpty(creatables) && CollectionHelper.isEmpty(updatables))
