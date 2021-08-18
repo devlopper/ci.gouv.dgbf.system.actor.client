@@ -76,6 +76,10 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 			if(ProfilePrivilegeBusiness.SAVE.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ProfilePrivilegeRepresentation.getProxy());
 			
+			else if(ProfileBusiness.CREATE.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ProfileRepresentation.getProxy());
+			else if(ProfileBusiness.UPDATE.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ProfileRepresentation.getProxy());
 			else if(ProfileBusiness.SAVE_PRIVILEGES.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ProfileRepresentation.getProxy());
 			
@@ -416,6 +420,30 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 					actors.add(actor);
 				}
 			return ((ActorRepresentation)representation).deleteProfiles(actors);
+		}
+		
+		if(arguments != null && ProfileBusiness.CREATE.equals(arguments.getActionIdentifier())) {
+			if(CollectionHelper.isEmpty(creatables))
+				throw new RuntimeException("Profiles à créer obligatoire");		
+			ProfileDto profile = (ProfileDto) CollectionHelper.getFirst(creatables);
+			return ((ProfileRepresentation)representation).create(profile.getCode(), profile.getName(), profile.getTypeIdentifier(), profile.getOrderNumber()
+					, profile.getRequestable(), profile.get__auditWho__());
+		}
+		
+		if(arguments != null && ProfileBusiness.UPDATE.equals(arguments.getActionIdentifier())) {
+			if(CollectionHelper.isEmpty(updatables))
+				throw new RuntimeException("Profiles à mettre à jour obligatoire");		
+			ProfileDto profile = (ProfileDto) CollectionHelper.getFirst(updatables);
+			return ((ProfileRepresentation)representation).update(profile.getIdentifier(),profile.getCode(), profile.getName(), profile.getTypeIdentifier()
+					, profile.getOrderNumber(), profile.getRequestable(), profile.get__auditWho__());
+		}
+		
+		if(arguments != null && ProfileBusiness.SAVE.equals(arguments.getActionIdentifier())) {
+			if(CollectionHelper.isEmpty(creatables) && CollectionHelper.isEmpty(updatables))
+				throw new RuntimeException("Profile à enregistrer obligatoire");		
+			ProfileDto profile = (ProfileDto) (CollectionHelper.isEmpty(creatables) ? CollectionHelper.getFirst(updatables) : CollectionHelper.getFirst(creatables));
+			return ((ProfileRepresentation)representation).save(profile.getIdentifier(),profile.getCode(), profile.getName(), profile.getTypeIdentifier()
+					, profile.getOrderNumber(), profile.getRequestable(), profile.get__auditWho__());
 		}
 		
 		if(arguments != null && ProfileBusiness.SAVE_PRIVILEGES.equals(arguments.getActionIdentifier())) {

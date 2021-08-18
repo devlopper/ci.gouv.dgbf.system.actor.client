@@ -10,5 +10,11 @@ import org.cyk.utility.client.controller.AbstractControllerEntityImpl;
 @ApplicationScoped
 public class ProfileControllerImpl extends AbstractControllerEntityImpl<Profile> implements ProfileController,Serializable {
 	private static final long serialVersionUID = 1L;
+
+	@Override
+	public Profile instantiate(String typeIdentifier) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }
