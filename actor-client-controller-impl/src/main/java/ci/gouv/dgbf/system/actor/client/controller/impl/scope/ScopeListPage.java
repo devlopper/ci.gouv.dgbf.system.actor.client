@@ -144,7 +144,7 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 	
 	@Getter @Setter @Accessors(chain=true)
 	public static class DataTableListenerImpl extends DataTable.Listener.AbstractImpl implements Serializable {
-		private ScopeFilterController filterController;		
+		private ScopeFilterController filterController;
 		private ScopeType scopeType;
 		
 		@Override

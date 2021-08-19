@@ -37,6 +37,7 @@ import org.cyk.utility.persistence.query.QueryExecutorArguments;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.ActorController;
 import ci.gouv.dgbf.system.actor.client.controller.api.FunctionController;
+import ci.gouv.dgbf.system.actor.client.controller.api.ProfileTypeController;
 import ci.gouv.dgbf.system.actor.client.controller.api.ScopeTypeController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
@@ -101,14 +102,14 @@ public interface Helper {
 		return input;
 	}
 	
-	static AutoComplete buildScopeAutoComplete(Scope scope,Object container,String scopeSelectOneFieldName) {
+	static AutoComplete buildScopeAutoComplete(Scope scope,Object container,String scopeTypeSelectOneFieldName) {
 		AutoComplete input = AutoComplete.build(AutoComplete.FIELD_VALUE,scope,AutoComplete.FIELD_ENTITY_CLASS,Scope.class,AutoComplete.FIELD_LISTENER
 				,new AutoComplete.Listener.AbstractImpl<Scope>() {
 			@Override
 			public Collection<Scope> complete(AutoComplete autoComplete) {
-				if(container == null || StringHelper.isBlank(scopeSelectOneFieldName))
+				if(container == null || StringHelper.isBlank(scopeTypeSelectOneFieldName))
 					return null;
-				Object scopeType = AbstractInput.getValue((AbstractInput<?>) FieldHelper.read(container, scopeSelectOneFieldName));
+				Object scopeType = AbstractInput.getValue((AbstractInput<?>) FieldHelper.read(container, scopeTypeSelectOneFieldName));
 				if(scopeType == null)
 					return null;
 				Arguments<Scope> arguments = new Arguments<Scope>()
@@ -118,6 +119,49 @@ public interface Helper {
 				return EntityReader.getInstance().readMany(Scope.class, arguments);
 			}
 		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.Scope.LABEL);
+		return input;
+	}
+	
+	static SelectOneCombo buildProfileTypeSelectOneCombo(ProfileType profileType,Boolean profileTypeRequestable,Object container,String profileSelectOneFieldName) {
+		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,profileType,SelectOneCombo.FIELD_CHOICE_CLASS,ScopeType.class,SelectOneCombo.FIELD_LISTENER
+				,new SelectOneCombo.Listener.AbstractImpl<ProfileType>() {
+			@Override
+			protected Collection<ProfileType> __computeChoices__(AbstractInputChoice<ProfileType> input,Class<?> entityClass) {
+				Collection<ProfileType> choices = Boolean.TRUE.equals(profileTypeRequestable) ? __inject__(ProfileTypeController.class).readRequestable()
+						: __inject__(ProfileTypeController.class).read();
+				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
+				return choices;
+			}
+			@Override
+			public void select(AbstractInputChoiceOne input, ProfileType profileType) {
+				super.select(input, profileType);
+				if(container != null && StringHelper.isNotBlank(profileSelectOneFieldName))
+					((AbstractInput<?>)FieldHelper.read(container, profileSelectOneFieldName)).setValue(null);
+			}
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.Profile.LABEL);
+		input.setValueAsFirstChoiceIfNull();
+		return input;
+	}
+	
+	static SelectOneCombo buildProfileSelectOneCombo(Profile profile,Object container,String profileTypeSelectOneFieldName) {
+		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,profile,SelectOneCombo.FIELD_CHOICE_CLASS,Profile.class,SelectOneCombo.FIELD_LISTENER
+				,new SelectOneCombo.Listener.AbstractImpl<Profile>() {
+			@Override
+			protected Collection<Profile> __computeChoices__(AbstractInputChoice<Profile> input,Class<?> entityClass) {
+				if(container == null || StringHelper.isBlank(profileTypeSelectOneFieldName))
+					return null;
+				Object profileType = AbstractInput.getValue((AbstractInput<?>) FieldHelper.read(container, profileTypeSelectOneFieldName));
+				if(profileType == null)
+					return null;
+				Arguments<Profile> arguments = new Arguments<Profile>()
+					.queryIdentifier(ProfileQuerier.QUERY_IDENTIFIER_READ_DYNAMIC)
+					.filterFieldsValues(ProfileQuerier.PARAMETER_NAME_TYPE_IDENTIFIER,FieldHelper.readSystemIdentifier(profileType));
+				Collection<Profile> choices = EntityReader.getInstance().readMany(Profile.class, arguments);
+				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
+				return choices;
+			}
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.Profile.LABEL);
+		input.setValueAsFirstChoiceIfNull();
 		return input;
 	}
 	

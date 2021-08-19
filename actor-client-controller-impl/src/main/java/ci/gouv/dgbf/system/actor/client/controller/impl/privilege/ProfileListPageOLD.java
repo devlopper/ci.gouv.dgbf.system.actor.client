@@ -13,6 +13,7 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.constant.ConstantEmpty;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.WebController;
@@ -28,32 +29,22 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.AbstractMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
-import org.cyk.utility.controller.Arguments;
-import org.cyk.utility.persistence.query.Filter;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Profile;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ProfileType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Service;
 import ci.gouv.dgbf.system.actor.client.controller.impl.Helper;
-import ci.gouv.dgbf.system.actor.client.controller.impl.scope.ProfileFilterController;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Named @ViewScoped @Getter @Setter
-public class ProfileListPage extends AbstractEntityListPageContainerManagedImpl<Profile> implements Serializable {
+public class ProfileListPageOLD extends AbstractEntityListPageContainerManagedImpl<Profile> implements Serializable {
 
-	private ProfileFilterController filterController;
 	private ProfileType profileType;
 	private Boolean isService;
 	private Layout layout;
-	
-	@Override
-	protected void __listenBeforePostConstruct__() {
-		super.__listenBeforePostConstruct__();
-		filterController = new ProfileFilterController();
-	}
 	
 	@Override
 	protected void __listenPostConstruct__() {
@@ -110,28 +101,13 @@ public class ProfileListPage extends AbstractEntityListPageContainerManagedImpl<
 	public static DataTable buildDataTable(Map<Object,Object> arguments) {
 		if(arguments == null)
 			arguments = new HashMap<>();
-		
-		Class<?> pageClass = (Class<?>) arguments.get(ProfileListPage.class);
-		ProfileFilterController filterController = null;		
-		LazyDataModelListenerImpl lazyDataModelListenerImpl = (LazyDataModelListenerImpl) MapHelper.readByKey(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER);
-		if(lazyDataModelListenerImpl == null)
-			arguments.put(DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,lazyDataModelListenerImpl = new LazyDataModelListenerImpl());
-		filterController = (ProfileFilterController) lazyDataModelListenerImpl.getFilterController();
-		if(filterController == null)
-			lazyDataModelListenerImpl.setFilterController(filterController = new ProfileFilterController());
-		lazyDataModelListenerImpl.enableFilterController();
-		String outcome = ValueHelper.defaultToIfBlank((String)MapHelper.readByKey(arguments,OUTCOME),OUTCOME);
-		filterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(outcome);
-		
-		DataTableListenerImpl dataTableListenerImpl = (DataTableListenerImpl) MapHelper.readByKey(arguments, DataTable.FIELD_LISTENER);
-		if(dataTableListenerImpl == null)
-			arguments.put(DataTable.FIELD_LISTENER, dataTableListenerImpl = new DataTableListenerImpl());
-		dataTableListenerImpl.setFilterController(filterController);
-		
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, Profile.class);
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ROWS, 100);
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, CollectionHelper.listOf(Profile.FIELD_CODE,Profile.FIELD_NAME));
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
-		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, filterController.generateColumnsNames());
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl());
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl());
 		DataTable dataTable = DataTable.build(arguments);
 		return dataTable;
 	}
@@ -144,8 +120,6 @@ public class ProfileListPage extends AbstractEntityListPageContainerManagedImpl<
 	
 	@Getter @Setter @Accessors(chain=true)
 	public static class DataTableListenerImpl extends DataTable.Listener.AbstractImpl implements Serializable {
-		private ProfileFilterController filterController;
-		private ProfileType profileType;
 		
 		@Override
 		public Map<Object, Object> getColumnArguments(AbstractDataTable dataTable, String fieldName) {
@@ -153,18 +127,9 @@ public class ProfileListPage extends AbstractEntityListPageContainerManagedImpl<
 			map.put(Column.ConfiguratorImpl.FIELD_EDITABLE, Boolean.FALSE);
 			if(Profile.FIELD_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Code");
-				map.put(Column.FIELD_WIDTH, "150");
+				map.put(Column.FIELD_WIDTH, "200");
 			}else if(Profile.FIELD_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Libellé");
-			}else if(Profile.FIELD_TYPE_AS_STRING.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Type");
-				map.put(Column.FIELD_WIDTH, "100");
-			}else if(Profile.FIELD_REQUESTABLE.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Demandable");
-				map.put(Column.FIELD_WIDTH, "100");
-			}else if(Profile.FIELD_ORDER_NUMBER.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Numéro d'ordre");
-				map.put(Column.FIELD_WIDTH, "50");
 			}else if(Profile.FIELD_PRIVILEGES_AS_STRINGS.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Privilèges");
 			}
@@ -183,14 +148,6 @@ public class ProfileListPage extends AbstractEntityListPageContainerManagedImpl<
 		public Class<? extends AbstractMenu> getRecordMenuClass(AbstractCollection collection) {
 			return ContextMenu.class;
 		}
-		
-		public String getStyleClassByRecord(Object record, Integer recordIndex) {
-			if(record == null || recordIndex == null)
-				return null;
-			if(filterController.getVisible() == null && Boolean.TRUE.equals(((Profile)record).getVisible()))
-				return "cyk-background-highlight";
-			return null;
-		}
 	}
 	
 	@Getter @Setter @Accessors(chain=true)
@@ -204,35 +161,18 @@ public class ProfileListPage extends AbstractEntityListPageContainerManagedImpl<
 		
 		@Override
 		public String getReadQueryIdentifier(LazyDataModel<Profile> lazyDataModel) {
-			return ProfileQuerier.QUERY_IDENTIFIER_READ_DYNAMIC;
+			return profileType == null ? ProfileQuerier.QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_SYSTEME : ProfileQuerier.QUERY_IDENTIFIER_READ_BY_TYPES_CODES;
 		}
 		
 		@Override
 		public Filter.Dto instantiateFilter(LazyDataModel<Profile> lazyDataModel) {
-			Filter.Dto filter = super.instantiateFilter(lazyDataModel);			
-			filter = ProfileFilterController.populateFilter(filter, (ProfileFilterController) filterController,Boolean.FALSE);
+			Filter.Dto filter = super.instantiateFilter(lazyDataModel);
+			if(profileType != null) {
+				if(filter == null)
+					filter = new Filter.Dto();
+				filter.addField(ProfileQuerier.PARAMETER_NAME_TYPES_CODES, List.of(profileType.getCode()));
+			}
 			return filter;
 		}
-		
-		@Override
-		public Arguments<Profile> instantiateArguments(LazyDataModel<Profile> lazyDataModel) {
-			Arguments<Profile> arguments = super.instantiateArguments(lazyDataModel);
-			/*
-			if( ((ProfileFilterController)filterController).getVisible() == null )
-				arguments.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Profile.FIELDS_VISIBLE_AND_VISIBLE_AS_STRING);
-			if(((ProfileFilterController)filterController).getScopeType() == null )
-				arguments.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Profile.FIELD_TYPE_AS_STRING);
-			*/
-			return arguments;
-		}
-	
-		public LazyDataModelListenerImpl enableFilterController(){
-			if(filterController == null)
-				filterController = new ProfileFilterController();
-			filterController.build();
-			return this;
-		}
 	}
-	
-	public static final String OUTCOME = "profileListView";
 }

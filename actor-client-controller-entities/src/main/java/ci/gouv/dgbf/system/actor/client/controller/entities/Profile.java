@@ -24,7 +24,7 @@ public class Profile extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	
 	@Input @InputChoice(choices = @Choices(count = Count.ALL)) @InputChoiceOne @InputChoiceOneCombo
 	private ProfileType type;	
-	private String typeIdentifier;
+	private String typeIdentifier,typeAsString,visibleAsString;
 	
 	private String profileIdentifier;
 	private Collection<String> privilegesAsStrings;
@@ -37,9 +37,16 @@ public class Profile extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	@Input @InputBooleanButton
 	private Boolean requestable;
 	
+	private Boolean visible;
+	
 	public static final String FIELD_TYPE = "type";
+	public static final String FIELD_TYPE_AS_STRING = "typeAsString";
 	public static final String FIELD_TYPE_IDENTIFIER = "typeIdentifier";
 	public static final String FIELD_ORDER_NUMBER = "orderNumber";
 	public static final String FIELD_REQUESTABLE = "requestable";
 	public static final String FIELD_PRIVILEGES_AS_STRINGS = "privilegesAsStrings";
+	
+	public static final String FIELD_VISIBLE = "visible";
+	public static final String FIELD_VISIBLE_AS_STRING = "visibleAsString";
+	public static final String FIELD_SEARCH = "search";
 }
