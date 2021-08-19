@@ -19,13 +19,12 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.Comman
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityEditPageContainerManagedImpl;
 import org.cyk.utility.controller.Arguments;
-import org.cyk.utility.controller.EntityReader;
 import org.cyk.utility.controller.EntitySaver;
 
+import ci.gouv.dgbf.system.actor.client.controller.api.ProfileController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Profile;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ProfileType;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileBusiness;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -42,7 +41,7 @@ public class ProfileEditPage extends AbstractEntityEditPageContainerManagedImpl<
 	
 	@Override
 	protected Form __buildForm__() {		
-		return buildForm();
+		return buildForm(Profile.FIELD_TYPE_IDENTIFIER,WebController.getInstance().getRequestParameter(Profile.FIELD_TYPE));
 	}
 
 	public static Form buildForm(Map<Object,Object> map) {
@@ -52,17 +51,11 @@ public class ProfileEditPage extends AbstractEntityEditPageContainerManagedImpl<
 		Action action = (Action) MapHelper.readByKey(map, Form.FIELD_ACTION);
 		if(action == null)
 			action = ValueHelper.defaultToIfNull(WebController.getInstance().getRequestParameterAction(), Action.CREATE);
-		Profile profile;
-		if(Action.CREATE.equals(action))
-			profile = new Profile();
-		else {
-			Arguments<Profile> arguments = new Arguments<>();
-			arguments.queryIdentifier(ProfileQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
-			.filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.ENTITY_IDENTIFIER));
-			profile = EntityReader.getInstance().readOne(Profile.class, arguments);
-		}
+		Profile profile = (Profile) MapHelper.readByKey(map, Form.FIELD_ENTITY);
+		if(profile == null)
+			MapHelper.writeByKeyDoNotOverride(map,Form.FIELD_ENTITY, profile = __inject__(ProfileController.class)
+				.prepareEdit(WebController.getInstance().getRequestParameter(ParameterName.ENTITY_IDENTIFIER), (String) MapHelper.readByKey(map, Profile.FIELD_TYPE_IDENTIFIER)));
 		MapHelper.writeByKeyDoNotOverride(map,Form.FIELD_ACTION, action);
-		MapHelper.writeByKeyDoNotOverride(map,Form.FIELD_ENTITY, profile);
 		MapHelper.writeByKeyDoNotOverride(map,Form.ConfiguratorImpl.FIELD_LISTENER, new FormConfiguratorListenerImpl());	
 		MapHelper.writeByKeyDoNotOverride(map,Form.FIELD_LISTENER, new FormListenerImpl());
 		MapHelper.writeByKeyDoNotOverride(map,Form.ConfiguratorImpl.FIELD_INPUTS_FIELDS_NAMES, List.of(Profile.FIELD_TYPE,Profile.FIELD_CODE
@@ -84,6 +77,8 @@ public class ProfileEditPage extends AbstractEntityEditPageContainerManagedImpl<
 		@Override
 		public void act(Form form) {
 			Profile profile = (Profile) form.getEntity();
+			if(profile.getType() != null)
+				profile.setTypeIdentifier(profile.getType().getIdentifier());
 			Arguments<Profile> arguments = new Arguments<Profile>().addCreatablesOrUpdatables(profile);
 			arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(ProfileBusiness.SAVE));
 			EntitySaver.getInstance().save(Profile.class, arguments);

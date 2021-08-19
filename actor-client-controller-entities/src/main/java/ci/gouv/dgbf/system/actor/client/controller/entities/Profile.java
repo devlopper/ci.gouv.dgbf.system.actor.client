@@ -38,6 +38,7 @@ public class Profile extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	private Boolean requestable;
 	
 	public static final String FIELD_TYPE = "type";
+	public static final String FIELD_TYPE_IDENTIFIER = "typeIdentifier";
 	public static final String FIELD_ORDER_NUMBER = "orderNumber";
 	public static final String FIELD_REQUESTABLE = "requestable";
 	public static final String FIELD_PRIVILEGES_AS_STRINGS = "privilegesAsStrings";

@@ -5,6 +5,5 @@ import org.cyk.utility.client.controller.ControllerEntity;
 
 public interface ProfileController extends ControllerEntity<Profile> {
 
-	Profile instantiate(String typeIdentifier);
-	
+	Profile prepareEdit(String identifier,String typeIdentifier);
 }
