@@ -123,7 +123,7 @@ public interface Helper {
 	}
 	
 	static SelectOneCombo buildProfileTypeSelectOneCombo(ProfileType profileType,Boolean profileTypeRequestable,Object container,String profileSelectOneFieldName) {
-		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,profileType,SelectOneCombo.FIELD_CHOICE_CLASS,ScopeType.class,SelectOneCombo.FIELD_LISTENER
+		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,profileType,SelectOneCombo.FIELD_CHOICE_CLASS,ProfileType.class,SelectOneCombo.FIELD_LISTENER
 				,new SelectOneCombo.Listener.AbstractImpl<ProfileType>() {
 			@Override
 			protected Collection<ProfileType> __computeChoices__(AbstractInputChoice<ProfileType> input,Class<?> entityClass) {
@@ -138,7 +138,7 @@ public interface Helper {
 				if(container != null && StringHelper.isNotBlank(profileSelectOneFieldName))
 					((AbstractInput<?>)FieldHelper.read(container, profileSelectOneFieldName)).setValue(null);
 			}
-		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.Profile.LABEL);
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType.LABEL);
 		input.setValueAsFirstChoiceIfNull();
 		return input;
 	}

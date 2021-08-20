@@ -7,15 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
-
 import org.cyk.utility.__kernel__.constant.ConstantEmpty;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
-import org.cyk.utility.__kernel__.value.ValueConverter;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
@@ -44,7 +40,7 @@ import lombok.experimental.Accessors;
 public class ProfileFilterController extends AbstractFilterController implements Serializable {
 
 	private InputText searchInputText;
-	private SelectOneCombo profileTypeSelectOne,visibleSelectOne;
+	private SelectOneCombo profileTypeSelectOne;
 	private AutoComplete actorSelectOne;
 	
 	private ProfileType profileTypeInitial;
@@ -59,7 +55,6 @@ public class ProfileFilterController extends AbstractFilterController implements
 		profileTypeInitial = getProfileTypeFromRequestParameter(null);
 		if(actorInitial == null)
 			actorInitial = getActorFromRequestParameter();
-		visibleInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(Profile.FIELD_VISIBLE));
 	}
 	
 	public static Profile getProfileFromRequestParameter() {
@@ -88,7 +83,6 @@ public class ProfileFilterController extends AbstractFilterController implements
 	protected void buildInputs() {
 		buildInputText(FIELD_SEARCH_INPUT_TEXT);
 		buildInputSelectOne(FIELD_PROFILE_TYPE_SELECT_ONE, ProfileType.class);
-		buildInputSelectOne(FIELD_VISIBLE_SELECT_ONE, Boolean.class);
 		buildInputSelectOne(FIELD_ACTOR_SELECT_ONE, Actor.class);
 		
 		enableValueChangeListeners();
@@ -106,8 +100,6 @@ public class ProfileFilterController extends AbstractFilterController implements
 	
 	@Override
 	protected Object getInputSelectOneInitialValue(String fieldName, Class<?> klass) {
-		if(FIELD_VISIBLE_SELECT_ONE.equals(fieldName))
-			return visibleInitial;
 		if(FIELD_PROFILE_TYPE_SELECT_ONE.equals(fieldName))
 			return profileTypeInitial;
 		if(FIELD_ACTOR_SELECT_ONE.equals(fieldName))
@@ -119,15 +111,11 @@ public class ProfileFilterController extends AbstractFilterController implements
 	protected String buildParameterName(String fieldName, AbstractInput<?> input) {
 		if(FIELD_SEARCH_INPUT_TEXT.equals(fieldName) || input == searchInputText)
 			return Profile.FIELD_SEARCH;
-		if(FIELD_VISIBLE_SELECT_ONE.equals(fieldName) || input == visibleSelectOne)
-			return Profile.FIELD_VISIBLE;
 		return super.buildParameterName(fieldName, input);
 	}
 	
 	@Override
 	protected String buildParameterValue(AbstractInput<?> input) {
-		if(input == visibleSelectOne)
-			return input.getValue() == null ? null : input.getValue().toString();
 		return super.buildParameterValue(input);
 	}
 	
@@ -137,8 +125,6 @@ public class ProfileFilterController extends AbstractFilterController implements
 			return Helper.buildSearchInputText((String) value);
 		if(FIELD_PROFILE_TYPE_SELECT_ONE.equals(fieldName))
 			return Helper.buildProfileTypeSelectOneCombo((ProfileType) value,profileTypeRequestable,null,null);
-		if(FIELD_VISIBLE_SELECT_ONE.equals(fieldName))
-			return Helper.buildVisibleSelectOneCombo((Boolean) value);
 		if(FIELD_ACTOR_SELECT_ONE.equals(fieldName))
 			return Helper.buildActorAutoComplete((Actor) value);
 		return null;
@@ -149,12 +135,8 @@ public class ProfileFilterController extends AbstractFilterController implements
 		Collection<Map<Object, Object>> cellsMaps = new ArrayList<>();
 		if(profileTypeSelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,profileTypeSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,2));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,profileTypeSelectOne,Cell.FIELD_WIDTH,7));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,profileTypeSelectOne,Cell.FIELD_WIDTH,10));
 		}		
-		if(visibleSelectOne != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,visibleSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,visibleSelectOne,Cell.FIELD_WIDTH,2));
-		}
 		
 		if(actorSelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,actorSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,2));
@@ -201,7 +183,7 @@ public class ProfileFilterController extends AbstractFilterController implements
 			columnsFieldsNames.add(Profile.FIELD_TYPE_AS_STRING);
 		columnsFieldsNames.addAll(List.of(Profile.FIELD_CODE,Profile.FIELD_NAME));
 		if(visibleInitial == null)
-			columnsFieldsNames.add(Profile.FIELD_VISIBLE_AS_STRING);
+			columnsFieldsNames.add(Profile.FIELD_NUMBER_OF_ACTORS);
 		return columnsFieldsNames;
 	}
 	
@@ -209,12 +191,8 @@ public class ProfileFilterController extends AbstractFilterController implements
 		return (String)AbstractInput.getValue(searchInputText);
 	}
 	
-	public ProfileType getScopeType() {
+	public ProfileType getProfileType() {
 		return (ProfileType)AbstractInput.getValue(profileTypeSelectOne);
-	}
-	
-	public Boolean getVisible() {
-		return (Boolean) AbstractInput.getValue(visibleSelectOne);
 	}
 	
 	public Actor getActor() {
@@ -225,8 +203,6 @@ public class ProfileFilterController extends AbstractFilterController implements
 	protected String buildParameterName(AbstractInput<?> input) {
 		if(searchInputText == input)
 			return Profile.FIELD_SEARCH;
-		if(visibleSelectOne == input)
-			return Profile.FIELD_VISIBLE;
 		return super.buildParameterName(input);
 	}
 	
@@ -243,7 +219,7 @@ public class ProfileFilterController extends AbstractFilterController implements
 	/**/
 	
 	public static Filter.Dto populateFilter(Filter.Dto filter,ProfileFilterController controller,Boolean initial) {
-		filter = Filter.Dto.addFieldIfValueNotNull(ProfileQuerier.PARAMETER_NAME_TYPE_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.profileTypeInitial : controller.getScopeType()), filter);
+		filter = Filter.Dto.addFieldIfValueNotNull(ProfileQuerier.PARAMETER_NAME_TYPE_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.profileTypeInitial : controller.getProfileType()), filter);
 		filter = Filter.Dto.addFieldIfValueNotNull(ProfileQuerier.PARAMETER_NAME_ACTOR_IDENTIFIER, FieldHelper.readSystemIdentifier(controller.isIgnored(FIELD_ACTOR_SELECT_ONE) || Boolean.TRUE.equals(initial) ? controller.actorInitial : controller.getActor()), filter);
 		filter = Filter.Dto.addFieldIfValueNotBlank(ProfileQuerier.PARAMETER_NAME_SEARCH, Boolean.TRUE.equals(initial) ? controller.searchInitial : controller.getSearch(), filter);
 		return filter;
@@ -262,9 +238,6 @@ public class ProfileFilterController extends AbstractFilterController implements
 		if(filterController.getProfileTypeInitial() == null && StringHelper.isNotBlank(profileTypeCode))
 			filterController.setProfileTypeInitial(EntityReader.getInstance().readOne(ProfileType.class, new Arguments<ProfileType>()
 				.queryIdentifier(ProfileTypeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE).filterFieldsValues(ProfileTypeQuerier.PARAMETER_NAME_CODE,profileTypeCode)));
-		HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-		if( !request.getParameterMap().containsKey(Profile.FIELD_VISIBLE) )
-			filterController.setVisibleInitial(Boolean.TRUE);
 		return filterController;
 	}
 	
@@ -272,6 +245,5 @@ public class ProfileFilterController extends AbstractFilterController implements
 	
 	public static final String FIELD_SEARCH_INPUT_TEXT = "searchInputText";
 	public static final String FIELD_PROFILE_TYPE_SELECT_ONE = "profileTypeSelectOne";
-	public static final String FIELD_VISIBLE_SELECT_ONE = "visibleSelectOne";
 	public static final String FIELD_ACTOR_SELECT_ONE = "actorSelectOne";
 }

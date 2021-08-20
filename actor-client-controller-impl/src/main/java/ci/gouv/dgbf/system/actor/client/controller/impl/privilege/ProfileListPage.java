@@ -36,6 +36,8 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.ProfileType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Service;
 import ci.gouv.dgbf.system.actor.client.controller.impl.Helper;
 import ci.gouv.dgbf.system.actor.client.controller.impl.scope.ProfileFilterController;
+import ci.gouv.dgbf.system.actor.client.controller.impl.scope.ScopeFilterController;
+import ci.gouv.dgbf.system.actor.client.controller.impl.scope.ScopeListPage.LazyDataModelListenerImpl;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import lombok.Getter;
 import lombok.Setter;
@@ -72,7 +74,7 @@ public class ProfileListPage extends AbstractEntityListPageContainerManagedImpl<
 	protected DataTable __buildDataTable__() {
 		if(Boolean.TRUE.equals(isService))
 			return null;
-		DataTable dataTable = buildDataTable(DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl().setProfileType(profileType));		
+		DataTable dataTable = buildDataTable(DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl().setFilterController(filterController));		
 		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate(CommandButton.FIELD_LISTENER
 				,new CommandButton.Listener.AbstractImpl() {
 			@Override
@@ -145,7 +147,6 @@ public class ProfileListPage extends AbstractEntityListPageContainerManagedImpl<
 	@Getter @Setter @Accessors(chain=true)
 	public static class DataTableListenerImpl extends DataTable.Listener.AbstractImpl implements Serializable {
 		private ProfileFilterController filterController;
-		private ProfileType profileType;
 		
 		@Override
 		public Map<Object, Object> getColumnArguments(AbstractDataTable dataTable, String fieldName) {
@@ -165,6 +166,9 @@ public class ProfileListPage extends AbstractEntityListPageContainerManagedImpl<
 			}else if(Profile.FIELD_ORDER_NUMBER.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Numéro d'ordre");
 				map.put(Column.FIELD_WIDTH, "50");
+			}else if(Profile.FIELD_NUMBER_OF_ACTORS.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Nombre d'acteurs");
+				map.put(Column.FIELD_WIDTH, "75");
 			}else if(Profile.FIELD_PRIVILEGES_AS_STRINGS.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Privilèges");
 			}
@@ -183,19 +187,10 @@ public class ProfileListPage extends AbstractEntityListPageContainerManagedImpl<
 		public Class<? extends AbstractMenu> getRecordMenuClass(AbstractCollection collection) {
 			return ContextMenu.class;
 		}
-		
-		public String getStyleClassByRecord(Object record, Integer recordIndex) {
-			if(record == null || recordIndex == null)
-				return null;
-			if(filterController.getVisible() == null && Boolean.TRUE.equals(((Profile)record).getVisible()))
-				return "cyk-background-highlight";
-			return null;
-		}
 	}
 	
 	@Getter @Setter @Accessors(chain=true)
 	public static class LazyDataModelListenerImpl extends LazyDataModel.Listener.AbstractImpl<Profile> implements Serializable {		
-		private ProfileType profileType;
 		
 		@Override
 		public Boolean getReaderUsable(LazyDataModel<Profile> lazyDataModel) {
@@ -217,12 +212,8 @@ public class ProfileListPage extends AbstractEntityListPageContainerManagedImpl<
 		@Override
 		public Arguments<Profile> instantiateArguments(LazyDataModel<Profile> lazyDataModel) {
 			Arguments<Profile> arguments = super.instantiateArguments(lazyDataModel);
-			/*
-			if( ((ProfileFilterController)filterController).getVisible() == null )
-				arguments.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Profile.FIELDS_VISIBLE_AND_VISIBLE_AS_STRING);
-			if(((ProfileFilterController)filterController).getScopeType() == null )
-				arguments.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Profile.FIELD_TYPE_AS_STRING);
-			*/
+			arguments.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Profile.FIELD_TYPE_AS_STRING);
+			arguments.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Profile.FIELD_NUMBER_OF_ACTORS);
 			return arguments;
 		}
 	

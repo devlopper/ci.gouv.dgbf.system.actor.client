@@ -37,7 +37,9 @@ public class Profile extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	@Input @InputBooleanButton
 	private Boolean requestable;
 	
-	private Boolean visible;
+	private Boolean used;
+	private String usedAsString;
+	private Integer numberOfActors;
 	
 	public static final String FIELD_TYPE = "type";
 	public static final String FIELD_TYPE_AS_STRING = "typeAsString";
@@ -46,7 +48,8 @@ public class Profile extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	public static final String FIELD_REQUESTABLE = "requestable";
 	public static final String FIELD_PRIVILEGES_AS_STRINGS = "privilegesAsStrings";
 	
-	public static final String FIELD_VISIBLE = "visible";
-	public static final String FIELD_VISIBLE_AS_STRING = "visibleAsString";
+	public static final String FIELD_USED = "used";
+	public static final String FIELD_USED_AS_STRING = "usedAsString";
+	public static final String FIELD_NUMBER_OF_ACTORS = "numberOfActors";
 	public static final String FIELD_SEARCH = "search";
 }
