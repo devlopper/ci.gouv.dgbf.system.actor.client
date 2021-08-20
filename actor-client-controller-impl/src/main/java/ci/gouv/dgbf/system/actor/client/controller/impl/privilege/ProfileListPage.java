@@ -36,8 +36,6 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.ProfileType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Service;
 import ci.gouv.dgbf.system.actor.client.controller.impl.Helper;
 import ci.gouv.dgbf.system.actor.client.controller.impl.scope.ProfileFilterController;
-import ci.gouv.dgbf.system.actor.client.controller.impl.scope.ScopeFilterController;
-import ci.gouv.dgbf.system.actor.client.controller.impl.scope.ScopeListPage.LazyDataModelListenerImpl;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import lombok.Getter;
 import lombok.Setter;
@@ -104,7 +102,9 @@ public class ProfileListPage extends AbstractEntityListPageContainerManagedImpl<
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Liste des profiles";
+		if(filterController == null)
+			return super.__getWindowTitleValue__();
+		return filterController.generateWindowTitleValue(ci.gouv.dgbf.system.actor.server.persistence.entities.Profile.LABEL,Boolean.FALSE);
 	}
 		
 	/**/

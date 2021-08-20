@@ -27,8 +27,6 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Profile;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ProfileType;
 import ci.gouv.dgbf.system.actor.client.controller.impl.Helper;
-import ci.gouv.dgbf.system.actor.client.controller.impl.myaccount.MyAccountIndexPage;
-import ci.gouv.dgbf.system.actor.client.controller.impl.myaccount.MyAccountScopeListPage;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileTypeQuerier;
@@ -152,10 +150,10 @@ public class ProfileFilterController extends AbstractFilterController implements
 		return cellsMaps;
 	}
 	
-	public String generateWindowTitleValue(String prefix) {
+	public String generateWindowTitleValue(String prefix,Boolean isForLoggedInUser) {
 		Collection<String> strings = new ArrayList<>();
 		strings.add(prefix);
-		if(MyAccountScopeListPage.class.equals(pageClass) || MyAccountIndexPage.class.equals(pageClass)) {
+		if(Boolean.TRUE.equals(isForLoggedInUser)) {
 			addGenerateWindowTitleValueActorInitial(strings);
 			addGenerateWindowTitleValueProfileTypeInitial(strings);
 		}else {
