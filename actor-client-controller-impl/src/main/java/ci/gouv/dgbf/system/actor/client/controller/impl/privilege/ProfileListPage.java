@@ -73,30 +73,6 @@ public class ProfileListPage extends AbstractEntityListPageContainerManagedImpl<
 		if(Boolean.TRUE.equals(isService))
 			return null;
 		DataTable dataTable = buildDataTable(DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl().setFilterController(filterController));		
-		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate(CommandButton.FIELD_LISTENER
-				,new CommandButton.Listener.AbstractImpl() {
-			@Override
-			protected Map<String, List<String>> getViewParameters(AbstractAction action) {
-				Map<String, List<String>> parameters = super.getViewParameters(action);
-				if(profileType != null) {
-					if(parameters == null)
-						parameters = new HashMap<>();
-					parameters.put(ParameterName.stringify(ProfileType.class), List.of(((ProfileType)profileType).getIdentifier()));
-				}					
-				return parameters;
-			}
-			
-			@Override
-			protected String getOutcome(AbstractAction action) {
-				return "profileEditView";
-			}
-		});
-		dataTable.addRecordMenuItemByArgumentsOpenViewInDialogUpdate();
-		if(profileType != null && !profileType.getCode().equals(ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType.CODE_SYSTEME)) {
-			dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();
-		}
-		dataTable.addRecordMenuItemByArgumentsNavigateToView(null,"profileEditPrivilegesView", CommandButton.FIELD_VALUE,"Privilèges"
-				, CommandButton.FIELD_ICON,"fa fa-lock");
 		return dataTable;
 	}
 	
@@ -111,9 +87,7 @@ public class ProfileListPage extends AbstractEntityListPageContainerManagedImpl<
 	
 	public static DataTable buildDataTable(Map<Object,Object> arguments) {
 		if(arguments == null)
-			arguments = new HashMap<>();
-		
-		Class<?> pageClass = (Class<?>) arguments.get(ProfileListPage.class);
+			arguments = new HashMap<>();		
 		ProfileFilterController filterController = null;		
 		LazyDataModelListenerImpl lazyDataModelListenerImpl = (LazyDataModelListenerImpl) MapHelper.readByKey(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER);
 		if(lazyDataModelListenerImpl == null)
@@ -135,6 +109,34 @@ public class ProfileListPage extends AbstractEntityListPageContainerManagedImpl<
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, filterController.generateColumnsNames());
 		DataTable dataTable = DataTable.build(arguments);
+		
+		if(Boolean.TRUE.equals(filterController.getIsUsedForLoggedUser())) {
+			
+		}else {
+			final ProfileFilterController filterControllerFinal = filterController;
+			dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate(CommandButton.FIELD_LISTENER
+					,new CommandButton.Listener.AbstractImpl() {
+				@Override
+				protected Map<String, List<String>> getViewParameters(AbstractAction action) {
+					Map<String, List<String>> parameters = super.getViewParameters(action);
+					ProfileType type = filterControllerFinal.getProfileType();
+					if( type != null) {
+						if(parameters == null)
+							parameters = new HashMap<>();
+						parameters.put(ParameterName.stringify(ProfileType.class), List.of(type.getIdentifier()));
+					}					
+					return parameters;
+				}
+				
+				@Override
+				protected String getOutcome(AbstractAction action) {
+					return ProfileEditPage.OUTCOME;
+				}
+			});
+			dataTable.addRecordMenuItemByArgumentsOpenViewInDialogUpdate();
+			dataTable.addRecordMenuItemByArgumentsNavigateToView(null,ProfileEditPrivilegesPage.OUTCOME, CommandButton.FIELD_VALUE
+					,ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege.LABEL, CommandButton.FIELD_ICON,"fa fa-lock");
+		}
 		return dataTable;
 	}
 	

@@ -46,7 +46,7 @@ public class ProfileFilterController extends AbstractFilterController implements
 	private String searchInitial;
 	private Actor actorInitial;
 	
-	private Boolean profileTypeRequestable;
+	private Boolean profileTypeRequestable,isUsedForLoggedUser;
 	
 	public ProfileFilterController() {
 		searchInitial = WebController.getInstance().getRequestParameter(buildParameterName(FIELD_SEARCH_INPUT_TEXT));

@@ -41,7 +41,7 @@ public class ProfileEditPage extends AbstractEntityEditPageContainerManagedImpl<
 	
 	@Override
 	protected Form __buildForm__() {		
-		return buildForm(Profile.FIELD_TYPE_IDENTIFIER,WebController.getInstance().getRequestParameter(Profile.FIELD_TYPE));
+		return buildForm(Profile.FIELD_TYPE_IDENTIFIER,WebController.getInstance().getRequestParameter(ParameterName.stringify(ProfileType.class)));
 	}
 
 	public static Form buildForm(Map<Object,Object> map) {

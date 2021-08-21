@@ -195,4 +195,6 @@ public class ProfileEditPrivilegesPage extends AbstractPageContainerManagedImpl 
 	public static Tree buildSelectedTree(Object...objects) {
 		return buildSelectedTree(MapHelper.instantiate(objects));
 	}
+	
+	public static final String OUTCOME = "profileEditPrivilegesView";
 }
