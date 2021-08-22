@@ -786,6 +786,24 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>myAccountProfileListView</from-outcome>
+			<to-view-id>/private/myaccount/profile/list.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>myAccountActorProfileRequestListView</from-outcome>
+			<to-view-id>/private/myaccount/profile/request/list.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>myAccountActorProfileRequestRecordView</from-outcome>
+			<to-view-id>/private/myaccount/profile/request/record.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>myAccountIndexView</from-outcome>
 			<to-view-id>/private/myaccount/index.jsf</to-view-id>
 			<redirect />

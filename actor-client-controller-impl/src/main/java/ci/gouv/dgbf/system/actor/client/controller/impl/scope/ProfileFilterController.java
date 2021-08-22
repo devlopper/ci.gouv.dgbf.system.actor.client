@@ -46,7 +46,7 @@ public class ProfileFilterController extends AbstractFilterController implements
 	private String searchInitial;
 	private Actor actorInitial;
 	
-	private Boolean profileTypeRequestable,isUsedForLoggedUser;
+	private Boolean /*profileTypeRequestable,*/isUsedForLoggedUser;
 	
 	public ProfileFilterController() {
 		searchInitial = WebController.getInstance().getRequestParameter(buildParameterName(FIELD_SEARCH_INPUT_TEXT));
@@ -122,7 +122,7 @@ public class ProfileFilterController extends AbstractFilterController implements
 		if(FIELD_SEARCH_INPUT_TEXT.equals(fieldName))
 			return Helper.buildSearchInputText((String) value);
 		if(FIELD_PROFILE_TYPE_SELECT_ONE.equals(fieldName))
-			return Helper.buildProfileTypeSelectOneCombo((ProfileType) value,profileTypeRequestable,null,null);
+			return Helper.buildProfileTypeSelectOneCombo((ProfileType) value,null,null);
 		if(FIELD_ACTOR_SELECT_ONE.equals(fieldName))
 			return Helper.buildActorAutoComplete((Actor) value);
 		return null;
@@ -180,7 +180,7 @@ public class ProfileFilterController extends AbstractFilterController implements
 		if(profileTypeInitial == null)
 			columnsFieldsNames.add(Profile.FIELD_TYPE_AS_STRING);
 		columnsFieldsNames.addAll(List.of(Profile.FIELD_CODE,Profile.FIELD_NAME));
-		if(visibleInitial == null)
+		if(isUsedForLoggedUser == null || !isUsedForLoggedUser)
 			columnsFieldsNames.add(Profile.FIELD_NUMBER_OF_ACTORS);
 		return columnsFieldsNames;
 	}

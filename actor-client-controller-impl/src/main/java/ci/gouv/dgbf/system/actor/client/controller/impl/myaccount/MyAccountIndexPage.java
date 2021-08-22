@@ -22,6 +22,8 @@ import ci.gouv.dgbf.system.actor.client.controller.api.ActorController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.impl.actor.ActorScopeRequestFilterController;
 import ci.gouv.dgbf.system.actor.client.controller.impl.actor.ActorScopeRequestListPage;
+import ci.gouv.dgbf.system.actor.client.controller.impl.privilege.ProfileListPage;
+import ci.gouv.dgbf.system.actor.client.controller.impl.scope.ProfileFilterController;
 import ci.gouv.dgbf.system.actor.client.controller.impl.scope.ScopeFilterController;
 import ci.gouv.dgbf.system.actor.client.controller.impl.scope.ScopeListPage;
 import lombok.Getter;
@@ -38,6 +40,7 @@ public class MyAccountIndexPage extends AbstractPageContainerManagedImpl impleme
 	private DataTable dataTable;	
 	
 	private ScopeFilterController scopeFilterController;
+	private ProfileFilterController profileFilterController;
 	private ActorScopeRequestFilterController actorScopeRequestFilterController;
 	
 	@Override
@@ -56,8 +59,8 @@ public class MyAccountIndexPage extends AbstractPageContainerManagedImpl impleme
 		String prefix = "Mon compte";
 		if(selectedTab.getParameterValue().equals(TAB_MY_VISIBILITIES))
 			return scopeFilterController.generateWindowTitleValue(prefix);
-		//else if(selectedTab.getParameterValue().equals(TAB_MY_PROFILES))
-		//	return "";
+		else if(selectedTab.getParameterValue().equals(TAB_MY_PROFILES))
+			return profileFilterController.generateWindowTitleValue(prefix, Boolean.TRUE);
 		else if(selectedTab.getParameterValue().equals(TAB_MY_REQUESTS))
 			return actorScopeRequestFilterController.generateWindowTitleValue(prefix);
 		return prefix+" | "+actor.getCode()+" - "+actor.getNames();
@@ -82,30 +85,25 @@ public class MyAccountIndexPage extends AbstractPageContainerManagedImpl impleme
 	 
 	private void buildTab(Collection<Map<Object,Object>> cellsMaps) {
 		if(selectedTab.getParameterValue().equals(TAB_MY_VISIBILITIES))
-			buildTabMyVisibilities(cellsMaps);
+			buildTabScopes(cellsMaps);
 		else if(selectedTab.getParameterValue().equals(TAB_MY_PROFILES))
-			buildTabMyProfiles(cellsMaps);
+			buildTabProfiles(cellsMaps);
 		else if(selectedTab.getParameterValue().equals(TAB_MY_REQUESTS))
-			buildTabMyRequests(cellsMaps);
+			buildTabRequests(cellsMaps);
 	}
 	
-	private void buildTabMyVisibilities(Collection<Map<Object,Object>> cellsMaps) {
-		buildMyVisibilitiesDataTable(cellsMaps);
-		builMyRequestsDataTable(cellsMaps,ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_SECTION);	
+	private void buildTabScopes(Collection<Map<Object,Object>> cellsMaps) {
+		buildScopesDataTable(cellsMaps);
+		buildScopeRequestsDataTable(cellsMaps,ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_SECTION);	
 	}
 	
-	private void buildTabMyProfiles(Collection<Map<Object,Object>> cellsMaps) {
-		cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
-			@Override
-			public Object buildControl(Cell cell) {
-				return null;
-			}
-		},Cell.FIELD_WIDTH,12));
+	private void buildTabProfiles(Collection<Map<Object,Object>> cellsMaps) {
+		buildProfilesDataTable(cellsMaps);
 		
 	}
 	
-	private void buildTabMyRequests(Collection<Map<Object,Object>> cellsMaps) {
-		builMyRequestsDataTable(cellsMaps,null);	
+	private void buildTabRequests(Collection<Map<Object,Object>> cellsMaps) {
+		buildScopeRequestsDataTable(cellsMaps,null);	
 	}
 	
 	private void buildLayout(Collection<Map<Object,Object>> cellsMaps) {
@@ -114,7 +112,7 @@ public class MyAccountIndexPage extends AbstractPageContainerManagedImpl impleme
 	
 	/**/
 	
-	private void buildMyVisibilitiesDataTable(Collection<Map<Object,Object>> cellsMaps) {
+	private void buildScopesDataTable(Collection<Map<Object,Object>> cellsMaps) {
 		scopeFilterController = MyAccountScopeListPage.instantiateFilterController().setScopeTypeRequestable(Boolean.TRUE);
 		scopeFilterController.build();
 		scopeFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(OUTCOME).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_MY_VISIBILITIES);			
@@ -128,7 +126,7 @@ public class MyAccountIndexPage extends AbstractPageContainerManagedImpl impleme
 		},Cell.FIELD_WIDTH,12));
 	}
 	
-	private void builMyRequestsDataTable(Collection<Map<Object,Object>> cellsMaps,String scopeTypeCode) {
+	private void buildScopeRequestsDataTable(Collection<Map<Object,Object>> cellsMaps,String scopeTypeCode) {
 		actorScopeRequestFilterController = MyAccountActorScopeRequestListPage.instantiateFilterController(scopeTypeCode).setScopeTypeRequestable(Boolean.TRUE);
 		actorScopeRequestFilterController.build();
 		actorScopeRequestFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(OUTCOME).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_MY_REQUESTS);
@@ -145,6 +143,22 @@ public class MyAccountIndexPage extends AbstractPageContainerManagedImpl impleme
 			}
 		},Cell.FIELD_WIDTH,12));		
 	}
+	
+	private void buildProfilesDataTable(Collection<Map<Object,Object>> cellsMaps) {
+		profileFilterController = MyAccountProfileListPage.instantiateFilterController();
+		profileFilterController.build();
+		profileFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(OUTCOME).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_MY_PROFILES);			
+		cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
+			@Override
+			public Object buildControl(Cell cell) {
+				return MyAccountProfileListPage.buildDataTable(DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER
+						,new MyAccountProfileListPage.LazyDataModelListenerImpl().setFilterController(profileFilterController),ProfileListPage.class,MyAccountProfileListPage.class
+						,ProfileListPage.OUTCOME,OUTCOME,DataTable.ConfiguratorImpl.FIELD_TITLE_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.Profile.LABEL);
+			}
+		},Cell.FIELD_WIDTH,12));
+	}
+	
+	
 	
 	/**/
 	

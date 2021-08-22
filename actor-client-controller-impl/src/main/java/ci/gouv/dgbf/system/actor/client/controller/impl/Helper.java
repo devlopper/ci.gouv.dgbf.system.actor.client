@@ -37,6 +37,7 @@ import org.cyk.utility.persistence.query.QueryExecutorArguments;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.ActorController;
 import ci.gouv.dgbf.system.actor.client.controller.api.FunctionController;
+import ci.gouv.dgbf.system.actor.client.controller.api.ProfileController;
 import ci.gouv.dgbf.system.actor.client.controller.api.ProfileTypeController;
 import ci.gouv.dgbf.system.actor.client.controller.api.ScopeTypeController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
@@ -122,13 +123,12 @@ public interface Helper {
 		return input;
 	}
 	
-	static SelectOneCombo buildProfileTypeSelectOneCombo(ProfileType profileType,Boolean profileTypeRequestable,Object container,String profileSelectOneFieldName) {
+	static SelectOneCombo buildProfileTypeSelectOneCombo(ProfileType profileType,Object container,String profileSelectOneFieldName) {
 		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,profileType,SelectOneCombo.FIELD_CHOICE_CLASS,ProfileType.class,SelectOneCombo.FIELD_LISTENER
 				,new SelectOneCombo.Listener.AbstractImpl<ProfileType>() {
 			@Override
 			protected Collection<ProfileType> __computeChoices__(AbstractInputChoice<ProfileType> input,Class<?> entityClass) {
-				Collection<ProfileType> choices = Boolean.TRUE.equals(profileTypeRequestable) ? __inject__(ProfileTypeController.class).readRequestable()
-						: __inject__(ProfileTypeController.class).read();
+				Collection<ProfileType> choices =  __inject__(ProfileTypeController.class).read();
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
 			}
@@ -143,7 +143,7 @@ public interface Helper {
 		return input;
 	}
 	
-	static SelectOneCombo buildProfileSelectOneCombo(Profile profile,Object container,String profileTypeSelectOneFieldName) {
+	static SelectOneCombo buildProfileSelectOneCombo(Profile profile,Boolean profileRequestable,Object container,String profileTypeSelectOneFieldName) {
 		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,profile,SelectOneCombo.FIELD_CHOICE_CLASS,Profile.class,SelectOneCombo.FIELD_LISTENER
 				,new SelectOneCombo.Listener.AbstractImpl<Profile>() {
 			@Override
@@ -153,10 +153,8 @@ public interface Helper {
 				Object profileType = AbstractInput.getValue((AbstractInput<?>) FieldHelper.read(container, profileTypeSelectOneFieldName));
 				if(profileType == null)
 					return null;
-				Arguments<Profile> arguments = new Arguments<Profile>()
-					.queryIdentifier(ProfileQuerier.QUERY_IDENTIFIER_READ_DYNAMIC)
-					.filterFieldsValues(ProfileQuerier.PARAMETER_NAME_TYPE_IDENTIFIER,FieldHelper.readSystemIdentifier(profileType));
-				Collection<Profile> choices = EntityReader.getInstance().readMany(Profile.class, arguments);
+				Collection<Profile> choices = Boolean.TRUE.equals(profileRequestable) ? __inject__(ProfileController.class).readRequestable((String)FieldHelper.readSystemIdentifier(profileType))
+						: __inject__(ProfileController.class).read();
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
 			}

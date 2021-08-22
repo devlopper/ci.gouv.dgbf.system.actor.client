@@ -1,6 +1,7 @@
 package ci.gouv.dgbf.system.actor.client.controller.api;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -16,6 +17,15 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 public class ProfileControllerImpl extends AbstractControllerEntityImpl<Profile> implements ProfileController,Serializable {
 	private static final long serialVersionUID = 1L;
 
+	@Override
+	public Collection<Profile> readRequestable(String typeIdentifier) {
+		Arguments<Profile> arguments = new Arguments<Profile>().queryIdentifierReadDynamicMany(Profile.class)
+				.filterFieldsValues(ProfileQuerier.PARAMETER_NAME_REQUESTABLE,Boolean.TRUE);
+		if(StringHelper.isNotBlank(typeIdentifier))
+			arguments.filterFieldsValues(ProfileQuerier.PARAMETER_NAME_TYPE_IDENTIFIER,typeIdentifier);
+		return EntityReader.getInstance().readMany(Profile.class, arguments);
+	}
+	
 	@Override
 	public Profile prepareEdit(String identifier,String typeIdentifier) {
 		Arguments<Profile> arguments = new Arguments<Profile>();
