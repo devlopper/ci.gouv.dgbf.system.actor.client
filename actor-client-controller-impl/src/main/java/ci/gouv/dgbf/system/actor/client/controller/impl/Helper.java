@@ -143,23 +143,16 @@ public interface Helper {
 		return input;
 	}
 	
-	static SelectOneCombo buildProfileSelectOneCombo(Profile profile,Boolean profileRequestable,Object container,String profileTypeSelectOneFieldName) {
-		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,profile,SelectOneCombo.FIELD_CHOICE_CLASS,Profile.class,SelectOneCombo.FIELD_LISTENER
-				,new SelectOneCombo.Listener.AbstractImpl<Profile>() {
+	static AutoComplete buildProfileAutoComplete(Profile profile,Boolean profileRequestable) {
+		AutoComplete input = AutoComplete.build(AutoComplete.FIELD_VALUE,profile,AutoComplete.FIELD_ENTITY_CLASS,Profile.class,AutoComplete.FIELD_LISTENER
+				,new AutoComplete.Listener.AbstractImpl<Profile>() {
 			@Override
-			protected Collection<Profile> __computeChoices__(AbstractInputChoice<Profile> input,Class<?> entityClass) {
-				if(container == null || StringHelper.isBlank(profileTypeSelectOneFieldName))
-					return null;
-				Object profileType = AbstractInput.getValue((AbstractInput<?>) FieldHelper.read(container, profileTypeSelectOneFieldName));
-				if(profileType == null)
-					return null;
-				Collection<Profile> choices = Boolean.TRUE.equals(profileRequestable) ? __inject__(ProfileController.class).readRequestable((String)FieldHelper.readSystemIdentifier(profileType))
+			public Collection<Profile> complete(AutoComplete autoComplete) {
+				Collection<Profile> choices = Boolean.TRUE.equals(profileRequestable) ? __inject__(ProfileController.class).readRequestable(null)
 						: __inject__(ProfileController.class).read();
-				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
 			}
-		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.Profile.LABEL);
-		input.setValueAsFirstChoiceIfNull();
+		},AutoComplete.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.Profile.LABEL);
 		return input;
 	}
 	

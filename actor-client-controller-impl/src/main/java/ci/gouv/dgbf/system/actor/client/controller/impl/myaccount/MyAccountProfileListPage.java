@@ -9,6 +9,7 @@ import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 
@@ -33,7 +34,7 @@ public class MyAccountProfileListPage extends AbstractEntityListPageContainerMan
 	
 	public static ProfileFilterController instantiateFilterController() {
 		ProfileFilterController filterController = ProfileFilterController.instantiate(__inject__(ActorController.class).getLoggedIn(), null);
-		filterController.setIsUsedForLoggedUser(Boolean.TRUE);
+		filterController.setIsUsedForLoggedUser(Boolean.TRUE).setRenderType(AbstractFilterController.RenderType.NONE);
 		filterController.ignore(ProfileFilterController.FIELD_ACTOR_SELECT_ONE);
 		return filterController;
 	}

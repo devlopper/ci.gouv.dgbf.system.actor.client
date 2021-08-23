@@ -434,6 +434,36 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>actorProfileRequestRecordView</from-outcome>
+			<to-view-id>/private/actor/profile/request/record/index.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>actorProfileRequestListView</from-outcome>
+			<to-view-id>/private/actor/profile/request/list/index.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>actorProfileRequestProcessView</from-outcome>
+			<to-view-id>/private/actor/profile/request/process/one.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>actorProfileRequestProcessManyView</from-outcome>
+			<to-view-id>/private/actor/profile/request/process/index.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>actorProfileRequestRejectOneView</from-outcome>
+			<to-view-id>/private/actor/profile/request/rejectone.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>actorScopeRequestRecordView</from-outcome>
 			<to-view-id>/private/actor/scope/request/record/index.jsf</to-view-id>
 			<redirect />

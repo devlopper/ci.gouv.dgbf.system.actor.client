@@ -48,12 +48,14 @@ public class ProfileEditPrivilegesPage extends AbstractPageContainerManagedImpl 
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Privilèges du profile "+profile.getName();
+		return ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege.LABEL+" - "+profile.getName();
 	}
 	
 	@Override
 	protected void __listenPostConstruct__() {
-		profile = WebController.getInstance().getRequestParameterEntity(Profile.class);
+		Arguments<Profile> arguments = new Arguments<>();
+		arguments.queryIdentifierReadDynamicOne(Profile.class).filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.ENTITY_IDENTIFIER));
+		profile = EntityReader.getInstance().readOne(Profile.class, arguments);
 		super.__listenPostConstruct__();		
 
 		Collection<ProfilePrivilege> profilePrivileges = EntityReader.getInstance().readMany(ProfilePrivilege.class, ProfilePrivilegeQuerier.QUERY_IDENTIFIER_READ_BY_PROFILES_CODES

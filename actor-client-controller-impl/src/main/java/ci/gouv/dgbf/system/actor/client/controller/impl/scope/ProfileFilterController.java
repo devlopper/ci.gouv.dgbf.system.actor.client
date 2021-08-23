@@ -46,8 +46,6 @@ public class ProfileFilterController extends AbstractFilterController implements
 	private String searchInitial;
 	private Actor actorInitial;
 	
-	private Boolean /*profileTypeRequestable,*/isUsedForLoggedUser;
-	
 	public ProfileFilterController() {
 		searchInitial = WebController.getInstance().getRequestParameter(buildParameterName(FIELD_SEARCH_INPUT_TEXT));
 		profileTypeInitial = getProfileTypeFromRequestParameter(null);
@@ -177,7 +175,7 @@ public class ProfileFilterController extends AbstractFilterController implements
 	
 	public Collection<String> generateColumnsNames() {
 		Collection<String> columnsFieldsNames = new ArrayList<>();
-		if(profileTypeInitial == null)
+		if(profileTypeInitial == null && (isUsedForLoggedUser == null || !isUsedForLoggedUser))
 			columnsFieldsNames.add(Profile.FIELD_TYPE_AS_STRING);
 		columnsFieldsNames.addAll(List.of(Profile.FIELD_CODE,Profile.FIELD_NAME));
 		if(isUsedForLoggedUser == null || !isUsedForLoggedUser)

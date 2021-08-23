@@ -17,6 +17,7 @@ import org.cyk.utility.representation.RepresentationProxyGetter;
 import ci.gouv.dgbf.system.actor.server.business.api.AccountRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorProfileBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.ActorProfileRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.AssignmentsBusiness;
@@ -33,6 +34,7 @@ import ci.gouv.dgbf.system.actor.server.business.api.ScopeTypeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ServiceBusiness;
 import ci.gouv.dgbf.system.actor.server.representation.api.AccountRequestRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorProfileRepresentation;
+import ci.gouv.dgbf.system.actor.server.representation.api.ActorProfileRequestRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorScopeRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorScopeRequestRepresentation;
@@ -51,6 +53,7 @@ import ci.gouv.dgbf.system.actor.server.representation.api.ServiceRepresentation
 import ci.gouv.dgbf.system.actor.server.representation.entities.AccountRequestDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorProfileDto;
+import ci.gouv.dgbf.system.actor.server.representation.entities.ActorProfileRequestDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorScopeDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorScopeRequestDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.AssignmentsDto;
@@ -110,6 +113,13 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				arguments.setRepresentation(ActorScopeRequestRepresentation.getProxy());
 			else if(ActorScopeRequestBusiness.PROCESS.equals(arguments.getRepresentationArguments().getActionIdentifier()))				
 				arguments.setRepresentation(ActorScopeRequestRepresentation.getProxy());
+			
+			else if(ActorProfileRequestBusiness.RECORD.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ActorProfileRequestRepresentation.getProxy());
+			else if(ActorProfileRequestBusiness.CANCEL.equals(arguments.getRepresentationArguments().getActionIdentifier()))				
+				arguments.setRepresentation(ActorProfileRequestRepresentation.getProxy());
+			else if(ActorProfileRequestBusiness.PROCESS.equals(arguments.getRepresentationArguments().getActionIdentifier()))				
+				arguments.setRepresentation(ActorProfileRequestRepresentation.getProxy());
 			
 			else if(AccountRequestBusiness.RECORD.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(AccountRequestRepresentation.getProxy());
@@ -318,19 +328,37 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 		if(arguments != null && ActorScopeRequestBusiness.RECORD.equals(arguments.getActionIdentifier())) {
 			ActorScopeRequestDto actorScopeRequest = (ActorScopeRequestDto) CollectionHelper.getFirst(creatables);
 			return ((ActorScopeRequestRepresentation)representation).record(actorScopeRequest.getActorsIdentifiers(), actorScopeRequest.getScopesIdentifiers()
-					, actorScopeRequest.getActorAsString(),actorScopeRequest.getIgnoreExisting());
+					, actorScopeRequest.get__auditWho__(),actorScopeRequest.getIgnoreExisting());
 		}
 		
 		if(arguments != null && ActorScopeRequestBusiness.CANCEL.equals(arguments.getActionIdentifier())) {
 			ActorScopeRequestDto actorScopeRequest = (ActorScopeRequestDto) CollectionHelper.getFirst(updatables);
 			return ((ActorScopeRequestRepresentation)representation).cancel(actorScopeRequest.getActorsIdentifiers()
-					, actorScopeRequest.getActorAsString(),actorScopeRequest.getIgnoreExisting());
+					, actorScopeRequest.get__auditWho__(),actorScopeRequest.getIgnoreExisting());
 		}
 		
 		if(arguments != null && ActorScopeRequestBusiness.PROCESS.equals(arguments.getActionIdentifier())) {
 			ActorScopeRequestDto actorScopeRequest = (ActorScopeRequestDto) CollectionHelper.getFirst(updatables);
 			return ((ActorScopeRequestRepresentation)representation).process((List<ActorScopeRequestDto>) CollectionHelper.cast(ActorScopeRequestDto.class, updatables)
-					, actorScopeRequest == null ? null : actorScopeRequest.getActorAsString());
+					, actorScopeRequest == null ? null : actorScopeRequest.get__auditWho__());
+		}
+		
+		if(arguments != null && ActorProfileRequestBusiness.RECORD.equals(arguments.getActionIdentifier())) {
+			ActorProfileRequestDto actorScopeRequest = (ActorProfileRequestDto) CollectionHelper.getFirst(creatables);
+			return ((ActorProfileRequestRepresentation)representation).record(actorScopeRequest.getActorsIdentifiers(), actorScopeRequest.getProfilesIdentifiers()
+					, actorScopeRequest.get__auditWho__(),actorScopeRequest.getIgnoreExisting());
+		}
+		
+		if(arguments != null && ActorProfileRequestBusiness.CANCEL.equals(arguments.getActionIdentifier())) {
+			ActorProfileRequestDto actorScopeRequest = (ActorProfileRequestDto) CollectionHelper.getFirst(updatables);
+			return ((ActorProfileRequestRepresentation)representation).cancel(actorScopeRequest.getActorsIdentifiers()
+					, actorScopeRequest.get__auditWho__(),actorScopeRequest.getIgnoreExisting());
+		}
+		
+		if(arguments != null && ActorProfileRequestBusiness.PROCESS.equals(arguments.getActionIdentifier())) {
+			ActorProfileRequestDto actorScopeRequest = (ActorProfileRequestDto) CollectionHelper.getFirst(updatables);
+			return ((ActorProfileRequestRepresentation)representation).process((List<ActorProfileRequestDto>) CollectionHelper.cast(ActorProfileRequestDto.class, updatables)
+					, actorScopeRequest == null ? null : actorScopeRequest.get__auditWho__());
 		}
 		
 		if(arguments != null && ActorBusiness.CREATE_SCOPES.equals(arguments.getActionIdentifier()))
