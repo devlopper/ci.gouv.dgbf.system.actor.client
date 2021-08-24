@@ -41,7 +41,7 @@ public class ActorProfileRequestFilterController extends AbstractFilterControlle
 	private Boolean processedInitial;
 	private Boolean grantedInitial;
 	
-	private Boolean scopeTypeRequestable;
+	private Boolean profileRequestable;
 	private String actionIdentifier;
 	
 	public ActorProfileRequestFilterController() {
@@ -229,7 +229,7 @@ public class ActorProfileRequestFilterController extends AbstractFilterControlle
 	
 	/**/
 	
-	public static ActorProfileRequestFilterController instantiate(Actor actor,String scopeTypeCode) {
+	public static ActorProfileRequestFilterController instantiate(Actor actor) {
 		ActorProfileRequestFilterController filterController = new ActorProfileRequestFilterController();
 		if(actor != null)
 			filterController.setActorInitial(actor);

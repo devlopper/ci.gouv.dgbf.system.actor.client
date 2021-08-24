@@ -20,6 +20,8 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.ActorController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
+import ci.gouv.dgbf.system.actor.client.controller.impl.actor.ActorProfileRequestFilterController;
+import ci.gouv.dgbf.system.actor.client.controller.impl.actor.ActorProfileRequestListPage;
 import ci.gouv.dgbf.system.actor.client.controller.impl.actor.ActorScopeRequestFilterController;
 import ci.gouv.dgbf.system.actor.client.controller.impl.actor.ActorScopeRequestListPage;
 import ci.gouv.dgbf.system.actor.client.controller.impl.privilege.ProfileListPage;
@@ -42,6 +44,7 @@ public class MyAccountIndexPage extends AbstractPageContainerManagedImpl impleme
 	private ScopeFilterController scopeFilterController;
 	private ProfileFilterController profileFilterController;
 	private ActorScopeRequestFilterController actorScopeRequestFilterController;
+	private ActorProfileRequestFilterController actorProfileRequestFilterController;
 	
 	@Override
 	protected void __listenPostConstruct__() {
@@ -94,12 +97,12 @@ public class MyAccountIndexPage extends AbstractPageContainerManagedImpl impleme
 	
 	private void buildTabScopes(Collection<Map<Object,Object>> cellsMaps) {
 		buildScopesDataTable(cellsMaps);
-		buildScopeRequestsDataTable(cellsMaps,ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_SECTION);	
+		buildScopeRequestsDataTable(cellsMaps,ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_SECTION);
 	}
 	
 	private void buildTabProfiles(Collection<Map<Object,Object>> cellsMaps) {
 		buildProfilesDataTable(cellsMaps);
-		
+		buildProfileRequestsDataTable(cellsMaps);
 	}
 	
 	private void buildTabRequests(Collection<Map<Object,Object>> cellsMaps) {
@@ -158,7 +161,23 @@ public class MyAccountIndexPage extends AbstractPageContainerManagedImpl impleme
 		},Cell.FIELD_WIDTH,12));
 	}
 	
-	
+	private void buildProfileRequestsDataTable(Collection<Map<Object,Object>> cellsMaps) {
+		actorProfileRequestFilterController = MyAccountActorProfileRequestListPage.instantiateFilterController();
+		actorProfileRequestFilterController.build();
+		actorProfileRequestFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(OUTCOME).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_MY_REQUESTS);
+		cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
+			@Override
+			public Object buildControl(Cell cell) {
+				DataTable dataTable = MyAccountActorProfileRequestListPage.buildDataTable(DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER
+						,new MyAccountActorProfileRequestListPage.LazyDataModelListenerImpl().setFilterController(actorProfileRequestFilterController)
+						,ActorProfileRequestListPage.OUTCOME,OUTCOME
+						,DataTable.ConfiguratorImpl.FIELD_TITLE_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfileRequest.LABEL);
+				if(selectedTab.getParameterValue().equals(TAB_MY_VISIBILITIES))
+					dataTable.getFilterController().setRenderType(AbstractFilterController.RenderType.NONE);
+				return dataTable;
+			}
+		},Cell.FIELD_WIDTH,12));		
+	}
 	
 	/**/
 	

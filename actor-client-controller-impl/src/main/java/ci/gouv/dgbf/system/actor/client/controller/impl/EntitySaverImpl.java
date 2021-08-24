@@ -351,7 +351,7 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 		
 		if(arguments != null && ActorProfileRequestBusiness.CANCEL.equals(arguments.getActionIdentifier())) {
 			ActorProfileRequestDto actorScopeRequest = (ActorProfileRequestDto) CollectionHelper.getFirst(updatables);
-			return ((ActorProfileRequestRepresentation)representation).cancel(actorScopeRequest.getActorsIdentifiers()
+			return ((ActorProfileRequestRepresentation)representation).cancel(List.of(actorScopeRequest.getIdentifier())
 					, actorScopeRequest.get__auditWho__(),actorScopeRequest.getIgnoreExisting());
 		}
 		

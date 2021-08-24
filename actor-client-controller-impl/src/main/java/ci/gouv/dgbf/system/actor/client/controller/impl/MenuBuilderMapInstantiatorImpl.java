@@ -44,12 +44,15 @@ public class MenuBuilderMapInstantiatorImpl extends org.cyk.utility.client.contr
 				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Demandes").setCommandableNavigationIdentifier("requestIndexView"))
 				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Bordereaux").setCommandableNavigationIdentifier("requestDispatchSlipIndexView"))
 				
-				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Demande domaines").setCommandableNavigationIdentifier("actorScopeRequestListView"))
+				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Liste Demande profile").setCommandableNavigationIdentifier("actorProfileRequestListView"))
+				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Traiter Demande profile").setCommandableNavigationIdentifier("actorProfileRequestProcessManyView"))
 				
-				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Mes visibilitiés").setCommandableNavigationIdentifier("myAccountScopeListView"))
-				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Mes Demandes de visibilités").setCommandableNavigationIdentifier("myAccountActorScopeRequestListView"))
+				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Liste Demande domaines").setCommandableNavigationIdentifier("actorScopeRequestListView"))
+				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Traiter Demande domaine").setCommandableNavigationIdentifier("actorScopeRequestProcessManyView"))
+				
+				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Mon compte").setCommandableNavigationIdentifier("myAccountIndexView"))
 							
-				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Traiter Demandes domaines").setCommandableNavigationIdentifier("actorScopeRequestProcessManyView"))
+				
 				
 				//.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Domaines d'administration").setCommandableNavigationIdentifier("clusterListView"))
 				//.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Habilitations").setCommandableNavigationIdentifier("clusterPrivilegesListView"))
