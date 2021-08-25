@@ -34,7 +34,6 @@ import org.cyk.utility.persistence.query.Filter;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Profile;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ProfileType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Service;
-import ci.gouv.dgbf.system.actor.client.controller.impl.Helper;
 import ci.gouv.dgbf.system.actor.client.controller.impl.scope.ProfileFilterController;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import lombok.Getter;
@@ -62,8 +61,8 @@ public class ProfileListPage extends AbstractEntityListPageContainerManagedImpl<
 		super.__listenPostConstruct__();		
 		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS
 				,CollectionHelper.listOf(
-					MapHelper.instantiate(Cell.FIELD_CONTROL,Helper.buildProfileListPageTabMenu(profileType),Cell.FIELD_WIDTH,12)
-					,MapHelper.instantiate(Cell.FIELD_CONTROL,Boolean.TRUE.equals(isService) ? ServiceListPage.buildDataTable() : dataTable,Cell.FIELD_WIDTH,12)
+					/*MapHelper.instantiate(Cell.FIELD_CONTROL,Helper.buildProfileListPageTabMenu(profileType),Cell.FIELD_WIDTH,12)
+					,*/MapHelper.instantiate(Cell.FIELD_CONTROL,Boolean.TRUE.equals(isService) ? ServiceListPage.buildDataTable() : dataTable,Cell.FIELD_WIDTH,12)
 					)
 			);
 	}
