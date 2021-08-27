@@ -106,7 +106,8 @@ public class MyAccountIndexPage extends AbstractPageContainerManagedImpl impleme
 	}
 	
 	private void buildTabRequests(Collection<Map<Object,Object>> cellsMaps) {
-		buildScopeRequestsDataTable(cellsMaps,null);	
+		buildProfileRequestsDataTable(cellsMaps);
+		buildScopeRequestsDataTable(cellsMaps,null);			
 	}
 	
 	private void buildLayout(Collection<Map<Object,Object>> cellsMaps) {
@@ -181,10 +182,10 @@ public class MyAccountIndexPage extends AbstractPageContainerManagedImpl impleme
 	
 	/**/
 	
-	private static final String TAB_MY_VISIBILITIES = "mesvisibilites";	
-	private static final String TAB_MY_PROFILES = "mesprofiles";
-	private static final String TAB_MY_REQUESTS = "mesdemandes";
-	private static final List<TabMenu.Tab> TABS = List.of(
+	public static final String TAB_MY_VISIBILITIES = "mesvisibilites";	
+	public static final String TAB_MY_PROFILES = "mesprofiles";
+	public static final String TAB_MY_REQUESTS = "mesdemandes";
+	public static final List<TabMenu.Tab> TABS = List.of(
 		new TabMenu.Tab("Mes visibilités",TAB_MY_VISIBILITIES)
 		,new TabMenu.Tab("Mes profiles",TAB_MY_PROFILES)
 		,new TabMenu.Tab("Mes demandes",TAB_MY_REQUESTS)

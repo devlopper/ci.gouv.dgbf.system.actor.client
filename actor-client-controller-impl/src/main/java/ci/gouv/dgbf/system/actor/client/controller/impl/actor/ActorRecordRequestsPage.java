@@ -14,6 +14,7 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.client.controller.web.jsf.Redirector;
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
@@ -52,9 +53,13 @@ public class ActorRecordRequestsPage extends AbstractEntityEditPageContainerMana
 		.enableValueChangeListener(List.of(form.getInput(SelectOneCombo.class, Actor.FIELD_SCOPES)));
 	}
 	
+	public static String getWindowTitle() {
+		return "Demande";
+	}
+	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Demande";
+		return getWindowTitle();
 	}
 	
 	/**/
@@ -92,6 +97,11 @@ public class ActorRecordRequestsPage extends AbstractEntityEditPageContainerMana
 		@Override
 		public void act(Form form) {
 			__inject__(ActorController.class).recordRequests((Actor) form.getEntity());
+		}
+		
+		@Override
+		public void redirect(Form form, Object request) {
+			Redirector.getInstance().redirect(new Redirector.Arguments().outcome(OUTCOME));
 		}
 	}
 	

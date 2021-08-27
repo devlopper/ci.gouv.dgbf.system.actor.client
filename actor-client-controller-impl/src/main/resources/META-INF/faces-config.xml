@@ -804,6 +804,12 @@
 		<!-- My Account  -->
 		
 		<navigation-case>
+			<from-outcome>myAccountActorRecordRequestsView</from-outcome>
+			<to-view-id>/private/myaccount/recordrequests.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>myAccountScopeListView</from-outcome>
 			<to-view-id>/private/myaccount/scope/list.jsf</to-view-id>
 			<redirect />

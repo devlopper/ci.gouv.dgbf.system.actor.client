@@ -46,14 +46,14 @@ public interface MyAccountTheme {
 						item.setOutcome("myAccountProfileView");
 						model.addElement(item);
 						*/
-						item = new DefaultMenuItem("Mes visibilités");
-						item.setOutcome("myAccountScopeListView");
+						item = new DefaultMenuItem("Demander habilitations");
+						item.setOutcome(MyAccountActorRecordRequestsPage.OUTCOME);
 						model.addElement(item);
-						
+						/*
 						item = new DefaultMenuItem("Mes demandes de visibilités");
 						item.setOutcome("myAccountActorScopeRequestListView");
 						model.addElement(item);
-						
+						*/
 						arguments.put(Tab.FIELD_MENU, Menu.build(Menu.FIELD_MODEL,model));
 					}else if(MENU_ITEM_REQUESTS.equals(name)) {
 						arguments.put(Tab.FIELD_ICON, "fa fa-file");
