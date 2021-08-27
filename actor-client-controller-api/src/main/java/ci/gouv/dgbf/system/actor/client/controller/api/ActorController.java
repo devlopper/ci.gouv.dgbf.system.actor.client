@@ -17,6 +17,8 @@ import ci.gouv.dgbf.system.actor.server.representation.entities.ActorDto;
 
 public interface ActorController extends ControllerEntity<Actor> {
 
+	Object recordRequests(Actor actor);
+	
 	default Actor getOneToBeCreatedByPublic() {
 		ActorDto actorDto = ActorRepresentation.getProxy().getOneToBeCreatedByPublic();
 		if(actorDto == null)

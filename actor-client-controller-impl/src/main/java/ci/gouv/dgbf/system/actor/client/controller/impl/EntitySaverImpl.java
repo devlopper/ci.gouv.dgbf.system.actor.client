@@ -139,7 +139,9 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				arguments.setRepresentation(ActorScopeRepresentation.getProxy());
 			else if(ActorBusiness.CREATE_FROM_PUBLIC.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ActorRepresentation.getProxy());
-			
+			else if(ActorBusiness.RECORD_REQUESTS.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ActorRepresentation.getProxy());
+						
 			else if(ServiceBusiness.DELETE_ALL_KEYCLOAK_AUTHORIZATION_POLICIES.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ServiceRepresentation.getProxy());
 			else if(ServiceBusiness.DELETE_ALL_KEYCLOAK_AUTHORIZATION_RESOURCES.equals(arguments.getRepresentationArguments().getActionIdentifier()))
@@ -448,6 +450,21 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 					actors.add(actor);
 				}
 			return ((ActorRepresentation)representation).deleteProfiles(actors);
+		}
+		
+		if(arguments != null && ActorBusiness.RECORD_REQUESTS.equals(arguments.getActionIdentifier())) {
+			ActorDto actor = (ActorDto) CollectionHelper.getFirst(creatables);
+			return ((ActorRepresentation)representation).recordRequests(actor.getActorsIdentifiers(), actor.getProfilesIdentifiers(), actor.getScopesIdentifiers()
+					, actor.get__auditWho__(),actor.getIgnoreExisting());
+			/*
+			Collection<ActorDto> actors = new ArrayList<>();,
+			if(CollectionHelper.isNotEmpty(deletables))
+				for(Object index : deletables) {
+					ActorDto actor = (ActorDto) index;
+					actors.add(actor);
+				}
+			return ((ActorRepresentation)representation).deleteProfiles(actors);
+			*/
 		}
 		
 		if(arguments != null && ProfileBusiness.CREATE.equals(arguments.getActionIdentifier())) {

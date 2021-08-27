@@ -26,8 +26,9 @@ public class ActorScopeRequest extends AbstractActorRequest implements Serializa
 	private Scope scope;
 	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceMany @InputChoiceManyAutoComplete
 	private Collection<Scope> scopes;
-	private String scopeAsString;	
+	private String scopeAsString;
 	private Collection<String> scopesIdentifiers;
+	
 	/*
 	@Override
 	public ActorScopeRequest setActorsIdentifiers(Collection<String> actorsIdentifiers) {

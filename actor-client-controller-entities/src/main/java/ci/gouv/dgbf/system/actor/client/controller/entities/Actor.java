@@ -12,27 +12,43 @@ import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.constant.ConstantEmpty;
 import org.cyk.utility.__kernel__.field.FieldHelper;
-import org.cyk.utility.__kernel__.object.__static__.controller.AbstractDataIdentifiableSystemStringIdentifiableBusinessStringImpl;
+import org.cyk.utility.__kernel__.object.__static__.controller.AbstractDataIdentifiableSystemStringIdentifiableBusinessStringAuditedImpl;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Choices;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Choices.Count;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Input;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoice;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceMany;
+import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceManyAutoComplete;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceManyCheck;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceOneAutoComplete;
+import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceOneCombo;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceOneRadio;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputPass;
+import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputTextarea;
 import org.cyk.utility.__kernel__.string.StringHelper;
 
-import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter @Setter @NoArgsConstructor @Accessors(chain=true)
-public class Actor extends AbstractDataIdentifiableSystemStringIdentifiableBusinessStringImpl implements Serializable {
+public class Actor extends AbstractDataIdentifiableSystemStringIdentifiableBusinessStringAuditedImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
+	
+	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceMany @InputChoiceManyAutoComplete
+	protected Collection<Actor> actors;	
+	protected Collection<String> actorsIdentifiers;
+	
+	@Input @InputChoice(choices = @Choices(count = Count.ALL)) @InputChoiceOneCombo
+	private ScopeType scopeType;
+	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceMany @InputChoiceManyAutoComplete
+	private Collection<Scope> scopes;
+	private Collection<String> scopesIdentifiers;
+	
+	@Input @InputChoice(choices = @Choices(count = Count.AUTO_COMPLETE)) @InputChoiceMany @InputChoiceManyAutoComplete
+	private Collection<Profile> profiles;
+	private Collection<String> profilesIdentifiers;
 	
 	private Identity identity;
 	private String creationDateAsString;
@@ -55,11 +71,11 @@ public class Actor extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 	@Input @InputChoice(choices = @Choices(count = Count.ALL)) @InputChoiceOneRadio private Civility civility;
 	@Input @InputChoice(choices = @Choices(count = Count.ALL)) @InputChoiceOneRadio private IdentityGroup group;
 	
-	@Input @InputChoice(choices = @Choices(count = Count.ALL)) @InputChoiceMany @InputChoiceManyCheck
-	private Collection<Function> functions;
+	@Input @InputTextarea protected String comment;	
+	protected Boolean ignoreExisting;
 	
 	@Input @InputChoice(choices = @Choices(count = Count.ALL)) @InputChoiceMany @InputChoiceManyCheck
-	private Collection<Profile> profiles;
+	private Collection<Function> functions;
 	
 	private Collection<String> sectionsIdentifiers;
 	private Collection<String> profilesCodes;
@@ -67,9 +83,7 @@ public class Actor extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 	private Collection<String> functionsCodes;
 	private Collection<Privilege> privileges;
 	private Collection<Privilege> visibleModules;
-	private Collection<Scope> scopes;
 	private Collection<Scope> visibleSections;
-	private Collection<String> scopesIdentifiers;
 	private Collection<String> budgetaryFunctionsAsStrings;
 	private Boolean emailSendableAfterCreation;
 	
@@ -120,6 +134,8 @@ public class Actor extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 		return code+" - "+getNames();
 	}
 	
+	public static final String FIELD_COMMENT = "comment";
+	public static final String FIELD_ACTORS = "actors";
 	public static final String FIELD_FIRST_NAME = "firstName";
 	public static final String FIELD_LAST_NAMES = "lastNames";
 	public static final String FIELD_NAMES = "names";
@@ -141,6 +157,8 @@ public class Actor extends AbstractDataIdentifiableSystemStringIdentifiableBusin
 	public static final String FIELD_PASSWORD = "password";
 	public static final String FIELD_PASSWORD_CONFIRMATION = "passwordConfirmation";
 	public static final String FIELD_FUNCTIONS = "functions";
+	public static final String FIELD_SCOPE_TYPE = "scopeType";
+	public static final String FIELD_SCOPES = "scopes";
 	public static final String FIELD_PROFILES = "profiles";
 	public static final String FIELD_PROFILES_CODES = "profilesCodes";
 	public static final String FIELD_PROFILES_CODES_AS_STRING = "profilesCodesAsString";

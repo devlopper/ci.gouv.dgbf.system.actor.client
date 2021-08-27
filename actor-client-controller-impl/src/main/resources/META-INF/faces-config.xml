@@ -17,6 +17,12 @@
 		<!-- Actor -->
 		
 		<navigation-case>
+			<from-outcome>actorRecordRequestsView</from-outcome>
+			<to-view-id>/private/actor/recordrequests.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>actorCreateFromPublicView</from-outcome>
 			<to-view-id>/creation_compte.jsf</to-view-id>
 			<redirect />
