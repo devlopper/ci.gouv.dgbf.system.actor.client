@@ -669,14 +669,15 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			}
 			return map;
 		}
-		/*
+		
 		public Object getCellValueByRecordByColumn(Object record, Integer recordIndex, Column column, Integer columnIndex) {
 			Object value = super.getCellValueByRecordByColumn(record, recordIndex, column, columnIndex);		
-			if(value instanceof String)
-				return StringHelper.getFirstWord((String)value);			
+			if(column != null && Assignments.FIELD_ACCOUNTING_HOLDER_AS_STRING.equals(column.getFieldName()) 
+					&& StringHelper.isNotBlank(((Assignments)record).getAccountingHolderAsString()))
+				return (String)value+String.format("(%s)",((Assignments)record).getAccountingTresorIdentifier());
 			return value;
 		}
-		
+		/*
 		@Override
 		public String getTooltipByRecord(Object record, Integer recordIndex) {
 			if(showTooltip == null || Boolean.TRUE.equals(showTooltip)) {
@@ -890,6 +891,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			Arguments<Assignments> arguments = super.instantiateArguments(lazyDataModel);
 			ArrayList<String> list = new ArrayList<>();
 			list.addAll(List.of(getFieldsAllStringsCodesOnly()));
+			list.add(ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments.FIELD_ACCOUNTING_TRESOR_IDENTIFIER);
 			arguments.getRepresentationArguments().getQueryExecutorArguments().setProcessableTransientFieldsNames(list);
 			return arguments;
 		}

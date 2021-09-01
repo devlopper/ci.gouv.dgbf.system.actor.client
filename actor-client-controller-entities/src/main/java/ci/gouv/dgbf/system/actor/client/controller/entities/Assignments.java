@@ -45,6 +45,7 @@ public class Assignments extends AbstractDataIdentifiableSystemStringAuditedImpl
 	private String financialControllerAssistantAsString;	
 	private String accountingHolderAsString;
 	private String accountingAssistantAsString;
+	private String accountingTresorIdentifier;
 	
 	/**/
 	
