@@ -31,6 +31,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityL
 import org.cyk.utility.controller.Arguments;
 import org.cyk.utility.persistence.query.Filter;
 
+import ci.gouv.dgbf.system.actor.client.controller.api.ProfileTypeController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Profile;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ProfileType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Service;
@@ -56,9 +57,9 @@ public class ProfileListPage extends AbstractEntityListPageContainerManagedImpl<
 	
 	@Override
 	protected void __listenPostConstruct__() {
-		profileType = WebController.getInstance().getRequestParameterEntityAsParent(ProfileType.class);
+		profileType = __inject__(ProfileTypeController.class).getByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.ENTITY_IDENTIFIER));
 		isService = ValueHelper.convertToBoolean(WebController.getInstance().getRequestParameter(ParameterName.stringify(Service.class)));
-		super.__listenPostConstruct__();		
+		super.__listenPostConstruct__();
 		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS
 				,CollectionHelper.listOf(
 					/*MapHelper.instantiate(Cell.FIELD_CONTROL,Helper.buildProfileListPageTabMenu(profileType),Cell.FIELD_WIDTH,12)
@@ -161,7 +162,7 @@ public class ProfileListPage extends AbstractEntityListPageContainerManagedImpl<
 			}else if(Profile.FIELD_TYPE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Type");
 				map.put(Column.FIELD_WIDTH, "100");
-			}else if(Profile.FIELD_REQUESTABLE.equals(fieldName)) {
+			}else if(Profile.FIELD_REQUESTABLE.equals(fieldName) || Profile.FIELD_REQUESTABLE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Demandable");
 				map.put(Column.FIELD_WIDTH, "100");
 			}else if(Profile.FIELD_ORDER_NUMBER.equals(fieldName)) {
@@ -213,8 +214,9 @@ public class ProfileListPage extends AbstractEntityListPageContainerManagedImpl<
 		@Override
 		public Arguments<Profile> instantiateArguments(LazyDataModel<Profile> lazyDataModel) {
 			Arguments<Profile> arguments = super.instantiateArguments(lazyDataModel);
-			arguments.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Profile.FIELD_TYPE_AS_STRING);
-			arguments.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Profile.FIELD_NUMBER_OF_ACTORS);
+			arguments.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Profile.FIELD_TYPE_AS_STRING
+					,ci.gouv.dgbf.system.actor.server.persistence.entities.Profile.FIELD_NUMBER_OF_ACTORS
+					,ci.gouv.dgbf.system.actor.server.persistence.entities.Profile.FIELDS_REQUESTABLE_AND_REQUESTABLE_AS_STRING);
 			return arguments;
 		}
 	

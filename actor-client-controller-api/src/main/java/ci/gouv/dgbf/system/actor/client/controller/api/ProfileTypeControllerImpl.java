@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.AbstractControllerEntityImpl;
 import org.cyk.utility.controller.Arguments;
 import org.cyk.utility.controller.EntityReader;
@@ -18,6 +19,14 @@ public class ProfileTypeControllerImpl extends AbstractControllerEntityImpl<Prof
 	@Override
 	public Collection<ProfileType> read() {
 		return EntityReader.getInstance().readMany(ProfileType.class, new Arguments<ProfileType>().queryIdentifierReadDynamicMany(ProfileType.class));
+	}
+
+	@Override
+	public ProfileType getByIdentifier(String identifier) {
+		if(StringHelper.isBlank(identifier))
+			return null;
+		return EntityReader.getInstance().readOne(ProfileType.class, new Arguments<ProfileType>().queryIdentifierReadDynamicOne(ProfileType.class)
+				.filterByIdentifier(identifier));
 	}
 
 }

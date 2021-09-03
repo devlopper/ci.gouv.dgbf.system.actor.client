@@ -91,7 +91,7 @@ public class ScopeTypeListPage extends AbstractEntityListPageContainerManagedImp
 				map.put(Column.FIELD_WIDTH, "150");
 				map.put(Column.FIELD_INPUTABLE, Boolean.TRUE);
 			}else if(ScopeType.FIELD_REQUESTABLE_AS_STRING.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Demandable ?");
+				map.put(Column.FIELD_HEADER_TEXT, "Demandable");
 				map.put(Column.FIELD_WIDTH, "100");
 				map.put(Column.FIELD_INPUTABLE, Boolean.TRUE);
 			}

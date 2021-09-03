@@ -36,6 +36,7 @@ public class Profile extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	
 	@Input @InputBooleanButton
 	private Boolean requestable;
+	private String requestableAsString;
 	
 	private Boolean used;
 	private String usedAsString;
@@ -46,6 +47,7 @@ public class Profile extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	public static final String FIELD_TYPE_IDENTIFIER = "typeIdentifier";
 	public static final String FIELD_ORDER_NUMBER = "orderNumber";
 	public static final String FIELD_REQUESTABLE = "requestable";
+	public static final String FIELD_REQUESTABLE_AS_STRING = "requestableAsString";
 	public static final String FIELD_PRIVILEGES_AS_STRINGS = "privilegesAsStrings";
 	
 	public static final String FIELD_USED = "used";

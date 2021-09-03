@@ -179,7 +179,7 @@ public class ProfileFilterController extends AbstractFilterController implements
 			columnsFieldsNames.add(Profile.FIELD_TYPE_AS_STRING);
 		columnsFieldsNames.addAll(List.of(Profile.FIELD_CODE,Profile.FIELD_NAME));
 		if(isUsedForLoggedUser == null || !isUsedForLoggedUser)
-			columnsFieldsNames.add(Profile.FIELD_NUMBER_OF_ACTORS);
+			columnsFieldsNames.addAll(List.of(Profile.FIELD_NUMBER_OF_ACTORS,Profile.FIELD_REQUESTABLE_AS_STRING));
 		return columnsFieldsNames;
 	}
 	
