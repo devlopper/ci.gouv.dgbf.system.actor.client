@@ -9,5 +9,6 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
 public interface ScopeTypeController extends ControllerEntity<ScopeType> {
 
 	Collection<ScopeType> read();
-	Collection<ScopeType> readRequestable();
+	Collection<ScopeType> readRequestable();	
+	ScopeType prepareEdit(String identifier);
 }

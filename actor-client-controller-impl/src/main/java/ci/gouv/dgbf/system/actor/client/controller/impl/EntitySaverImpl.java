@@ -30,6 +30,7 @@ import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestDispatchSlipBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestScopeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.ScopeTypeBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeTypeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ServiceBusiness;
 import ci.gouv.dgbf.system.actor.server.representation.api.AccountRequestRepresentation;
@@ -49,6 +50,7 @@ import ci.gouv.dgbf.system.actor.server.representation.api.RequestRepresentation
 import ci.gouv.dgbf.system.actor.server.representation.api.RequestScopeFunctionRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ScopeFunctionRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ScopeTypeFunctionRepresentation;
+import ci.gouv.dgbf.system.actor.server.representation.api.ScopeTypeRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ServiceRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.entities.AccountRequestDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorDto;
@@ -67,6 +69,7 @@ import ci.gouv.dgbf.system.actor.server.representation.entities.RequestDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.RequestScopeFunctionDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ScopeDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ScopeFunctionDto;
+import ci.gouv.dgbf.system.actor.server.representation.entities.ScopeTypeDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ScopeTypeFunctionDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ServiceDto;
 
@@ -500,6 +503,14 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				profiles.add(profile);
 			}
 			return ((ProfileRepresentation)representation).savePrivileges(profiles);
+		}
+		
+		if(arguments != null && ScopeTypeBusiness.SAVE.equals(arguments.getActionIdentifier())) {
+			if(CollectionHelper.isEmpty(creatables) && CollectionHelper.isEmpty(updatables))
+				throw new RuntimeException("Type de domaine à enregistrer obligatoire");		
+			ScopeTypeDto scopeType = (ScopeTypeDto) (CollectionHelper.isEmpty(creatables) ? CollectionHelper.getFirst(updatables) : CollectionHelper.getFirst(creatables));
+			return ((ScopeTypeRepresentation)representation).save(scopeType.getIdentifier(),scopeType.getCode(), scopeType.getName()
+					, scopeType.getOrderNumber(), scopeType.getRequestable(), SessionHelper.getUserName());
 		}
 		
 		if(arguments != null && ServiceBusiness.DELETE_ALL_KEYCLOAK_AUTHORIZATION_POLICIES.equals(arguments.getActionIdentifier())) {

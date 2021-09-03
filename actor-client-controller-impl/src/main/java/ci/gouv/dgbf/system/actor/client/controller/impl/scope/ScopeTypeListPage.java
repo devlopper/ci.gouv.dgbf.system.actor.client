@@ -18,6 +18,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Laz
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.AbstractMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
+import org.cyk.utility.controller.Arguments;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
@@ -33,13 +34,13 @@ public class ScopeTypeListPage extends AbstractEntityListPageContainerManagedImp
 		DataTable dataTable = buildDataTable();		
 		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();
 		dataTable.addRecordMenuItemByArgumentsOpenViewInDialogUpdate();
-		dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();	
+		//dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();	
 		return dataTable;
 	}
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Liste des domaines de visibilités";
+		return ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.LABEL;
 	}
 	
 	/**/
@@ -50,8 +51,7 @@ public class ScopeTypeListPage extends AbstractEntityListPageContainerManagedImp
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, ScopeType.class);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES
-				, CollectionHelper.listOf(ScopeType.FIELD_CODE,ScopeType.FIELD_NAME,ScopeType.FIELD_SCOPE_FUNCTION_CODE_SCRIPT,ScopeType.FIELD_SCOPE_FUNCTION_NAME_SCRIPT
-						,ScopeType.FIELD_ORDER_NUMBER));
+				, CollectionHelper.listOf(ScopeType.FIELD_CODE,ScopeType.FIELD_NAME,ScopeType.FIELD_ORDER_NUMBER,ScopeType.FIELD_REQUESTABLE_AS_STRING));
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl());
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl());
@@ -85,10 +85,14 @@ public class ScopeTypeListPage extends AbstractEntityListPageContainerManagedImp
 				map.put(Column.FIELD_INPUTABLE, Boolean.TRUE);
 			}else if(ScopeType.FIELD_ORDER_NUMBER.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Numéro d'ordre");
-				map.put(Column.FIELD_WIDTH, "150");
+				map.put(Column.FIELD_WIDTH, "100");
 			}else if(ScopeType.FIELD_SCOPE_FUNCTION_DERIVABLE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Poste dérivable ?");
 				map.put(Column.FIELD_WIDTH, "150");
+				map.put(Column.FIELD_INPUTABLE, Boolean.TRUE);
+			}else if(ScopeType.FIELD_REQUESTABLE_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Demandable ?");
+				map.put(Column.FIELD_WIDTH, "100");
 				map.put(Column.FIELD_INPUTABLE, Boolean.TRUE);
 			}
 			return map;
@@ -110,7 +114,15 @@ public class ScopeTypeListPage extends AbstractEntityListPageContainerManagedImp
 		
 		@Override
 		public String getReadQueryIdentifier(LazyDataModel<ScopeType> lazyDataModel) {
-			return ScopeTypeQuerier.QUERY_IDENTIFIER_READ_ORDER_BY_ORDER_NUMBER_ASCENDING;
+			return ScopeTypeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC;
+		}
+		
+		@Override
+		public Arguments<ScopeType> instantiateArguments(LazyDataModel<ScopeType> lazyDataModel) {
+			Arguments<ScopeType> arguments = super.instantiateArguments(lazyDataModel);
+			arguments.projections(ScopeType.FIELD_IDENTIFIER,ScopeType.FIELD_CODE,ScopeType.FIELD_NAME,ScopeType.FIELD_ORDER_NUMBER);
+			arguments.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.FIELDS_REQUESTABLE_AND_REQUESTABLE_AS_STRING);
+			return arguments;
 		}
 	}
 }

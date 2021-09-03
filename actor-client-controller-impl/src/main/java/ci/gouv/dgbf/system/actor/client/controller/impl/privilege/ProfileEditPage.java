@@ -70,7 +70,7 @@ public class ProfileEditPage extends AbstractEntityEditPageContainerManagedImpl<
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Enregistrement de profile";
+		return "Enregistrement "+ci.gouv.dgbf.system.actor.server.persistence.entities.Profile.LABEL;
 	}
 	
 	public static class FormListenerImpl extends Form.Listener.AbstractImpl implements Serializable {

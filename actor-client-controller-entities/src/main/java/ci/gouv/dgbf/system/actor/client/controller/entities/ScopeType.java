@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import org.cyk.utility.__kernel__.object.__static__.controller.AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Input;
+import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputBooleanButton;
+import org.cyk.utility.client.controller.component.annotation.InputNumber;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,8 +15,9 @@ import lombok.Setter;
 public class ScopeType extends AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	@Input private Byte orderNumber;
-	private Boolean requestable;
+	@Input @InputNumber private Byte orderNumber;
+	@Input @InputBooleanButton private Boolean requestable;
+	private String requestableAsString;
 	private String scopeFunctionCodeScript;
 	private String scopeFunctionNameScript;
 	private Boolean scopeFunctionDerivable;
@@ -84,6 +87,8 @@ public class ScopeType extends AbstractDataIdentifiableSystemStringIdentifiableB
 	}
 	
 	public static final String FIELD_ORDER_NUMBER = "orderNumber";
+	public static final String FIELD_REQUESTABLE = "requestable";
+	public static final String FIELD_REQUESTABLE_AS_STRING = "requestableAsString";
 	public static final String FIELD_SCOPE_FUNCTION_DERIVABLE = "scopeFunctionDerivable";
 	public static final String FIELD_SCOPE_FUNCTION_CODE_SCRIPT = "scopeFunctionCodeScript";
 	public static final String FIELD_SCOPE_FUNCTION_NAME_SCRIPT = "scopeFunctionNameScript";
