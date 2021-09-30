@@ -23,6 +23,7 @@ import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.AssignmentsBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ExecutionImputationBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.IdentificationFormAttributeBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.PrivilegeBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
@@ -42,6 +43,7 @@ import ci.gouv.dgbf.system.actor.server.representation.api.ActorScopeRequestRepr
 import ci.gouv.dgbf.system.actor.server.representation.api.AssignmentsRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ExecutionImputationRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.IdentificationFormAttributeRepresentation;
+import ci.gouv.dgbf.system.actor.server.representation.api.PrivilegeRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfileFunctionRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfilePrivilegeRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ProfileRepresentation;
@@ -79,6 +81,9 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 	@Override
 	protected <T> void prepare(Class<T> controllerEntityClass,Arguments<T> arguments) {
 		if(arguments.getRepresentationArguments() != null && arguments.getRepresentation() == null) {
+			if(PrivilegeBusiness.REFRESH.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(PrivilegeRepresentation.getProxy());
+			
 			if(ProfilePrivilegeBusiness.SAVE.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ProfilePrivilegeRepresentation.getProxy());
 			
@@ -230,6 +235,9 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 	
 	@Override
 	protected <T> Response save(Object representation, Collection<?> creatables, Collection<?> updatables,Collection<?> deletables, org.cyk.utility.representation.Arguments arguments) {
+		if(arguments != null && PrivilegeBusiness.REFRESH.equals(arguments.getActionIdentifier()))
+			return ((PrivilegeRepresentation)representation).refresh();
+		
 		if(arguments != null && ProfilePrivilegeBusiness.SAVE.equals(arguments.getActionIdentifier())) {
 			Collection<ProfilePrivilegeDto> dtos = new ArrayList<>();
 			if(CollectionHelper.isNotEmpty(creatables))

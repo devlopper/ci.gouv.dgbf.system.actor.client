@@ -9,18 +9,23 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
+import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Tree;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.controller.Arguments;
 import org.cyk.utility.controller.EntityReader;
-import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.__kernel__.string.StringHelper;
-import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Tree;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Privilege;
 import ci.gouv.dgbf.system.actor.client.controller.entities.PrivilegeType;
+import ci.gouv.dgbf.system.actor.server.business.api.PrivilegeBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeTypeQuerier;
 import lombok.Getter;
@@ -32,6 +37,7 @@ public class PrivilegeTreePage extends AbstractPageContainerManagedImpl implemen
 	private Collection<PrivilegeType> privilegeTypes;
 	private Collection<Privilege> privileges;
 	private TreeNode root;
+	private CommandButton refreshCommandButton;
 	
 	@Override
 	protected void __listenPostConstruct__() {
@@ -47,7 +53,20 @@ public class PrivilegeTreePage extends AbstractPageContainerManagedImpl implemen
 			//build tree
 			if(CollectionHelper.isNotEmpty(privileges))
 				root = instantiateTreeNode(privileges,null);
-		}		
+		}
+		
+		refreshCommandButton = CommandButton.build(CommandButton.FIELD_VALUE,"Rafraichir",CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
+				,CommandButton.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+			@Override
+			protected Object __runExecuteFunction__(AbstractAction action) {
+				Privilege privilege = new Privilege();
+				Arguments<Privilege> arguments = new Arguments<Privilege>().addCreatablesOrUpdatables(privilege);
+				arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments()
+						.setActionIdentifier(PrivilegeBusiness.REFRESH));
+				EntitySaver.getInstance().save(Privilege.class, arguments);
+				return null;
+			}
+		});
 	}
 	
 	@Override
