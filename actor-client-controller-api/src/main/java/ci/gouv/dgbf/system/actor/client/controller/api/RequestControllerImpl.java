@@ -10,5 +10,10 @@ import org.cyk.utility.client.controller.AbstractControllerEntityImpl;
 @ApplicationScoped
 public class RequestControllerImpl extends AbstractControllerEntityImpl<Request> implements RequestController,Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
+	@Override
+	public Request getModelByElectronicMailAddress(String electronicMailAddress) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -18,6 +18,13 @@ public interface RequestController extends ControllerEntity<Request> {
 		return MappingHelper.getSource(response.readEntity(RequestDto.class), Request.class);
 	}
 	
+	default Request getOneToBeCreatedByTypeIdentifierByElectronicMailAddress(String typeIdentifier,String electronicMailAddress) {
+		Response response = RequestRepresentation.getProxy().getOneToBeCreatedByTypeIdentifierByElectronicMailAddress(typeIdentifier, electronicMailAddress);
+		if(response == null)
+			return null;
+		return MappingHelper.getSource(response.readEntity(RequestDto.class), Request.class);
+	}
+	
 	default byte[] getPhotoByIdentifier(String identifier) {
 		Response response = RequestRepresentation.getProxy().getPhotoByIdentifier(identifier);
 		if(response == null)
@@ -45,4 +52,7 @@ public interface RequestController extends ControllerEntity<Request> {
 			return null;
 		return response.hasEntity() ? response.readEntity(byte[].class) : null;
 	}
+
+	Request getModelByElectronicMailAddress(String electronicMailAddress);
+	//Boolean existByElectronicMailAddress(String electronicMailAddress);
 }

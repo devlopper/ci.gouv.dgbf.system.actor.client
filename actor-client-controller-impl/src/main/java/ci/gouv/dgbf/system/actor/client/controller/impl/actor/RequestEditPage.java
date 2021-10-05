@@ -48,6 +48,7 @@ import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.primefaces.PrimeFaces;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.ActorController;
+import ci.gouv.dgbf.system.actor.client.controller.api.RequestController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
@@ -79,7 +80,7 @@ import lombok.experimental.Accessors;
 public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<Request> implements Serializable {
 
 	private ScopeFunctionSelectionController budgetaryScopeFunctionSelectionController;
-		
+
 	@Override
 	protected void __listenPostConstruct__() {
 		super.__listenPostConstruct__();
@@ -94,75 +95,79 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 			if(request.getType() != null && ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType.IDENTIFIER_DEMANDE_POSTES_BUDGETAIRES.equals(request.getType().getIdentifier())) {
 				SelectOneCombo sectionSelectOne = form.getInput(SelectOneCombo.class, Request.FIELD_SECTION);
 				SelectOneCombo administrativeUnitSelectOne = form.getInput(SelectOneCombo.class, Request.FIELD_ADMINISTRATIVE_UNIT);
-				
-				sectionSelectOne.setListener(new SelectOneCombo.Listener.AbstractImpl<Section>() {
-					@Override
-					public Collection<Section> computeChoices(AbstractInputChoice<Section> input) {
-						Collection<Section> sections = EntityReader.getInstance().readMany(Section.class,SectionQuerier.QUERY_IDENTIFIER_READ_ALL_FOR_UI);
-						CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(sections);
-						return sections;
-					}
-					
-					@Override
-					public void select(AbstractInputChoiceOne input, Section section) {
-						super.select(input, section);
-						if(administrativeUnitSelectOne != null) {
-							administrativeUnitSelectOne.setChoicesInitialized(Boolean.FALSE);
-							administrativeUnitSelectOne.updateChoices();
-							administrativeUnitSelectOne.selectFirstChoice();
+				if(sectionSelectOne != null) {
+					sectionSelectOne.setListener(new SelectOneCombo.Listener.AbstractImpl<Section>() {
+						@Override
+						public Collection<Section> computeChoices(AbstractInputChoice<Section> input) {
+							Collection<Section> sections = EntityReader.getInstance().readMany(Section.class,SectionQuerier.QUERY_IDENTIFIER_READ_ALL_FOR_UI);
+							CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(sections);
+							return sections;
 						}
+						
+						@Override
+						public void select(AbstractInputChoiceOne input, Section section) {
+							super.select(input, section);
+							if(administrativeUnitSelectOne != null) {
+								administrativeUnitSelectOne.setChoicesInitialized(Boolean.FALSE);
+								administrativeUnitSelectOne.updateChoices();
+								administrativeUnitSelectOne.selectFirstChoice();
+							}
+						}
+					});
+					sectionSelectOne.enableValueChangeListener(List.of(administrativeUnitSelectOne));
+					if(Action.UPDATE.equals(form.getAction())) {
+						sectionSelectOne.selectBySystemIdentifier(request.getSection().getIdentifier());
 					}
-				});
-				sectionSelectOne.enableValueChangeListener(List.of(administrativeUnitSelectOne));
+				}
 				
-				administrativeUnitSelectOne.setListener(new SelectOneCombo.Listener.AbstractImpl<AdministrativeUnit>() {
-					@Override
-					public Collection<AdministrativeUnit> computeChoices(AbstractInputChoice<AdministrativeUnit> input) {
-						if(sectionSelectOne == null || sectionSelectOne.getValue() == null)
-							return null;
-						Collection<AdministrativeUnit> administrativeUnits = EntityReader.getInstance().readMany(AdministrativeUnit.class,AdministrativeUnitQuerier
-								.QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_FOR_UI,AdministrativeUnitQuerier.PARAMETER_NAME_SECTION_IDENTIFIER
-								,((Section)sectionSelectOne.getValue()).getIdentifier());
-						CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(administrativeUnits);
-						return administrativeUnits;
-					}
-					
-					@Override
-					public void select(AbstractInputChoiceOne input, AdministrativeUnit administrativeUnit) {
-						super.select(input, administrativeUnit);
-						if(administrativeUnit != null) {
-							if(budgetaryScopeFunctionSelectionController != null) {
-								if(CollectionHelper.isEmpty(budgetaryScopeFunctionSelectionController.getSelected())) {
-									Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>();
-									arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments());
-									arguments.getRepresentationArguments().setQueryExecutorArguments(new QueryExecutorArguments.Dto());
-									arguments.getRepresentationArguments().getQueryExecutorArguments()
-										.setQueryIdentifier(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_CODE_FOR_UI);
-									arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterFieldsValues(
-											ScopeFunctionQuerier.PARAMETER_NAME_SCOPE_IDENTIFIER, administrativeUnit.getIdentifier()
-											, ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_CODE
-											, ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER);
-									ArrayList<String> list = new ArrayList<>();
-									list.addAll(List.of(ScopeFunction.FIELD_REQUESTED,ScopeFunction.FIELD_GRANTED));
-									arguments.getRepresentationArguments().getQueryExecutorArguments().setProcessableTransientFieldsNames(list);
-									Collection<ScopeFunction> scopeFunctions = EntityReader.getInstance().readMany(ScopeFunction.class,arguments);
-									if(CollectionHelper.getSize(scopeFunctions) == 1) {
-										ScopeFunction scopeFunction = CollectionHelper.getFirst(scopeFunctions);
-										if(!Boolean.TRUE.equals(scopeFunction.getGranted())) {
-											budgetaryScopeFunctionSelectionController.addScopeFunction(scopeFunction);
-											PrimeFaces.current().ajax().update(":form:"+budgetaryScopeFunctionSelectionController.getScopeFunctionsListIdentifier());
+				if(administrativeUnitSelectOne != null) {
+					administrativeUnitSelectOne.setListener(new SelectOneCombo.Listener.AbstractImpl<AdministrativeUnit>() {
+						@Override
+						public Collection<AdministrativeUnit> computeChoices(AbstractInputChoice<AdministrativeUnit> input) {
+							if(sectionSelectOne == null || sectionSelectOne.getValue() == null)
+								return null;
+							Collection<AdministrativeUnit> administrativeUnits = EntityReader.getInstance().readMany(AdministrativeUnit.class,AdministrativeUnitQuerier
+									.QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_FOR_UI,AdministrativeUnitQuerier.PARAMETER_NAME_SECTION_IDENTIFIER
+									,((Section)sectionSelectOne.getValue()).getIdentifier());
+							CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(administrativeUnits);
+							return administrativeUnits;
+						}
+						
+						@Override
+						public void select(AbstractInputChoiceOne input, AdministrativeUnit administrativeUnit) {
+							super.select(input, administrativeUnit);
+							if(administrativeUnit != null) {
+								if(budgetaryScopeFunctionSelectionController != null) {
+									if(CollectionHelper.isEmpty(budgetaryScopeFunctionSelectionController.getSelected())) {
+										Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>();
+										arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments());
+										arguments.getRepresentationArguments().setQueryExecutorArguments(new QueryExecutorArguments.Dto());
+										arguments.getRepresentationArguments().getQueryExecutorArguments()
+											.setQueryIdentifier(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_CODE_FOR_UI);
+										arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterFieldsValues(
+												ScopeFunctionQuerier.PARAMETER_NAME_SCOPE_IDENTIFIER, administrativeUnit.getIdentifier()
+												, ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_CODE
+												, ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER);
+										ArrayList<String> list = new ArrayList<>();
+										list.addAll(List.of(ScopeFunction.FIELD_REQUESTED,ScopeFunction.FIELD_GRANTED));
+										arguments.getRepresentationArguments().getQueryExecutorArguments().setProcessableTransientFieldsNames(list);
+										Collection<ScopeFunction> scopeFunctions = EntityReader.getInstance().readMany(ScopeFunction.class,arguments);
+										if(CollectionHelper.getSize(scopeFunctions) == 1) {
+											ScopeFunction scopeFunction = CollectionHelper.getFirst(scopeFunctions);
+											if(!Boolean.TRUE.equals(scopeFunction.getGranted())) {
+												budgetaryScopeFunctionSelectionController.addScopeFunction(scopeFunction);
+												PrimeFaces.current().ajax().update(":form:"+budgetaryScopeFunctionSelectionController.getScopeFunctionsListIdentifier());
+											}
 										}
 									}
 								}
-							}
-						}						
+							}						
+						}
+					});
+					administrativeUnitSelectOne.enableValueChangeListener(List.of());
+					if(Action.UPDATE.equals(form.getAction())) {
+						administrativeUnitSelectOne.selectBySystemIdentifier(request.getAdministrativeUnit().getIdentifier());
 					}
-				});
-				administrativeUnitSelectOne.enableValueChangeListener(List.of());
-				
-				if(Action.UPDATE.equals(form.getAction())) {
-					sectionSelectOne.selectBySystemIdentifier(request.getSection().getIdentifier());
-					administrativeUnitSelectOne.selectBySystemIdentifier(request.getAdministrativeUnit().getIdentifier());
 				}
 			}
 		}		
@@ -210,10 +215,16 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 	public static String getWindowTitleValue(Form form,String default_) {
 		if(form.getEntity() == null || ((Request)form.getEntity()).getType() == null)
 			return default_;
-		if(Action.CREATE.equals(form.getAction()))
-			return "Saisie de nouvelle demande : "+((Request)form.getEntity()).getType().getName();
-		if(Action.UPDATE.equals(form.getAction()))
-			return "Modification de demande : "+((Request)form.getEntity()).getType().getName();
+		return getWindowTitleValue(form.getAction(), ((Request)form.getEntity()).getType(), default_);
+	}
+	
+	public static String getWindowTitleValue(Action action,RequestType type,String default_) {
+		if(type == null)
+			return default_;
+		if(Action.CREATE.equals(action))
+			return "Saisie de nouvelle demande : "+type.getName();
+		if(Action.UPDATE.equals(action))
+			return "Modification de demande : "+type.getName();
 		return default_;
 	}
 	
@@ -253,11 +264,14 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 				requestTypeIdentifier = ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType.IDENTIFIER_DEMANDE_POSTES_BUDGETAIRES;
 				
 			if(StringHelper.isBlank(requestTypeIdentifier))
-				return null;			
+				return null;
 			Request request = null;
 			if(StringHelper.isBlank(actorIdentifier)) {
-				request = EntityReader.getInstance().readOne(Request.class, RequestQuerier.QUERY_IDENTIFIER_INSTANTIATE_ONE_BY_TYPE_IDENTIFIER
-						, RequestQuerier.PARAMETER_NAME_TYPE_IDENTIFIER,requestTypeIdentifier);
+				String electronicMailAddress = WebController.getInstance().getRequestParameter(Request.FIELD_ELECTRONIC_MAIL_ADDRESS);
+				if(StringHelper.isBlank(electronicMailAddress))
+					request = __inject__(RequestController.class).getOneToBeCreatedByTypeIdentifier(requestTypeIdentifier);
+				else
+					request = __inject__(RequestController.class).getOneToBeCreatedByTypeIdentifierByElectronicMailAddress(requestTypeIdentifier, electronicMailAddress);
 				request.setReadPageURL(JavaServerFacesHelper.buildUrlFromOutcome(PublicRequestOpenPage.OUTCOME));
 				request.setActor(__inject__(ActorController.class).getLoggedIn());
 			}else {
