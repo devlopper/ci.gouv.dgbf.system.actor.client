@@ -95,6 +95,9 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	
 	private Collection<ScopeFunction> grantedBudgetariesScopeFunctions;
 	
+	private Collection<String> scopeFunctionsCodes,grantedScopeFunctionsCodes;
+	private String scopeFunctionsCodesAsString,grantedScopeFunctionsCodesAsString;
+	
 	private Boolean hasGrantedHolderScopeFunction;
 	private Boolean hasBudgetaryScopeFunctionWhereFunctionCodeBelongsToExecutionAssistantsCodes;
 	private Boolean hasBudgetaryScopeFunctionWhereFunctionCodeIsCreditManagerHolder;
@@ -236,6 +239,9 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	public static final String FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS = "budgetariesScopeFunctionsAsStrings";
 	public static final String FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRINGS = "budgetariesScopeFunctionsGrantedAsStrings";
 	public static final String FIELD_GRANTED_BUDGETARIES_SCOPE_FUNCTIONS = "grantedBudgetariesScopeFunctions";
+	public static final String FIELD_SCOPE_FUNCTIONS_CODES = "scopeFunctionsCodes";
+	public static final String FIELD_SCOPE_FUNCTIONS_CODES_AS_STRING = "scopeFunctionsCodesAsString";
+	public static final String FIELD_GRANTED_SCOPE_FUNCTIONS_CODES_AS_STRING = "grantedScopeFunctionsCodesAsString";
 	
 	/* Others */
 	
@@ -255,6 +261,8 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	public static final String FIELD_IS_AUTHORIZING_OFFICER_HOLDER = "isAuthorizingOfficerHolder";
 	public static final String FIELD_IS_FINANCIAL_CONTROLLER_HOLDER = "isFinancialControllerHolder";
 	public static final String FIELD_IS_ACCOUNTING_HOLDER = "isAccountingHolder";
+	
+	public static final String FIELD_SEARCH = "search";
 	
 	/**/
 	

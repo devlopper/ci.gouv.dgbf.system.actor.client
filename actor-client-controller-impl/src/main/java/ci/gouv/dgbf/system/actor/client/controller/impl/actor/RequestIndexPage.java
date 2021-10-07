@@ -166,7 +166,8 @@ public class RequestIndexPage extends AbstractPageContainerManagedImpl implement
 	}
 	
 	private void buildGlobalFilters(Collection<Map<Object,Object>> cellsMaps) {
-		requestFilterController = new RequestFilterController()/*.ignore(RequestFilterController.FIELD_NAME_SECTION_SELECT_ONE)*/.build();
+		requestFilterController = new RequestFilterController();
+		requestFilterController/*.ignore(RequestFilterController.FIELD_NAME_SECTION_SELECT_ONE)*/.build();
 		requestFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(OUTCOME).addParameter(TabMenu.Tab.PARAMETER_NAME, selectedTab.getParameterValue());	
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,requestFilterController.getLayout(),Cell.FIELD_WIDTH,12));
 	}
@@ -178,8 +179,8 @@ public class RequestIndexPage extends AbstractPageContainerManagedImpl implement
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return RequestListPage.buildWindowTitleValue(selectedTab.getName(),requestFilterController.getFunction(), requestFilterController.getSection()
-				, requestFilterController.getAdministrativeUnit(), requestFilterController.getBudgetSpecializationUnit());
+		return "Demandes"/*RequestListPage.buildWindowTitleValue(selectedTab.getName(),requestFilterController.getFunction(), requestFilterController.getSection()
+				, requestFilterController.getAdministrativeUnit(), requestFilterController.getBudgetSpecializationUnit())*/;
 	}
 	
 	/**/

@@ -15,14 +15,11 @@ import javax.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.controller.Arguments;
-import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.__kernel__.session.SessionManager;
-import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
+import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
@@ -33,12 +30,16 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.AbstractM
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntitySaver;
+import org.cyk.utility.persistence.query.Filter;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
+import ci.gouv.dgbf.system.actor.client.controller.impl.scope.ProfileFilterController;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
@@ -49,7 +50,14 @@ import lombok.experimental.Accessors;
 @Named @ViewScoped @Getter @Setter
 public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<Request> implements Serializable {
 
+	private RequestFilterController filterController;
 	private LinkedHashMap<String, String> legends = new LinkedHashMap<>();
+	
+	@Override
+	protected void __listenBeforePostConstruct__() {
+		super.__listenBeforePostConstruct__();
+		filterController = new RequestFilterController();
+	}
 	
 	@Override
 	protected void __listenPostConstruct__() {
@@ -63,34 +71,15 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 	
 	@Override
 	protected DataTable __buildDataTable__() {
-		DataTable dataTable = buildDataTable();
+		DataTable dataTable = buildDataTable(DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl().setFilterController(filterController));
 		return dataTable;
 	}
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Liste des demandes";
-	}
-	
-	public static String buildWindowTitleValue(String prefix,Function function,Section section,AdministrativeUnit administrativeUnit,BudgetSpecializationUnit budgetSpecializationUnit) {
-		Collection<String> strings = new ArrayList<>();
-		strings.add(prefix);
-		if(section != null) {
-			if(administrativeUnit == null && budgetSpecializationUnit == null)
-				strings.add(section.toString());
-			else
-				strings.add("Section "+section.getCode());
-		}
-		if(administrativeUnit != null) {
-			strings.add(administrativeUnit.toString());
-		}
-		if(function != null) {
-			strings.add(function.getName());
-		}
-		if(budgetSpecializationUnit != null) {
-			strings.add((budgetSpecializationUnit.getCode().startsWith("1") ? "Dotation":"Programme")+" "+budgetSpecializationUnit.getCode());
-		}
-		return StringHelper.concatenate(strings, " | ");
+		if(filterController == null)
+			return super.__getWindowTitleValue__();
+		return filterController.generateWindowTitleValue(ci.gouv.dgbf.system.actor.server.persistence.entities.Request.LABEL);
 	}
 	
 	/**/
@@ -99,11 +88,31 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 		if(arguments == null)
 			arguments = new HashMap<>();
 		ContentType contentType = (ContentType) MapHelper.readByKey(arguments, ContentType.class);
+		
+		RequestFilterController filterController = null;		
+		LazyDataModelListenerImpl lazyDataModelListenerImpl = (LazyDataModelListenerImpl) MapHelper.readByKey(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER);
+		if(lazyDataModelListenerImpl == null)
+			arguments.put(DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,lazyDataModelListenerImpl = new LazyDataModelListenerImpl());
+		filterController = (RequestFilterController) lazyDataModelListenerImpl.getFilterController();
+		if(filterController == null)
+			lazyDataModelListenerImpl.setFilterController(filterController = new RequestFilterController());
+		lazyDataModelListenerImpl.enableFilterController();
+		String outcome = ValueHelper.defaultToIfBlank((String)MapHelper.readByKey(arguments,OUTCOME),OUTCOME);
+		filterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(outcome);
+		
+		DataTableListenerImpl dataTableListenerImpl = (DataTableListenerImpl) MapHelper.readByKey(arguments, DataTable.FIELD_LISTENER);
+		if(dataTableListenerImpl == null)
+			arguments.put(DataTable.FIELD_LISTENER, dataTableListenerImpl = new DataTableListenerImpl());
+		dataTableListenerImpl.setContentType(contentType).setFilterController(filterController);
+		
+		/**/
+		
 		//Class<?> pageClass = (Class<?>) MapHelper.readByKey(arguments, RequestListPage.class);
-		LazyDataModelListenerImpl lazyDataModelListener = (LazyDataModelListenerImpl) MapHelper.readByKey(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER);
-		if(lazyDataModelListener == null)
-			lazyDataModelListener = new LazyDataModelListenerImpl();
+		//LazyDataModelListenerImpl lazyDataModelListener = (LazyDataModelListenerImpl) MapHelper.readByKey(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER);
+		//if(lazyDataModelListener == null)
+		//	lazyDataModelListener = new LazyDataModelListenerImpl();
 		//Class<?> pageClass = (Class<?>) MapHelper.readByKey(arguments, RequestListPage.class);
+		/*
 		List<String> columnsFieldsNames = new ArrayList<>();
 		columnsFieldsNames.addAll(List.of(Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
 				,Request.FIELD_ELECTRONIC_MAIL_ADDRESS,Request.FIELD_MOBILE_PHONE_NUMBER,Request.FIELD_ADMINISTRATIVE_UNIT_AS_STRING
@@ -118,13 +127,14 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 		if(ContentType.PROCESSED.equals(contentType) || ContentType.ALL.equals(contentType)) {
 			columnsFieldsNames.addAll(List.of(Request.FIELD_ACCOUNT_CREATION_MESSAGE));
 		}
+		*/
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl().setContentType(contentType));
 		
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, Request.class);
-		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, columnsFieldsNames);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
-		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl().setContentType(contentType));
-		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl());
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, filterController.generateColumnsNames());
+		
 		DataTable dataTable = DataTable.build(arguments);
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);
 		
@@ -173,6 +183,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 	
 	@Getter @Setter @Accessors(chain=true)
 	public static class DataTableListenerImpl extends DataTable.Listener.AbstractImpl implements Serializable {
+		private RequestFilterController filterController;
 		private ContentType contentType;
 		
 		@Override
@@ -248,6 +259,10 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 				map.put(Column.FIELD_FILTER_BY, RequestQuerier.PARAMETER_NAME_REGISTRATION_NUMBER);
 			}else if(Request.FIELD_ACCOUNT_CREATION_MESSAGE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Création compte");
+				map.put(Column.FIELD_WIDTH, "200");
+				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
+			}else if(Request.FIELD_SCOPE_FUNCTIONS_CODES.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Poste(s)");
 				map.put(Column.FIELD_WIDTH, "200");
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}
@@ -430,6 +445,13 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			if(excludedIdentifiers == null)
 				excludedIdentifiers = new ArrayList<>();
 			excludedIdentifiers.addAll(identifiers);
+			return this;
+		}
+		
+		public LazyDataModelListenerImpl enableFilterController(){
+			if(filterController == null)
+				filterController = new ProfileFilterController();
+			filterController.build();
 			return this;
 		}
 		

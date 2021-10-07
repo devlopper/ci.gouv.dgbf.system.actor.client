@@ -205,7 +205,7 @@ public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl
 				super.select(input, function);
 				
 			}
-		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Catégorie de fonction budgétaire");
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.LABEL);
 		selectOne.updateChoices();
 		selectOne.selectByValueSystemIdentifier();
 		//functionSelectOne.enableValueChangeListener(List.of());

@@ -52,7 +52,4 @@ public interface RequestController extends ControllerEntity<Request> {
 			return null;
 		return response.hasEntity() ? response.readEntity(byte[].class) : null;
 	}
-
-	Request getModelByElectronicMailAddress(String electronicMailAddress);
-	//Boolean existByElectronicMailAddress(String electronicMailAddress);
 }

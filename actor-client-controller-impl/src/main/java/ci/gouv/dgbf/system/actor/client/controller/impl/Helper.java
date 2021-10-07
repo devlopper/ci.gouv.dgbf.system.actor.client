@@ -39,6 +39,8 @@ import ci.gouv.dgbf.system.actor.client.controller.api.ActorController;
 import ci.gouv.dgbf.system.actor.client.controller.api.FunctionController;
 import ci.gouv.dgbf.system.actor.client.controller.api.ProfileController;
 import ci.gouv.dgbf.system.actor.client.controller.api.ProfileTypeController;
+import ci.gouv.dgbf.system.actor.client.controller.api.RequestStatusController;
+import ci.gouv.dgbf.system.actor.client.controller.api.RequestTypeController;
 import ci.gouv.dgbf.system.actor.client.controller.api.ScopeTypeController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
@@ -46,6 +48,8 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.FunctionType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Profile;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ProfileType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestDispatchSlip;
+import ci.gouv.dgbf.system.actor.client.controller.entities.RequestStatus;
+import ci.gouv.dgbf.system.actor.client.controller.entities.RequestType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Scope;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Service;
@@ -166,6 +170,34 @@ public interface Helper {
 	
 	static SelectOneCombo buildVisibleSelectOneCombo(Boolean visible) {
 		return SelectOneCombo.buildUnknownYesNoOnly((Boolean) visible, "Visible");
+	}
+	
+	static SelectOneCombo buildRequestTypeSelectOneCombo(RequestType requestType) {
+		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,requestType,SelectOneCombo.FIELD_CHOICE_CLASS,RequestType.class,SelectOneCombo.FIELD_LISTENER
+				,new SelectOneCombo.Listener.AbstractImpl<RequestType>() {
+			@Override
+			protected Collection<RequestType> __computeChoices__(AbstractInputChoice<RequestType> input,Class<?> entityClass) {
+				Collection<RequestType> choices =  __inject__(RequestTypeController.class).read();
+				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
+				return choices;
+			}
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType.LABEL);
+		input.setValueAsFirstChoiceIfNull();
+		return input;
+	}
+	
+	static SelectOneCombo buildRequestStatusSelectOneCombo(RequestStatus requestStatus) {
+		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,requestStatus,SelectOneCombo.FIELD_CHOICE_CLASS,RequestStatus.class,SelectOneCombo.FIELD_LISTENER
+				,new SelectOneCombo.Listener.AbstractImpl<RequestStatus>() {
+			@Override
+			protected Collection<RequestStatus> __computeChoices__(AbstractInputChoice<RequestStatus> input,Class<?> entityClass) {
+				Collection<RequestStatus> choices =  __inject__(RequestStatusController.class).read();
+				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
+				return choices;
+			}
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.LABEL);
+		input.setValueAsFirstChoiceIfNull();
+		return input;
 	}
 	
 	static String formatTitleRequestDispatchSlip(RequestDispatchSlip requestDispatchSlip,Action action) {

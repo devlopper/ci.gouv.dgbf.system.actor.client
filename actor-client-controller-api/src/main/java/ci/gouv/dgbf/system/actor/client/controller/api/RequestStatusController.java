@@ -5,4 +5,5 @@ import org.cyk.utility.client.controller.ControllerEntity;
 
 public interface RequestStatusController extends ControllerEntity<RequestStatus> {
 
+	RequestStatus getByIdentifier(String identifier);
 }

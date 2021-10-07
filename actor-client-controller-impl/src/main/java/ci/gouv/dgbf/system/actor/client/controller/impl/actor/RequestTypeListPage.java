@@ -1,6 +1,7 @@
 package ci.gouv.dgbf.system.actor.client.controller.impl.actor;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,10 +16,14 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Abs
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoiceOne;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.AbstractMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 
+import ci.gouv.dgbf.system.actor.client.controller.api.RequestTypeController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestType;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestTypeQuerier;
 import lombok.Getter;
@@ -100,5 +105,25 @@ public class RequestTypeListPage extends AbstractEntityListPageContainerManagedI
 		public String getReadQueryIdentifier(LazyDataModel<RequestType> lazyDataModel) {
 			return RequestTypeQuerier.QUERY_IDENTIFIER_READ_FOR_UI;
 		}
+	}
+	
+	public static SelectOneCombo buildSelectOne(RequestType requestType) {
+		SelectOneCombo selectOne = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,requestType,SelectOneCombo.FIELD_CHOICE_CLASS,RequestType.class,SelectOneCombo.FIELD_LISTENER
+				,new SelectOneCombo.Listener.AbstractImpl<RequestType>() {
+			@Override
+			public Collection<RequestType> computeChoices(AbstractInputChoice<RequestType> input) {
+				Collection<RequestType> choices = __inject__(RequestTypeController.class).read();
+				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
+				return choices;
+			}
+			@Override
+			public void select(AbstractInputChoiceOne input, RequestType requestType) {
+				super.select(input, requestType);
+				
+			}
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType.LABEL);
+		selectOne.updateChoices();
+		selectOne.selectByValueSystemIdentifier();
+		return selectOne;
 	}
 }
