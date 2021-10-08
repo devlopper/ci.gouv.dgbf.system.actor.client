@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
@@ -29,6 +30,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.RequestType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.client.controller.impl.function.FunctionListPage;
 import ci.gouv.dgbf.system.actor.client.controller.impl.scope.ScopeListPage;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestStatusQuerier;
@@ -45,6 +47,7 @@ public class RequestFilterController extends AbstractFilterController implements
 	private InputText searchInputText;
 	
 	private Section sectionInitial;
+	private AdministrativeUnit administrativeUnitInitial;
 	private Function functionInitial;
 	private RequestType typeInitial;
 	private RequestStatus statusInitial;
@@ -52,6 +55,7 @@ public class RequestFilterController extends AbstractFilterController implements
 	
 	public RequestFilterController() {
 		sectionInitial = getSectionFromRequestParameter();
+		administrativeUnitInitial = getAdministrativeUnitFromRequestParameter();
 		functionInitial = getFunctionFromRequestParameter();
 		typeInitial = getTypeFromRequestParameter();
 		statusInitial = getStatusFromRequestParameter();
@@ -63,6 +67,13 @@ public class RequestFilterController extends AbstractFilterController implements
 				.queryIdentifier(SectionQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
 				.projections(Section.FIELD_IDENTIFIER,Section.FIELD_CODE,Section.FIELD_NAME)
 				.filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.stringify(Section.class))));
+	}
+	
+	public static AdministrativeUnit getAdministrativeUnitFromRequestParameter() {
+		return EntityReader.getInstance().readOneBySystemIdentifierAsParent(AdministrativeUnit.class, new Arguments<AdministrativeUnit>()
+				.queryIdentifier(AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
+				.projections(AdministrativeUnit.FIELD_IDENTIFIER,AdministrativeUnit.FIELD_CODE,AdministrativeUnit.FIELD_NAME)
+				.filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.stringify(AdministrativeUnit.class))));
 	}
 	
 	public static Function getFunctionFromRequestParameter() {
@@ -89,9 +100,11 @@ public class RequestFilterController extends AbstractFilterController implements
 	@Override
 	protected void buildInputs() {
 		buildInputSelectOne(FIELD_SECTION_SELECT_ONE, Section.class);
+		buildInputSelectOne(FIELD_ADMINISTRATIVE_UNIT_SELECT_ONE, AdministrativeUnit.class);
 		buildInputSelectOne(FIELD_FUNCTION_SELECT_ONE, Function.class);
 		buildInputSelectOne(FIELD_TYPE_SELECT_ONE, RequestType.class);
 		buildInputSelectOne(FIELD_STATUS_SELECT_ONE, RequestStatus.class);
+		buildInputText(FIELD_SEARCH_INPUT_TEXT);
 	}
 	
 	@Override
@@ -111,6 +124,8 @@ public class RequestFilterController extends AbstractFilterController implements
 	protected Object getInputSelectOneInitialValue(String fieldName, Class<?> klass) {
 		if(FIELD_SECTION_SELECT_ONE.equals(fieldName))
 			return sectionInitial;
+		if(FIELD_ADMINISTRATIVE_UNIT_SELECT_ONE.equals(fieldName))
+			return administrativeUnitInitial;
 		if(FIELD_FUNCTION_SELECT_ONE.equals(fieldName))
 			return functionInitial;
 		if(FIELD_TYPE_SELECT_ONE.equals(fieldName))
@@ -138,7 +153,12 @@ public class RequestFilterController extends AbstractFilterController implements
 		if(sectionSelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,sectionSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,2));
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,sectionSelectOne,Cell.FIELD_WIDTH,10));
-		}		
+		}
+		
+		if(administrativeUnitSelectOne != null) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,administrativeUnitSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,2));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,administrativeUnitSelectOne,Cell.FIELD_WIDTH,10));
+		}
 		
 		if(functionSelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,functionSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,2));
@@ -177,12 +197,16 @@ public class RequestFilterController extends AbstractFilterController implements
 		Collection<String> columnsFieldsNames = new ArrayList<>();
 		if(sectionInitial == null)
 			columnsFieldsNames.add(Request.FIELD_SECTION_AS_STRING);
+		if(administrativeUnitInitial == null)
+			columnsFieldsNames.add(Request.FIELD_ADMINISTRATIVE_UNIT_AS_STRING);
 		if(typeInitial == null)
 			columnsFieldsNames.add(Request.FIELD_TYPE_AS_STRING);
 		if(statusInitial == null)
 			columnsFieldsNames.add(Request.FIELD_STATUS_AS_STRING);
 		columnsFieldsNames.addAll(List.of(Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
 				,Request.FIELD_ELECTRONIC_MAIL_ADDRESS,Request.FIELD_MOBILE_PHONE_NUMBER,Request.FIELD_SCOPE_FUNCTIONS_CODES));
+		columnsFieldsNames.add(Request.FIELD_CREATION_DATE_AS_STRING);
+		columnsFieldsNames.add(Request.FIELD_PROCESSING_DATE_AS_STRING);
 		return columnsFieldsNames;
 	}
 
@@ -203,7 +227,7 @@ public class RequestFilterController extends AbstractFilterController implements
 	}
 	
 	public AdministrativeUnit getAdministrativeUnit() {
-		return (AdministrativeUnit)AbstractInput.getValue(statusSelectOne);
+		return (AdministrativeUnit)AbstractInput.getValue(administrativeUnitSelectOne);
 	}
 	
 	public BudgetSpecializationUnit getBudgetSpecializationUnit() {
@@ -215,10 +239,11 @@ public class RequestFilterController extends AbstractFilterController implements
 	}
 	
 	public static Filter.Dto populateFilter(Filter.Dto filter,RequestFilterController controller,Boolean initial) {
-		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_SECTIONS_IDENTIFIERS, List.of(FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.sectionInitial : controller.getSection())), filter);
-		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS, List.of(FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.functionInitial : controller.getFunction())), filter);		
-		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_TYPES_IDENTIFIERS, List.of(FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.typeInitial : controller.getType())), filter);
-		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_STATUS_IDENTIFIERS, List.of(FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.statusInitial : controller.getStatus())), filter);		
+		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_SECTIONS_IDENTIFIERS, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.sectionInitial : controller.getSection())), filter);
+		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_IDENTIFIERS, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.administrativeUnitInitial : controller.getAdministrativeUnit())), filter);
+		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.functionInitial : controller.getFunction())), filter);		
+		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_TYPES_IDENTIFIERS, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.typeInitial : controller.getType())), filter);
+		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_STATUS_IDENTIFIERS, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.statusInitial : controller.getStatus())), filter);		
 		filter = Filter.Dto.addFieldIfValueNotBlank(RequestQuerier.PARAMETER_NAME_SEARCH, Boolean.TRUE.equals(initial) ? controller.searchInitial : controller.getSearch(), filter);
 		return filter;
 	}
@@ -234,6 +259,7 @@ public class RequestFilterController extends AbstractFilterController implements
 	
 	public static final String FIELD_SEARCH_INPUT_TEXT = "searchInputText";
 	public static final String FIELD_SECTION_SELECT_ONE = "sectionSelectOne";
+	public static final String FIELD_ADMINISTRATIVE_UNIT_SELECT_ONE = "administrativeUnitSelectOne";
 	public static final String FIELD_FUNCTION_SELECT_ONE = "functionSelectOne";
 	public static final String FIELD_TYPE_SELECT_ONE = "typeSelectOne";
 	public static final String FIELD_STATUS_SELECT_ONE = "statusSelectOne";

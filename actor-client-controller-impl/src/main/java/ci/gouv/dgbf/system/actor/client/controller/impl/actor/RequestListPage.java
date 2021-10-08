@@ -200,12 +200,12 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			}else if(Request.FIELD_CREATION_DATE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Créée le");
 				map.put(Column.FIELD_WIDTH, "130");
-				map.put(Column.FIELD_VISIBLE, ContentType.TO_PROCESS.equals(contentType));
+				//map.put(Column.FIELD_VISIBLE, ContentType.TO_PROCESS.equals(contentType));
 				map.put(Column.FIELD_SORT_BY, Request.FIELD_CREATION_DATE);
 			}else if(Request.FIELD_PROCESSING_DATE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Traitée le");
 				map.put(Column.FIELD_WIDTH, "130");
-				map.put(Column.FIELD_VISIBLE, ContentType.PROCESSED.equals(contentType));
+				//map.put(Column.FIELD_VISIBLE, ContentType.PROCESSED.equals(contentType));
 				map.put(Column.FIELD_SORT_BY, Request.FIELD_PROCESSING_DATE);
 			}else if(Request.FIELD_TYPE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Type");
@@ -214,49 +214,38 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 				
 			}else if(Request.FIELD_STATUS_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Statut");
-				map.put(Column.FIELD_WIDTH, "130");
+				map.put(Column.FIELD_WIDTH, "70");
 				map.put(Column.FIELD_VISIBLE, Boolean.TRUE);
 			}else if(Request.FIELD_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Numéro");
 				map.put(Column.FIELD_WIDTH, "110");
-				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
-				map.put(Column.FIELD_FILTER_BY, RequestQuerier.PARAMETER_NAME_CODE);
 			}else if(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Fonction(s) budgétaire(s)");
 				map.put(Column.FIELD_WIDTH, "150");
 			}else if(Request.FIELD_ELECTRONIC_MAIL_ADDRESS.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Email");
 				map.put(Column.FIELD_WIDTH, "200");
-				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
-				map.put(Column.FIELD_FILTER_BY, RequestQuerier.PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS);
-				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}else if(Request.FIELD_MOBILE_PHONE_NUMBER.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Tel. Mobile");
 				map.put(Column.FIELD_WIDTH, "100");
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}else if(Request.FIELD_ADMINISTRATIVE_UNIT_AS_STRING.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Unité administrative");
-				//map.put(Column.FIELD_WIDTH, "90");
+				map.put(Column.FIELD_HEADER_TEXT, "U.A."/*"Unité administrative"*/);
+				map.put(Column.FIELD_WIDTH, "80");
 			}else if(Request.FIELD_SECTION_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Section");
-				map.put(Column.FIELD_WIDTH, "70");
+				map.put(Column.FIELD_WIDTH, "65");
 			}else if(Request.FIELD_FIRST_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Nom");
-				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
-				map.put(Column.FIELD_FILTER_BY, RequestQuerier.PARAMETER_NAME_FIRST_NAME);
 				map.put(Column.FIELD_SORT_BY, RequestQuerier.PARAMETER_NAME_FIRST_NAME);
 				map.put(Column.FIELD_WIDTH, "100");
 			}else if(Request.FIELD_LAST_NAMES.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Prénoms");
 				map.put(Column.FIELD_SORT_BY, RequestQuerier.PARAMETER_NAME_LAST_NAMES);
-				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
-				map.put(Column.FIELD_FILTER_BY, RequestQuerier.PARAMETER_NAME_LAST_NAMES);
 				map.put(Column.FIELD_WIDTH, "150");
 			}else if(Request.FIELD_REGISTRATION_NUMBER.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Matricule");
-				map.put(Column.FIELD_WIDTH, "110");
-				map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE, Boolean.TRUE);
-				map.put(Column.FIELD_FILTER_BY, RequestQuerier.PARAMETER_NAME_REGISTRATION_NUMBER);
+				map.put(Column.FIELD_WIDTH, "75");
 			}else if(Request.FIELD_ACCOUNT_CREATION_MESSAGE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Création compte");
 				map.put(Column.FIELD_WIDTH, "200");
@@ -264,7 +253,6 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			}else if(Request.FIELD_SCOPE_FUNCTIONS_CODES.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Poste(s)");
 				map.put(Column.FIELD_WIDTH, "200");
-				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}
 			return map;
 		}
@@ -320,9 +308,9 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 					return strings.stream().map(x -> StringUtils.substringBefore(x, " ")).collect(Collectors.joining(","));
 			}/*else if(Request.FIELD_ADMINISTRATIVE_UNIT_AS_STRING.equals(column.getFieldName())) {
 				return StringUtils.substringBefore(((Request)record).getAdministrativeUnitAsString()," ");
-			}*/else if(Request.FIELD_SECTION_AS_STRING.equals(column.getFieldName())) {
+			}else if(Request.FIELD_SECTION_AS_STRING.equals(column.getFieldName())) {
 				return StringUtils.substringBefore(((Request)record).getSectionAsString()," ");
-			}
+			}*/
 			return super.getCellValueByRecordByColumn(record, recordIndex, column, columnIndex);
 		}
 		
@@ -409,11 +397,13 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 		
 		@Override
 		public String getReadQueryIdentifier(LazyDataModel<Request> lazyDataModel) {
-			return RequestQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI;
+			return RequestQuerier.QUERY_IDENTIFIER_READ_DYNAMIC;
 		}
 		
 		public Filter.Dto instantiateFilter(LazyDataModel<Request> lazyDataModel) {
 			Filter.Dto filter = super.instantiateFilter(lazyDataModel);
+			filter = RequestFilterController.populateFilter(filter, (RequestFilterController) filterController,Boolean.FALSE);
+			/*
 			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_EXCLUDED_IDENTIFIERS, excludedIdentifiers, filter);		
 			
 			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_ACTOR_IDENTIFIER, actorIdentifier, filter);
@@ -425,17 +415,29 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT_SECTION_IDENTIFIER, sectionIdentifier, filter);
 			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER, functionIdentifier, filter);
 			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_STATUS_IDENTIFIER, statusIdentifier, filter);
+			*/
 			return filter;
 		}
 		
 		@Override
 		public Arguments<Request> instantiateArguments(LazyDataModel<Request> lazyDataModel) {
 			Arguments<Request> arguments = super.instantiateArguments(lazyDataModel);
-			ArrayList<String> list = new ArrayList<>();
+			/*ArrayList<String> list = new ArrayList<>();			
 			list.addAll(List.of(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRINGS
 					,Request.FIELD_HAS_GRANTED_HOLDER_SCOPE_FUNCTION,Request.FIELD_ACCEPTED,Request.FIELD_IS_CREDIT_MANAGER_HOLDER
 					,Request.FIELD_IS_AUTHORIZING_OFFICER_HOLDER,Request.FIELD_IS_FINANCIAL_CONTROLLER_HOLDER,Request.FIELD_IS_ACCOUNTING_HOLDER));
-			arguments.getRepresentationArguments().getQueryExecutorArguments().setProcessableTransientFieldsNames(list);
+			*/
+			arguments.getRepresentationArguments().getQueryExecutorArguments().addProjectionsFromStrings(
+					ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELD_IDENTIFIER
+					,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELD_CODE
+					,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELD_FIRST_NAME
+					,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELD_LAST_NAMES
+					,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELD_REGISTRATION_NUMBER
+					,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELD_ELECTRONIC_MAIL_ADDRESS
+					,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELD_MOBILE_PHONE_NUMBER)
+			.addProcessableTransientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_AS_CODE_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
+					,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELDS_SCOPE_FUNCTIONS_CODES
+					,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
 			return arguments;
 		}
 		
