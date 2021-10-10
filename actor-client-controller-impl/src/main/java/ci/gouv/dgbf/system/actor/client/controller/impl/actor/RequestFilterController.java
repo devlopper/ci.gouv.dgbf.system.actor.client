@@ -220,15 +220,17 @@ public class RequestFilterController extends AbstractFilterController implements
 	
 	public String generateWindowTitleValue(String prefix) {
 		Collection<String> strings = new ArrayList<>();
-		strings.add(prefix);
+		if(typeInitial == null)
+			strings.add(prefix);
+		else
+			strings.add(typeInitial.getName());
 		if(sectionInitial != null)
-			strings.add("Section "+sectionInitial.getCode());
+			strings.add("Section "+(administrativeUnitInitial == null ? sectionInitial.toString() : sectionInitial.getCode()));
 		if(administrativeUnitInitial != null)
 			strings.add(administrativeUnitInitial.toString());
 		if(functionInitial != null)
 			strings.add(functionInitial.getCode());
-		if(typeInitial != null)
-			strings.add(typeInitial.getName());
+		
 		if(processedInitial != null && statusInitial == null) {
 			strings.add(processedInitial ? "Traité" : "Non traité");
 		}
@@ -244,14 +246,15 @@ public class RequestFilterController extends AbstractFilterController implements
 		if(administrativeUnitInitial == null)
 			columnsFieldsNames.add(Request.FIELD_ADMINISTRATIVE_UNIT_AS_STRING);
 		if(typeInitial == null)
-			columnsFieldsNames.add(Request.FIELD_TYPE_AS_STRING);
-		if(statusInitial == null)
-			columnsFieldsNames.add(Request.FIELD_STATUS_AS_STRING);
+			columnsFieldsNames.add(Request.FIELD_TYPE_AS_STRING);		
 		columnsFieldsNames.addAll(List.of(Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
 				,Request.FIELD_ELECTRONIC_MAIL_ADDRESS,Request.FIELD_MOBILE_PHONE_NUMBER,Request.FIELD_SCOPE_FUNCTIONS_CODES));
 		columnsFieldsNames.add(Request.FIELD_CREATION_DATE_AS_STRING);
 		if(Boolean.TRUE.equals(processedInitial))
 			columnsFieldsNames.add(Request.FIELD_PROCESSING_DATE_AS_STRING);
+		if(statusInitial == null)
+			columnsFieldsNames.add(Request.FIELD_STATUS_AS_STRING);
+		columnsFieldsNames.add(Request.FIELD_DISPATCH_SLIP_AS_STRING);
 		return columnsFieldsNames;
 	}
 

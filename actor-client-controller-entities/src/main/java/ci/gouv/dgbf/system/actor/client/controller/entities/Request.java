@@ -44,6 +44,7 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	private String accountCreationDateAsString;
 	private String accountCreationMessage;
 	private String accessToken;
+	private String dispatchSlipCode,dispatchSlipAsString;
 	
 	/* Identity */
 	
@@ -255,6 +256,7 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	public static final String FIELD_TREATMENT = "treatment";
 	public static final String FIELD_ACCEPTATION_COMMENT = "acceptationComment";
 	public static final String FIELD_REJECTION_REASON = "rejectionReason";
+	public static final String FIELD_DISPATCH_SLIP_AS_STRING = "dispatchSlipAsString";
 	
 	/**/
 	

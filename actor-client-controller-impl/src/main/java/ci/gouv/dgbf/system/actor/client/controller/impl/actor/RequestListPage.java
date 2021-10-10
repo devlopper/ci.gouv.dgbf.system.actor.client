@@ -229,6 +229,9 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 				map.put(Column.FIELD_HEADER_TEXT, "Tel. Mobile");
 				map.put(Column.FIELD_WIDTH, "100");
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
+			}else if(Request.FIELD_DISPATCH_SLIP_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Bordereau");
+				map.put(Column.FIELD_WIDTH, "100");
 			}else if(Request.FIELD_ADMINISTRATIVE_UNIT_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "U.A."/*"Unité administrative"*/);
 				map.put(Column.FIELD_WIDTH, "80");
@@ -256,24 +259,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			}
 			return map;
 		}
-		/*
-		@Override
-		public String getStyleClassByRecord(Object record, Integer recordIndex) {
-			if(record instanceof Request) {
-				Request request = (Request) record;
-				if(Boolean.TRUE.equals(request.getHasBudgetaryScopeFunctionWhereFunctionCodeIsAccountingHolder()))
-					return "cyk-scope-function-cpt";
-				if(Boolean.TRUE.equals(request.getHasBudgetaryScopeFunctionWhereFunctionCodeIsFinancialControllerHolder()))
-					return "cyk-scope-function-cf";
-				if(Boolean.TRUE.equals(request.getHasBudgetaryScopeFunctionWhereFunctionCodeIsAuthorizingOfficerHolder()))
-					return "cyk-scope-function-ord";
-				if(Boolean.TRUE.equals(request.getHasBudgetaryScopeFunctionWhereFunctionCodeIsCreditManagerHolder()))
-					return "cyk-scope-function-gc";
-				return "cyk-scope-function-assistant";
-			}
-			return super.getStyleClassByRecord(record, recordIndex);
-		}
-		*/
+		
 		@Override
 		public String getStyleClassByRecordByColumn(Object record, Integer recordIndex, Column column,Integer columnIndex) {
 			if(record instanceof Request) {
@@ -295,22 +281,12 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 		
 		@Override
 		public Object getCellValueByRecordByColumn(Object record, Integer recordIndex, Column column,Integer columnIndex) {
-			if(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS.equals(column.getFieldName())) {
+			if(Request.FIELD_SCOPE_FUNCTIONS_CODES.equals(column.getFieldName())) {
 				Request request = (Request)record;
-				Collection<String> strings = null;
-				if(request.getStatus().getCode().equals(ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_ACCEPTED)
-						&& CollectionHelper.isNotEmpty(request.getBudgetariesScopeFunctionsGrantedAsStrings())) {
-					strings =  ((Request)record).getBudgetariesScopeFunctionsGrantedAsStrings();
-				}else if(CollectionHelper.isNotEmpty(request.getBudgetariesScopeFunctionsAsStrings())){
-					strings =  ((Request)record).getBudgetariesScopeFunctionsAsStrings();
-				}
+				Collection<String> strings = request.getScopeFunctionsCodes();
 				if(CollectionHelper.isNotEmpty(strings))
 					return strings.stream().map(x -> StringUtils.substringBefore(x, " ")).collect(Collectors.joining(","));
-			}/*else if(Request.FIELD_ADMINISTRATIVE_UNIT_AS_STRING.equals(column.getFieldName())) {
-				return StringUtils.substringBefore(((Request)record).getAdministrativeUnitAsString()," ");
-			}else if(Request.FIELD_SECTION_AS_STRING.equals(column.getFieldName())) {
-				return StringUtils.substringBefore(((Request)record).getSectionAsString()," ");
-			}*/
+			}
 			return super.getCellValueByRecordByColumn(record, recordIndex, column, columnIndex);
 		}
 		
@@ -369,16 +345,6 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			return columnsFieldsNames;
 		}
 		
-		@Override
-		public String getStyleClassByRecord(Object record, Integer recordIndex) {
-			if(record instanceof Request) {
-				Request request = (Request) record;
-				if(!Boolean.TRUE.equals(request.getAccepted()) && Boolean.TRUE.equals(request.getHasGrantedHolderScopeFunction()))
-					return "cyk-background-highlight";
-			}
-			return super.getStyleClassByRecord(record, recordIndex);
-		}
-		
 		private static final String SEPARATOR = "<br/>"+StringUtils.repeat("&nbsp;", 10);
 		private static final String TOOLTIP_FORMAT = "Section : %s<br/>Unité administrative : %s<br/>Fonction(s) budgétaire(s) :%s";
 	}
@@ -403,30 +369,12 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 		public Filter.Dto instantiateFilter(LazyDataModel<Request> lazyDataModel) {
 			Filter.Dto filter = super.instantiateFilter(lazyDataModel);
 			filter = RequestFilterController.populateFilter(filter, (RequestFilterController) filterController,Boolean.FALSE);
-			/*
-			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_EXCLUDED_IDENTIFIERS, excludedIdentifiers, filter);		
-			
-			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_ACTOR_IDENTIFIER, actorIdentifier, filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_PROCESSING_DATE_IS_NULL, processingDateIsNullNullable, filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_PROCESSING_DATE_IS_NOT_NULL, processingDateIsNotNullNullable, filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_DISPATCH_SLIP_IDENTIFIER, dispatchSlipIdentifier, filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_DISPATCH_SLIP_IS_NULL, dispatchSlipIsNullNullable, filter);
-			
-			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT_SECTION_IDENTIFIER, sectionIdentifier, filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER, functionIdentifier, filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_STATUS_IDENTIFIER, statusIdentifier, filter);
-			*/
 			return filter;
 		}
 		
 		@Override
 		public Arguments<Request> instantiateArguments(LazyDataModel<Request> lazyDataModel) {
 			Arguments<Request> arguments = super.instantiateArguments(lazyDataModel);
-			/*ArrayList<String> list = new ArrayList<>();			
-			list.addAll(List.of(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRINGS
-					,Request.FIELD_HAS_GRANTED_HOLDER_SCOPE_FUNCTION,Request.FIELD_ACCEPTED,Request.FIELD_IS_CREDIT_MANAGER_HOLDER
-					,Request.FIELD_IS_AUTHORIZING_OFFICER_HOLDER,Request.FIELD_IS_FINANCIAL_CONTROLLER_HOLDER,Request.FIELD_IS_ACCOUNTING_HOLDER));
-			*/
 			arguments.getRepresentationArguments().getQueryExecutorArguments().addProjectionsFromStrings(
 					ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELD_IDENTIFIER
 					,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELD_CODE
@@ -434,10 +382,17 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 					,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELD_LAST_NAMES
 					,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELD_REGISTRATION_NUMBER
 					,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELD_ELECTRONIC_MAIL_ADDRESS
-					,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELD_MOBILE_PHONE_NUMBER)
-			.addProcessableTransientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_AS_CODE_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
-					,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELDS_SCOPE_FUNCTIONS_CODES
-					,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
+					,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELD_MOBILE_PHONE_NUMBER
+					,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELD_DISPATCH_SLIP_CODE)
+			.addProcessableTransientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_AS_CODE_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS);
+			
+			Boolean processed = ((RequestFilterController)filterController).getProcessedInitial();
+			if(Boolean.TRUE.equals(processed))
+				arguments.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_AS_CODE_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
+						,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES_IS_CREDIT_MANAGER_HOLDER_IS_AUTHORIZING_OFFICER_HOLDER_IS_FINANCIAL_CONTROLLER_HOLDER_IS_ACCOUNTING_HOLDER);
+			else
+				arguments.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_AS_CODE_TYPE_STATUS_CREATION_DATE_AS_STRINGS
+						,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELDS_SCOPE_FUNCTIONS_CODES_IS_CREDIT_MANAGER_HOLDER_IS_AUTHORIZING_OFFICER_HOLDER_IS_FINANCIAL_CONTROLLER_HOLDER_IS_ACCOUNTING_HOLDER);
 			return arguments;
 		}
 		
