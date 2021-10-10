@@ -36,13 +36,16 @@ import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.ActorController;
+import ci.gouv.dgbf.system.actor.client.controller.api.AdministrativeUnitController;
 import ci.gouv.dgbf.system.actor.client.controller.api.FunctionController;
 import ci.gouv.dgbf.system.actor.client.controller.api.ProfileController;
 import ci.gouv.dgbf.system.actor.client.controller.api.ProfileTypeController;
 import ci.gouv.dgbf.system.actor.client.controller.api.RequestStatusController;
 import ci.gouv.dgbf.system.actor.client.controller.api.RequestTypeController;
 import ci.gouv.dgbf.system.actor.client.controller.api.ScopeTypeController;
+import ci.gouv.dgbf.system.actor.client.controller.api.SectionController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
+import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.FunctionType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Profile;
@@ -52,6 +55,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.RequestStatus;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Scope;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeType;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Service;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionTypeQuerier;
@@ -218,6 +222,57 @@ public interface Helper {
 		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.LABEL);
 		input.setValueAsFirstChoiceIfNull();
 		return input;
+	}
+	
+	public static SelectOneCombo buildSectionSelectOne(Section section,Object container,String administrativeUnitSelectOneFieldName) {
+		SelectOneCombo sectionSelect = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,Section.class,SelectOneCombo.FIELD_VALUE,section,SelectOneCombo.FIELD_LISTENER
+				,new SelectOneCombo.Listener.AbstractImpl<Section>() {
+			@Override
+			public Collection<Section> computeChoices(AbstractInputChoice<Section> input) {
+				Collection<Section> choices = __inject__(SectionController.class).readVisiblesByLoggedInActorCodeForUI();
+				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
+				return choices;
+			}
+			@Override
+			public void select(AbstractInputChoiceOne input, Section section) {
+				super.select(input, section);
+				if(container != null && StringHelper.isNotBlank(administrativeUnitSelectOneFieldName)) {
+					AbstractInputChoiceOne administrativeUnitSelectOne = (AbstractInputChoiceOne)FieldHelper.read(container, administrativeUnitSelectOneFieldName);
+					if(administrativeUnitSelectOne != null) {
+						administrativeUnitSelectOne.setValue(null);
+						administrativeUnitSelectOne.updateChoices();
+					}
+				}
+				
+			}
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.Section.LABEL);		
+		return sectionSelect;
+	}
+	
+	public static SelectOneCombo buildAdministrativeUnitSelectOne(AdministrativeUnit administrativeUnit,Object container,String sectionSelectFieldName) {		
+		SelectOneCombo sectionSelect = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,AdministrativeUnit.class,SelectOneCombo.FIELD_VALUE,administrativeUnit
+				,SelectOneCombo.FIELD_LISTENER
+				,new SelectOneCombo.Listener.AbstractImpl<AdministrativeUnit>() {
+			@Override
+			public Collection<AdministrativeUnit> computeChoices(AbstractInputChoice<AdministrativeUnit> input) {
+				Collection<AdministrativeUnit> choices = null;
+				if(container == null || StringHelper.isBlank(sectionSelectFieldName))
+					choices =  __inject__(AdministrativeUnitController.class).readVisiblesByLoggedInActorCodeForUI();
+				else {
+					AbstractInputChoiceOne sectionSelect = (AbstractInputChoiceOne)FieldHelper.read(container, sectionSelectFieldName);
+					if(sectionSelect != null) {
+						Section section =  (Section) sectionSelect.getValue();
+						if(section == null)
+							choices =  __inject__(AdministrativeUnitController.class).readVisiblesByLoggedInActorCodeForUI();
+						else
+							choices = __inject__(AdministrativeUnitController.class).readVisiblesBySectionIdentifierByLoggedInActorCodeForUI(section.getIdentifier());
+					}					
+				}
+				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
+				return choices;
+			}
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit.LABEL);		
+		return sectionSelect;
 	}
 	
 	static String formatTitleRequestDispatchSlip(RequestDispatchSlip requestDispatchSlip,Action action) {
