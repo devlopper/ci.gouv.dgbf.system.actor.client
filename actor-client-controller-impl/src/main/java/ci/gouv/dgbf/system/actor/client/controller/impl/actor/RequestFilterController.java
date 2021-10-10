@@ -11,6 +11,7 @@ import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.value.ValueConverter;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
@@ -28,6 +29,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestStatus;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
+import ci.gouv.dgbf.system.actor.client.controller.impl.Helper;
 import ci.gouv.dgbf.system.actor.client.controller.impl.function.FunctionListPage;
 import ci.gouv.dgbf.system.actor.client.controller.impl.scope.ScopeListPage;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
@@ -43,7 +45,8 @@ import lombok.experimental.Accessors;
 @Getter @Setter @Accessors(chain=true)
 public class RequestFilterController extends AbstractFilterController implements Serializable {
 
-	private SelectOneCombo sectionSelectOne,functionSelectOne,typeSelectOne,statusSelectOne,administrativeUnitSelectOne,budgetSpecializationUnitSelectOne;
+	private SelectOneCombo sectionSelectOne,functionSelectOne,typeSelectOne,statusSelectOne,administrativeUnitSelectOne,budgetSpecializationUnitSelectOne
+		,processedSelectOne,acceptedSelectOne;
 	private InputText searchInputText;
 	
 	private Section sectionInitial;
@@ -52,6 +55,8 @@ public class RequestFilterController extends AbstractFilterController implements
 	private RequestType typeInitial;
 	private RequestStatus statusInitial;
 	private String searchInitial;
+	private Boolean processedInitial;
+	private Boolean acceptedInitial;
 	
 	public RequestFilterController() {
 		sectionInitial = getSectionFromRequestParameter();
@@ -59,7 +64,9 @@ public class RequestFilterController extends AbstractFilterController implements
 		functionInitial = getFunctionFromRequestParameter();
 		typeInitial = getTypeFromRequestParameter();
 		statusInitial = getStatusFromRequestParameter();
-		searchInitial = WebController.getInstance().getRequestParameter(buildParameterName(FIELD_SEARCH_INPUT_TEXT));		
+		searchInitial = WebController.getInstance().getRequestParameter(buildParameterName(FIELD_SEARCH_INPUT_TEXT));
+		processedInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(Request.FIELD_PROCESSED));
+		acceptedInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(Request.FIELD_ACCEPTED));
 	}
 	
 	public static Section getSectionFromRequestParameter() {
@@ -103,8 +110,17 @@ public class RequestFilterController extends AbstractFilterController implements
 		buildInputSelectOne(FIELD_ADMINISTRATIVE_UNIT_SELECT_ONE, AdministrativeUnit.class);
 		buildInputSelectOne(FIELD_FUNCTION_SELECT_ONE, Function.class);
 		buildInputSelectOne(FIELD_TYPE_SELECT_ONE, RequestType.class);
+		buildInputSelectOne(FIELD_PROCESSED_SELECT_ONE, Boolean.class);
 		buildInputSelectOne(FIELD_STATUS_SELECT_ONE, RequestStatus.class);
-		buildInputText(FIELD_SEARCH_INPUT_TEXT);
+		buildInputText(FIELD_SEARCH_INPUT_TEXT);		
+		buildInputSelectOne(FIELD_ACCEPTED_SELECT_ONE, Boolean.class);
+		
+		enableValueChangeListeners();
+	}
+	
+	private void enableValueChangeListeners() {
+		if(processedSelectOne != null)
+			processedSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,statusSelectOne));
 	}
 	
 	@Override
@@ -115,8 +131,12 @@ public class RequestFilterController extends AbstractFilterController implements
 			return FunctionListPage.buildSelectOne((Function) value);
 		if(FIELD_TYPE_SELECT_ONE.equals(fieldName))
 			return RequestTypeListPage.buildSelectOne((RequestType) value);
+		if(FIELD_PROCESSED_SELECT_ONE.equals(fieldName))
+			return Helper.buildProcessedSelectOneCombo((Boolean) value,this,FIELD_STATUS_SELECT_ONE);
 		if(FIELD_STATUS_SELECT_ONE.equals(fieldName))
-			return RequestStatusListPage.buildSelectOne((RequestStatus) value);
+			return RequestStatusListPage.buildSelectOne((RequestStatus) value,this,FIELD_PROCESSED_SELECT_ONE);		
+		if(FIELD_ACCEPTED_SELECT_ONE.equals(fieldName))
+			return Helper.buildAcceptedSelectOneCombo((Boolean) value);
 		return null;
 	}
 	
@@ -132,6 +152,10 @@ public class RequestFilterController extends AbstractFilterController implements
 			return typeInitial;
 		if(FIELD_STATUS_SELECT_ONE.equals(fieldName))
 			return statusInitial;
+		if(FIELD_PROCESSED_SELECT_ONE.equals(fieldName))
+			return processedInitial;
+		if(FIELD_ACCEPTED_SELECT_ONE.equals(fieldName))
+			return acceptedInitial;
 		return super.getInputSelectOneInitialValue(fieldName, klass);
 	}
 	
@@ -139,7 +163,20 @@ public class RequestFilterController extends AbstractFilterController implements
 	protected String buildParameterName(String fieldName, AbstractInput<?> input) {
 		if(FIELD_SEARCH_INPUT_TEXT.equals(fieldName) || input == searchInputText)
 			return Request.FIELD_SEARCH;
+		if(FIELD_ACCEPTED_SELECT_ONE.equals(fieldName) || input == acceptedSelectOne)
+			return Request.FIELD_ACCEPTED;
+		if(FIELD_PROCESSED_SELECT_ONE.equals(fieldName) || input == processedSelectOne)
+			return Request.FIELD_PROCESSED;
 		return super.buildParameterName(fieldName, input);
+	}
+	
+	@Override
+	protected String buildParameterValue(AbstractInput<?> input) {
+		if(input == acceptedSelectOne)
+			return input.getValue() == null ? null : input.getValue().toString();
+		if(input == processedSelectOne)
+			return input.getValue() == null ? null : input.getValue().toString();
+		return super.buildParameterValue(input);
 	}
 	
 	@Override
@@ -164,17 +201,28 @@ public class RequestFilterController extends AbstractFilterController implements
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,functionSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,2));
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,functionSelectOne,Cell.FIELD_WIDTH,10));
 		}
-		
-		if(statusSelectOne != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,statusSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,2));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,statusSelectOne,Cell.FIELD_WIDTH,10));
-		}
+		/*
 		
 		if(searchInputText != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,searchInputText.getOutputLabel(),Cell.FIELD_WIDTH,2));
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,searchInputText,Cell.FIELD_WIDTH,10));	
 		}
+		*/
+		if(processedSelectOne != null) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,processedSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,2));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,processedSelectOne,Cell.FIELD_WIDTH,10));		
+		}
 		
+		if(statusSelectOne != null) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,statusSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,2));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,statusSelectOne,Cell.FIELD_WIDTH,10));
+		}
+		/*
+		if(acceptedSelectOne != null) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,acceptedSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,2));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,acceptedSelectOne,Cell.FIELD_WIDTH,10));
+		}
+		*/
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,filterCommandButton,Cell.FIELD_WIDTH,12));	
 		return cellsMaps;
 	}
@@ -188,6 +236,14 @@ public class RequestFilterController extends AbstractFilterController implements
 			strings.add(functionInitial.toString());
 		if(typeInitial != null)
 			strings.add(typeInitial.toString());
+		
+		if(processedInitial != null) {
+			strings.add(processedInitial ? "Traité" : "Non traité");
+		}	
+		if(acceptedInitial != null) {
+			strings.add(acceptedInitial ? "Accepté" : "Rejeté");
+		}		
+		
 		if(statusInitial != null)
 			strings.add(statusInitial.toString());
 		return StringHelper.concatenate(strings, " | ");
@@ -238,12 +294,37 @@ public class RequestFilterController extends AbstractFilterController implements
 		return (String)AbstractInput.getValue(searchInputText);
 	}
 	
+	public Boolean getProcessed() {
+		return (Boolean) AbstractInput.getValue(processedSelectOne);
+	}
+	
+	public Boolean getAccepted() {
+		return (Boolean) AbstractInput.getValue(acceptedSelectOne);
+	}
+	
+	@Override
+	protected String buildParameterName(AbstractInput<?> input) {
+		if(processedSelectOne == input)
+			return Request.FIELD_PROCESSED;
+		if(acceptedSelectOne == input)
+			return Request.FIELD_ACCEPTED;
+		return super.buildParameterName(input);
+	}
+	
 	public static Filter.Dto populateFilter(Filter.Dto filter,RequestFilterController controller,Boolean initial) {
 		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_SECTIONS_IDENTIFIERS, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.sectionInitial : controller.getSection())), filter);
 		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_IDENTIFIERS, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.administrativeUnitInitial : controller.getAdministrativeUnit())), filter);
 		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.functionInitial : controller.getFunction())), filter);		
 		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_TYPES_IDENTIFIERS, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.typeInitial : controller.getType())), filter);
-		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_STATUS_IDENTIFIERS, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.statusInitial : controller.getStatus())), filter);		
+		
+		Boolean processed = Boolean.TRUE.equals(initial) ? controller.processedInitial : controller.getProcessed();
+		if(processed == null) {
+			
+		}else {
+			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_PROCESSED, processed, filter);			
+			//filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_ACCEPTED, Boolean.TRUE.equals(initial) ? controller.acceptedInitial : controller.getAccepted(), filter);
+		}
+		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_STATUS_IDENTIFIERS, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.statusInitial : controller.getStatus())), filter);
 		filter = Filter.Dto.addFieldIfValueNotBlank(RequestQuerier.PARAMETER_NAME_SEARCH, Boolean.TRUE.equals(initial) ? controller.searchInitial : controller.getSearch(), filter);
 		return filter;
 	}
@@ -263,4 +344,6 @@ public class RequestFilterController extends AbstractFilterController implements
 	public static final String FIELD_FUNCTION_SELECT_ONE = "functionSelectOne";
 	public static final String FIELD_TYPE_SELECT_ONE = "typeSelectOne";
 	public static final String FIELD_STATUS_SELECT_ONE = "statusSelectOne";
+	public static final String FIELD_PROCESSED_SELECT_ONE = "processedSelectOne";
+	public static final String FIELD_ACCEPTED_SELECT_ONE = "acceptedSelectOne";
 }

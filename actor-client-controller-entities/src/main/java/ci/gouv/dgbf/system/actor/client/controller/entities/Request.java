@@ -186,6 +186,7 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	public static final String FIELD_STATUS = "status";
 	public static final String FIELD_STATUS_AS_STRING = "statusAsString";
 	public static final String FIELD_ACCOUNT_CREATION_MESSAGE = "accountCreationMessage";
+	public static final String FIELD_PROCESSED = "processed";
 	public static final String FIELD_ACCEPTED = "accepted";
 	public static final String FIELD_REJECTED = "rejected";
 	public static final String FIELD_CREATION_DATE = "creationDate";

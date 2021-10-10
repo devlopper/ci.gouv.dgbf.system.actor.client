@@ -1,6 +1,7 @@
 package ci.gouv.dgbf.system.actor.client.controller.api;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -10,6 +11,7 @@ import org.cyk.utility.controller.Arguments;
 import org.cyk.utility.controller.EntityReader;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestStatus;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestStatusQuerier;
 
 @ApplicationScoped
 public class RequestStatusControllerImpl extends AbstractControllerEntityImpl<RequestStatus> implements RequestStatusController,Serializable {
@@ -21,5 +23,13 @@ public class RequestStatusControllerImpl extends AbstractControllerEntityImpl<Re
 			return null;
 		return EntityReader.getInstance().readOne(RequestStatus.class, new Arguments<RequestStatus>().queryIdentifierReadDynamicOne(RequestStatus.class)
 				.filterByIdentifier(identifier));
+	}
+	
+	@Override
+	public Collection<RequestStatus> read(Boolean processed) {
+		if(processed == null)
+			return read();
+		return EntityReader.getInstance().readMany(RequestStatus.class, new Arguments<RequestStatus>().queryIdentifierReadDynamicMany(RequestStatus.class)
+				.filterFieldsValues(RequestStatusQuerier.PARAMETER_NAME_PROCESSED,processed));
 	}
 }

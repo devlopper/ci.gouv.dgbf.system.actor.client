@@ -160,12 +160,32 @@ public interface Helper {
 		return input;
 	}
 	
+	static SelectOneCombo buildProcessedSelectOneCombo(Boolean processed,Object container,String childSelectOneFieldName) {
+		return SelectOneCombo.buildUnknownYesNoOnly((Boolean) processed, "Traité",new SelectOneCombo.Listener.AbstractImpl<Boolean>() {
+			@Override
+			public void select(AbstractInputChoiceOne input, Boolean value) {
+				super.select(input, value);
+				if(container != null && StringHelper.isNotBlank(childSelectOneFieldName)) {
+					AbstractInputChoiceOne childInput = (AbstractInputChoiceOne)FieldHelper.read(container, childSelectOneFieldName);
+					if(childInput != null) {
+						childInput.setValue(null);
+						childInput.updateChoices();
+					}
+				}
+			}
+		});
+	}
+	
 	static SelectOneCombo buildProcessedSelectOneCombo(Boolean processed) {
-		return SelectOneCombo.buildUnknownYesNoOnly((Boolean) processed, "Traité");
+		return buildProcessedSelectOneCombo(processed, null, null);
 	}
 	
 	static SelectOneCombo buildGrantedSelectOneCombo(Boolean granted) {
 		return SelectOneCombo.buildUnknownYesNoOnly((Boolean) granted, "Accordé");
+	}
+	
+	static SelectOneCombo buildAcceptedSelectOneCombo(Boolean accepted) {
+		return SelectOneCombo.buildUnknownYesNoOnly((Boolean) accepted, "Accepté");
 	}
 	
 	static SelectOneCombo buildVisibleSelectOneCombo(Boolean visible) {
