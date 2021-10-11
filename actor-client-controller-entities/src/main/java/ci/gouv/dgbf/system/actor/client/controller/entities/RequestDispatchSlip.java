@@ -39,6 +39,7 @@ public class RequestDispatchSlip extends AbstractDataIdentifiableSystemStringIde
 	private String creationDateAsString,sendingDateAsString,processingDateAsString,comment;
 	
 	private Collection<Request> requests;
+	private Integer numberOfRequests;
 	private Collection<String> requestsIdentifiers;
 	private Collection<String> acceptedRequestsIdentifiers;
 	private Collection<RequestDto.Acceptation> requestsAcceptations;
@@ -118,6 +119,7 @@ public class RequestDispatchSlip extends AbstractDataIdentifiableSystemStringIde
 	public static final String FIELD_CREATION_DATE_AS_STRING = "creationDateAsString";
 	public static final String FIELD_SENDING_DATE_AS_STRING = "sendingDateAsString";
 	public static final String FIELD_PROCESSING_DATE_AS_STRING = "processingDateAsString";
+	public static final String FIELD_NUMBER_OF_REQUESTS = "numberOfRequests";
 	
 	public static final String TREATMENT_ACCEPT = "0";
 	public static final String TREATMENT_REJECT = "1";

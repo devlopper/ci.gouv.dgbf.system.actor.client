@@ -11,6 +11,7 @@ import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.value.ValueHelper;
@@ -191,7 +192,7 @@ public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl
 
 	/**/
 	
-	public static SelectOneCombo buildSelectOne(Function function) {
+	public static SelectOneCombo buildSelectOne(Function function,Object container,Collection<String> updatablesSelectOneFieldsNames) {
 		SelectOneCombo selectOne = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,function,SelectOneCombo.FIELD_CHOICE_CLASS,Function.class,SelectOneCombo.FIELD_LISTENER
 				,new SelectOneCombo.Listener.AbstractImpl<Function>() {
 			@Override
@@ -203,12 +204,24 @@ public class FunctionListPage extends AbstractEntityListPageContainerManagedImpl
 			@Override
 			public void select(AbstractInputChoiceOne input, Function function) {
 				super.select(input, function);
-				
+				if(container != null && CollectionHelper.isNotEmpty(updatablesSelectOneFieldsNames)) {
+					for(String fieldName : updatablesSelectOneFieldsNames) {
+						AbstractInputChoiceOne selectOne = (AbstractInputChoiceOne)FieldHelper.read(container, fieldName);
+						if(selectOne != null) {
+							selectOne.setValue(null);
+							selectOne.updateChoices();
+						}
+					}					
+				}
 			}
 		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.Function.LABEL);
 		selectOne.updateChoices();
 		selectOne.selectByValueSystemIdentifier();
 		//functionSelectOne.enableValueChangeListener(List.of());
 		return selectOne;
+	}
+	
+	public static SelectOneCombo buildSelectOne(Function function) {
+		return buildSelectOne(function, null, null);
 	}
 }

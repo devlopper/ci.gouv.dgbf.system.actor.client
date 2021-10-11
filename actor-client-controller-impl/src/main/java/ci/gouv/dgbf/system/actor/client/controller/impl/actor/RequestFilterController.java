@@ -26,6 +26,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
+import ci.gouv.dgbf.system.actor.client.controller.entities.RequestDispatchSlip;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestStatus;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestType;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
@@ -33,6 +34,7 @@ import ci.gouv.dgbf.system.actor.client.controller.impl.Helper;
 import ci.gouv.dgbf.system.actor.client.controller.impl.function.FunctionListPage;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestDispatchSlipQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestStatusQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestTypeQuerier;
@@ -45,7 +47,7 @@ import lombok.experimental.Accessors;
 public class RequestFilterController extends AbstractFilterController implements Serializable {
 
 	private SelectOneCombo sectionSelectOne,functionSelectOne,typeSelectOne,statusSelectOne,administrativeUnitSelectOne,budgetSpecializationUnitSelectOne
-		,processedSelectOne;
+		,processedSelectOne,dispatchSlipSelectOne;
 	private InputText searchInputText;
 	
 	private Section sectionInitial;
@@ -55,14 +57,24 @@ public class RequestFilterController extends AbstractFilterController implements
 	private Boolean processedInitial;
 	private RequestStatus statusInitial;
 	private String searchInitial;
+	private RequestDispatchSlip dispatchSlipInitial;
 	
 	public RequestFilterController() {
+		dispatchSlipInitial = getDispatchSlipFromRequestParameter();
 		administrativeUnitInitial = getAdministrativeUnitFromRequestParameter();		
-		if(administrativeUnitInitial == null || administrativeUnitInitial.getSection() == null)
-			sectionInitial = getSectionFromRequestParameter();
-		else
+		
+		if(sectionInitial == null && administrativeUnitInitial != null)
 			sectionInitial = administrativeUnitInitial.getSection();
-		functionInitial = getFunctionFromRequestParameter();
+		if(sectionInitial == null && dispatchSlipInitial != null)
+			sectionInitial = dispatchSlipInitial.getSection();
+		if(sectionInitial == null)
+			sectionInitial = getSectionFromRequestParameter();
+		
+		if(functionInitial == null && dispatchSlipInitial != null)
+			functionInitial = dispatchSlipInitial.getFunction();
+		if(functionInitial == null)
+			functionInitial = getFunctionFromRequestParameter();
+		
 		typeInitial = getTypeFromRequestParameter();
 		statusInitial = getStatusFromRequestParameter();
 		processedInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(Request.FIELD_PROCESSED));
@@ -104,6 +116,14 @@ public class RequestFilterController extends AbstractFilterController implements
 				.filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.stringify(RequestStatus.class))));
 	}
 	
+	public static RequestDispatchSlip getDispatchSlipFromRequestParameter() {
+		return EntityReader.getInstance().readOneBySystemIdentifierAsParent(RequestDispatchSlip.class, new Arguments<RequestDispatchSlip>()
+				.queryIdentifier(RequestDispatchSlipQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
+				.projections(RequestDispatchSlip.FIELD_IDENTIFIER,RequestDispatchSlip.FIELD_CODE,RequestDispatchSlip.FIELD_NAME)
+				.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip.FIELDS_SECTION_FUNCTION)
+				.filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.stringify(RequestDispatchSlip.class))));
+	}
+	
 	@Override
 	protected void buildInputs() {
 		buildInputSelectOne(FIELD_SECTION_SELECT_ONE, Section.class);
@@ -112,6 +132,7 @@ public class RequestFilterController extends AbstractFilterController implements
 		buildInputSelectOne(FIELD_TYPE_SELECT_ONE, RequestType.class);
 		buildInputSelectOne(FIELD_PROCESSED_SELECT_ONE, Boolean.class);
 		buildInputSelectOne(FIELD_STATUS_SELECT_ONE, RequestStatus.class);
+		buildInputSelectOne(FIELD_DISPATCH_SLIP_SELECT_ONE, RequestDispatchSlip.class);
 		buildInputText(FIELD_SEARCH_INPUT_TEXT);		
 		
 		enableValueChangeListeners();
@@ -119,7 +140,9 @@ public class RequestFilterController extends AbstractFilterController implements
 	
 	private void enableValueChangeListeners() {
 		if(sectionSelectOne != null)
-			sectionSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,administrativeUnitSelectOne));
+			sectionSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,administrativeUnitSelectOne,dispatchSlipSelectOne));
+		if(functionSelectOne != null)
+			functionSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,dispatchSlipSelectOne));
 		if(processedSelectOne != null)
 			processedSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,statusSelectOne));		
 	}
@@ -127,17 +150,19 @@ public class RequestFilterController extends AbstractFilterController implements
 	@Override
 	protected AbstractInput<?> buildInput(String fieldName, Object value) {
 		if(FIELD_SECTION_SELECT_ONE.equals(fieldName))
-			return Helper.buildSectionSelectOne((Section) value, this,FIELD_ADMINISTRATIVE_UNIT_SELECT_ONE);
+			return Helper.buildSectionSelectOne((Section) value, this,List.of(FIELD_ADMINISTRATIVE_UNIT_SELECT_ONE,FIELD_DISPATCH_SLIP_SELECT_ONE));
 		if(FIELD_ADMINISTRATIVE_UNIT_SELECT_ONE.equals(fieldName))
 			return Helper.buildAdministrativeUnitSelectOne((AdministrativeUnit) value, this,FIELD_SECTION_SELECT_ONE);
 		if(FIELD_FUNCTION_SELECT_ONE.equals(fieldName))
-			return FunctionListPage.buildSelectOne((Function) value);
+			return FunctionListPage.buildSelectOne((Function) value,this,List.of(FIELD_DISPATCH_SLIP_SELECT_ONE));
 		if(FIELD_TYPE_SELECT_ONE.equals(fieldName))
 			return RequestTypeListPage.buildSelectOne((RequestType) value);
 		if(FIELD_PROCESSED_SELECT_ONE.equals(fieldName))
 			return Helper.buildProcessedSelectOneCombo((Boolean) value,this,FIELD_STATUS_SELECT_ONE);
 		if(FIELD_STATUS_SELECT_ONE.equals(fieldName))
 			return RequestStatusListPage.buildSelectOne((RequestStatus) value,this,FIELD_PROCESSED_SELECT_ONE);
+		if(FIELD_DISPATCH_SLIP_SELECT_ONE.equals(fieldName))
+			return RequestDispatchSlipListPage.buildSelectOne((RequestDispatchSlip) value,this,FIELD_SECTION_SELECT_ONE,FIELD_FUNCTION_SELECT_ONE);
 		if(FIELD_SEARCH_INPUT_TEXT.equals(fieldName))
 			return Helper.buildSearchInputText((String) value);
 		return null;
@@ -157,6 +182,8 @@ public class RequestFilterController extends AbstractFilterController implements
 			return statusInitial;
 		if(FIELD_PROCESSED_SELECT_ONE.equals(fieldName))
 			return processedInitial;
+		if(FIELD_DISPATCH_SLIP_SELECT_ONE.equals(fieldName))
+			return dispatchSlipInitial;
 		return super.getInputSelectOneInitialValue(fieldName, klass);
 	}
 	
@@ -209,6 +236,11 @@ public class RequestFilterController extends AbstractFilterController implements
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,statusSelectOne,Cell.FIELD_WIDTH,2));
 		}
 		
+		if(dispatchSlipSelectOne != null) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dispatchSlipSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,2));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dispatchSlipSelectOne,Cell.FIELD_WIDTH,10));
+		}
+		
 		if(searchInputText != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,searchInputText.getOutputLabel(),Cell.FIELD_WIDTH,2));
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,searchInputText,Cell.FIELD_WIDTH,10));	
@@ -229,7 +261,9 @@ public class RequestFilterController extends AbstractFilterController implements
 		if(administrativeUnitInitial != null)
 			strings.add(administrativeUnitInitial.toString());
 		if(functionInitial != null)
-			strings.add(functionInitial.getCode());
+			strings.add(functionInitial.getName());
+		if(dispatchSlipInitial != null)
+			strings.add(dispatchSlipInitial.getName());
 		
 		if(processedInitial != null && statusInitial == null) {
 			strings.add(processedInitial ? "Traité" : "Non traité");
@@ -259,7 +293,8 @@ public class RequestFilterController extends AbstractFilterController implements
 		}
 		if(statusInitial == null)
 			columnsFieldsNames.add(Request.FIELD_STATUS_AS_STRING);
-		columnsFieldsNames.add(Request.FIELD_DISPATCH_SLIP_AS_STRING);
+		if(dispatchSlipInitial == null)
+			columnsFieldsNames.add(Request.FIELD_DISPATCH_SLIP_AS_STRING);
 		return columnsFieldsNames;
 	}
 
@@ -287,6 +322,10 @@ public class RequestFilterController extends AbstractFilterController implements
 		return (BudgetSpecializationUnit)AbstractInput.getValue(budgetSpecializationUnitSelectOne);
 	}
 	
+	public RequestDispatchSlip getDispatchSlip() {
+		return (RequestDispatchSlip)AbstractInput.getValue(dispatchSlipSelectOne);
+	}
+	
 	public String getSearch() {
 		return (String)AbstractInput.getValue(searchInputText);
 	}
@@ -305,8 +344,9 @@ public class RequestFilterController extends AbstractFilterController implements
 	public static Filter.Dto populateFilter(Filter.Dto filter,RequestFilterController controller,Boolean initial) {
 		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_SECTIONS_IDENTIFIERS, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.sectionInitial : controller.getSection())), filter);
 		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_IDENTIFIERS, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.administrativeUnitInitial : controller.getAdministrativeUnit())), filter);
-		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.functionInitial : controller.getFunction())), filter);		
+		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.functionInitial : controller.getFunction())), filter);
 		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_TYPES_IDENTIFIERS, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.typeInitial : controller.getType())), filter);
+		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_DISPATCH_SLIP_IDENTIFIERS, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.dispatchSlipInitial : controller.getDispatchSlip())), filter);
 		
 		Boolean processed = Boolean.TRUE.equals(initial) ? controller.processedInitial : controller.getProcessed();
 		if(processed == null) {
@@ -336,4 +376,5 @@ public class RequestFilterController extends AbstractFilterController implements
 	public static final String FIELD_TYPE_SELECT_ONE = "typeSelectOne";
 	public static final String FIELD_STATUS_SELECT_ONE = "statusSelectOne";
 	public static final String FIELD_PROCESSED_SELECT_ONE = "processedSelectOne";
+	public static final String FIELD_DISPATCH_SLIP_SELECT_ONE = "dispatchSlipSelectOne";
 }

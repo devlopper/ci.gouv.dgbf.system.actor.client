@@ -2,6 +2,7 @@ package ci.gouv.dgbf.system.actor.client.controller.impl.actor;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -11,20 +12,28 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.persistence.query.Filter;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoiceOne;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.AbstractMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
+import org.cyk.utility.persistence.query.Filter;
 
+import ci.gouv.dgbf.system.actor.client.controller.api.RequestDispatchSlipController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestDispatchSlip;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
@@ -172,6 +181,34 @@ public class RequestDispatchSlipListPage extends AbstractEntityListPageContainer
 		
 		public static final String FIELD_PROCESSING_DATE_IS_NULLABLE = "processingDateIsNullable";
 		public static final String FIELD_PROCESSING_DATE_IS_NOT_NULLABLE = "processingDateIsNotNullable";
+	}
+
+	public static SelectOneCombo buildSelectOne(RequestDispatchSlip requestDispatchSlip,Object container,String sectionSelectOneFieldName,String functionSelectOneFieldName) {
+		SelectOneCombo selectOne = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,requestDispatchSlip,SelectOneCombo.FIELD_CHOICE_CLASS,RequestDispatchSlip.class,SelectOneCombo.FIELD_LISTENER
+				,new SelectOneCombo.Listener.AbstractImpl<RequestDispatchSlip>() {
+			@Override
+			public Collection<RequestDispatchSlip> computeChoices(AbstractInputChoice<RequestDispatchSlip> input) {
+				String sectionIdentifier = null;
+				String functionIdentifier = null;
+				if(container != null) {
+					if(StringHelper.isNotBlank(sectionSelectOneFieldName))
+						sectionIdentifier = (String) FieldHelper.readSystemIdentifier(AbstractInput.getValue((AbstractInput<?>)FieldHelper.read(container, sectionSelectOneFieldName)));
+					if(StringHelper.isNotBlank(functionSelectOneFieldName))
+						functionIdentifier = (String) FieldHelper.readSystemIdentifier(AbstractInput.getValue((AbstractInput<?>)FieldHelper.read(container, functionSelectOneFieldName)));
+				}
+				Collection<RequestDispatchSlip> choices = __inject__(RequestDispatchSlipController.class).read(sectionIdentifier, functionIdentifier);
+				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
+				return choices;
+			}
+			@Override
+			public void select(AbstractInputChoiceOne input, RequestDispatchSlip requestDispatchSlip) {
+				super.select(input, requestDispatchSlip);
+				
+			}
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip.LABEL);
+		selectOne.updateChoices();
+		selectOne.selectByValueSystemIdentifier();
+		return selectOne;
 	}
 	
 	public static final String OUTCOME = "requestDispatchSlipListView";

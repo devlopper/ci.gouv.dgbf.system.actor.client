@@ -224,7 +224,7 @@ public interface Helper {
 		return input;
 	}
 	
-	public static SelectOneCombo buildSectionSelectOne(Section section,Object container,String administrativeUnitSelectOneFieldName) {
+	public static SelectOneCombo buildSectionSelectOne(Section section,Object container,Collection<String> updatablesSelectOneFieldsNames) {
 		SelectOneCombo select = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,Section.class,SelectOneCombo.FIELD_VALUE,section,SelectOneCombo.FIELD_LISTENER
 				,new SelectOneCombo.Listener.AbstractImpl<Section>() {
 			@Override
@@ -237,14 +237,15 @@ public interface Helper {
 			@Override
 			public void select(AbstractInputChoiceOne input, Section section) {
 				super.select(input, section);
-				if(container != null && StringHelper.isNotBlank(administrativeUnitSelectOneFieldName)) {
-					AbstractInputChoiceOne administrativeUnitSelectOne = (AbstractInputChoiceOne)FieldHelper.read(container, administrativeUnitSelectOneFieldName);
-					if(administrativeUnitSelectOne != null) {
-						administrativeUnitSelectOne.setValue(null);
-						administrativeUnitSelectOne.updateChoices();
-					}
+				if(container != null && CollectionHelper.isNotEmpty(updatablesSelectOneFieldsNames)) {
+					for(String fieldName : updatablesSelectOneFieldsNames) {
+						AbstractInputChoiceOne selectOne = (AbstractInputChoiceOne)FieldHelper.read(container, fieldName);
+						if(selectOne != null) {
+							selectOne.setValue(null);
+							selectOne.updateChoices();
+						}
+					}					
 				}
-				
 			}
 		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.Section.LABEL);		
 		return select;
