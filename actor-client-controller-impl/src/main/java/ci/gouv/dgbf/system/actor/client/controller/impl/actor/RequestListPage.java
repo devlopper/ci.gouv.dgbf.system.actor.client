@@ -200,12 +200,14 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			}else if(Request.FIELD_CREATION_DATE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Créée le");
 				map.put(Column.FIELD_WIDTH, "130");
-				//map.put(Column.FIELD_VISIBLE, ContentType.TO_PROCESS.equals(contentType));
+				if(filterController != null)
+					map.put(Column.FIELD_VISIBLE, filterController.getProcessedInitial() == null || !filterController.getProcessedInitial());
 				map.put(Column.FIELD_SORT_BY, Request.FIELD_CREATION_DATE);
 			}else if(Request.FIELD_PROCESSING_DATE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Traitée le");
 				map.put(Column.FIELD_WIDTH, "130");
-				//map.put(Column.FIELD_VISIBLE, ContentType.PROCESSED.equals(contentType));
+				if(filterController != null)
+					map.put(Column.FIELD_VISIBLE, Boolean.TRUE.equals(filterController.getProcessedInitial()));
 				map.put(Column.FIELD_SORT_BY, Request.FIELD_PROCESSING_DATE);
 			}else if(Request.FIELD_TYPE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Type");
@@ -254,7 +256,10 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 				map.put(Column.FIELD_WIDTH, "200");
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}else if(Request.FIELD_SCOPE_FUNCTIONS_CODES.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Poste(s)");
+				map.put(Column.FIELD_HEADER_TEXT, "Poste(s) demandée(s)");
+				map.put(Column.FIELD_WIDTH, "200");
+			}else if(Request.FIELD_GRANTED_SCOPE_FUNCTIONS_CODES.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Poste(s) accordée(s)");
 				map.put(Column.FIELD_WIDTH, "200");
 			}
 			return map;
@@ -264,7 +269,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 		public String getStyleClassByRecordByColumn(Object record, Integer recordIndex, Column column,Integer columnIndex) {
 			if(record instanceof Request) {
 				Request request = (Request) record;
-				if(columnIndex != null && columnIndex == 0) {					
+				if(columnIndex != null && columnIndex == 0) {
 					if(Boolean.TRUE.equals(request.getIsAccountingHolder()))
 						return "cyk-scope-function-cpt";
 					if(Boolean.TRUE.equals(request.getIsFinancialControllerHolder()))

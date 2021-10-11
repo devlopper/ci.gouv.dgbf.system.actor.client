@@ -225,11 +225,12 @@ public interface Helper {
 	}
 	
 	public static SelectOneCombo buildSectionSelectOne(Section section,Object container,String administrativeUnitSelectOneFieldName) {
-		SelectOneCombo sectionSelect = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,Section.class,SelectOneCombo.FIELD_VALUE,section,SelectOneCombo.FIELD_LISTENER
+		SelectOneCombo select = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,Section.class,SelectOneCombo.FIELD_VALUE,section,SelectOneCombo.FIELD_LISTENER
 				,new SelectOneCombo.Listener.AbstractImpl<Section>() {
 			@Override
 			public Collection<Section> computeChoices(AbstractInputChoice<Section> input) {
-				Collection<Section> choices = __inject__(SectionController.class).readVisiblesByLoggedInActorCodeForUI();
+				//Collection<Section> choices = __inject__(SectionController.class).readVisiblesByLoggedInActorCodeForUI();
+				Collection<Section> choices = __inject__(SectionController.class).read();
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
 			}
@@ -246,33 +247,34 @@ public interface Helper {
 				
 			}
 		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.Section.LABEL);		
-		return sectionSelect;
+		return select;
 	}
 	
 	public static SelectOneCombo buildAdministrativeUnitSelectOne(AdministrativeUnit administrativeUnit,Object container,String sectionSelectFieldName) {		
-		SelectOneCombo sectionSelect = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,AdministrativeUnit.class,SelectOneCombo.FIELD_VALUE,administrativeUnit
+		SelectOneCombo select = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,AdministrativeUnit.class,SelectOneCombo.FIELD_VALUE,administrativeUnit
 				,SelectOneCombo.FIELD_LISTENER
 				,new SelectOneCombo.Listener.AbstractImpl<AdministrativeUnit>() {
 			@Override
 			public Collection<AdministrativeUnit> computeChoices(AbstractInputChoice<AdministrativeUnit> input) {
 				Collection<AdministrativeUnit> choices = null;
 				if(container == null || StringHelper.isBlank(sectionSelectFieldName))
-					choices =  __inject__(AdministrativeUnitController.class).readVisiblesByLoggedInActorCodeForUI();
+					choices =  null;//__inject__(AdministrativeUnitController.class).readVisiblesByLoggedInActorCodeForUI();
 				else {
 					AbstractInputChoiceOne sectionSelect = (AbstractInputChoiceOne)FieldHelper.read(container, sectionSelectFieldName);
 					if(sectionSelect != null) {
 						Section section =  (Section) sectionSelect.getValue();
 						if(section == null)
-							choices =  __inject__(AdministrativeUnitController.class).readVisiblesByLoggedInActorCodeForUI();
+							choices =  null;//__inject__(AdministrativeUnitController.class).readVisiblesByLoggedInActorCodeForUI();
 						else
-							choices = __inject__(AdministrativeUnitController.class).readVisiblesBySectionIdentifierByLoggedInActorCodeForUI(section.getIdentifier());
-					}					
+							//choices = __inject__(AdministrativeUnitController.class).readVisiblesBySectionIdentifierByLoggedInActorCodeForUI(section.getIdentifier());
+							choices = __inject__(AdministrativeUnitController.class).readBySectionIdentifier(section.getIdentifier());
+					}
 				}
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
 			}
 		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit.LABEL);		
-		return sectionSelect;
+		return select;
 	}
 	
 	static String formatTitleRequestDispatchSlip(RequestDispatchSlip requestDispatchSlip,Action action) {

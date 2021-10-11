@@ -246,12 +246,17 @@ public class RequestFilterController extends AbstractFilterController implements
 		if(administrativeUnitInitial == null)
 			columnsFieldsNames.add(Request.FIELD_ADMINISTRATIVE_UNIT_AS_STRING);
 		if(typeInitial == null)
-			columnsFieldsNames.add(Request.FIELD_TYPE_AS_STRING);		
+			columnsFieldsNames.add(Request.FIELD_TYPE_AS_STRING);
 		columnsFieldsNames.addAll(List.of(Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
-				,Request.FIELD_ELECTRONIC_MAIL_ADDRESS,Request.FIELD_MOBILE_PHONE_NUMBER,Request.FIELD_SCOPE_FUNCTIONS_CODES));
+				,Request.FIELD_ELECTRONIC_MAIL_ADDRESS,Request.FIELD_MOBILE_PHONE_NUMBER));
+		if(processedInitial == null || !processedInitial) {
+			columnsFieldsNames.addAll(List.of(Request.FIELD_SCOPE_FUNCTIONS_CODES));
+		}
 		columnsFieldsNames.add(Request.FIELD_CREATION_DATE_AS_STRING);
-		if(Boolean.TRUE.equals(processedInitial))
+		if(processedInitial == null || processedInitial) {
 			columnsFieldsNames.add(Request.FIELD_PROCESSING_DATE_AS_STRING);
+			columnsFieldsNames.add(Request.FIELD_GRANTED_SCOPE_FUNCTIONS_CODES);
+		}
 		if(statusInitial == null)
 			columnsFieldsNames.add(Request.FIELD_STATUS_AS_STRING);
 		columnsFieldsNames.add(Request.FIELD_DISPATCH_SLIP_AS_STRING);
