@@ -23,7 +23,7 @@ import lombok.Setter;
 @Named @ViewScoped @Getter @Setter
 public class RequestStatusListPage extends AbstractEntityListPageContainerManagedImpl<RequestStatus> implements Serializable {
 
-	public static SelectOneCombo buildSelectOne(RequestStatus requestStatus,Object container,String processedSelectOneFieldName) {
+	public static SelectOneCombo buildSelectOne(RequestStatus requestStatus,Object container,String processedSelectOneFieldName,Boolean processed) {
 		SelectOneCombo selectOne = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,requestStatus,SelectOneCombo.FIELD_CHOICE_CLASS,RequestStatus.class,SelectOneCombo.FIELD_LISTENER
 				,new SelectOneCombo.Listener.AbstractImpl<RequestStatus>() {
 			@Override
@@ -33,8 +33,7 @@ public class RequestStatusListPage extends AbstractEntityListPageContainerManage
 					choices = __inject__(RequestStatusController.class).read();
 				else {					
 					AbstractInput<?> processedInput = (AbstractInput<?>)FieldHelper.read(container, processedSelectOneFieldName);
-					if(processedInput != null)
-						choices = __inject__(RequestStatusController.class).read((Boolean)processedInput.getValue());
+					choices = __inject__(RequestStatusController.class).read(processedInput == null ? processed : (Boolean)processedInput.getValue());
 				}
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;

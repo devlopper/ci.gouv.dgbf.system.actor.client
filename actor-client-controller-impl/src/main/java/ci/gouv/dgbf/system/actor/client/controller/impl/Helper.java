@@ -65,9 +65,13 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 
 public interface Helper {
 	
-	static InputText buildSearchInputText(String string) {
-		InputText input = InputText.build(SelectOneCombo.FIELD_VALUE,string,InputText.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Rechercher");
+	static InputText buildSearchInputText(String string,String label) {
+		InputText input = InputText.build(SelectOneCombo.FIELD_VALUE,string,InputText.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,label);
 		return input;
+	}
+	
+	static InputText buildSearchInputText(String string) {
+		return buildSearchInputText(string, "Recherche");
 	}
 	
 	static AutoComplete buildActorAutoComplete(Actor actor) {

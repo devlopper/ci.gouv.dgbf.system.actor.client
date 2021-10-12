@@ -201,6 +201,7 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	public static final String FIELD_ACTOR_NAMES = "actorNames";
 	public static final String FIELD_FIRST_NAME = "firstName";
 	public static final String FIELD_LAST_NAMES = "lastNames";
+	public static final String FIELD_FIRST_NAME_AND_LAST_NAMES = "firstNameAndLastNames";
 	public static final String FIELD_NAMES = "names";
 	public static final String FIELD_ELECTRONIC_MAIL_ADDRESS = "electronicMailAddress";
 	public static final String FIELD_REGISTRATION_NUMBER = "registrationNumber";

@@ -11,6 +11,8 @@ import ci.gouv.dgbf.system.actor.server.representation.entities.RequestDto;
 
 public interface RequestController extends ControllerEntity<Request> {
 
+	Long countByProcessed(Boolean processed);
+	
 	default Request getOneToBeCreatedByTypeIdentifier(String typeIdentifier) {
 		Response response = RequestRepresentation.getProxy().getOneToBeCreatedByTypeIdentifier(typeIdentifier);
 		if(response == null)

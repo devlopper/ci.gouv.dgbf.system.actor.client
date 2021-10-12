@@ -17,6 +17,7 @@ import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.session.SessionManager;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
 import org.cyk.utility.__kernel__.value.ValueHelper;
@@ -26,9 +27,11 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Abs
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.AbstractMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 import org.cyk.utility.controller.Arguments;
 import org.cyk.utility.controller.EntitySaver;
@@ -39,7 +42,6 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecialization
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
-import ci.gouv.dgbf.system.actor.client.controller.impl.scope.ProfileFilterController;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
@@ -52,6 +54,8 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 
 	private RequestFilterController filterController;
 	private LinkedHashMap<String, String> legends = new LinkedHashMap<>();
+	private TabMenu.Tab selectedTab,selectedRequestTab;
+	private Layout layout;
 	
 	@Override
 	protected void __listenBeforePostConstruct__() {
@@ -61,12 +65,48 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 	
 	@Override
 	protected void __listenPostConstruct__() {
+		selectedTab = TabMenu.Tab.getSelectedByRequestParameter(TABS);
 		super.__listenPostConstruct__();
 		legends.put("Gestionnaire", "#F1EEF6");
 		legends.put("Ordonnateur", "#BDC9E1");
 		legends.put("Contrôleur Financier", "#74A9CF");
 		legends.put("Comptable", "#2B8CBE");
 		legends.put("Assistant", "#EDCADD");
+		/*
+		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
+		
+		Collection<MenuItem> tabMenuItems = new ArrayList<>();
+		//Long total = count(TAB_REQUESTS_ALL,functionIdentifier, sectionIdentifier,administrativeUnitIdentifier, budgetSpecializationUnitIdentifier);
+		for(TabMenu.Tab tab : TABS) {
+			MenuItem menuItem = new MenuItem().setValue(tab.getName()).addParameter(TabMenu.Tab.PARAMETER_NAME, tab.getParameterValue());
+			tabMenuItems.add(menuItem);
+			Long count = null;
+			String name;
+			if(tab.getParameterValue().equals(TAB_REQUESTS_ALL)) {
+				//count = total;
+				name = String.format("%s (%s)", tab.getName(),count);
+			}else {
+				//if(NumberHelper.isEqualToZero(total)) {
+					name = String.format("%s (%s)", tab.getName(),0);
+				}else {
+					count = count(tab.getParameterValue(), functionIdentifier, sectionIdentifier, administrativeUnitIdentifier, budgetSpecializationUnitIdentifier);
+					name = String.format("%s (%s|%s)", tab.getName(),count,NumberHelper.computePercentageAsInteger(count, total)+"%");
+				}
+			}
+			menuItem.setValue(name);
+			menuItem.setParameters(filterController.asMap());
+		}
+		TabMenu tabMenu = TabMenu.build(TabMenu.ConfiguratorImpl.FIELD_ITEMS_OUTCOME,OUTCOME,TabMenu.FIELD_ACTIVE_INDEX,TabMenu.Tab.getIndexOf(TABS, selectedTab)
+				,TabMenu.ConfiguratorImpl.FIELD_ITEMS,tabMenuItems);
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,tabMenu,Cell.FIELD_WIDTH,12));
+		
+		cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
+			@Override
+			public Object buildControl(Cell cell) {
+				return dataTable;
+			}
+		},Cell.FIELD_WIDTH,12));
+		*/
 	}
 	
 	@Override
@@ -95,10 +135,14 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			arguments.put(DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,lazyDataModelListenerImpl = new LazyDataModelListenerImpl());
 		filterController = (RequestFilterController) lazyDataModelListenerImpl.getFilterController();
 		if(filterController == null)
+			lazyDataModelListenerImpl.setFilterController(filterController = (RequestFilterController) MapHelper.readByKey(arguments, RequestFilterController.class));
+		if(filterController == null)
 			lazyDataModelListenerImpl.setFilterController(filterController = new RequestFilterController());
 		lazyDataModelListenerImpl.enableFilterController();
-		String outcome = ValueHelper.defaultToIfBlank((String)MapHelper.readByKey(arguments,OUTCOME),OUTCOME);
-		filterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(outcome);
+		if(StringHelper.isBlank(filterController.getOnSelectRedirectorArguments(Boolean.TRUE).getOutcome())) {
+			String outcome = ValueHelper.defaultToIfBlank((String)MapHelper.readByKey(arguments,OUTCOME),OUTCOME);
+			filterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(outcome);
+		}
 		
 		DataTableListenerImpl dataTableListenerImpl = (DataTableListenerImpl) MapHelper.readByKey(arguments, DataTable.FIELD_LISTENER);
 		if(dataTableListenerImpl == null)
@@ -141,9 +185,10 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 		if(AbstractCollection.RenderType.OUTPUT.equals(dataTable.getRenderType())) {
 			dataTable.addRecordMenuItemByArgumentsNavigateToView(null,RequestReadPage.OUTCOME, MenuItem.FIELD_VALUE,"Consulter",MenuItem.FIELD_ICON,"fa fa-eye");
 			if(Boolean.TRUE.equals(SessionManager.getInstance().isUserHasOneOfRoles(Profile.CODE_ADMINISTRATEUR,Profile.CODE_CHARGE_ETUDE_DAS))) {
-				if(ContentType.TO_PROCESS.equals(contentType)) {
+				//dataTable.addRecordMenuItemByArgumentsNavigateToView(null,RequestProcessPage.OUTCOME, MenuItem.FIELD_VALUE,"Traiter",MenuItem.FIELD_ICON,"fa fa-file");
+				if((filterController != null && Boolean.FALSE.equals(filterController.getProcessedInitial())) || ContentType.TO_PROCESS.equals(contentType)) {
 					dataTable.addRecordMenuItemByArgumentsNavigateToView(null,RequestProcessPage.OUTCOME, MenuItem.FIELD_VALUE,"Traiter",MenuItem.FIELD_ICON,"fa fa-file");
-				}else if(ContentType.PROCESSED.equals(contentType)) {
+				}else if((filterController != null && Boolean.TRUE.equals(filterController.getProcessedInitial())) || ContentType.PROCESSED.equals(contentType)) {
 					dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Créer les comptes",MenuItem.FIELD_TITLE
 							,"Exporter les demandes acceptées pour la création de compte",MenuItem.FIELD_USER_INTERFACE_ACTION
 							,UserInterfaceAction.EXECUTE_FUNCTION,MenuItem.FIELD_ICON,"fa fa-gear"
@@ -161,19 +206,10 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 							});
 				}
 			}
-		}
-				
-		/*if(pageClass == null || UserRequestsPage.class.equals(pageClass)) {
-			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("myAccountRequestReadView", MenuItem.FIELD_VALUE,"Consulter",MenuItem.FIELD_ICON,"fa fa-eye");
-		}else {
-			
-		}
-		*/
-		
-		//dataTable.addRecordMenuItemByArgumentsNavigateToViewRead();
-		//if(Boolean.TRUE.equals(lazyDataModelListener.getProcessingDateIsNullable()))
-			
-		//dataTable.addRecordMenuItemByArgumentsExecuteFunctionDelete();	
+		}		
+		//dataTable.getContentOutputPanel().setDeferred(Boolean.TRUE);
+		dataTable.getFilterController().getLayout().setDeferred(Boolean.TRUE);
+		dataTable.getOrderNumberColumn().setWidth("20");
 		return dataTable;
 	}
 	
@@ -193,8 +229,9 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			if(Request.FIELD_ACTOR_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Compte");
 				map.put(Column.FIELD_WIDTH, "200");
-			}else if(Request.FIELD_ACTOR_NAMES.equals(fieldName)) {
+			}else if(Request.FIELD_FIRST_NAME_AND_LAST_NAMES.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Nom et prénom(s)");
+				map.put(Column.FIELD_WIDTH, "200");
 			}else if(Request.FIELD_COMMENT.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Commentaire");
 			}else if(Request.FIELD_CREATION_DATE_AS_STRING.equals(fieldName)) {
@@ -232,14 +269,17 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 				map.put(Column.FIELD_WIDTH, "100");
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}else if(Request.FIELD_DISPATCH_SLIP_AS_STRING.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Bordereau");
+				map.put(Column.FIELD_HEADER_TEXT, "N° Bordereau");
 				map.put(Column.FIELD_WIDTH, "100");
+				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}else if(Request.FIELD_ADMINISTRATIVE_UNIT_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "U.A."/*"Unité administrative"*/);
 				map.put(Column.FIELD_WIDTH, "80");
+				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}else if(Request.FIELD_SECTION_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Section");
 				map.put(Column.FIELD_WIDTH, "65");
+				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}else if(Request.FIELD_FIRST_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Nom");
 				map.put(Column.FIELD_SORT_BY, RequestQuerier.PARAMETER_NAME_FIRST_NAME);
@@ -256,11 +296,15 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 				map.put(Column.FIELD_WIDTH, "200");
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}else if(Request.FIELD_SCOPE_FUNCTIONS_CODES.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Poste(s) demandée(s)");
+				map.put(Column.FIELD_HEADER_TEXT, "Poste(s) demandé(s)");
 				map.put(Column.FIELD_WIDTH, "200");
+				if(filterController != null)
+					map.put(Column.FIELD_VISIBLE, filterController.getProcessedInitial() == null || !filterController.getProcessedInitial());
 			}else if(Request.FIELD_GRANTED_SCOPE_FUNCTIONS_CODES.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Poste(s) accordée(s)");
+				map.put(Column.FIELD_HEADER_TEXT, "Poste(s) accordé(s)");
 				map.put(Column.FIELD_WIDTH, "200");
+				if(filterController != null)
+					map.put(Column.FIELD_VISIBLE, Boolean.TRUE.equals(filterController.getProcessedInitial()));
 			}
 			return map;
 		}
@@ -373,7 +417,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 		
 		public Filter.Dto instantiateFilter(LazyDataModel<Request> lazyDataModel) {
 			Filter.Dto filter = super.instantiateFilter(lazyDataModel);
-			filter = RequestFilterController.populateFilter(filter, (RequestFilterController) filterController,Boolean.FALSE);
+			filter = RequestFilterController.populateFilter(filter, (RequestFilterController) filterController,Boolean.TRUE);
 			return filter;
 		}
 		
@@ -383,21 +427,23 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			arguments.getRepresentationArguments().getQueryExecutorArguments().addProjectionsFromStrings(
 					ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELD_IDENTIFIER
 					,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELD_CODE
-					,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELD_FIRST_NAME
-					,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELD_LAST_NAMES
+					,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELD_FIRST_NAME_AND_LAST_NAMES
 					,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELD_REGISTRATION_NUMBER
 					,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELD_ELECTRONIC_MAIL_ADDRESS
 					,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELD_MOBILE_PHONE_NUMBER
-					,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELD_DISPATCH_SLIP_CODE)
-			.addProcessableTransientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_AS_CODE_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS);
+					,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELD_DISPATCH_SLIP_CODE);
+			
+			arguments.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Request
+					.FIELDS_SCOPE_FUNCTIONS_CODES_IS_CREDIT_MANAGER_HOLDER_IS_AUTHORIZING_OFFICER_HOLDER_IS_FINANCIAL_CONTROLLER_HOLDER_IS_ACCOUNTING_HOLDER);
 			
 			Boolean processed = ((RequestFilterController)filterController).getProcessedInitial();
-			if(Boolean.TRUE.equals(processed))
-				arguments.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_AS_CODE_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
-						,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES_IS_CREDIT_MANAGER_HOLDER_IS_AUTHORIZING_OFFICER_HOLDER_IS_FINANCIAL_CONTROLLER_HOLDER_IS_ACCOUNTING_HOLDER);
-			else
-				arguments.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_AS_CODE_TYPE_STATUS_CREATION_DATE_AS_STRINGS
-						,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELDS_SCOPE_FUNCTIONS_CODES_IS_CREDIT_MANAGER_HOLDER_IS_AUTHORIZING_OFFICER_HOLDER_IS_FINANCIAL_CONTROLLER_HOLDER_IS_ACCOUNTING_HOLDER);
+			if(processed == null || processed) {
+				arguments.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Request
+						.FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_AS_CODE_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
+						,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
+			}else
+				arguments.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Request
+						.FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_AS_CODE_TYPE_STATUS_CREATION_DATE_AS_STRINGS);
 			return arguments;
 		}
 		
@@ -412,7 +458,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 		
 		public LazyDataModelListenerImpl enableFilterController(){
 			if(filterController == null)
-				filterController = new ProfileFilterController();
+				filterController = new RequestFilterController();
 			filterController.build();
 			return this;
 		}
@@ -424,6 +470,16 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 	public static enum ContentType {
 		TO_PROCESS,PROCESSED,ALL
 	}
+	
+	public static final String TAB_REQUESTS_TO_PROCESS = "demandes_a_traiter";
+	public static final String TAB_REQUESTS_PROCESSED = "demandes_traitees";
+	public static final String TAB_REQUESTS_ALL = "toutes_les_demandes";
+	
+	private static final List<TabMenu.Tab> TABS = List.of(
+		new TabMenu.Tab("Demandes à traiter",TAB_REQUESTS_TO_PROCESS)
+		,new TabMenu.Tab("Demandes traitées",TAB_REQUESTS_PROCESSED)
+		,new TabMenu.Tab("Toutes les demandes",TAB_REQUESTS_ALL)
+	);
 	
 	public static final String OUTCOME = "requestListView";
 }

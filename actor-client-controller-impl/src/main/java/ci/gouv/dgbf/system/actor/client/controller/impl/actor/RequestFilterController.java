@@ -3,6 +3,7 @@ package ci.gouv.dgbf.system.actor.client.controller.impl.actor;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ import org.cyk.utility.controller.Arguments;
 import org.cyk.utility.controller.EntityReader;
 import org.cyk.utility.persistence.query.Filter;
 
+import ci.gouv.dgbf.system.actor.client.controller.api.RequestTypeController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
@@ -52,6 +54,7 @@ public class RequestFilterController extends AbstractFilterController implements
 	
 	private Section sectionInitial;
 	private AdministrativeUnit administrativeUnitInitial;
+	private BudgetSpecializationUnit budgetSpecializationUnitInitial;
 	private Function functionInitial;
 	private RequestType typeInitial;
 	private Boolean processedInitial;
@@ -76,8 +79,12 @@ public class RequestFilterController extends AbstractFilterController implements
 			functionInitial = getFunctionFromRequestParameter();
 		
 		typeInitial = getTypeFromRequestParameter();
+		if(typeInitial == null)
+			typeInitial = __inject__(RequestTypeController.class).getByIdentifier(ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType.IDENTIFIER_DEMANDE_POSTES_BUDGETAIRES);
+			
 		statusInitial = getStatusFromRequestParameter();
 		processedInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(Request.FIELD_PROCESSED));
+		
 		searchInitial = WebController.getInstance().getRequestParameter(buildParameterName(FIELD_SEARCH_INPUT_TEXT));		
 	}
 	
@@ -160,11 +167,14 @@ public class RequestFilterController extends AbstractFilterController implements
 		if(FIELD_PROCESSED_SELECT_ONE.equals(fieldName))
 			return Helper.buildProcessedSelectOneCombo((Boolean) value,this,FIELD_STATUS_SELECT_ONE);
 		if(FIELD_STATUS_SELECT_ONE.equals(fieldName))
-			return RequestStatusListPage.buildSelectOne((RequestStatus) value,this,FIELD_PROCESSED_SELECT_ONE);
+			return RequestStatusListPage.buildSelectOne((RequestStatus) value,this,FIELD_PROCESSED_SELECT_ONE,processedInitial);
 		if(FIELD_DISPATCH_SLIP_SELECT_ONE.equals(fieldName))
 			return RequestDispatchSlipListPage.buildSelectOne((RequestDispatchSlip) value,this,FIELD_SECTION_SELECT_ONE,FIELD_FUNCTION_SELECT_ONE);
-		if(FIELD_SEARCH_INPUT_TEXT.equals(fieldName))
-			return Helper.buildSearchInputText((String) value);
+		if(FIELD_SEARCH_INPUT_TEXT.equals(fieldName)) {
+			InputText inputText = Helper.buildSearchInputText((String) value);
+			inputText.setPlaceholder("Numéro|Nom|Prénoms|Matricule|Email|Téléphone Mobile");
+			return inputText;
+		}
 		return null;
 	}
 	
@@ -223,7 +233,7 @@ public class RequestFilterController extends AbstractFilterController implements
 		
 		if(functionSelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,functionSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,2));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,functionSelectOne,Cell.FIELD_WIDTH,4));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,functionSelectOne,Cell.FIELD_WIDTH,processedSelectOne == null ? 6 : 4));
 		}
 		
 		if(processedSelectOne != null) {
@@ -233,7 +243,7 @@ public class RequestFilterController extends AbstractFilterController implements
 		
 		if(statusSelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,statusSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,statusSelectOne,Cell.FIELD_WIDTH,2));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,statusSelectOne,Cell.FIELD_WIDTH,processedSelectOne == null ? 3 : 2));
 		}
 		
 		if(dispatchSlipSelectOne != null) {
@@ -263,7 +273,7 @@ public class RequestFilterController extends AbstractFilterController implements
 		if(functionInitial != null)
 			strings.add(functionInitial.getName());
 		if(dispatchSlipInitial != null)
-			strings.add(dispatchSlipInitial.getName());
+			strings.add(ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip.LABEL+" N° "+dispatchSlipInitial.getCode());
 		
 		if(processedInitial != null && statusInitial == null) {
 			strings.add(processedInitial ? "Traité" : "Non traité");
@@ -275,13 +285,14 @@ public class RequestFilterController extends AbstractFilterController implements
 	
 	public Collection<String> generateColumnsNames() {
 		Collection<String> columnsFieldsNames = new ArrayList<>();
+		columnsFieldsNames.addAll(List.of(Request.FIELD_CODE));
 		if(sectionInitial == null)
 			columnsFieldsNames.add(Request.FIELD_SECTION_AS_STRING);
 		if(administrativeUnitInitial == null)
 			columnsFieldsNames.add(Request.FIELD_ADMINISTRATIVE_UNIT_AS_STRING);
 		if(typeInitial == null)
 			columnsFieldsNames.add(Request.FIELD_TYPE_AS_STRING);
-		columnsFieldsNames.addAll(List.of(Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
+		columnsFieldsNames.addAll(List.of(Request.FIELD_FIRST_NAME_AND_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
 				,Request.FIELD_ELECTRONIC_MAIL_ADDRESS,Request.FIELD_MOBILE_PHONE_NUMBER));
 		if(processedInitial == null || !processedInitial) {
 			columnsFieldsNames.addAll(List.of(Request.FIELD_SCOPE_FUNCTIONS_CODES));
@@ -339,6 +350,30 @@ public class RequestFilterController extends AbstractFilterController implements
 		if(processedSelectOne == input)
 			return Request.FIELD_PROCESSED;
 		return super.buildParameterName(input);
+	}
+	
+	@Override
+	public Map<String, List<String>> asMap() {
+		Map<String, List<String>> map = new HashMap<>();
+		if(sectionInitial != null)
+			map.put(ParameterName.stringify(Section.class), List.of((String)FieldHelper.readSystemIdentifier(sectionInitial)));	
+		if(administrativeUnitInitial != null)
+			map.put(ParameterName.stringify(AdministrativeUnit.class), List.of((String)FieldHelper.readSystemIdentifier(administrativeUnitInitial)));
+		if(budgetSpecializationUnitInitial != null)
+			map.put(ParameterName.stringify(BudgetSpecializationUnit.class), List.of((String)FieldHelper.readSystemIdentifier(budgetSpecializationUnitInitial)));
+		if(functionInitial != null)
+			map.put(ParameterName.stringify(Function.class), List.of((String)FieldHelper.readSystemIdentifier(functionInitial)));
+		if(statusInitial != null)
+			map.put(ParameterName.stringify(RequestStatus.class), List.of((String)FieldHelper.readSystemIdentifier(statusInitial)));
+		if(typeInitial != null)
+			map.put(ParameterName.stringify(RequestType.class), List.of((String)FieldHelper.readSystemIdentifier(typeInitial)));
+		if(dispatchSlipInitial != null)
+			map.put(ParameterName.stringify(RequestDispatchSlip.class), List.of((String)FieldHelper.readSystemIdentifier(dispatchSlipInitial)));
+		if(processedInitial != null)
+			map.put(Request.FIELD_PROCESSED, List.of(processedInitial.toString()));
+		if(searchInitial != null && StringHelper.isNotBlank(searchInitial))
+			map.put(Request.FIELD_SEARCH, List.of(searchInitial));
+		return map;
 	}
 	
 	public static Filter.Dto populateFilter(Filter.Dto filter,RequestFilterController controller,Boolean initial) {
