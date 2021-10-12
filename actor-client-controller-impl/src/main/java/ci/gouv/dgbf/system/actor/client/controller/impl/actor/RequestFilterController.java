@@ -62,7 +62,21 @@ public class RequestFilterController extends AbstractFilterController implements
 	private String searchInitial;
 	private RequestDispatchSlip dispatchSlipInitial;
 	
-	public RequestFilterController() {
+	public RequestFilterController() {}
+	
+	public RequestFilterController(RequestFilterController requestFilterController) {
+		sectionInitial = requestFilterController.sectionInitial;
+		administrativeUnitInitial = requestFilterController.administrativeUnitInitial;
+		functionInitial = requestFilterController.functionInitial;
+		typeInitial = requestFilterController.typeInitial;
+		processedInitial = requestFilterController.processedInitial;
+		statusInitial = requestFilterController.statusInitial;
+		searchInitial = requestFilterController.searchInitial;
+		dispatchSlipInitial = requestFilterController.dispatchSlipInitial;
+		budgetSpecializationUnitInitial = requestFilterController.budgetSpecializationUnitInitial;
+	}
+	
+	public RequestFilterController initializeFromRequestParameters() {
 		dispatchSlipInitial = getDispatchSlipFromRequestParameter();
 		administrativeUnitInitial = getAdministrativeUnitFromRequestParameter();		
 		
@@ -85,7 +99,8 @@ public class RequestFilterController extends AbstractFilterController implements
 		statusInitial = getStatusFromRequestParameter();
 		processedInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(Request.FIELD_PROCESSED));
 		
-		searchInitial = WebController.getInstance().getRequestParameter(buildParameterName(FIELD_SEARCH_INPUT_TEXT));		
+		searchInitial = WebController.getInstance().getRequestParameter(buildParameterName(FIELD_SEARCH_INPUT_TEXT));
+		return this;
 	}
 	
 	public static Section getSectionFromRequestParameter() {

@@ -17,8 +17,10 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntityCounter;
+import org.cyk.utility.persistence.query.Filter;
 
-import ci.gouv.dgbf.system.actor.client.controller.api.RequestController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,14 +28,15 @@ import lombok.Setter;
 @Named @ViewScoped @Getter @Setter
 public class RequestIndexPage extends AbstractPageContainerManagedImpl implements Serializable {
 
-	private RequestFilterController requestFilterController;
+	private RequestFilterController requestFilterController,tabMenuRequestFilterController;
 	private TabMenu.Tab selectedTab,selectedRequestTab;
 	private Layout layout;
+	private Filter.Dto filter;
 	
 	@Override
 	protected void __listenBeforePostConstruct__() {
 		super.__listenBeforePostConstruct__();
-		requestFilterController = new RequestFilterController();		
+		requestFilterController = new RequestFilterController().initializeFromRequestParameters();	
 	}
 	
 	@Override
@@ -43,16 +46,33 @@ public class RequestIndexPage extends AbstractPageContainerManagedImpl implement
 		if(requestFilterController.getProcessedInitial() == null && TAB_REQUESTS_TO_PROCESS.equals(selectedTab.getParameterValue()))
 			requestFilterController.setProcessedInitial(Boolean.FALSE);
 		requestFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(OUTCOME).addParameter(TabMenu.Tab.PARAMETER_NAME, selectedTab.getParameterValue());
+		tabMenuRequestFilterController = new RequestFilterController(requestFilterController);
 		buildLayout();
 	}
 	
+	private Long count(String tab) {
+		Arguments<Request> arguments = new Arguments<Request>();
+		arguments.queryIdentifierCountDynamic(Request.class);		
+		if(TAB_REQUESTS_ALL.equals(tab)) {
+			tabMenuRequestFilterController.setProcessedInitial(null);
+		}else if(TAB_REQUESTS_TO_PROCESS.equals(tab)) {
+			tabMenuRequestFilterController.setProcessedInitial(Boolean.FALSE);
+		}else if(TAB_REQUESTS_PROCESSED.equals(tab)) {
+			tabMenuRequestFilterController.setProcessedInitial(Boolean.TRUE);
+		}
+		arguments.getRepresentationArguments(Boolean.TRUE).getQueryExecutorArguments(Boolean.TRUE)
+			.setFilter(RequestFilterController.instantiateFilter(tabMenuRequestFilterController, Boolean.TRUE));
+		return EntityCounter.getInstance().count(Request.class, arguments);
+	}
+	
 	private TabMenu buildTabMenu() {
-		Collection<MenuItem> tabMenuItems = new ArrayList<>();		
-		Long total = __inject__(RequestController.class).countByProcessed(null);
+		Long total = count(TAB_REQUESTS_ALL);
+		Collection<MenuItem> tabMenuItems = new ArrayList<>();
 		for(TabMenu.Tab tab : TABS) {
+			Long count = null;
 			MenuItem menuItem = new MenuItem().setValue(tab.getName()).addParameter(TabMenu.Tab.PARAMETER_NAME, tab.getParameterValue());
 			tabMenuItems.add(menuItem);
-			Long count = null;
+			
 			String name;
 			if(tab.getParameterValue().equals(TAB_REQUESTS_ALL)) {
 				count = total;
@@ -60,21 +80,23 @@ public class RequestIndexPage extends AbstractPageContainerManagedImpl implement
 			}else {
 				if(NumberHelper.isEqualToZero(total)) {
 					name = String.format("%s (%s)", tab.getName(),0);
-				}else {
-					count = __inject__(RequestController.class).countByProcessed(tab.getParameterValue().equals(TAB_REQUESTS_PROCESSED));
+				}else {					
+					count = count(tab.getParameterValue());
 					name = String.format("%s (%s|%s)", tab.getName(),count,NumberHelper.computePercentageAsInteger(count, total)+"%");
 				}
 			}
 			menuItem.setValue(name);
-			Map<String,List<String>> parameters = requestFilterController.asMap();
-			if(tab.getParameterValue().equals(TAB_REQUESTS_ALL)) {
-				parameters.remove(Request.FIELD_PROCESSED);
-			}else if(tab.getParameterValue().equals(TAB_REQUESTS_TO_PROCESS)) {
-				parameters.put(Request.FIELD_PROCESSED,List.of(Boolean.FALSE.toString()));
-			}else if(tab.getParameterValue().equals(TAB_REQUESTS_PROCESSED)) {
-				parameters.put(Request.FIELD_PROCESSED,List.of(Boolean.TRUE.toString()));
+			
+			if(TAB_REQUESTS_ALL.equals(tab.getParameterValue())) {
+				tabMenuRequestFilterController.setProcessedInitial(null);
+			}else if(TAB_REQUESTS_TO_PROCESS.equals(tab.getParameterValue())) {
+				tabMenuRequestFilterController.setProcessedInitial(Boolean.FALSE);
+			}else if(TAB_REQUESTS_PROCESSED.equals(tab.getParameterValue())) {
+				tabMenuRequestFilterController.setProcessedInitial(Boolean.TRUE);
 			}
-			menuItem.getParameters(Boolean.TRUE).putAll(parameters);
+			Map<String,List<String>> parameters = tabMenuRequestFilterController.asMap();
+			if(parameters != null)
+				menuItem.getParameters(Boolean.TRUE).putAll(parameters);
 		}
 		TabMenu tabMenu = TabMenu.build(TabMenu.ConfiguratorImpl.FIELD_ITEMS_OUTCOME,OUTCOME,TabMenu.FIELD_ACTIVE_INDEX,TabMenu.Tab.getIndexOf(TABS, selectedTab)
 				,TabMenu.ConfiguratorImpl.FIELD_ITEMS,tabMenuItems);
@@ -106,18 +128,21 @@ public class RequestIndexPage extends AbstractPageContainerManagedImpl implement
 	}
 	
 	private DataTable buildDataTableRequestsToProcess() {
+		requestFilterController.setProcessedInitial(Boolean.FALSE);
 		requestFilterController.ignore(RequestFilterController.FIELD_PROCESSED_SELECT_ONE);
 		DataTable dataTable = RequestListPage.buildDataTable(RequestFilterController.class,requestFilterController);
 		return dataTable;
 	}
 	
 	private DataTable buildDataTableRequestsProcessed() {
+		requestFilterController.setProcessedInitial(Boolean.TRUE);
 		requestFilterController.ignore(RequestFilterController.FIELD_PROCESSED_SELECT_ONE);
 		DataTable dataTable = RequestListPage.buildDataTable(RequestFilterController.class,requestFilterController);
 		return dataTable;
 	}
 	
 	private DataTable buildDataTableRequestsAll() {
+		requestFilterController.setProcessedInitial(null);
 		DataTable dataTable = RequestListPage.buildDataTable(RequestFilterController.class,requestFilterController);
 		return dataTable;
 	}
