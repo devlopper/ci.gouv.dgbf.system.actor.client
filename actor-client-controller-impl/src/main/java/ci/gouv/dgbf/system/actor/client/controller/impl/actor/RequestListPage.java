@@ -27,11 +27,9 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Abs
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.AbstractMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 import org.cyk.utility.controller.Arguments;
 import org.cyk.utility.controller.EntitySaver;
@@ -54,59 +52,21 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 
 	private RequestFilterController filterController;
 	private LinkedHashMap<String, String> legends = new LinkedHashMap<>();
-	private TabMenu.Tab selectedTab,selectedRequestTab;
-	private Layout layout;
 	
 	@Override
 	protected void __listenBeforePostConstruct__() {
 		super.__listenBeforePostConstruct__();
-		filterController = new RequestFilterController().initializeFromRequestParameters();
+		filterController = new RequestFilterController().initialize();
 	}
 	
 	@Override
 	protected void __listenPostConstruct__() {
-		selectedTab = TabMenu.Tab.getSelectedByRequestParameter(TABS);
 		super.__listenPostConstruct__();
 		legends.put("Gestionnaire", "#F1EEF6");
 		legends.put("Ordonnateur", "#BDC9E1");
 		legends.put("Contrôleur Financier", "#74A9CF");
 		legends.put("Comptable", "#2B8CBE");
 		legends.put("Assistant", "#EDCADD");
-		/*
-		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
-		
-		Collection<MenuItem> tabMenuItems = new ArrayList<>();
-		//Long total = count(TAB_REQUESTS_ALL,functionIdentifier, sectionIdentifier,administrativeUnitIdentifier, budgetSpecializationUnitIdentifier);
-		for(TabMenu.Tab tab : TABS) {
-			MenuItem menuItem = new MenuItem().setValue(tab.getName()).addParameter(TabMenu.Tab.PARAMETER_NAME, tab.getParameterValue());
-			tabMenuItems.add(menuItem);
-			Long count = null;
-			String name;
-			if(tab.getParameterValue().equals(TAB_REQUESTS_ALL)) {
-				//count = total;
-				name = String.format("%s (%s)", tab.getName(),count);
-			}else {
-				//if(NumberHelper.isEqualToZero(total)) {
-					name = String.format("%s (%s)", tab.getName(),0);
-				}else {
-					count = count(tab.getParameterValue(), functionIdentifier, sectionIdentifier, administrativeUnitIdentifier, budgetSpecializationUnitIdentifier);
-					name = String.format("%s (%s|%s)", tab.getName(),count,NumberHelper.computePercentageAsInteger(count, total)+"%");
-				}
-			}
-			menuItem.setValue(name);
-			menuItem.setParameters(filterController.asMap());
-		}
-		TabMenu tabMenu = TabMenu.build(TabMenu.ConfiguratorImpl.FIELD_ITEMS_OUTCOME,OUTCOME,TabMenu.FIELD_ACTIVE_INDEX,TabMenu.Tab.getIndexOf(TABS, selectedTab)
-				,TabMenu.ConfiguratorImpl.FIELD_ITEMS,tabMenuItems);
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,tabMenu,Cell.FIELD_WIDTH,12));
-		
-		cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
-			@Override
-			public Object buildControl(Cell cell) {
-				return dataTable;
-			}
-		},Cell.FIELD_WIDTH,12));
-		*/
 	}
 	
 	@Override
@@ -149,29 +109,6 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			arguments.put(DataTable.FIELD_LISTENER, dataTableListenerImpl = new DataTableListenerImpl());
 		dataTableListenerImpl.setContentType(contentType).setFilterController(filterController);
 		
-		/**/
-		
-		//Class<?> pageClass = (Class<?>) MapHelper.readByKey(arguments, RequestListPage.class);
-		//LazyDataModelListenerImpl lazyDataModelListener = (LazyDataModelListenerImpl) MapHelper.readByKey(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER);
-		//if(lazyDataModelListener == null)
-		//	lazyDataModelListener = new LazyDataModelListenerImpl();
-		//Class<?> pageClass = (Class<?>) MapHelper.readByKey(arguments, RequestListPage.class);
-		/*
-		List<String> columnsFieldsNames = new ArrayList<>();
-		columnsFieldsNames.addAll(List.of(Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
-				,Request.FIELD_ELECTRONIC_MAIL_ADDRESS,Request.FIELD_MOBILE_PHONE_NUMBER,Request.FIELD_ADMINISTRATIVE_UNIT_AS_STRING
-				,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS));
-		if(ContentType.TO_PROCESS.equals(contentType)) {
-			columnsFieldsNames.addAll(List.of(Request.FIELD_CREATION_DATE_AS_STRING));
-		}else if(ContentType.PROCESSED.equals(contentType)) {
-			columnsFieldsNames.addAll(List.of(Request.FIELD_PROCESSING_DATE_AS_STRING));
-		}else
-			columnsFieldsNames.addAll(List.of(Request.FIELD_CREATION_DATE_AS_STRING,Request.FIELD_PROCESSING_DATE_AS_STRING));		
-		columnsFieldsNames.addAll(List.of(Request.FIELD_STATUS_AS_STRING));
-		if(ContentType.PROCESSED.equals(contentType) || ContentType.ALL.equals(contentType)) {
-			columnsFieldsNames.addAll(List.of(Request.FIELD_ACCOUNT_CREATION_MESSAGE));
-		}
-		*/
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl().setContentType(contentType));
 		
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
@@ -470,16 +407,6 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 	public static enum ContentType {
 		TO_PROCESS,PROCESSED,ALL
 	}
-	
-	public static final String TAB_REQUESTS_TO_PROCESS = "demandes_a_traiter";
-	public static final String TAB_REQUESTS_PROCESSED = "demandes_traitees";
-	public static final String TAB_REQUESTS_ALL = "toutes_les_demandes";
-	
-	private static final List<TabMenu.Tab> TABS = List.of(
-		new TabMenu.Tab("Demandes à traiter",TAB_REQUESTS_TO_PROCESS)
-		,new TabMenu.Tab("Demandes traitées",TAB_REQUESTS_PROCESSED)
-		,new TabMenu.Tab("Toutes les demandes",TAB_REQUESTS_ALL)
-	);
-	
+
 	public static final String OUTCOME = "requestListView";
 }

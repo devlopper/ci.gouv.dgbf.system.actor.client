@@ -39,11 +39,14 @@ public class RequestDispatchSlip extends AbstractDataIdentifiableSystemStringIde
 	private String creationDateAsString,sendingDateAsString,processingDateAsString,comment;
 	
 	private Collection<Request> requests;
-	private Integer numberOfRequests;
+	private Integer numberOfRequests,numberOfRequestsProcessed,numberOfRequestsAccepted,numberOfRequestsRejected,numberOfRequestsNotProcessed;
 	private Collection<String> requestsIdentifiers;
 	private Collection<String> acceptedRequestsIdentifiers;
 	private Collection<RequestDto.Acceptation> requestsAcceptations;
 	private Collection<RequestDto.Rejection> requestsRejections;
+	
+	private Boolean sent;
+	private Boolean processed;
 	
 	public void writeIdentifiers(String actionIdentifier) {
 		if(section == null)
@@ -120,6 +123,13 @@ public class RequestDispatchSlip extends AbstractDataIdentifiableSystemStringIde
 	public static final String FIELD_SENDING_DATE_AS_STRING = "sendingDateAsString";
 	public static final String FIELD_PROCESSING_DATE_AS_STRING = "processingDateAsString";
 	public static final String FIELD_NUMBER_OF_REQUESTS = "numberOfRequests";
+	public static final String FIELD_NUMBER_OF_REQUESTS_PROCESSED = "numberOfRequestsProcessed";
+	public static final String FIELD_NUMBER_OF_REQUESTS_ACCEPTED = "numberOfRequestsAccepted";
+	public static final String FIELD_NUMBER_OF_REQUESTS_REJECTED = "numberOfRequestsRejected";
+	public static final String FIELD_NUMBER_OF_REQUESTS_NOT_PROCESSED = "numberOfRequestsNotProcessed";
+	public static final String FIELD_SENT = "sent";
+	public static final String FIELD_PROCESSED = "processed";
+	public static final String FIELD_SEARCH = "search";
 	
 	public static final String TREATMENT_ACCEPT = "0";
 	public static final String TREATMENT_REJECT = "1";

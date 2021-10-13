@@ -76,7 +76,7 @@ public class RequestFilterController extends AbstractFilterController implements
 		budgetSpecializationUnitInitial = requestFilterController.budgetSpecializationUnitInitial;
 	}
 	
-	public RequestFilterController initializeFromRequestParameters() {
+	public RequestFilterController initialize() {
 		dispatchSlipInitial = getDispatchSlipFromRequestParameter();
 		administrativeUnitInitial = getAdministrativeUnitFromRequestParameter();		
 		

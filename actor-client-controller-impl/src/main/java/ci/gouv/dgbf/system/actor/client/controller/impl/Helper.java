@@ -168,6 +168,22 @@ public interface Helper {
 		return input;
 	}
 	
+	static SelectOneCombo buildSentSelectOneCombo(Boolean sent,Object container,String childSelectOneFieldName) {
+		return SelectOneCombo.buildUnknownYesNoOnly((Boolean) sent, "Transmis",new SelectOneCombo.Listener.AbstractImpl<Boolean>() {
+			@Override
+			public void select(AbstractInputChoiceOne input, Boolean value) {
+				super.select(input, value);
+				if(container != null && StringHelper.isNotBlank(childSelectOneFieldName)) {
+					AbstractInputChoiceOne childInput = (AbstractInputChoiceOne)FieldHelper.read(container, childSelectOneFieldName);
+					if(childInput != null) {
+						childInput.setValue(null);
+						childInput.updateChoices();
+					}
+				}
+			}
+		});
+	}
+	
 	static SelectOneCombo buildProcessedSelectOneCombo(Boolean processed,Object container,String childSelectOneFieldName) {
 		return SelectOneCombo.buildUnknownYesNoOnly((Boolean) processed, "Traité",new SelectOneCombo.Listener.AbstractImpl<Boolean>() {
 			@Override

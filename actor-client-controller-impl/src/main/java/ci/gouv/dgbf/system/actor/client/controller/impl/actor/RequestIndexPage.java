@@ -19,7 +19,6 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu;
 import org.cyk.utility.controller.Arguments;
 import org.cyk.utility.controller.EntityCounter;
-import org.cyk.utility.persistence.query.Filter;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
 import lombok.Getter;
@@ -31,12 +30,11 @@ public class RequestIndexPage extends AbstractPageContainerManagedImpl implement
 	private RequestFilterController requestFilterController,tabMenuRequestFilterController;
 	private TabMenu.Tab selectedTab,selectedRequestTab;
 	private Layout layout;
-	private Filter.Dto filter;
 	
 	@Override
 	protected void __listenBeforePostConstruct__() {
 		super.__listenBeforePostConstruct__();
-		requestFilterController = new RequestFilterController().initializeFromRequestParameters();	
+		requestFilterController = new RequestFilterController().initialize();	
 	}
 	
 	@Override
@@ -147,15 +145,6 @@ public class RequestIndexPage extends AbstractPageContainerManagedImpl implement
 		return dataTable;
 	}
 	
-	/*
-	private void buildGlobalFilters(Collection<Map<Object,Object>> cellsMaps) {
-		requestFilterController = new RequestFilterController();
-		requestFilterController.ignore(RequestFilterController.FIELD_NAME_SECTION_SELECT_ONE).build();
-		requestFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(OUTCOME).addParameter(TabMenu.Tab.PARAMETER_NAME, selectedTab.getParameterValue());	
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,requestFilterController.getLayout(),Cell.FIELD_WIDTH,12));
-	}
-	*/
-
 	private void buildLayout() {
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
 		cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
