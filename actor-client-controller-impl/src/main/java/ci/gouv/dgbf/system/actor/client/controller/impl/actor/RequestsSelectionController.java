@@ -10,6 +10,7 @@ import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.random.RandomHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
@@ -53,13 +54,14 @@ public class RequestsSelectionController implements Serializable {
 	}
 	
 	private void buildDataTable(RequestStatus requestStatus) {
+		RequestFilterController filterController = new RequestFilterController();
+		filterController.setDispatchSlipExistsInitial(Boolean.FALSE);
 		requestsDataTable = RequestListPage.buildDataTable(RequestListPage.class,RequestsSelectionController.class
 				,DataTable.FIELD_RENDER_TYPE,AbstractCollection.RenderType.SELECTION,DataTable.FIELD_SELECTION_MODE,"multiple"
-				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new RequestListPage.LazyDataModelListenerImpl()
-				.setProcessingDateIsNullNullable(Boolean.FALSE)
+				,RequestFilterController.class,filterController
 				//.setStatusIdentifier(requestStatus == null ? null : requestStatus.getIdentifier())
 				);
-		
+		requestsDataTable.getFilterController().setRenderType(AbstractFilterController.RenderType.NONE);
 	}
 	
 	private void buildAddCommandButton() {
@@ -101,8 +103,10 @@ public class RequestsSelectionController implements Serializable {
 			dialogTitle = "Sélection de demandes à porter sur le bordereau";
 		}else {
 			dialogTitle = String.format("Sélection de demandes de la section %s de %s à porter sur le bordereau",section.getCode(),function.getName());
-			((RequestListPage.LazyDataModelListenerImpl) ((LazyDataModel<Request>)requestsDataTable.getValue()).getListener()).setFunctionIdentifier(function.getIdentifier());
-			((RequestListPage.LazyDataModelListenerImpl) ((LazyDataModel<Request>)requestsDataTable.getValue()).getListener()).setSectionIdentifier(section.getIdentifier());
+			RequestFilterController filterController = (RequestFilterController) ((RequestListPage.LazyDataModelListenerImpl) ((LazyDataModel<Request>)requestsDataTable.getValue()).getListener())
+					.getFilterController();
+			filterController.setSectionInitial(section);
+			filterController.setFunctionInitial(function);
 			if(CollectionHelper.isEmpty(selected))
 				((RequestListPage.LazyDataModelListenerImpl) ((LazyDataModel<Request>)requestsDataTable.getValue()).getListener()).setExcludedIdentifiers(null);
 			else

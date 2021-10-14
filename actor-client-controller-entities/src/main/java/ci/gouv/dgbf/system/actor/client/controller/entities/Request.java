@@ -190,6 +190,7 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	public static final String FIELD_PROCESSED = "processed";
 	public static final String FIELD_ACCEPTED = "accepted";
 	public static final String FIELD_REJECTED = "rejected";
+	public static final String FIELD_DISPATCH_SLIP_EXISTS = "dispatchSlipExists";
 	public static final String FIELD_CREATION_DATE = "creationDate";
 	public static final String FIELD_CREATION_DATE_AS_STRING = "creationDateAsString";
 	

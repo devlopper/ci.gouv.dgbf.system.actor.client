@@ -131,7 +131,8 @@ public class RequestDispatchSlipEditPage extends AbstractEntityEditPageContainer
 			@SuppressWarnings("unchecked")
 			LazyDataModel<Request> lazyDataModel = (LazyDataModel<Request>) requestsSelectionController.getRequestsDataTable().getValue();
 			RequestListPage.LazyDataModelListenerImpl lazyDataModelListener = (LazyDataModelListenerImpl) lazyDataModel.getListener();
-			lazyDataModelListener.setDispatchSlipIsNullNullable(Boolean.FALSE);
+			RequestFilterController requestFilterController = (RequestFilterController) lazyDataModelListener.getFilterController();
+			requestFilterController.setDispatchSlipExistsInitial(Boolean.FALSE).setProcessedInitial(Boolean.FALSE);
 		}
 		//requestDispatchSlip.setRequests(selectedRequests);
 		Action action = (Action) MapHelper.readByKey(arguments, Form.FIELD_ACTION);
@@ -223,7 +224,7 @@ public class RequestDispatchSlipEditPage extends AbstractEntityEditPageContainer
 				List<Function> functions = (List<Function>) __inject__(FunctionController.class).readCreditManagersAuthorizingOfficers();
 				if(CollectionHelper.getSize(functions) > 1)
 					functions.add(0, null);
-				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Catégorie fonction budgétaire");
+				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, ci.gouv.dgbf.system.actor.server.persistence.entities.Function.LABEL);
 				map.put(AbstractInputChoice.FIELD_CHOICES,functions);
 				map.put(AbstractInputChoice.FIELD_CHOICE_CLASS,Function.class);
 			}

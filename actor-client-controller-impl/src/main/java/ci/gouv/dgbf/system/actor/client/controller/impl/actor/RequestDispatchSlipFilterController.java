@@ -211,15 +211,13 @@ public class RequestDispatchSlipFilterController extends AbstractFilterControlle
 		}
 		columnsFieldsNames.add(RequestDispatchSlip.FIELD_CREATION_DATE_AS_STRING);
 		if(sentInitial == null || sentInitial) {
-			
+			columnsFieldsNames.add(RequestDispatchSlip.FIELD_SENDING_DATE_AS_STRING);
 		}
 		if(processedInitial == null || processedInitial) {
 			columnsFieldsNames.add(RequestDispatchSlip.FIELD_PROCESSING_DATE_AS_STRING);
-			columnsFieldsNames.add(RequestDispatchSlip.FIELD_NUMBER_OF_REQUESTS_PROCESSED);
-			columnsFieldsNames.add(RequestDispatchSlip.FIELD_NUMBER_OF_REQUESTS_ACCEPTED);
-			columnsFieldsNames.add(RequestDispatchSlip.FIELD_NUMBER_OF_REQUESTS_REJECTED);
-			columnsFieldsNames.add(RequestDispatchSlip.FIELD_NUMBER_OF_REQUESTS_NOT_PROCESSED);
 		}
+		columnsFieldsNames.addAll(List.of(RequestDispatchSlip.FIELD_NUMBER_OF_REQUESTS_PROCESSED,RequestDispatchSlip.FIELD_NUMBER_OF_REQUESTS_ACCEPTED
+				,RequestDispatchSlip.FIELD_NUMBER_OF_REQUESTS_REJECTED,RequestDispatchSlip.FIELD_NUMBER_OF_REQUESTS_NOT_PROCESSED));
 		return columnsFieldsNames;
 	}
 

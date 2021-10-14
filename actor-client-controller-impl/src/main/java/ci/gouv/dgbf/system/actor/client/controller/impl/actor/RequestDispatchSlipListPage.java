@@ -166,32 +166,39 @@ public class RequestDispatchSlipListPage extends AbstractEntityListPageContainer
 				map.put(Column.FIELD_HEADER_TEXT, "Libellé");
 			}else if(RequestDispatchSlip.FIELD_SECTION_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Section");
+				map.put(Column.FIELD_WIDTH, "65");
 			}else if(RequestDispatchSlip.FIELD_FUNCTION_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Fonction");
+				map.put(Column.FIELD_WIDTH, "70");
 			}else if(RequestDispatchSlip.FIELD_COMMENT.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Commentaire");
 			}else if(RequestDispatchSlip.FIELD_CREATION_DATE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Créé le");
+				map.put(Column.FIELD_WIDTH, "120");
 			}else if(RequestDispatchSlip.FIELD_SENDING_DATE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Transmis le");
 				map.put(Column.FIELD_WIDTH, "120");
+				if(filterController != null)
+					map.put(Column.FIELD_VISIBLE, filterController.getSentInitial() == null || filterController.getSentInitial());
 			}else if(RequestDispatchSlip.FIELD_PROCESSING_DATE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Traité le");
 				map.put(Column.FIELD_WIDTH, "120");
+				if(filterController != null)
+					map.put(Column.FIELD_VISIBLE, filterController.getProcessedInitial() == null || filterController.getProcessedInitial());
 			}else if(RequestDispatchSlip.FIELD_NUMBER_OF_REQUESTS.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "# demandes");
+				map.put(Column.FIELD_HEADER_TEXT, "# Demandes");
 				map.put(Column.FIELD_WIDTH, "120");
 			}else if(RequestDispatchSlip.FIELD_NUMBER_OF_REQUESTS_PROCESSED.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "# demandes traitées");
+				map.put(Column.FIELD_HEADER_TEXT, "# D. traitées");
 				map.put(Column.FIELD_WIDTH, "120");
 			}else if(RequestDispatchSlip.FIELD_NUMBER_OF_REQUESTS_ACCEPTED.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "# demandes acceptées");
+				map.put(Column.FIELD_HEADER_TEXT, "# D. acceptées");
 				map.put(Column.FIELD_WIDTH, "120");
 			}else if(RequestDispatchSlip.FIELD_NUMBER_OF_REQUESTS_REJECTED.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "# demandes rejetées");
+				map.put(Column.FIELD_HEADER_TEXT, "# D. rejetées");
 				map.put(Column.FIELD_WIDTH, "120");
 			}else if(RequestDispatchSlip.FIELD_NUMBER_OF_REQUESTS_NOT_PROCESSED.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "# demandes à traiter");
+				map.put(Column.FIELD_HEADER_TEXT, "# D. à traiter");
 				map.put(Column.FIELD_WIDTH, "120");
 			}
 			return map;
@@ -288,6 +295,22 @@ public class RequestDispatchSlipListPage extends AbstractEntityListPageContainer
 		selectOne.updateChoices();
 		selectOne.selectByValueSystemIdentifier();
 		return selectOne;
+	}
+	
+	public static SelectOneCombo buildExistsSelectOneCombo(Boolean exists,Object container,String childSelectOneFieldName) {
+		return SelectOneCombo.buildUnknownYesNoOnly(exists, "Portée sur bordereau",new SelectOneCombo.Listener.AbstractImpl<Boolean>() {
+			@Override
+			public void select(AbstractInputChoiceOne input, Boolean value) {
+				super.select(input, value);
+				if(container != null && StringHelper.isNotBlank(childSelectOneFieldName)) {
+					AbstractInputChoiceOne childInput = (AbstractInputChoiceOne)FieldHelper.read(container, childSelectOneFieldName);
+					if(childInput != null) {
+						childInput.setValue(null);
+						childInput.updateChoices();
+					}
+				}
+			}
+		});
 	}
 	
 	public static final String OUTCOME = "requestDispatchSlipListView";

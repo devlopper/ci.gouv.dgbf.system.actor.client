@@ -24,6 +24,7 @@ import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.Redirector;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.Event;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.Button;
@@ -135,10 +136,11 @@ public class RequestDispatchSlipReadPage extends AbstractPageContainerManagedImp
 	}*/
 	
 	private void buildRequestsDataTable(Collection<Map<Object,Object>> cellsMaps) {
-		DataTable dataTable = RequestListPage.buildDataTable(DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER
-				,new RequestListPage.LazyDataModelListenerImpl().setDispatchSlipIdentifier(requestDispatchSlip.getIdentifier())
+		RequestFilterController filterController = new RequestFilterController();
+		filterController.setDispatchSlipInitial(requestDispatchSlip).setRenderType(AbstractFilterController.RenderType.NONE);
+		DataTable dataTable = RequestListPage.buildDataTable(RequestFilterController.class,filterController
 				,DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-header-visibility-hidden cyk-ui-datatable-footer-visibility-hidden"
-				,RequestListPage.class,RequestDispatchSlipReadPage.class);		
+				,RequestListPage.class,RequestDispatchSlipReadPage.class);
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
 	}
 	

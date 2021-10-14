@@ -208,7 +208,10 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			}else if(Request.FIELD_DISPATCH_SLIP_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "N° Bordereau");
 				map.put(Column.FIELD_WIDTH, "100");
-				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
+				if(filterController != null && filterController.getDispatchSlipExists() != null && filterController.getDispatchSlipExists())
+					map.put(Column.FIELD_VISIBLE, Boolean.TRUE);
+				else
+					map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}else if(Request.FIELD_ADMINISTRATIVE_UNIT_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "U.A."/*"Unité administrative"*/);
 				map.put(Column.FIELD_WIDTH, "80");
@@ -337,9 +340,6 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 	
 	@Getter @Setter @Accessors(chain=true)
 	public static class LazyDataModelListenerImpl extends LazyDataModel.Listener.AbstractImpl<Request> implements Serializable {
-		private String actorIdentifier,sectionIdentifier,administrativeUnitIdentifier,functionIdentifier,dispatchSlipIdentifier,statusIdentifier;
-		private Boolean processingDateIsNullNullable,processingDateIsNotNullNullable;
-		private Boolean dispatchSlipIsNullNullable;
 		private Collection<String> excludedIdentifiers;
 		
 		@Override
@@ -399,9 +399,6 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			filterController.build();
 			return this;
 		}
-		
-		public static final String FIELD_PROCESSING_DATE_IS_NULLABLE = "processingDateIsNullable";
-		public static final String FIELD_PROCESSING_DATE_IS_NOT_NULLABLE = "processingDateIsNotNullable";
 	}
 	
 	public static enum ContentType {

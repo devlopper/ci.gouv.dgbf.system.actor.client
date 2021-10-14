@@ -18,8 +18,6 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu;
 
-import ci.gouv.dgbf.system.actor.client.controller.api.ActorController;
-import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.impl.actor.RequestListPage;
 import lombok.Getter;
 import lombok.Setter;
@@ -57,9 +55,9 @@ public class UserRequestsPage extends AbstractPageContainerManagedImpl implement
 	}
 	
 	private void buildTabRequestList(Collection<Map<Object,Object>> cellsMaps) {
-		Actor actor = __inject__(ActorController.class).getLoggedIn();
+		//Actor actor = __inject__(ActorController.class).getLoggedIn();
 		DataTable dataTable = RequestListPage.buildDataTable(
-				DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new RequestListPage.LazyDataModelListenerImpl().setActorIdentifier(actor.getIdentifier())
+				DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new RequestListPage.LazyDataModelListenerImpl()/*.setActorIdentifier(actor.getIdentifier())*/
 				,RequestListPage.class,UserRequestsPage.class
 				);	
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));

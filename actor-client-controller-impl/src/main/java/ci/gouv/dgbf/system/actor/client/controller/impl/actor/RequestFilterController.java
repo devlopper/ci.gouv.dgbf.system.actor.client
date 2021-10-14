@@ -49,7 +49,7 @@ import lombok.experimental.Accessors;
 public class RequestFilterController extends AbstractFilterController implements Serializable {
 
 	private SelectOneCombo sectionSelectOne,functionSelectOne,typeSelectOne,statusSelectOne,administrativeUnitSelectOne,budgetSpecializationUnitSelectOne
-		,processedSelectOne,dispatchSlipSelectOne;
+		,processedSelectOne,dispatchSlipExistsSelectOne,dispatchSlipSelectOne;
 	private InputText searchInputText;
 	
 	private Section sectionInitial;
@@ -60,7 +60,9 @@ public class RequestFilterController extends AbstractFilterController implements
 	private Boolean processedInitial;
 	private RequestStatus statusInitial;
 	private String searchInitial;
+	private Boolean dispatchSlipExistsInitial;
 	private RequestDispatchSlip dispatchSlipInitial;
+	private Collection<String> excludedIdentifiers;
 	
 	public RequestFilterController() {}
 	
@@ -72,8 +74,10 @@ public class RequestFilterController extends AbstractFilterController implements
 		processedInitial = requestFilterController.processedInitial;
 		statusInitial = requestFilterController.statusInitial;
 		searchInitial = requestFilterController.searchInitial;
+		dispatchSlipExistsInitial = requestFilterController.dispatchSlipExistsInitial;
 		dispatchSlipInitial = requestFilterController.dispatchSlipInitial;
 		budgetSpecializationUnitInitial = requestFilterController.budgetSpecializationUnitInitial;
+		excludedIdentifiers = requestFilterController.excludedIdentifiers;
 	}
 	
 	public RequestFilterController initialize() {
@@ -98,6 +102,7 @@ public class RequestFilterController extends AbstractFilterController implements
 			
 		statusInitial = getStatusFromRequestParameter();
 		processedInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(Request.FIELD_PROCESSED));
+		dispatchSlipExistsInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(Request.FIELD_DISPATCH_SLIP_EXISTS));
 		
 		searchInitial = WebController.getInstance().getRequestParameter(buildParameterName(FIELD_SEARCH_INPUT_TEXT));
 		return this;
@@ -154,6 +159,7 @@ public class RequestFilterController extends AbstractFilterController implements
 		buildInputSelectOne(FIELD_TYPE_SELECT_ONE, RequestType.class);
 		buildInputSelectOne(FIELD_PROCESSED_SELECT_ONE, Boolean.class);
 		buildInputSelectOne(FIELD_STATUS_SELECT_ONE, RequestStatus.class);
+		buildInputSelectOne(FIELD_DISPATCH_SLIP_EXISTS_SELECT_ONE, RequestDispatchSlip.class);
 		buildInputSelectOne(FIELD_DISPATCH_SLIP_SELECT_ONE, RequestDispatchSlip.class);
 		buildInputText(FIELD_SEARCH_INPUT_TEXT);		
 		
@@ -166,7 +172,9 @@ public class RequestFilterController extends AbstractFilterController implements
 		if(functionSelectOne != null)
 			functionSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,dispatchSlipSelectOne));
 		if(processedSelectOne != null)
-			processedSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,statusSelectOne));		
+			processedSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,statusSelectOne));
+		if(dispatchSlipExistsSelectOne != null)
+			dispatchSlipExistsSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,dispatchSlipSelectOne));
 	}
 	
 	@Override
@@ -183,6 +191,8 @@ public class RequestFilterController extends AbstractFilterController implements
 			return Helper.buildProcessedSelectOneCombo((Boolean) value,this,FIELD_STATUS_SELECT_ONE);
 		if(FIELD_STATUS_SELECT_ONE.equals(fieldName))
 			return RequestStatusListPage.buildSelectOne((RequestStatus) value,this,FIELD_PROCESSED_SELECT_ONE,processedInitial);
+		if(FIELD_DISPATCH_SLIP_EXISTS_SELECT_ONE.equals(fieldName))
+			return RequestDispatchSlipListPage.buildExistsSelectOneCombo((Boolean) value,this,FIELD_DISPATCH_SLIP_SELECT_ONE);
 		if(FIELD_DISPATCH_SLIP_SELECT_ONE.equals(fieldName))
 			return RequestDispatchSlipListPage.buildSelectOne((RequestDispatchSlip) value,this,FIELD_SECTION_SELECT_ONE,FIELD_FUNCTION_SELECT_ONE);
 		if(FIELD_SEARCH_INPUT_TEXT.equals(fieldName)) {
@@ -207,6 +217,8 @@ public class RequestFilterController extends AbstractFilterController implements
 			return statusInitial;
 		if(FIELD_PROCESSED_SELECT_ONE.equals(fieldName))
 			return processedInitial;
+		if(FIELD_DISPATCH_SLIP_EXISTS_SELECT_ONE.equals(fieldName))
+			return dispatchSlipExistsInitial;
 		if(FIELD_DISPATCH_SLIP_SELECT_ONE.equals(fieldName))
 			return dispatchSlipInitial;
 		return super.getInputSelectOneInitialValue(fieldName, klass);
@@ -218,12 +230,14 @@ public class RequestFilterController extends AbstractFilterController implements
 			return Request.FIELD_SEARCH;
 		if(FIELD_PROCESSED_SELECT_ONE.equals(fieldName) || input == processedSelectOne)
 			return Request.FIELD_PROCESSED;
+		if(FIELD_DISPATCH_SLIP_EXISTS_SELECT_ONE.equals(fieldName) || input == dispatchSlipExistsSelectOne)
+			return Request.FIELD_DISPATCH_SLIP_EXISTS;
 		return super.buildParameterName(fieldName, input);
 	}
 	
 	@Override
 	protected String buildParameterValue(AbstractInput<?> input) {
-		if(input == processedSelectOne)
+		if(input == processedSelectOne || input == dispatchSlipExistsSelectOne)
 			return input.getValue() == null ? null : input.getValue().toString();
 		return super.buildParameterValue(input);
 	}
@@ -261,9 +275,14 @@ public class RequestFilterController extends AbstractFilterController implements
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,statusSelectOne,Cell.FIELD_WIDTH,processedSelectOne == null ? 3 : 2));
 		}
 		
+		if(dispatchSlipExistsSelectOne != null) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dispatchSlipExistsSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,2));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dispatchSlipExistsSelectOne,Cell.FIELD_WIDTH,3));
+		}
+		
 		if(dispatchSlipSelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dispatchSlipSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,2));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dispatchSlipSelectOne,Cell.FIELD_WIDTH,10));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dispatchSlipSelectOne,Cell.FIELD_WIDTH,5));
 		}
 		
 		if(searchInputText != null) {
@@ -287,11 +306,14 @@ public class RequestFilterController extends AbstractFilterController implements
 			strings.add(administrativeUnitInitial.toString());
 		if(functionInitial != null)
 			strings.add(functionInitial.getName());
+		if(dispatchSlipExistsInitial != null) {
+			strings.add((dispatchSlipExistsInitial ? "Portées" : "À porter")+" sur bordereau");
+		}
 		if(dispatchSlipInitial != null)
 			strings.add(ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip.LABEL+" N° "+dispatchSlipInitial.getCode());
 		
 		if(processedInitial != null && statusInitial == null) {
-			strings.add(processedInitial ? "Traité" : "Non traité");
+			strings.add(processedInitial ? "Traitées" : "À traiter");
 		}
 		if(statusInitial != null)
 			strings.add(statusInitial.getName());
@@ -305,7 +327,7 @@ public class RequestFilterController extends AbstractFilterController implements
 			columnsFieldsNames.add(Request.FIELD_SECTION_AS_STRING);
 		if(administrativeUnitInitial == null)
 			columnsFieldsNames.add(Request.FIELD_ADMINISTRATIVE_UNIT_AS_STRING);
-		if(typeInitial == null)
+		if(typeInitial == null && dispatchSlipInitial == null)
 			columnsFieldsNames.add(Request.FIELD_TYPE_AS_STRING);
 		columnsFieldsNames.addAll(List.of(Request.FIELD_FIRST_NAME_AND_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
 				,Request.FIELD_ELECTRONIC_MAIL_ADDRESS,Request.FIELD_MOBILE_PHONE_NUMBER));
@@ -348,6 +370,10 @@ public class RequestFilterController extends AbstractFilterController implements
 		return (BudgetSpecializationUnit)AbstractInput.getValue(budgetSpecializationUnitSelectOne);
 	}
 	
+	public Boolean getDispatchSlipExists() {
+		return (Boolean)AbstractInput.getValue(dispatchSlipExistsSelectOne);
+	}
+	
 	public RequestDispatchSlip getDispatchSlip() {
 		return (RequestDispatchSlip)AbstractInput.getValue(dispatchSlipSelectOne);
 	}
@@ -386,6 +412,8 @@ public class RequestFilterController extends AbstractFilterController implements
 			map.put(ParameterName.stringify(RequestDispatchSlip.class), List.of((String)FieldHelper.readSystemIdentifier(dispatchSlipInitial)));
 		if(processedInitial != null)
 			map.put(Request.FIELD_PROCESSED, List.of(processedInitial.toString()));
+		if(dispatchSlipExistsInitial != null)
+			map.put(Request.FIELD_DISPATCH_SLIP_EXISTS, List.of(dispatchSlipExistsInitial.toString()));
 		if(searchInitial != null && StringHelper.isNotBlank(searchInitial))
 			map.put(Request.FIELD_SEARCH, List.of(searchInitial));
 		return map;
@@ -396,14 +424,21 @@ public class RequestFilterController extends AbstractFilterController implements
 		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_IDENTIFIERS, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.administrativeUnitInitial : controller.getAdministrativeUnit())), filter);
 		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.functionInitial : controller.getFunction())), filter);
 		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_TYPES_IDENTIFIERS, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.typeInitial : controller.getType())), filter);
-		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_DISPATCH_SLIP_IDENTIFIERS, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.dispatchSlipInitial : controller.getDispatchSlip())), filter);
+		
+		Boolean dispatchSlipExists = Boolean.TRUE.equals(initial) ? controller.dispatchSlipExistsInitial : controller.getDispatchSlipExists();
+		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_DISPATCH_SLIP_EXISTS, dispatchSlipExists, filter);
+		if(dispatchSlipExists == null || dispatchSlipExists) {
+			Collection<Object> dispatchSlipsIdentifiers = CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.dispatchSlipInitial : controller.getDispatchSlip()));
+			if(CollectionHelper.isNotEmpty(dispatchSlipsIdentifiers))
+				filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_DISPATCH_SLIP_IDENTIFIERS, dispatchSlipsIdentifiers, filter);			
+		}
 		
 		Boolean processed = Boolean.TRUE.equals(initial) ? controller.processedInitial : controller.getProcessed();
+		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_PROCESSED, processed, filter);
 		if(processed == null) {
 			
 		}else {
-			filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_PROCESSED, processed, filter);			
-			//filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_ACCEPTED, Boolean.TRUE.equals(initial) ? controller.acceptedInitial : controller.getAccepted(), filter);
+			
 		}
 		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_STATUS_IDENTIFIERS, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.statusInitial : controller.getStatus())), filter);
 		filter = Filter.Dto.addFieldIfValueNotBlank(RequestQuerier.PARAMETER_NAME_SEARCH, Boolean.TRUE.equals(initial) ? controller.searchInitial : controller.getSearch(), filter);
@@ -427,4 +462,5 @@ public class RequestFilterController extends AbstractFilterController implements
 	public static final String FIELD_STATUS_SELECT_ONE = "statusSelectOne";
 	public static final String FIELD_PROCESSED_SELECT_ONE = "processedSelectOne";
 	public static final String FIELD_DISPATCH_SLIP_SELECT_ONE = "dispatchSlipSelectOne";
+	public static final String FIELD_DISPATCH_SLIP_EXISTS_SELECT_ONE = "dispatchSlipExistsSelectOne";
 }
