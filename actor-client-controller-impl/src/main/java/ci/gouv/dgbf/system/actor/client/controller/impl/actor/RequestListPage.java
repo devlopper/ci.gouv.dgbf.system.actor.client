@@ -113,6 +113,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 		
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, Request.class);
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_SORT_MODE, "multiple");
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, filterController.generateColumnsNames());
 		
@@ -234,6 +235,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			}else if(Request.FIELD_REGISTRATION_NUMBER.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Matricule");
 				map.put(Column.FIELD_WIDTH, "75");
+				map.put(Column.FIELD_SORT_BY, fieldName);
 			}else if(Request.FIELD_ACCOUNT_CREATION_MESSAGE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Création compte");
 				map.put(Column.FIELD_WIDTH, "200");

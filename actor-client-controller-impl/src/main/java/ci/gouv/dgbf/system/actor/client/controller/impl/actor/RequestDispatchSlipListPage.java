@@ -97,6 +97,7 @@ public class RequestDispatchSlipListPage extends AbstractEntityListPageContainer
 		
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, RequestDispatchSlip.class);
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_SORT_MODE, "multiple");
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, filterController.generateColumnsNames());
 		
@@ -162,6 +163,7 @@ public class RequestDispatchSlipListPage extends AbstractEntityListPageContainer
 			if(RequestDispatchSlip.FIELD_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Numéro");
 				map.put(Column.FIELD_WIDTH, "120");
+				map.put(Column.FIELD_SORT_BY, fieldName);
 			}else if(RequestDispatchSlip.FIELD_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Libellé");
 			}else if(RequestDispatchSlip.FIELD_SECTION_AS_STRING.equals(fieldName)) {
@@ -175,16 +177,19 @@ public class RequestDispatchSlipListPage extends AbstractEntityListPageContainer
 			}else if(RequestDispatchSlip.FIELD_CREATION_DATE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Créé le");
 				map.put(Column.FIELD_WIDTH, "120");
+				map.put(Column.FIELD_SORT_BY, ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip.FIELD_CREATION_DATE);
 			}else if(RequestDispatchSlip.FIELD_SENDING_DATE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Transmis le");
 				map.put(Column.FIELD_WIDTH, "120");
 				if(filterController != null)
 					map.put(Column.FIELD_VISIBLE, filterController.getSentInitial() == null || filterController.getSentInitial());
+				map.put(Column.FIELD_SORT_BY, ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip.FIELD_SENDING_DATE);
 			}else if(RequestDispatchSlip.FIELD_PROCESSING_DATE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Traité le");
 				map.put(Column.FIELD_WIDTH, "120");
 				if(filterController != null)
 					map.put(Column.FIELD_VISIBLE, filterController.getProcessedInitial() == null || filterController.getProcessedInitial());
+				map.put(Column.FIELD_SORT_BY, ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip.FIELD_PROCESSING_DATE);
 			}else if(RequestDispatchSlip.FIELD_NUMBER_OF_REQUESTS.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "# Demandes");
 				map.put(Column.FIELD_WIDTH, "120");
