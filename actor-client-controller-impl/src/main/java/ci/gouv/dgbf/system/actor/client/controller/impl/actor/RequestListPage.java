@@ -169,6 +169,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			}else if(Request.FIELD_FIRST_NAME_AND_LAST_NAMES.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Nom et prénom(s)");
 				map.put(Column.FIELD_WIDTH, "200");
+				map.put(Column.FIELD_SORT_BY, fieldName);
 			}else if(Request.FIELD_COMMENT.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Commentaire");
 			}else if(Request.FIELD_CREATION_DATE_AS_STRING.equals(fieldName)) {
@@ -195,12 +196,14 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			}else if(Request.FIELD_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Numéro");
 				map.put(Column.FIELD_WIDTH, "110");
+				map.put(Column.FIELD_SORT_BY, fieldName);
 			}else if(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Fonction(s) budgétaire(s)");
 				map.put(Column.FIELD_WIDTH, "150");
 			}else if(Request.FIELD_ELECTRONIC_MAIL_ADDRESS.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Email");
 				map.put(Column.FIELD_WIDTH, "200");
+				map.put(Column.FIELD_SORT_BY, fieldName);
 			}else if(Request.FIELD_MOBILE_PHONE_NUMBER.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Tel. Mobile");
 				map.put(Column.FIELD_WIDTH, "100");
@@ -222,11 +225,11 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}else if(Request.FIELD_FIRST_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Nom");
-				map.put(Column.FIELD_SORT_BY, RequestQuerier.PARAMETER_NAME_FIRST_NAME);
+				map.put(Column.FIELD_SORT_BY, fieldName);
 				map.put(Column.FIELD_WIDTH, "100");
 			}else if(Request.FIELD_LAST_NAMES.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Prénoms");
-				map.put(Column.FIELD_SORT_BY, RequestQuerier.PARAMETER_NAME_LAST_NAMES);
+				map.put(Column.FIELD_SORT_BY, fieldName);
 				map.put(Column.FIELD_WIDTH, "150");
 			}else if(Request.FIELD_REGISTRATION_NUMBER.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Matricule");

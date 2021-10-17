@@ -225,6 +225,13 @@ public class RequestFilterController extends AbstractFilterController implements
 	}
 	
 	@Override
+	protected String getInputTextInitialValue(String fieldName) {
+		if(FIELD_SEARCH_INPUT_TEXT.equals(fieldName))
+			return searchInitial;
+		return super.getInputTextInitialValue(fieldName);
+	}
+	
+	@Override
 	protected String buildParameterName(String fieldName, AbstractInput<?> input) {
 		if(FIELD_SEARCH_INPUT_TEXT.equals(fieldName) || input == searchInputText)
 			return Request.FIELD_SEARCH;

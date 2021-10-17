@@ -65,7 +65,7 @@ public class RequestDispatchSlipFilterController extends AbstractFilterControlle
 			functionInitial = getFunctionFromRequestParameter();
 		sentInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(RequestDispatchSlip.FIELD_SENT));
 		processedInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(RequestDispatchSlip.FIELD_PROCESSED));
-		searchInitial = WebController.getInstance().getRequestParameter(buildParameterName(FIELD_SEARCH_INPUT_TEXT));
+		searchInitial = WebController.getInstance().getRequestParameter(buildParameterName(RequestDispatchSlip.FIELD_SEARCH));
 		return this;
 	}
 
@@ -130,6 +130,13 @@ public class RequestDispatchSlipFilterController extends AbstractFilterControlle
 	}
 	
 	@Override
+	protected String getInputTextInitialValue(String fieldName) {
+		if(FIELD_SEARCH_INPUT_TEXT.equals(fieldName))
+			return searchInitial;
+		return super.getInputTextInitialValue(fieldName);
+	}
+	
+	@Override
 	protected String buildParameterName(String fieldName, AbstractInput<?> input) {
 		if(FIELD_SEARCH_INPUT_TEXT.equals(fieldName) || input == searchInputText)
 			return RequestDispatchSlip.FIELD_SEARCH;
@@ -157,19 +164,25 @@ public class RequestDispatchSlipFilterController extends AbstractFilterControlle
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,sectionSelectOne,Cell.FIELD_WIDTH,10));
 		}
 		
+		Integer width = null;
 		if(functionSelectOne != null) {
+			width = 4;
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,functionSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,2));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,functionSelectOne,Cell.FIELD_WIDTH,4));
+			if(sentSelectOne == null)
+				width = width + 3;
+			if(processedSelectOne == null)
+				width = width + 3;
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,functionSelectOne,Cell.FIELD_WIDTH,width));
 		}
-		
 		if(sentSelectOne != null) {
+			width = 2;
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,sentSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,sentSelectOne,Cell.FIELD_WIDTH,2));		
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,sentSelectOne,Cell.FIELD_WIDTH,width));
 		}
-		
 		if(processedSelectOne != null) {
+			width = 2;
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,processedSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,processedSelectOne,Cell.FIELD_WIDTH,2));		
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,processedSelectOne,Cell.FIELD_WIDTH,width));
 		}
 		
 		if(searchInputText != null) {
@@ -211,11 +224,11 @@ public class RequestDispatchSlipFilterController extends AbstractFilterControlle
 		}
 		columnsFieldsNames.add(RequestDispatchSlip.FIELD_CREATION_DATE_AS_STRING);
 		if(sentInitial == null || sentInitial) {
-			columnsFieldsNames.add(RequestDispatchSlip.FIELD_SENDING_DATE_AS_STRING);
-		}
-		if(processedInitial == null || processedInitial) {
-			columnsFieldsNames.add(RequestDispatchSlip.FIELD_PROCESSING_DATE_AS_STRING);
-		}
+			columnsFieldsNames.add(RequestDispatchSlip.FIELD_SENDING_DATE_AS_STRING);		
+			if(processedInitial == null || processedInitial) {
+				columnsFieldsNames.add(RequestDispatchSlip.FIELD_PROCESSING_DATE_AS_STRING);
+			}
+		}		
 		columnsFieldsNames.addAll(List.of(RequestDispatchSlip.FIELD_NUMBER_OF_REQUESTS_PROCESSED,RequestDispatchSlip.FIELD_NUMBER_OF_REQUESTS_ACCEPTED
 				,RequestDispatchSlip.FIELD_NUMBER_OF_REQUESTS_REJECTED,RequestDispatchSlip.FIELD_NUMBER_OF_REQUESTS_NOT_PROCESSED));
 		return columnsFieldsNames;

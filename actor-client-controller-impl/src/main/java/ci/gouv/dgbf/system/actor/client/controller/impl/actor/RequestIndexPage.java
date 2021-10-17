@@ -140,7 +140,6 @@ public class RequestIndexPage extends AbstractPageContainerManagedImpl implement
 	}
 	
 	private DataTable buildDataTableRequestsAll() {
-		requestFilterController.setProcessedInitial(null);
 		DataTable dataTable = RequestListPage.buildDataTable(RequestFilterController.class,requestFilterController);
 		return dataTable;
 	}
