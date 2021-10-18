@@ -40,6 +40,7 @@ public class RequestDispatchSlip extends AbstractDataIdentifiableSystemStringIde
 	
 	private Collection<Request> requests;
 	private Integer numberOfRequests,numberOfRequestsProcessed,numberOfRequestsAccepted,numberOfRequestsRejected,numberOfRequestsNotProcessed;
+	private Boolean isNumberOfRequestsEqualNumberOfRequestsProcessed;
 	private Collection<String> requestsIdentifiers;
 	private Collection<String> acceptedRequestsIdentifiers;
 	private Collection<RequestDto.Acceptation> requestsAcceptations;
@@ -127,6 +128,7 @@ public class RequestDispatchSlip extends AbstractDataIdentifiableSystemStringIde
 	public static final String FIELD_NUMBER_OF_REQUESTS_ACCEPTED = "numberOfRequestsAccepted";
 	public static final String FIELD_NUMBER_OF_REQUESTS_REJECTED = "numberOfRequestsRejected";
 	public static final String FIELD_NUMBER_OF_REQUESTS_NOT_PROCESSED = "numberOfRequestsNotProcessed";
+	public static final String FIELD_IS_NUMBER_OF_REQUESTS_EQUAL_NUMBER_OF_REQUESTS_PROCESSED = "isNumberOfRequestsEqualNumberOfRequestsProcessed";
 	public static final String FIELD_SENT = "sent";
 	public static final String FIELD_PROCESSED = "processed";
 	public static final String FIELD_SEARCH = "search";
