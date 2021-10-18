@@ -106,10 +106,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 		
 		DataTableListenerImpl dataTableListenerImpl = (DataTableListenerImpl) MapHelper.readByKey(arguments, DataTable.FIELD_LISTENER);
 		if(dataTableListenerImpl == null)
-			arguments.put(DataTable.FIELD_LISTENER, dataTableListenerImpl = new DataTableListenerImpl());
-		dataTableListenerImpl.setContentType(contentType).setFilterController(filterController);
-		
-		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl().setContentType(contentType));
+			arguments.put(DataTable.FIELD_LISTENER, dataTableListenerImpl = new DataTableListenerImpl().setContentType(contentType).setFilterController(filterController));
 		
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, Request.class);
