@@ -189,15 +189,6 @@ public class ActorListPageNEW extends AbstractEntityListPageContainerManagedImpl
 				return StringHelper.concatenate(((Actor)record).getProfilesCodes(),",");
 			return super.getCellValueByRecordByColumn(record, recordIndex, column, columnIndex);
 		}
-		
-		/*
-		public String getStyleClassByRecord(Object record, Integer recordIndex) {
-			if(record == null || recordIndex == null)
-				return null;
-			if(filterController.getVisible() == null && Boolean.TRUE.equals(((Scope)record).getVisible()))
-				return "cyk-background-highlight";
-			return null;
-		}*/
 	}
 	
 	@Getter @Setter @Accessors(chain=true)

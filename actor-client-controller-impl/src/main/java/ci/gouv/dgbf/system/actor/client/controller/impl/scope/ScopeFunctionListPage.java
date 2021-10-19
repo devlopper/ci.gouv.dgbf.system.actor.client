@@ -362,18 +362,6 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 			}
 			return super.getCellValueByRecordByColumn(record, recordIndex, column, columnIndex);
 		}
-		
-		/*@Override
-		public String getStyleClassByRecord(Object record, Integer recordIndex) {
-			if(record instanceof ScopeFunction) {
-				ScopeFunction scopeFunction = (ScopeFunction) record;
-				if(Boolean.TRUE.equals(scopeFunction.getGranted()))
-					return "cyk-background-highlight";
-				if(Boolean.TRUE.equals(scopeFunction.getRequested()))
-					return "background: red !important";
-			}
-			return super.getStyleClassByRecord(record, recordIndex);
-		}*/
 	}
 	
 	@Getter @Setter @Accessors(chain=true)

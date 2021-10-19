@@ -218,7 +218,7 @@ public class ScopeListPage extends AbstractEntityListPageContainerManagedImpl<Sc
 			if(record == null || recordIndex == null)
 				return null;
 			if(filterController.getVisible() == null && Boolean.TRUE.equals(((Scope)record).getVisible()))
-				return "cyk-background-highlight";
+				return "cyk-background-highlight-green";
 			return null;
 		}
 	}

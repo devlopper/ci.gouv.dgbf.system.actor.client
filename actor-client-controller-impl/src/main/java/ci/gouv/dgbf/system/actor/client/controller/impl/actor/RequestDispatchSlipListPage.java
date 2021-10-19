@@ -210,6 +210,15 @@ public class RequestDispatchSlipListPage extends AbstractEntityListPageContainer
 		public Class<? extends AbstractMenu> getRecordMenuClass(AbstractCollection collection) {
 			return ContextMenu.class;
 		}
+		
+		public String getStyleClassByRecord(Object record, Integer recordIndex) {
+			if(!(record instanceof RequestDispatchSlip))
+				return null;
+			RequestDispatchSlip requestDispatchSlip = (RequestDispatchSlip) record;
+			if(StringHelper.isNotBlank(requestDispatchSlip.getProcessingDateAsString()) && !Boolean.TRUE.equals(requestDispatchSlip.getIsNumberOfRequestsEqualNumberOfRequestsProcessed()))
+				return "cyk-background-highlight-green";
+			return null;
+		}
 	}
 	
 	@Getter @Setter @Accessors(chain=true)
