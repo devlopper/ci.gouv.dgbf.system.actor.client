@@ -42,8 +42,8 @@ import ci.gouv.dgbf.system.actor.client.controller.api.ProfileController;
 import ci.gouv.dgbf.system.actor.client.controller.api.ProfileTypeController;
 import ci.gouv.dgbf.system.actor.client.controller.api.RequestStatusController;
 import ci.gouv.dgbf.system.actor.client.controller.api.RequestTypeController;
+import ci.gouv.dgbf.system.actor.client.controller.api.ScopeController;
 import ci.gouv.dgbf.system.actor.client.controller.api.ScopeTypeController;
-import ci.gouv.dgbf.system.actor.client.controller.api.SectionController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
@@ -250,7 +250,18 @@ public interface Helper {
 			@Override
 			public Collection<Section> computeChoices(AbstractInputChoice<Section> input) {
 				//Collection<Section> choices = __inject__(SectionController.class).readVisiblesByLoggedInActorCodeForUI();
-				Collection<Section> choices = __inject__(SectionController.class).read();
+				//Collection<Section> choices = __inject__(SectionController.class).read();
+				Collection<Scope> scopes = __inject__(ScopeController.class).getLoggedInVisibleSections();
+				if(CollectionHelper.isEmpty(scopes))
+					return null;
+				Collection<Section> choices = new ArrayList<>();
+				for(Scope scope : scopes) {
+					Section section = new Section();
+					section.setIdentifier(scope.getIdentifier());
+					section.setCode(scope.getCode());
+					section.setName(scope.getName());
+					choices.add(section);
+				}
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
 			}
@@ -269,6 +280,14 @@ public interface Helper {
 			}
 		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.Section.LABEL);		
 		return select;
+	}
+	
+	static Collection<String> getSectionsIdentifiers(Boolean initial,Object objectInitial,SelectOneCombo  selectOne) {
+		Object object = Boolean.TRUE.equals(initial) ? objectInitial : (Section)selectOne.getValue();
+		if(object == null)
+			return DependencyInjection.inject(ScopeController.class).getLoggedInVisibleSectionsIdentifiers();
+		else
+			return List.of((String)FieldHelper.readSystemIdentifier(object));
 	}
 	
 	public static SelectOneCombo buildAdministrativeUnitSelectOne(AdministrativeUnit administrativeUnit,Object container,String sectionSelectFieldName) {		

@@ -280,7 +280,10 @@ public class RequestDispatchSlipFilterController extends AbstractFilterControlle
 	}
 	
 	public static Filter.Dto populateFilter(Filter.Dto filter,RequestDispatchSlipFilterController controller,Boolean initial) {
-		filter = Filter.Dto.addFieldIfValueNotNull(RequestDispatchSlipQuerier.PARAMETER_NAME_SECTIONS_IDENTIFIERS, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.sectionInitial : controller.getSection())), filter);
+		Collection<String> identifiers = Helper.getSectionsIdentifiers(initial, controller.getSectionInitial(), controller.getSectionSelectOne());
+		if(CollectionHelper.isNotEmpty(identifiers))
+			filter = Filter.Dto.addFieldIfValueNotNull(RequestDispatchSlipQuerier.PARAMETER_NAME_SECTIONS_IDENTIFIERS, identifiers, filter);
+		//filter = Filter.Dto.addFieldIfValueNotNull(RequestDispatchSlipQuerier.PARAMETER_NAME_SECTIONS_IDENTIFIERS, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.sectionInitial : controller.getSection())), filter);
 		filter = Filter.Dto.addFieldIfValueNotNull(RequestDispatchSlipQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.functionInitial : controller.getFunction())), filter);
 		filter = Filter.Dto.addFieldIfValueNotNull(RequestDispatchSlipQuerier.PARAMETER_NAME_SENT, Boolean.TRUE.equals(initial) ? controller.sentInitial : controller.getSent(), filter);
 		filter = Filter.Dto.addFieldIfValueNotNull(RequestDispatchSlipQuerier.PARAMETER_NAME_PROCESSED, Boolean.TRUE.equals(initial) ? controller.processedInitial : controller.getProcessed(), filter);
