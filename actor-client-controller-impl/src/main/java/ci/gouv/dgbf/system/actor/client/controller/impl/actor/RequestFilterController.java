@@ -284,7 +284,7 @@ public class RequestFilterController extends AbstractFilterController implements
 		
 		if(dispatchSlipExistsSelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dispatchSlipExistsSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,2));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dispatchSlipExistsSelectOne,Cell.FIELD_WIDTH,3));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dispatchSlipExistsSelectOne,Cell.FIELD_WIDTH,dispatchSlipSelectOne == null ? 10 : 3));
 		}
 		
 		if(dispatchSlipSelectOne != null) {

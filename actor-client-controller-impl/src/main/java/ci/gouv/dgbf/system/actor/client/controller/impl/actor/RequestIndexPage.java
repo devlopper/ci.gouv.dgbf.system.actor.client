@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
+import org.cyk.utility.__kernel__.computation.SortOrder;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
@@ -128,6 +129,7 @@ public class RequestIndexPage extends AbstractPageContainerManagedImpl implement
 	private DataTable buildDataTableRequestsToProcess() {
 		requestFilterController.setProcessedInitial(Boolean.FALSE);
 		requestFilterController.ignore(RequestFilterController.FIELD_PROCESSED_SELECT_ONE);
+		requestFilterController.order(Request.FIELD_CREATION_DATE, SortOrder.DESCENDING);
 		DataTable dataTable = RequestListPage.buildDataTable(RequestFilterController.class,requestFilterController);
 		return dataTable;
 	}
@@ -135,11 +137,13 @@ public class RequestIndexPage extends AbstractPageContainerManagedImpl implement
 	private DataTable buildDataTableRequestsProcessed() {
 		requestFilterController.setProcessedInitial(Boolean.TRUE);
 		requestFilterController.ignore(RequestFilterController.FIELD_PROCESSED_SELECT_ONE);
+		requestFilterController.order(Request.FIELD_PROCESSING_DATE, SortOrder.DESCENDING);
 		DataTable dataTable = RequestListPage.buildDataTable(RequestFilterController.class,requestFilterController);
 		return dataTable;
 	}
 	
 	private DataTable buildDataTableRequestsAll() {
+		requestFilterController.order(Request.FIELD_CREATION_DATE, SortOrder.DESCENDING);
 		DataTable dataTable = RequestListPage.buildDataTable(RequestFilterController.class,requestFilterController);
 		return dataTable;
 	}
