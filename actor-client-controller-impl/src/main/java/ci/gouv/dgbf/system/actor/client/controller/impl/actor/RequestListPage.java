@@ -51,7 +51,7 @@ import lombok.experimental.Accessors;
 public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<Request> implements Serializable {
 
 	private RequestFilterController filterController;
-	private LinkedHashMap<String, String> legends = new LinkedHashMap<>();
+	private HashMap<String, String> legends;
 	
 	@Override
 	protected void __listenBeforePostConstruct__() {
@@ -62,11 +62,17 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 	@Override
 	protected void __listenPostConstruct__() {
 		super.__listenPostConstruct__();
+		legends = buildLegends();
+	}
+	
+	public static HashMap<String,String> buildLegends() {
+		LinkedHashMap<String, String> legends = new LinkedHashMap<>();
 		legends.put("Gestionnaire", "#F1EEF6");
 		legends.put("Ordonnateur", "#BDC9E1");
 		legends.put("Contrôleur Financier", "#74A9CF");
 		legends.put("Comptable", "#2B8CBE");
 		legends.put("Assistant", "#EDCADD");
+		return legends;
 	}
 	
 	@Override

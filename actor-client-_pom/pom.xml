@@ -25,9 +25,5 @@
 		<module>../actor-client-controller-entities</module>
 		<module>../actor-client-controller-api</module>
 		<module>../actor-client-controller-impl</module>
-		
-		<!-- Deployment -->
-		<module>../actor-client-deployment</module>
-				
 	</modules>
 </project>

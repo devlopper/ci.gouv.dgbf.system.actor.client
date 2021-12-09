@@ -42,6 +42,7 @@ public class MenuBuilderMapInstantiatorImpl extends org.cyk.utility.client.contr
 				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Formulaires").setCommandableNavigationIdentifier("identificationFormListView"))
 				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Types de demandes").setCommandableNavigationIdentifier("requestTypeListView"))
 				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Demandes").setCommandableNavigationIdentifier("requestIndexView"))
+				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Poste demandés").setCommandableNavigationIdentifier("requestScopeFunctionListView"))
 				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Bordereaux").setCommandableNavigationIdentifier("requestDispatchSlipIndexView"))
 				
 				.addChild(__inject__(MenuItemBuilder.class).setCommandableName("Demander").setCommandableNavigationIdentifier("actorRecordRequestsView"))

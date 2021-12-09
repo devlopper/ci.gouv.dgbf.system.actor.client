@@ -74,6 +74,15 @@ public interface Helper {
 		return buildSearchInputText(string, "Recherche");
 	}
 	
+	static InputText buildElectronicMailAddressInputText(String string,String label) {
+		InputText input = InputText.build(SelectOneCombo.FIELD_VALUE,string,InputText.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,label);
+		return input;
+	}
+	
+	static InputText buildElectronicMailAddressInputText(String string) {
+		return buildElectronicMailAddressInputText(string, "Email");
+	}
+	
 	static AutoComplete buildActorAutoComplete(Actor actor) {
 		AutoComplete input = AutoComplete.build(AutoComplete.FIELD_VALUE,actor,AutoComplete.FIELD_ENTITY_CLASS,Actor.class,AutoComplete.FIELD_LISTENER
 				,new AutoComplete.Listener.AbstractImpl<Actor>() {
