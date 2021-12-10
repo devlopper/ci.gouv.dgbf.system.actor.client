@@ -6,19 +6,26 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.ValueConverter;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AutoComplete;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.InputText;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntityReader;
 import org.cyk.utility.persistence.query.Filter;
 
+import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestScopeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.impl.Helper;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestScopeFunctionQuerier;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,20 +34,29 @@ import lombok.experimental.Accessors;
 @Getter @Setter @Accessors(chain=true)
 public class RequestScopeFunctionFilterController extends AbstractFilterController implements Serializable {
 
+	private AutoComplete functionAutoComplete;
 	private SelectOneCombo grantedSelectOne;
 	private InputText electronicMailAddressInputText;
 	
+	private Collection<Function> functionsInitial;
 	private Boolean grantedInitial;
 	private String electronicMailAddressInitial;
+	
+	private Collection<String> functionsCodes;
 	
 	public RequestScopeFunctionFilterController() {}
 	
 	public RequestScopeFunctionFilterController(RequestScopeFunctionFilterController requestScopeFunctionFilterController) {
+		functionsInitial = requestScopeFunctionFilterController.functionsInitial;
 		grantedInitial = requestScopeFunctionFilterController.grantedInitial;
 		electronicMailAddressInitial = requestScopeFunctionFilterController.electronicMailAddressInitial;
 	}
 	
 	public RequestScopeFunctionFilterController initialize() {
+		Collection<String> functionsIdentifiers = WebController.getInstance().getRequestParameters(ParameterName.stringifyMany(Function.class));
+		if(CollectionHelper.isNotEmpty(functionsIdentifiers))
+			functionsInitial = EntityReader.getInstance().readMany(Function.class, new Arguments<Function>().queryIdentifier(FunctionQuerier.QUERY_IDENTIFIER_READ_DYNAMIC)
+					.filterByIdentifiers(functionsIdentifiers));
 		grantedInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(RequestScopeFunction.FIELD_GRANTED));
 		electronicMailAddressInitial = WebController.getInstance().getRequestParameter(RequestScopeFunction.FIELD_ELECTRONIC_MAIL_ADDRESS);
 		return this;
@@ -48,6 +64,7 @@ public class RequestScopeFunctionFilterController extends AbstractFilterControll
 	
 	@Override
 	protected void buildInputs() {
+		//buildInputSelectOne(FIELD_FUNCTION_AUTO_COMPLETE, Function.class);
 		buildInputSelectOne(FIELD_GRANTED_SELECT_ONE, Boolean.class);
 		buildInputText(FIELD_ELECTRONIC_MAIL_ADDRESS_INPUT_TEXT);		
 		enableValueChangeListeners();
@@ -57,6 +74,8 @@ public class RequestScopeFunctionFilterController extends AbstractFilterControll
 	
 	@Override
 	protected AbstractInput<?> buildInput(String fieldName, Object value) {
+		//if(FIELD_FUNCTION_AUTO_COMPLETE.equals(fieldName))
+		//	return functionAutoComplete = buildFunctionAutoComplete((ScopeFunction) value);
 		if(FIELD_GRANTED_SELECT_ONE.equals(fieldName))
 			return Helper.buildGrantedSelectOneCombo((Boolean) value);
 		if(FIELD_ELECTRONIC_MAIL_ADDRESS_INPUT_TEXT.equals(fieldName)) {
@@ -65,9 +84,36 @@ public class RequestScopeFunctionFilterController extends AbstractFilterControll
 		}
 		return null;
 	}
+	/*
+	private AutoComplete buildFunctionAutoComplete(Collection<Function> functions) {
+		AutoComplete input = AutoComplete.build(AutoComplete.FIELD_ENTITY_CLASS,Function.class,AutoComplete.FIELD_READER_USABLE,Boolean.TRUE
+				,AutoComplete.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Fonction",AutoComplete.FIELD_VALUE,functions
+				,AutoComplete.FIELD_READ_QUERY_IDENTIFIER,FunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTIONS_CODES
+				,AutoComplete.FIELD_LISTENER,new AutoComplete.Listener.AbstractImpl<ScopeFunction>() {
+			@Override
+			public Filter.Dto instantiateFilter(AutoComplete autoComplete) {
+				return new Filter.Dto()
+						.addField(ScopeFunctionQuerier.PARAMETER_NAME_CODE, autoComplete.get__queryString__())
+						.addField(ScopeFunctionQuerier.PARAMETER_NAME_NAME, autoComplete.get__queryString__())
+						.addField(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTIONS_CODES, ci.gouv.dgbf.system.actor.server.persistence.entities.Function.EXECUTION_HOLDERS_CODES)
+						;
+			}
+			
+			@Override
+			public Arguments<ScopeFunction> instantiateArguments(AutoComplete autoComplete) {
+				Arguments<ScopeFunction> arguments = super.instantiateArguments(autoComplete);
+				arguments.getRepresentationArguments().getQueryExecutorArguments().addProcessableTransientFieldsNames(ScopeFunction.FIELD_FUNCTION_CODE);
+				return arguments;
+			}
+		});
+		input.enableAjaxItemSelect();
+		return input;
+	}*/
 	
 	@Override
 	protected Object getInputSelectOneInitialValue(String fieldName, Class<?> klass) {
+		if(FIELD_FUNCTION_AUTO_COMPLETE.equals(fieldName))
+			return functionsInitial;
 		if(FIELD_GRANTED_SELECT_ONE.equals(fieldName))
 			return grantedInitial;
 		return super.getInputSelectOneInitialValue(fieldName, klass);
@@ -140,6 +186,11 @@ public class RequestScopeFunctionFilterController extends AbstractFilterControll
 		return columnsFieldsNames;
 	}
 
+	@SuppressWarnings("unchecked")
+	public Collection<Function> getFunctions() {
+		return (Collection<Function>)AbstractInput.getValue(functionAutoComplete);
+	}
+	
 	public String getElectronicMailAddress() {
 		return (String)AbstractInput.getValue(electronicMailAddressInputText);
 	}
@@ -156,6 +207,8 @@ public class RequestScopeFunctionFilterController extends AbstractFilterControll
 	}
 	
 	public static Filter.Dto populateFilter(Filter.Dto filter,RequestScopeFunctionFilterController controller,Boolean initial) {
+		if(CollectionHelper.isNotEmpty(controller.functionsCodes))
+			filter = Filter.Dto.addFieldIfValueNotNull(RequestScopeFunctionQuerier.PARAMETER_NAME_FUNCTIONS_CODES, controller.functionsCodes, filter);
 		filter = Filter.Dto.addFieldIfValueNotNull(RequestScopeFunctionQuerier.PARAMETER_NAME_GRANTED, Boolean.TRUE.equals(initial) ? controller.grantedInitial : controller.getGranted(), filter);
 		filter = Filter.Dto.addFieldIfValueNotBlank(RequestScopeFunctionQuerier.PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS, Boolean.TRUE.equals(initial) ? controller.electronicMailAddressInitial : controller.getElectronicMailAddress(), filter);
 		return filter;
@@ -167,9 +220,14 @@ public class RequestScopeFunctionFilterController extends AbstractFilterControll
 	
 	/**/
 	
+	public static RequestScopeFunctionFilterController instantiate() {
+		RequestScopeFunctionFilterController filterController = new RequestScopeFunctionFilterController();
+		return filterController;
+	}
 	
 	/**/
 	
 	public static final String FIELD_ELECTRONIC_MAIL_ADDRESS_INPUT_TEXT = "electronicMailAddressInputText";
 	public static final String FIELD_GRANTED_SELECT_ONE = "grantedSelectOne";
+	public static final String FIELD_FUNCTION_AUTO_COMPLETE = "functionAutoComplete";
 }

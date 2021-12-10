@@ -256,10 +256,24 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>publicRequestScopeFunctionListInputElectronicMailAddressView</from-outcome>
+			<to-view-id>/public/request/scopefunction/list/inputelectronicmailaddress.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>publicRequestScopeFunctionListView</from-outcome>
+			<to-view-id>/public/request/scopefunction/list/index.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>requestScopeFunctionListView</from-outcome>
 			<to-view-id>/private/request/scopefunction/list/index.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
+		
+		
 		
 		<!--  -->
 		

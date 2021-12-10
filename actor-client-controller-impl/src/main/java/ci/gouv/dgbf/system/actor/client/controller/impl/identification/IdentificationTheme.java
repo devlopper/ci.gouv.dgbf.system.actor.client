@@ -44,8 +44,8 @@ public interface IdentificationTheme {
 						item.setOutcome("publicRequestSendAccessTokenView");
 						model.addElement(item);
 						
-						item = new DefaultMenuItem("Obtenir spécimen signature par mail");
-						item.setOutcome("publicRequestSendSignatureSpecimenView");
+						item = new DefaultMenuItem("Postes");
+						item.setOutcome("publicRequestScopeFunctionListInputElectronicMailAddressView");
 						model.addElement(item);
 						
 						/*

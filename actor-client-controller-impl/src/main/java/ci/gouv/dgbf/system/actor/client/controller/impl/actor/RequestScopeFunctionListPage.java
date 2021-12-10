@@ -65,11 +65,17 @@ public class RequestScopeFunctionListPage extends AbstractEntityListPageContaine
 		return dataTable;
 	}
 	
+	public static String buildWindowTitleValue(RequestScopeFunctionFilterController filterController) {
+		if(filterController == null)
+			return null;
+		return filterController.generateWindowTitleValue(ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction.LABEL);
+	}
+	
 	@Override
 	protected String __getWindowTitleValue__() {
 		if(filterController == null)
 			return super.__getWindowTitleValue__();
-		return filterController.generateWindowTitleValue(ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction.LABEL);
+		return buildWindowTitleValue(filterController);
 	}
 	
 	/**/
