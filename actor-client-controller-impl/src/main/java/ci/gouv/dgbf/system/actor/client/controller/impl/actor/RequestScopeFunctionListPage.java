@@ -3,6 +3,7 @@ package ci.gouv.dgbf.system.actor.client.controller.impl.actor;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.faces.view.ViewScoped;
@@ -13,6 +14,8 @@ import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.uri.UniformResourceIdentifierBuilder;
+import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
+import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
@@ -22,14 +25,17 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Dat
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.AbstractMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMenu;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.javascript.OpenWindowScriptBuilder;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.report.jasper.client.ReportServlet;
 import org.primefaces.PrimeFaces;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestScopeFunction;
+import ci.gouv.dgbf.system.actor.server.business.api.RequestScopeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestScopeFunctionQuerier;
 import lombok.Getter;
 import lombok.Setter;
@@ -99,7 +105,9 @@ public class RequestScopeFunctionListPage extends AbstractEntityListPageContaine
 		DataTable dataTable = DataTable.build(arguments);
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);
 		
-		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Consulter","fa fa-eye",new AbstractAction.Listener.AbstractImpl() {
+		dataTable.addRecordMenuItemByArguments(MenuItem.FIELD_VALUE,"Consulter spécimen de signature",MenuItem.FIELD_ICON,"fa fa-eye",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
+				,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.FALSE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_NULLABLE,Boolean.TRUE
+				,MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
 			@Override
 			protected Object __runExecuteFunction__(AbstractAction action) {
 				RequestScopeFunction requestScopeFunction = (RequestScopeFunction)action.readArgument();
@@ -114,6 +122,28 @@ public class RequestScopeFunctionListPage extends AbstractEntityListPageContaine
 				return null;
 			}
 		});
+		
+		dataTable.addRecordMenuItemByArguments(MenuItem.FIELD_VALUE,"Envoyer spécimen de signature par mail",MenuItem.FIELD_ICON,"fa fa-send",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
+				,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES,List.of(RenderType.INLINE,RenderType.GROWL)
+				,MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+			@Override
+			protected Object __runExecuteFunction__(AbstractAction action) {
+				RequestScopeFunction requestScopeFunction = (RequestScopeFunction)action.readArgument();
+				if(requestScopeFunction == null)
+					return null;
+				if(StringHelper.isBlank(requestScopeFunction.getSignatureSpecimenReadReportURIQuery()))
+					throw new RuntimeException(String.format("Il n'existe aucun spécimen de signature pour le poste %s",requestScopeFunction.getScopeFunctionString()));
+				String identifier = requestScopeFunction.getIdentifier();
+				requestScopeFunction = new RequestScopeFunction();
+				requestScopeFunction.setIdentifier(identifier);
+				Arguments<RequestScopeFunction> arguments = new Arguments<RequestScopeFunction>().setResponseEntityClass(String.class).addCreatablesOrUpdatables(requestScopeFunction);
+				arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(RequestScopeFunctionBusiness.NOTIFY_SIGNATURE_SPECIMEN));
+				EntitySaver.getInstance().save(RequestScopeFunction.class, arguments);
+				return arguments.get__responseEntity__();
+			}
+		});
+		
+		//CollectionHelper.getLast(dataTable.getRecordMenu().getItems()).setConfirm(null);
 		
 		//dataTable.getContentOutputPanel().setDeferred(Boolean.TRUE);
 		dataTable.getFilterController().getLayout().setDeferred(Boolean.TRUE);

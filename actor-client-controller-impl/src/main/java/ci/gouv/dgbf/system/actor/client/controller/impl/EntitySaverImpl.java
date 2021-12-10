@@ -727,6 +727,11 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 			return ((RequestRepresentation)representation).notifySignaturesSpecimens(request.getElectronicMailAddress());
 		}
 		
+		if(arguments != null && RequestScopeFunctionBusiness.NOTIFY_SIGNATURE_SPECIMEN.equals(arguments.getActionIdentifier())) {
+			RequestScopeFunctionDto requestScopeFunction = (RequestScopeFunctionDto) CollectionHelper.getFirst(updatables);
+			return ((RequestScopeFunctionRepresentation)representation).notifySignatureSpecimen(List.of(requestScopeFunction.getIdentifier()));
+		}
+		
 		if(arguments != null && RequestBusiness.EXPORT_FOR_ACCOUNT_CREATION.equals(arguments.getActionIdentifier()))
 			return ((RequestRepresentation)representation).exportForAccountCreation(SessionHelper.getUserName());
 		
