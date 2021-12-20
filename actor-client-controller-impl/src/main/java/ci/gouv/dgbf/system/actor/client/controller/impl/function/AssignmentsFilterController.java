@@ -10,6 +10,7 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
@@ -53,11 +54,12 @@ import lombok.experimental.Accessors;
 @Getter @Setter @Accessors(chain=true)
 public class AssignmentsFilterController extends AbstractFilterController implements Serializable {
 
-	private SelectOneCombo sectionSelectOne,administrativeUnitSelectOne,budgetSpecializationUnitSelectOne,actionSelectOne,activitySelectOne,activityCategorySelectOne
+	private SelectOneCombo exerciseSelectOne,sectionSelectOne,administrativeUnitSelectOne,budgetSpecializationUnitSelectOne,actionSelectOne,activitySelectOne,activityCategorySelectOne
 		,expenditureNatureSelectOne,functionSelectOne,regionSelectOne,departmentSelectOne,subPrefectureSelectOne;
 	private AutoComplete scopeFunctionAutoComplete;
 	private ActivitySelectionController activitySelectionController;
 	
+	private Integer exerciseInitial;
 	private Section sectionInitial;
 	private AdministrativeUnit administrativeUnitInitial;
 	private BudgetSpecializationUnit budgetSpecializationUnitInitial;
@@ -72,6 +74,7 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 	private ScopeFunction scopeFunctionInitial;
 	
 	public AssignmentsFilterController() {
+		exerciseInitial = NumberHelper.getInteger(WebController.getInstance().getRequestParameter("exercice"),2021);
 		Collection<String> activitiesIdentifiers = WebController.getInstance().getRequestParameters(ParameterName.stringifyMany(Activity.class));
 		if(CollectionHelper.isEmpty(activitiesIdentifiers)) {
 			activityInitial = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(Activity.class
@@ -167,6 +170,8 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 	
 	@Override
 	protected Object getInputSelectOneInitialValue(String fieldName, Class<?> klass) {
+		if(FIELD_EXERCISE_SELECT_ONE.equals(fieldName))
+			return exerciseInitial;
 		if(FIELD_SECTION_SELECT_ONE.equals(fieldName))
 			return sectionInitial;
 		if(FIELD_ADMINISTRATIVE_UNIT_SELECT_ONE.equals(fieldName))
@@ -198,6 +203,7 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 	
 	@Override
 	protected void buildInputs() {
+		buildInputSelectOne(FIELD_EXERCISE_SELECT_ONE,Integer.class);
 		buildInputSelectOne(FIELD_SECTION_SELECT_ONE, Section.class);
 		buildInputSelectOne(FIELD_ADMINISTRATIVE_UNIT_SELECT_ONE, AdministrativeUnit.class);
 		buildInputSelectOne(FIELD_BUDGET_SPECIALIZATION_UNIT_SELECT_ONE, BudgetSpecializationUnit.class);
@@ -235,6 +241,8 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 	
 	@Override
 	protected AbstractInput<?> buildInput(String fieldName, Object value) {
+		if(FIELD_EXERCISE_SELECT_ONE.equals(fieldName))
+			return buildExerciseSelectOne((Integer) value);
 		if(FIELD_SECTION_SELECT_ONE.equals(fieldName))
 			return buildSectionSelectOne((Section) value);
 		if(FIELD_ADMINISTRATIVE_UNIT_SELECT_ONE.equals(fieldName))
@@ -260,6 +268,18 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 			return buildLocalitySousPrefectureSelectOne((Locality) value);
 		
 		return null;
+	}
+	
+	private SelectOneCombo buildExerciseSelectOne(Integer exercise) {
+		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,exercise,SelectOneCombo.FIELD_CHOICE_CLASS,Integer.class,SelectOneCombo.FIELD_LISTENER
+				,new SelectOneCombo.Listener.AbstractImpl<Integer>() {
+			@Override
+			public Collection<Integer> computeChoices(AbstractInputChoice<Integer> input) {
+				Collection<Integer> choices = List.of(2021,2022);
+				return choices;
+			}
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Exercice");
+		return input;
 	}
 	
 	private SelectOneCombo buildSectionSelectOne(Section section) {		
@@ -553,7 +573,12 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 		Collection<Map<Object, Object>> cellsMaps = new ArrayList<>();
 		if(sectionSelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,sectionSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,sectionSelectOne,Cell.FIELD_WIDTH,11));	
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,sectionSelectOne,Cell.FIELD_WIDTH,9));	
+		}
+		
+		if(exerciseSelectOne != null) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,exerciseSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,exerciseSelectOne,Cell.FIELD_WIDTH,1));	
 		}
 		
 		if(budgetSpecializationUnitSelectOne != null) {
@@ -600,6 +625,11 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,filterCommandButton,Cell.FIELD_WIDTH,1));
 			
 		return cellsMaps;
+	}
+	
+	public Integer getExercise() {
+		Object value = AbstractInput.getValue(exerciseSelectOne);
+		return NumberHelper.getInteger(value, 2021);
 	}
 	
 	public Section getSection() {
@@ -665,6 +695,27 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 	}
 	
 	@Override
+	protected String buildParameterName(String fieldName) {
+		if(FIELD_EXERCISE_SELECT_ONE.equals(fieldName))
+			return "exercice";
+		return super.buildParameterName(fieldName);
+	}
+	
+	@Override
+	protected String buildParameterName(AbstractInput<?> input) {
+		if(exerciseSelectOne == input)
+			return "exercice";
+		return super.buildParameterName(input);
+	}
+	
+	@Override
+	protected String buildParameterValue(AbstractInput<?> input) {
+		if(exerciseSelectOne == input)
+			return (String) exerciseSelectOne.getValue();
+		return super.buildParameterValue(input);
+	}
+	
+	@Override
 	protected Boolean isSelectRedirectorArgumentsParameter(Class<?> klass, AbstractInput<?> input) {
 		if(Locality.class.equals(klass) && input == regionSelectOne)
 			return AbstractInput.getValue(departmentSelectOne) == null && AbstractInput.getValue(subPrefectureSelectOne) == null;
@@ -673,6 +724,7 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 		return super.isSelectRedirectorArgumentsParameter(klass, input);
 	}
 	
+	public static final String FIELD_EXERCISE_SELECT_ONE = "exerciseSelectOne";
 	public static final String FIELD_SECTION_SELECT_ONE = "sectionSelectOne";
 	public static final String FIELD_ADMINISTRATIVE_UNIT_SELECT_ONE = "administrativeUnitSelectOne";
 	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT_SELECT_ONE = "budgetSpecializationUnitSelectOne";

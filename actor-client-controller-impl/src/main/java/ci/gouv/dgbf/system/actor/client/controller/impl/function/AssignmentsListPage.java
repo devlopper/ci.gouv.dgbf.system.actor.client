@@ -404,6 +404,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 	/**/
 	
 	public static class PageArguments implements Serializable{
+		public Integer exercise;
 		public Section section;
 		public AdministrativeUnit administrativeUnit;
 		public BudgetSpecializationUnit budgetSpecializationUnit;
@@ -752,6 +753,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		//private String sectionCode,budgetSpecializationUnitCode,actionCode,expenditureNatureCode,activityCategoryCode,activityCode,economicNatureCode,administrativeUnitCode;
 		private Boolean allHoldersDefined,someHoldersNotDefined;
 		
+		private Integer exercise;
 		private Section section;
 		private AdministrativeUnit administrativeUnit;
 		private BudgetSpecializationUnit budgetSpecializationUnit;
@@ -829,6 +831,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		}
 		
 		public LazyDataModelListenerImpl applyPageArguments(PageArguments pageArguments){
+			setExercise(pageArguments.exercise);
 			section(pageArguments.section);
 			administrativeUnit(pageArguments.administrativeUnit);
 			budgetSpecializationUnit(pageArguments.budgetSpecializationUnit);
@@ -846,6 +849,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		public LazyDataModelListenerImpl applyFilterController(AssignmentsFilterController filterController){
 			if(filterController == null)
 				return this;
+			setExercise(filterController.getExercise());
 			section(filterController.getSection());
 			administrativeUnit(filterController.getAdministrativeUnit());
 			budgetSpecializationUnit(filterController.getBudgetSpecializationUnit());
@@ -903,7 +907,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		@Override
 		public Filter.Dto instantiateFilter(LazyDataModel<Assignments> lazyDataModel) {
 			Filter.Dto filter = super.instantiateFilter(lazyDataModel);
-			filter = addFieldIfValueNotNull(filter, section, administrativeUnit, budgetSpecializationUnit, action, expenditureNature, activityCategory, activity,activities
+			filter = addFieldIfValueNotNull(filter, exercise,section, administrativeUnit, budgetSpecializationUnit, action, expenditureNature, activityCategory, activity,activities
 					, economicNature, scopeFunction,region,department,subPrefecture);			
 			if(allHoldersDefined != null && Boolean.TRUE.equals(allHoldersDefined))
 				filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ALL_HOLDERS_DEFINED_NULLABLE, Boolean.FALSE, filter);
@@ -913,7 +917,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			return filter;
 		}
 		
-		public static Filter.Dto addFieldIfValueNotNull(Filter.Dto filter,Section section,AdministrativeUnit administrativeUnit,BudgetSpecializationUnit budgetSpecializationUnit
+		public static Filter.Dto addFieldIfValueNotNull(Filter.Dto filter,Integer exercise,Section section,AdministrativeUnit administrativeUnit,BudgetSpecializationUnit budgetSpecializationUnit
 				,Action action,ExpenditureNature expenditureNature,ActivityCategory activityCategory,Activity activity,Collection<Activity> activities
 				,EconomicNature economicNature,ScopeFunction scopeFunction,Locality region,Locality department,Locality subPrefecture) {
 			
@@ -921,6 +925,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			if(CollectionHelper.isNotEmpty(activities))
 				filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACTIVITIES_IDENTIFIERS, FieldHelper.readSystemIdentifiers(activities), filter);
 			
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_EXERCISE, exercise, filter);
 			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_SECTION_IDENTIFIER, FieldHelper.readSystemIdentifier(section), filter);
 			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT_IDENTIFIER, FieldHelper.readSystemIdentifier(administrativeUnit), filter);
 			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER, FieldHelper.readSystemIdentifier(budgetSpecializationUnit), filter);

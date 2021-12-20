@@ -19,7 +19,7 @@ import lombok.experimental.Accessors;
 @Getter @Setter @Accessors(chain=true)
 public class IdentityReadController extends AbstractReadController implements Serializable {
 
-	private Layout layout,personLayout,contactLayout,administrativeLayout;
+	private Layout personLayout,contactLayout,administrativeLayout;
 	
 	public IdentityReadController(Actor actor) {
 		if(actor == null)

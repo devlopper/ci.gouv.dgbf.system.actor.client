@@ -230,7 +230,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 			
 		}
 		AssignmentsListPage.LazyDataModelListenerImpl.addFieldIfValueNotNull(arguments.getRepresentationArguments().getQueryExecutorArguments().getFilter(Boolean.TRUE)
-				, assignmentsFilterController.getSection(), assignmentsFilterController.getAdministrativeUnit(), assignmentsFilterController.getBudgetSpecializationUnit()
+				,assignmentsFilterController.getExercise() , assignmentsFilterController.getSection(), assignmentsFilterController.getAdministrativeUnit(), assignmentsFilterController.getBudgetSpecializationUnit()
 				, assignmentsFilterController.getAction(), assignmentsFilterController.getExpenditureNature(), assignmentsFilterController.getActivityCategory()
 				, assignmentsFilterController.getActivity(),assignmentsFilterController.getActivities(), null, assignmentsFilterController.getScopeFunction()
 				,assignmentsFilterController.getRegion(),assignmentsFilterController.getDepartment(),assignmentsFilterController.getSubPrefecture());
