@@ -11,6 +11,7 @@ import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.session.SessionHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.Redirector;
@@ -39,17 +40,21 @@ public class PublicRequestScopeFunctionListPage extends AbstractEntityListPageCo
 	}
 	
 	public static RequestScopeFunctionFilterController instantiateFilterController() {
-		String encryptElectronicMailAddress = WebController.getInstance().getRequestParameter(QUERY_PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS);
-		if(StringHelper.isBlank(encryptElectronicMailAddress)) {
-			Redirector.Arguments arguments = new Redirector.Arguments();
-			arguments.outcome(PublicRequestScopeFunctionListInputElectronicMailAddressPage.OUTCOME);
-			Redirector.getInstance().redirect(arguments);		
-			return null;
+		String electronicMailAddress = (String) SessionHelper.getAttributeValue(QUERY_PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS);
+		if(StringHelper.isBlank(electronicMailAddress)) {
+			String encryptElectronicMailAddress = WebController.getInstance().getRequestParameter(QUERY_PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS);
+			if(StringHelper.isBlank(encryptElectronicMailAddress)) {
+				Redirector.Arguments arguments = new Redirector.Arguments();
+				arguments.outcome(PublicRequestScopeFunctionListInputElectronicMailAddressPage.OUTCOME);
+				Redirector.getInstance().redirect(arguments);		
+				return null;
+			}
+			electronicMailAddress = __inject__(IdentityController.class).decryptElectroncicMailAddress(encryptElectronicMailAddress);
+			SessionHelper.setAttributeValue(QUERY_PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS, electronicMailAddress);
 		}
-		String electronicMailAddress = __inject__(IdentityController.class).decryptElectroncicMailAddress(encryptElectronicMailAddress);
 		RequestScopeFunctionFilterController filterController = RequestScopeFunctionFilterController.instantiate();
 		filterController.setIsUsedForLoggedUser(Boolean.FALSE);
-		filterController.setElectronicMailAddressInitial(electronicMailAddress/*"kycdev@gmail.com"*/);//this one must read from secret value only known by email owner
+		filterController.setElectronicMailAddressInitial(electronicMailAddress);
 		filterController.setGrantedInitial(Boolean.TRUE);
 		filterController.setFunctionsCodes(FUNCTIONS_CODES);
 		filterController.setRenderType(AbstractFilterController.RenderType.NONE);

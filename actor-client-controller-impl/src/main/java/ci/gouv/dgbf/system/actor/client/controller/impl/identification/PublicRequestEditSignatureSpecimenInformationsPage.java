@@ -2,7 +2,6 @@ package ci.gouv.dgbf.system.actor.client.controller.impl.identification;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.faces.view.ViewScoped;
@@ -80,8 +79,7 @@ public class PublicRequestEditSignatureSpecimenInformationsPage extends Abstract
 		@Override
 		public void redirect(Form form, Object request) {
 			if(Action.UPDATE.equals(form.getAction()))
-				Redirector.getInstance().redirect(PublicRequestScopeFunctionListPage.OUTCOME
-						,Map.of(PublicRequestScopeFunctionListPage.QUERY_PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS,List.of(((Request)form.getEntity()).getElectronicMailAddress())));
+				Redirector.getInstance().redirect(new Redirector.Arguments().outcome(PublicRequestScopeFunctionListPage.OUTCOME));
 		}
 	}
 	
