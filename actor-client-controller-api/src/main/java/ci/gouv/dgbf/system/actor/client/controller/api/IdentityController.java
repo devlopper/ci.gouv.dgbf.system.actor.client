@@ -5,4 +5,7 @@ import org.cyk.utility.client.controller.ControllerEntity;
 
 public interface IdentityController extends ControllerEntity<Identity> {
 
+	String encryptElectroncicMailAddress(String electronicMailAddress);
+	
+	String decryptElectroncicMailAddress(String encryptElectronicMailAddress);
 }

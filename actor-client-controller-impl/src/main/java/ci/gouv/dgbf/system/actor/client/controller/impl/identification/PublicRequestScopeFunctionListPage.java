@@ -18,7 +18,9 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilter
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 
+import ci.gouv.dgbf.system.actor.client.controller.api.IdentityController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestScopeFunction;
+import ci.gouv.dgbf.system.actor.client.controller.impl.actor.RequestEditSignatureSpecimenInformationsPage;
 import ci.gouv.dgbf.system.actor.client.controller.impl.actor.RequestScopeFunctionFilterController;
 import ci.gouv.dgbf.system.actor.client.controller.impl.actor.RequestScopeFunctionListPage;
 import lombok.Getter;
@@ -37,13 +39,14 @@ public class PublicRequestScopeFunctionListPage extends AbstractEntityListPageCo
 	}
 	
 	public static RequestScopeFunctionFilterController instantiateFilterController() {
-		String electronicMailAddress = WebController.getInstance().getRequestParameter(QUERY_PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS);
-		if(StringHelper.isBlank(electronicMailAddress)) {
+		String encryptElectronicMailAddress = WebController.getInstance().getRequestParameter(QUERY_PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS);
+		if(StringHelper.isBlank(encryptElectronicMailAddress)) {
 			Redirector.Arguments arguments = new Redirector.Arguments();
 			arguments.outcome(PublicRequestScopeFunctionListInputElectronicMailAddressPage.OUTCOME);
 			Redirector.getInstance().redirect(arguments);		
 			return null;
 		}
+		String electronicMailAddress = __inject__(IdentityController.class).decryptElectroncicMailAddress(encryptElectronicMailAddress);
 		RequestScopeFunctionFilterController filterController = RequestScopeFunctionFilterController.instantiate();
 		filterController.setIsUsedForLoggedUser(Boolean.FALSE);
 		filterController.setElectronicMailAddressInitial(electronicMailAddress/*"kycdev@gmail.com"*/);//this one must read from secret value only known by email owner
@@ -56,7 +59,7 @@ public class PublicRequestScopeFunctionListPage extends AbstractEntityListPageCo
 	@Override
 	protected DataTable __buildDataTable__() {
 		DataTable dataTable = buildDataTable(RequestScopeFunctionFilterController.class,filterController,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER
-				,new LazyDataModelListenerImpl().setFilterController(filterController));
+				,new LazyDataModelListenerImpl().setFilterController(filterController),RequestEditSignatureSpecimenInformationsPage.OUTCOME,PublicRequestEditSignatureSpecimenInformationsPage.OUTCOME);
 		return dataTable;
 	}
 	

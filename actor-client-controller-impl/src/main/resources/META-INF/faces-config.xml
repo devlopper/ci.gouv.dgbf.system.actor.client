@@ -178,6 +178,18 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>requestEditSignatureSpecimenInformationsView</from-outcome>
+			<to-view-id>/private/request/edit/signaturespecimeninformations.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>requestScopeFunctionListView</from-outcome>
+			<to-view-id>/private/request/scopefunction/list/index.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>publicRequestEditView</from-outcome>
 			<to-view-id>/public/request/edit/index.jsf</to-view-id>
 			<redirect />
@@ -262,18 +274,22 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>publicRequestScopeFunctionListInputElectronicMailAddressNotifyView</from-outcome>
+			<to-view-id>/public/request/scopefunction/list/inputelectronicmailaddressnotify.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>publicRequestScopeFunctionListView</from-outcome>
 			<to-view-id>/public/request/scopefunction/list/index.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 		
 		<navigation-case>
-			<from-outcome>requestScopeFunctionListView</from-outcome>
-			<to-view-id>/private/request/scopefunction/list/index.jsf</to-view-id>
+			<from-outcome>publicRequestEditSignatureSpecimenInformationsView</from-outcome>
+			<to-view-id>/public/request/edit/signaturespecimeninformations.jsf</to-view-id>
 			<redirect />
-		</navigation-case>
-		
-		
+		</navigation-case>		
 		
 		<!--  -->
 		

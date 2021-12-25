@@ -322,7 +322,7 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 				actionIdentifier = RequestBusiness.INITIALIZE;
 				request.setElectronicMailAddress(ActorBusiness.normalizeElectronicMailAddress(request.getElectronicMailAddress()));
 			}else if(Action.UPDATE.equals(form.getAction()))
-				actionIdentifier = RequestBusiness.RECORD;
+				actionIdentifier = getRecordActionIdentifier();
 			else
 				throw new RuntimeException("Action "+form.getAction()+" not yet handled");
 			
@@ -338,6 +338,10 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 				String identifier = (String) v.get(0);
 				request.setIdentifier(identifier);
 			}
+		}
+		
+		protected String getRecordActionIdentifier() {
+			return RequestBusiness.RECORD;
 		}
 		
 		protected void writeBudgetariesScopeFunctionsIdentifiers() {

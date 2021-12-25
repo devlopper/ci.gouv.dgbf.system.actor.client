@@ -111,6 +111,10 @@ public class RequestScopeFunctionListPage extends AbstractEntityListPageContaine
 		DataTable dataTable = DataTable.build(arguments);
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);
 		
+		String outcome = (String) ValueHelper.defaultToIfBlank(arguments.get(RequestEditSignatureSpecimenInformationsPage.OUTCOME), RequestEditSignatureSpecimenInformationsPage.OUTCOME);
+		dataTable.addRecordMenuItemByArgumentsNavigateToView(null,outcome, MenuItem.FIELD_VALUE,"Modifier",MenuItem.FIELD_ICON,"fa fa-pencil"
+				,MenuItem.ConfiguratorImpl.FIELD_ARGUMENT_SYSTEM_IDENTIFIER_FIELD_NAME,RequestScopeFunction.FIELD_REQUEST_IDENTIFIER);
+		
 		dataTable.addRecordMenuItemByArguments(MenuItem.FIELD_VALUE,"Consulter spécimen de signature",MenuItem.FIELD_ICON,"fa fa-eye",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
 				,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.FALSE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_NULLABLE,Boolean.TRUE
 				,MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
@@ -203,6 +207,9 @@ public class RequestScopeFunctionListPage extends AbstractEntityListPageContaine
 			}else if(RequestScopeFunction.FIELD_ACT_OF_APPOINTMENT_REFERENCE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Réf. Acte Nomination");
 				map.put(Column.FIELD_WIDTH, "200");
+			}else if(RequestScopeFunction.FIELD_REQUEST_CODE.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Code Demande");
+				map.put(Column.FIELD_WIDTH, "100");
 			}
 			return map;
 		}
@@ -259,7 +266,7 @@ public class RequestScopeFunctionListPage extends AbstractEntityListPageContaine
 					ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction.FIELD_IDENTIFIER);
 			
 			arguments.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction
-					.FIELDS_IDENTITY_SCOPE_FUNCTION_STRING_GRANTED_STRING);
+					.FIELDS_REQUEST_IDENTIFIER_IDENTITY_SCOPE_FUNCTION_STRING_GRANTED_STRING);
 			/*
 			Boolean granted = ((RequestScopeFunctionFilterController)filterController).getGrantedInitial();
 			if(granted == null) {

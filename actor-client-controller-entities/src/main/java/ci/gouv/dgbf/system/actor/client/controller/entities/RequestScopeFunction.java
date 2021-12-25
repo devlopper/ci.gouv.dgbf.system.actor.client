@@ -15,6 +15,8 @@ public class RequestScopeFunction extends AbstractDataIdentifiableSystemStringAu
 	private static final long serialVersionUID = 1L;
 	
 	private Collection<String> scopeFunctionsIdentifiers;
+	private String requestIdentifier;
+	private String requestCode;
 	private String scopeFunctionString;
 	private String electronicMailAddress;
 	private Boolean granted;
@@ -31,6 +33,8 @@ public class RequestScopeFunction extends AbstractDataIdentifiableSystemStringAu
 	private String registrationNumber;
 	private String signatureSpecimenReadReportURIQuery;
 	
+	public static final String FIELD_REQUEST_IDENTIFIER = "requestIdentifier";
+	public static final String FIELD_REQUEST_CODE = "requestCode";
 	public static final String FIELD_SECTION_STRING = "sectionString";
 	public static final String FIELD_ADMINISTRATIVE_UNIT_STRING = "administrativeUnitString";
 	public static final String FIELD_FIRST_NAME = "firstName";

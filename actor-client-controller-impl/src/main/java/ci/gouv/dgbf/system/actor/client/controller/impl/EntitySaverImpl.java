@@ -149,6 +149,8 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 				arguments.setRepresentation(ActorRepresentation.getProxy());
 			else if(ActorBusiness.RECORD_REQUESTS.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ActorRepresentation.getProxy());
+			else if(ActorBusiness.RECORD_REQUESTS.equals(arguments.getRepresentationArguments().getActionIdentifier()))
+				arguments.setRepresentation(ActorRepresentation.getProxy());
 						
 			else if(ServiceBusiness.DELETE_ALL_KEYCLOAK_AUTHORIZATION_POLICIES.equals(arguments.getRepresentationArguments().getActionIdentifier()))
 				arguments.setRepresentation(ServiceRepresentation.getProxy());
@@ -689,6 +691,11 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 			return ((RequestRepresentation)representation).record(request);
 		}
 		
+		if(arguments != null && RequestBusiness.RECORD_SIGNATURE_SPECIMEN_INFORMATIONS.equals(arguments.getActionIdentifier())) {
+			RequestDto request = (RequestDto) CollectionHelper.getFirst(updatables);
+			return ((RequestRepresentation)representation).recordSignatureSpecimenInformations(request);
+		}
+		
 		if(arguments != null && RequestBusiness.RECORD_PHOTO.equals(arguments.getActionIdentifier())) {
 			RequestDto request = (RequestDto) CollectionHelper.getFirst(updatables);
 			return ((RequestRepresentation)representation).recordPhoto(request);
@@ -725,6 +732,11 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 		if(arguments != null && RequestBusiness.NOTIFY_SIGNATURES_SPECIMENS.equals(arguments.getActionIdentifier())) {
 			RequestDto request = (RequestDto) CollectionHelper.getFirst(creatables);
 			return ((RequestRepresentation)representation).notifySignaturesSpecimens(request.getElectronicMailAddress());
+		}
+		
+		if(arguments != null && RequestBusiness.NOTIFY_SIGNATURES_SPECIMENS_LINK.equals(arguments.getActionIdentifier())) {
+			RequestDto request = (RequestDto) CollectionHelper.getFirst(creatables);
+			return ((RequestRepresentation)representation).notifySignaturesSpecimensLink(request.getElectronicMailAddress(),request.getReadPageURL());
 		}
 		
 		if(arguments != null && RequestScopeFunctionBusiness.NOTIFY_SIGNATURE_SPECIMEN.equals(arguments.getActionIdentifier())) {

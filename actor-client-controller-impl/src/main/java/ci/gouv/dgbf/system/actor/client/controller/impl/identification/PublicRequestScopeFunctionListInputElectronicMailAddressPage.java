@@ -12,13 +12,17 @@ import javax.inject.Named;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.client.controller.web.jsf.JavaServerFacesHelper;
 import org.cyk.utility.client.controller.web.jsf.Redirector;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntitySaver;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
+import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -37,7 +41,7 @@ public class PublicRequestScopeFunctionListInputElectronicMailAddressPage extend
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Saisie de mail pour l'affichage des postes";
+		return "Saisie de mail pour récupération de spécimen de signature";
 	}
 	
 	/**/
@@ -66,13 +70,17 @@ public class PublicRequestScopeFunctionListInputElectronicMailAddressPage extend
 		@Override
 		public void act(Form form) {			
 			Request request = (Request) form.getEntity();
-			Redirector.Arguments arguments = new Redirector.Arguments();
-			arguments.outcome(PublicRequestScopeFunctionListPage.OUTCOME).addParameter(PublicRequestScopeFunctionListPage.QUERY_PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS, request.getElectronicMailAddress());
-			Redirector.getInstance().redirect(arguments);			
+			request.setReadPageURL(JavaServerFacesHelper.buildUrlFromOutcome(PublicRequestScopeFunctionListPage.OUTCOME));
+			Arguments<Request> arguments = new Arguments<Request>().setResponseEntityClass(String.class).addCreatablesOrUpdatables(request);
+			arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(RequestBusiness.NOTIFY_SIGNATURES_SPECIMENS_LINK));
+			EntitySaver.getInstance().save(Request.class, arguments);
 		}
 		
-		public void redirect(Form form, Object request) {
-			//nothing to do
+		public void redirect(Form form, Object object) {
+			Request request = (Request) form.getEntity();
+			Redirector.Arguments arguments = new Redirector.Arguments();
+			arguments.outcome(PublicRequestScopeFunctionListInputElectronicMailAddressNotifyPage.OUTCOME).addParameter(PublicRequestScopeFunctionListPage.QUERY_PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS, request.getElectronicMailAddress());
+			Redirector.getInstance().redirect(arguments);
 		}
 	}
 	
@@ -91,7 +99,7 @@ public class PublicRequestScopeFunctionListInputElectronicMailAddressPage extend
 		@Override
 		public Map<Object, Object> getCommandButtonArguments(Form form, Collection<AbstractInput<?>> inputs) {
 			Map<Object, Object> map = super.getCommandButtonArguments(form, inputs);
-			map.put(CommandButton.FIELD_VALUE, "Afficher les postes");
+			map.put(CommandButton.FIELD_VALUE, "Récupérer");
 			return map;
 		}
 	}

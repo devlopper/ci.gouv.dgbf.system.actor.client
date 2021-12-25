@@ -8,6 +8,11 @@
 		<view-id value="/public/identification/index.jsf" />
 	</url-mapping>
 	
+	<url-mapping id="recuperation_specimen_signature">
+		<pattern value="/recuperation-specimen-signature" />
+		<view-id value="/public/request/scopefunction/list/inputelectronicmailaddress.jsf" />
+	</url-mapping>
+	
 	<url-mapping id="creation_compte">
 		<pattern value="/creation_compte.jsf" />
 		<view-id value="/public/actor/create.jsf" />

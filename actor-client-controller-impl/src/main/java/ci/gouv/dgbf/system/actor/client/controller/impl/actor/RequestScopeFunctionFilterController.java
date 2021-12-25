@@ -176,7 +176,7 @@ public class RequestScopeFunctionFilterController extends AbstractFilterControll
 		if(StringHelper.isBlank(electronicMailAddressInitial))
 			columnsFieldsNames.addAll(List.of(RequestScopeFunction.FIELD_ELECTRONIC_MAIL_ADDRESS));
 		
-		columnsFieldsNames.addAll(List.of(RequestScopeFunction.FIELD_REGISTRATION_NUMBER,RequestScopeFunction.FIELD_FIRST_NAME,RequestScopeFunction.FIELD_LAST_NAMES
+		columnsFieldsNames.addAll(List.of(RequestScopeFunction.FIELD_REQUEST_CODE,RequestScopeFunction.FIELD_REGISTRATION_NUMBER,RequestScopeFunction.FIELD_FIRST_NAME,RequestScopeFunction.FIELD_LAST_NAMES
 				,RequestScopeFunction.FIELD_SECTION_STRING,RequestScopeFunction.FIELD_ADMINISTRATIVE_UNIT_FUNCTION,RequestScopeFunction.FIELD_ACT_OF_APPOINTMENT_REFERENCE,RequestScopeFunction.FIELD_ADMINISTRATIVE_UNIT_STRING
 				,RequestScopeFunction.FIELD_MOBILE_PHONE_NUMBER,RequestScopeFunction.FIELD_OFFICE_PHONE_NUMBER,RequestScopeFunction.FIELD_POSTAL_BOX_ADDRESS
 				,RequestScopeFunction.FIELD_SCOPE_FUNCTION_STRING));
