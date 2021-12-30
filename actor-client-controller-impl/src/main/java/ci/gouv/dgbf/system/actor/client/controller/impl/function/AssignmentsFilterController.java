@@ -74,7 +74,7 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 	private ScopeFunction scopeFunctionInitial;
 	
 	public AssignmentsFilterController() {
-		exerciseInitial = NumberHelper.getInteger(WebController.getInstance().getRequestParameter("exercice"),2021);
+		exerciseInitial = NumberHelper.getInteger(WebController.getInstance().getRequestParameter("exercice"),2022);
 		Collection<String> activitiesIdentifiers = WebController.getInstance().getRequestParameters(ParameterName.stringifyMany(Activity.class));
 		if(CollectionHelper.isEmpty(activitiesIdentifiers)) {
 			activityInitial = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(Activity.class

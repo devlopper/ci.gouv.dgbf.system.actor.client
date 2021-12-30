@@ -16,6 +16,7 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.session.SessionManager;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
@@ -93,16 +94,19 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 	}
 	
 	public static String buildWindowTitleValue(String prefix,PageArguments pageArguments) {
-		return buildWindowTitleValue(prefix, pageArguments.section, pageArguments.administrativeUnit, pageArguments.budgetSpecializationUnit, pageArguments.action
+		return buildWindowTitleValue(prefix,pageArguments.exercise,pageArguments.section, pageArguments.administrativeUnit, pageArguments.budgetSpecializationUnit, pageArguments.action
 				, pageArguments.activity,pageArguments.activities, pageArguments.expenditureNature, pageArguments.activityCategory,pageArguments.scopeFunction,pageArguments.region
 				,pageArguments.department,pageArguments.subPrefecture);
 	}
 	
-	public static String buildWindowTitleValue(String prefix,Section section,AdministrativeUnit administrativeUnit,BudgetSpecializationUnit budgetSpecializationUnit
+	public static String buildWindowTitleValue(String prefix,Integer exercice,Section section,AdministrativeUnit administrativeUnit,BudgetSpecializationUnit budgetSpecializationUnit
 			,Action action,Activity activity,Collection<Activity> activities,ExpenditureNature expenditureNature,ActivityCategory activityCategory,ScopeFunction scopeFunction
 			,Locality region,Locality department,Locality subPrefecture) {
 		Collection<String> strings = new ArrayList<>();
 		strings.add(prefix);
+		if(exercice != null) {
+			strings.add("Exercice "+exercice);
+		}
 		if(CollectionHelper.isEmpty(activities)) {
 			if(section != null) {
 				if(administrativeUnit == null && budgetSpecializationUnit == null)
@@ -272,6 +276,8 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 					});
 			*/
 			Map<String, List<String>> parameters = new HashMap<>();
+			if(MapHelper.readByKey(arguments, "exercice") != null)
+				parameters.put("exercice", List.of((String)MapHelper.readByKey(arguments, "exercice")));
 			if(MapHelper.readByKey(arguments, Section.class) != null)
 				parameters.put(ParameterName.stringify(Section.class), List.of((String)FieldHelper.readSystemIdentifier(MapHelper.readByKey(arguments, Section.class))));
 			if(MapHelper.readByKey(arguments, AdministrativeUnit.class) != null)
@@ -419,6 +425,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		public Locality subPrefecture;
 		
 		public void initialize() {
+			exercise = NumberHelper.getInteger(WebController.getInstance().getRequestParameter("exercice"),2022);
 			Collection<String> activitiesIdentifiers = WebController.getInstance().getRequestParameters(ParameterName.stringifyMany(Activity.class));
 			if(CollectionHelper.isEmpty(activitiesIdentifiers)) {
 				if(activity == null) {

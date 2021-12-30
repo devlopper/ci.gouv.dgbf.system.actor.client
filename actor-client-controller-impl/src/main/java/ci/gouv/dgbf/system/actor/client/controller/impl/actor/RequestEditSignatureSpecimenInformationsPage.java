@@ -117,7 +117,9 @@ public class RequestEditSignatureSpecimenInformationsPage extends AbstractEntity
 			List<String> collection = (List<String>) super.getFieldsNames(form);
 			if(request.getType() != null 
 					&& ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType.IDENTIFIER_DEMANDE_POSTES_BUDGETAIRES.equals(request.getType().getIdentifier())) {
-				collection.removeAll(List.of(Request.FIELD_ACT_OF_APPOINTMENT_REFERENCE,Request.FIELD_ACT_OF_APPOINTMENT_SIGNATORY,Request.FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS));
+				collection.removeAll(List.of(Request.FIELD_ELECTRONIC_MAIL_ADDRESS,Request.FIELD_SECTION,Request.FIELD_ADMINISTRATIVE_UNIT,Request.FIELD_ADMINISTRATIVE_FUNCTION
+						,Request.FIELD_ACT_OF_APPOINTMENT_REFERENCE,Request.FIELD_ACT_OF_APPOINTMENT_SIGNATORY,Request.FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE
+						,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS));
 			}
 			return collection;
 		}

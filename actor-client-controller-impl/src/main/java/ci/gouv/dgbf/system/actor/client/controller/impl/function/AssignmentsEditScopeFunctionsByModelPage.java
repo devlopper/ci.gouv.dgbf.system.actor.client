@@ -31,10 +31,12 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import org.cyk.utility.controller.Arguments;
 import org.cyk.utility.controller.EntitySaver;
+import org.cyk.utility.persistence.query.Field;
 import org.cyk.utility.persistence.query.Filter;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.business.api.AssignmentsBusiness;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -133,6 +135,17 @@ public class AssignmentsEditScopeFunctionsByModelPage extends AbstractPageContai
 						Filter.Dto filter = lazyDataModel == null ? null : lazyDataModel.get__filter__();
 						if(filter == null || CollectionHelper.isEmpty(filter.getFields()))
 							throw new RuntimeException("Le filtre est obligatoire");
+						Field.Dto exerciceField = null;
+						for(Field.Dto f : filter.getFields()) {
+							if(AssignmentsQuerier.PARAMETER_NAME_EXERCISE.equals(f.getName())) {
+								exerciceField = f;
+								break;
+							}
+						}
+						if(exerciceField == null || exerciceField.getValue() == null)
+							throw new RuntimeException("L'exercice budgétaire est obligatoire");
+						if(CollectionHelper.getSize(filter.getFields()) < 2)
+							throw new RuntimeException("Un autre paramètre de filtre (autre que l'exercice) est obligatoire");
 						model.setFilter(filter);
 						/*
 						Map<String,Object> filters = ((LazyDataModel<Assignments>)assignmentsDataTable.getValue()).get__filters__();						
