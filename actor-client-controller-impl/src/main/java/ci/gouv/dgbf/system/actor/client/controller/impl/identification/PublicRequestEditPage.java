@@ -12,6 +12,8 @@ import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.Redirector;
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityEditPageContainerManagedImpl;
@@ -19,6 +21,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityE
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
 import ci.gouv.dgbf.system.actor.client.controller.impl.actor.RequestEditPage;
 import ci.gouv.dgbf.system.actor.client.controller.impl.actor.ScopeFunctionSelectionController;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -35,8 +38,11 @@ public class PublicRequestEditPage extends AbstractEntityEditPageContainerManage
 		//RequestEditPage.redirectIfTypeIsNull(form,"publicRequestSelectTypeView");
 		//RequestEditPage.setAdministrativeUnitAutoCompleteReadItemLabelListener(form);
 		RequestEditPage.postConstruct(form, budgetaryScopeFunctionSelectionController);
+		String electronicMailAddress = WebController.getInstance().getRequestParameter(Request.FIELD_ELECTRONIC_MAIL_ADDRESS);
+		if(StringHelper.isBlank(electronicMailAddress) && form.getEntity() != null && ((Request)form.getEntity()).getType() != null && RequestType.IDENTIFIER_DEMANDE_POSTES_BUDGETAIRES.equals(((Request)form.getEntity()).getType().getIdentifier()))
+			Redirector.getInstance().redirect(new Redirector.Arguments().outcome(PublicRequestElectronicMailAddressInputPage.OUTCOME));		
 	}
-		
+
 	@Override
 	protected void setActionFromRequestParameter() {
 		super.setActionFromRequestParameter();

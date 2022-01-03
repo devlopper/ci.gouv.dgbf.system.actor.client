@@ -270,8 +270,11 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 				String electronicMailAddress = WebController.getInstance().getRequestParameter(Request.FIELD_ELECTRONIC_MAIL_ADDRESS);
 				if(StringHelper.isBlank(electronicMailAddress))
 					request = __inject__(RequestController.class).getOneToBeCreatedByTypeIdentifier(requestTypeIdentifier);
-				else
+				else {
 					request = __inject__(RequestController.class).getOneToBeCreatedByTypeIdentifierByElectronicMailAddress(requestTypeIdentifier, electronicMailAddress);
+					if(StringHelper.isBlank(request.getElectronicMailAddress()))
+						request.setElectronicMailAddress(electronicMailAddress);
+				}
 				request.setReadPageURL(JavaServerFacesHelper.buildUrlFromOutcome(PublicRequestOpenPage.OUTCOME));
 				request.setActor(__inject__(ActorController.class).getLoggedIn());
 			}else {
