@@ -18,13 +18,10 @@ import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.LazyDataModel;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.AbstractMenu;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 import org.cyk.utility.controller.Arguments;
@@ -233,10 +230,11 @@ public class RequestScopeFunctionListPage extends AbstractEntityListPageContaine
 			return super.getStyleClassByRecordByColumn(record, recordIndex, column, columnIndex);
 		}
 		*/
-		
+		/*
 		public Class<? extends AbstractMenu> getRecordMenuClass(AbstractCollection collection) {
 			return ContextMenu.class;
 		}
+		*/
 	}
 	
 	@Getter @Setter @Accessors(chain=true)
@@ -266,7 +264,7 @@ public class RequestScopeFunctionListPage extends AbstractEntityListPageContaine
 					ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction.FIELD_IDENTIFIER);
 			
 			arguments.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction
-					.FIELDS_REQUEST_IDENTIFIER_IDENTITY_SCOPE_FUNCTION_STRING_GRANTED_STRING);
+					.FIELDS_REQUEST_IDENTIFIER_REQUEST_CODE_IDENTITY_SCOPE_FUNCTION_STRING_GRANTED_STRING);
 			/*
 			Boolean granted = ((RequestScopeFunctionFilterController)filterController).getGrantedInitial();
 			if(granted == null) {

@@ -397,7 +397,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_VALUE,assignments.get__auditRecords__());
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_RENDER_TYPE,org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection.RenderType.OUTPUT_UNSELECTABLE);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl().setIsShowHolderCodeOnly(Boolean.TRUE).setIsAuditRecord(Boolean.TRUE));
-				
+
 		DataTable dataTable = DataTable.build(arguments);
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);
 		return dataTable;
