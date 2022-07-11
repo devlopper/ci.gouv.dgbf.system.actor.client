@@ -97,16 +97,18 @@ public class ScopeFilterController extends AbstractFilterController implements S
 		buildInputSelectOne(FIELD_VISIBLE_SELECT_ONE, Boolean.class);
 		buildInputSelectOne(FIELD_ACTOR_SELECT_ONE, Actor.class);
 		
-		enableValueChangeListeners();
-		selectByValueSystemIdentifier();		
+		//enableValueChangeListeners();
+		//selectByValueSystemIdentifier();		
 	}
 	
-	private void enableValueChangeListeners() {
+	@Override
+	protected void enableValueChangeListeners() {
 		if(actorSelectOne != null)
 			actorSelectOne.enableAjaxItemSelect();
 	}
 	
-	private void selectByValueSystemIdentifier() {
+	@Override
+	protected void selectByValueSystemIdentifier() {
 		
 	}
 	

@@ -58,18 +58,20 @@ public class ActorProfileRequestFilterController extends AbstractFilterControlle
 		buildInputSelectOne(FIELD_PROCESSED_SELECT_ONE, Boolean.class);
 		buildInputSelectOne(FIELD_GRANTED_SELECT_ONE, Boolean.class);
 		
-		enableValueChangeListeners();
-		selectByValueSystemIdentifier();		
+		//enableValueChangeListeners();
+		//selectByValueSystemIdentifier();		
 	}
 	
-	private void enableValueChangeListeners() {
+	@Override
+	protected void enableValueChangeListeners() {
 		if(actorSelectOne != null)
 			actorSelectOne.enableAjaxItemSelect();
 		if(profileSelectOne != null)
 			profileSelectOne.enableAjaxItemSelect();
 	}
 	
-	private void selectByValueSystemIdentifier() {
+	@Override
+	protected void selectByValueSystemIdentifier() {
 		
 	}
 	

@@ -96,11 +96,12 @@ public class ActorFilterController extends AbstractFilterController implements S
 		buildInputSelectOne(FIELD_SECTION_SELECT_ONE, Section.class);
 		buildInputSelectOne(FIELD_ADMINISTRATIVE_UNIT_SELECT_ONE, AdministrativeUnit.class);
 		
-		enableValueChangeListeners();
-		selectByValueSystemIdentifier();		
+		//enableValueChangeListeners();
+		//selectByValueSystemIdentifier();		
 	}
 	
-	private void enableValueChangeListeners() {
+	@Override
+	protected void enableValueChangeListeners() {
 		sectionSelectOne.enableValueChangeListener(List.of(administrativeUnitSelectOne));		
 		administrativeUnitSelectOne.enableAjaxItemSelect();
 		
@@ -110,7 +111,8 @@ public class ActorFilterController extends AbstractFilterController implements S
 		scopeSelectOne.enableAjaxItemSelect();
 	}
 	
-	private void selectByValueSystemIdentifier() {
+	@Override
+	protected void selectByValueSystemIdentifier() {
 		
 	}
 	

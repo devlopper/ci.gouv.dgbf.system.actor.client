@@ -91,10 +91,11 @@ public class RequestDispatchSlipFilterController extends AbstractFilterControlle
 		buildInputSelectOne(FIELD_PROCESSED_SELECT_ONE, Boolean.class);
 		buildInputText(FIELD_SEARCH_INPUT_TEXT);
 
-		enableValueChangeListeners();
+		//enableValueChangeListeners();
 	}
 	
-	private void enableValueChangeListeners() {
+	@Override
+	protected void enableValueChangeListeners() {
 			
 	}
 	

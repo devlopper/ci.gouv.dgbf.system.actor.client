@@ -163,10 +163,11 @@ public class RequestFilterController extends AbstractFilterController implements
 		buildInputSelectOne(FIELD_DISPATCH_SLIP_SELECT_ONE, RequestDispatchSlip.class);
 		buildInputText(FIELD_SEARCH_INPUT_TEXT);		
 		
-		enableValueChangeListeners();
+		//enableValueChangeListeners();
 	}
 	
-	private void enableValueChangeListeners() {
+	@Override
+	protected void enableValueChangeListeners() {
 		if(sectionSelectOne != null)
 			sectionSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,administrativeUnitSelectOne,dispatchSlipSelectOne));
 		if(functionSelectOne != null)

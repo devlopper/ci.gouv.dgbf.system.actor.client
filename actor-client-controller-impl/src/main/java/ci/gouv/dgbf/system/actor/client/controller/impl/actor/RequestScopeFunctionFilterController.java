@@ -67,10 +67,11 @@ public class RequestScopeFunctionFilterController extends AbstractFilterControll
 		//buildInputSelectOne(FIELD_FUNCTION_AUTO_COMPLETE, Function.class);
 		buildInputSelectOne(FIELD_GRANTED_SELECT_ONE, Boolean.class);
 		buildInputText(FIELD_ELECTRONIC_MAIL_ADDRESS_INPUT_TEXT);		
-		enableValueChangeListeners();
+		//enableValueChangeListeners();
 	}
 	
-	private void enableValueChangeListeners() {}
+	@Override
+	protected void enableValueChangeListeners() {}
 	
 	@Override
 	protected AbstractInput<?> buildInput(String fieldName, Object value) {

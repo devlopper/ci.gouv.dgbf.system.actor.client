@@ -217,11 +217,12 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 		buildInputSelectOne(FIELD_DEPARTMENT_SELECT_ONE, ScopeFunction.class);
 		buildInputSelectOne(FIELD_SUB_PREFECTURE_SELECT_ONE, ScopeFunction.class);
 		
-		enableValueChangeListeners();		
-		selectByValueSystemIdentifier();		
+		//enableValueChangeListeners();		
+		//selectByValueSystemIdentifier();		
 	}
 	
-	private void enableValueChangeListeners() {
+	@Override
+	protected void enableValueChangeListeners() {
 		sectionSelectOne.enableValueChangeListener(List.of(administrativeUnitSelectOne,budgetSpecializationUnitSelectOne,expenditureNatureSelectOne,activityCategorySelectOne,activitySelectOne));
 		administrativeUnitSelectOne.enableValueChangeListener(List.of(expenditureNatureSelectOne,activityCategorySelectOne,activitySelectOne));
 		budgetSpecializationUnitSelectOne.enableValueChangeListener(List.of(expenditureNatureSelectOne,activityCategorySelectOne,activitySelectOne));
@@ -235,7 +236,8 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 		subPrefectureSelectOne.enableValueChangeListener(List.of());
 	}
 	
-	private void selectByValueSystemIdentifier() {
+	@Override
+	protected void selectByValueSystemIdentifier() {
 		sectionSelectOne.selectByValueSystemIdentifier();
 	}
 	
