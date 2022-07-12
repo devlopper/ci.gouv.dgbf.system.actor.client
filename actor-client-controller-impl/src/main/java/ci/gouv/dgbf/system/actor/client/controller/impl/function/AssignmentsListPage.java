@@ -47,6 +47,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.Activity;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ActivityCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Assignments;
+import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.EconomicNature;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ExpenditureNature;
@@ -94,12 +95,12 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 	}
 	
 	public static String buildWindowTitleValue(String prefix,PageArguments pageArguments) {
-		return buildWindowTitleValue(prefix,pageArguments.exercise,pageArguments.section, pageArguments.administrativeUnit, pageArguments.budgetSpecializationUnit, pageArguments.action
+		return buildWindowTitleValue(prefix,pageArguments.exercise,pageArguments.budgetCategory,pageArguments.section, pageArguments.administrativeUnit, pageArguments.budgetSpecializationUnit, pageArguments.action
 				, pageArguments.activity,pageArguments.activities, pageArguments.expenditureNature, pageArguments.activityCategory,pageArguments.scopeFunction,pageArguments.region
 				,pageArguments.department,pageArguments.subPrefecture);
 	}
 	
-	public static String buildWindowTitleValue(String prefix,Integer exercice,Section section,AdministrativeUnit administrativeUnit,BudgetSpecializationUnit budgetSpecializationUnit
+	public static String buildWindowTitleValue(String prefix,Integer exercice,BudgetCategory budgetCategory,Section section,AdministrativeUnit administrativeUnit,BudgetSpecializationUnit budgetSpecializationUnit
 			,Action action,Activity activity,Collection<Activity> activities,ExpenditureNature expenditureNature,ActivityCategory activityCategory,ScopeFunction scopeFunction
 			,Locality region,Locality department,Locality subPrefecture) {
 		Collection<String> strings = new ArrayList<>();
@@ -108,6 +109,9 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			strings.add("Exercice "+exercice);
 		}
 		if(CollectionHelper.isEmpty(activities)) {
+			if(budgetCategory != null) {
+				strings.add(budgetCategory.toString());
+			}
 			if(section != null) {
 				if(administrativeUnit == null && budgetSpecializationUnit == null)
 					strings.add(section.toString());
@@ -278,6 +282,8 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			Map<String, List<String>> parameters = new HashMap<>();
 			if(MapHelper.readByKey(arguments, "exercice") != null)
 				parameters.put("exercice", List.of((String)MapHelper.readByKey(arguments, "exercice")));
+			if(MapHelper.readByKey(arguments, BudgetCategory.class) != null)
+				parameters.put(ParameterName.stringify(BudgetCategory.class), List.of((String)FieldHelper.readSystemIdentifier(MapHelper.readByKey(arguments, BudgetCategory.class))));
 			if(MapHelper.readByKey(arguments, Section.class) != null)
 				parameters.put(ParameterName.stringify(Section.class), List.of((String)FieldHelper.readSystemIdentifier(MapHelper.readByKey(arguments, Section.class))));
 			if(MapHelper.readByKey(arguments, AdministrativeUnit.class) != null)
@@ -411,6 +417,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 	
 	public static class PageArguments implements Serializable{
 		public Integer exercise;
+		public BudgetCategory budgetCategory;
 		public Section section;
 		public AdministrativeUnit administrativeUnit;
 		public BudgetSpecializationUnit budgetSpecializationUnit;
@@ -432,6 +439,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 					activity = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(Activity.class
 							,ActivityQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI);
 					if(activity != null) {
+						budgetCategory = activity.getBudgetCategory();
 						section = activity.getSection();
 						budgetSpecializationUnit = activity.getBudgetSpecializationUnit();
 						administrativeUnit = activity.getAdministrativeUnit();
@@ -484,6 +492,9 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 				
 				if(region == null) {
 					region = WebController.getInstance().getRequestParameterEntityAsParent(Locality.class);
+				}
+				if(budgetCategory == null) {
+					budgetCategory = WebController.getInstance().getRequestParameterEntityAsParent(BudgetCategory.class);
 				}
 				if(section == null) {
 					section = WebController.getInstance().getRequestParameterEntityAsParent(Section.class);
@@ -674,6 +685,9 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 					map.put(Column.ConfiguratorImpl.FIELD_FILTERABLE,filterable);
 					map.put(Column.FIELD_FILTER_BY, AssignmentsQuerier.PARAMETER_NAME_EXPENDITURE_NATURE);
 				}
+			}else if(Assignments.FIELD_BUDGET_CATEGORY_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "CB");
+				map.put(Column.FIELD_WIDTH, "80");
 			}
 			return map;
 		}
@@ -711,13 +725,15 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		}
 	
 		public static Collection<String> buildColumnsNames(PageArguments pageArguments) {
-			return buildColumnsNames(pageArguments.section, pageArguments.administrativeUnit, pageArguments.budgetSpecializationUnit, pageArguments.activity
+			return buildColumnsNames(pageArguments.budgetCategory,pageArguments.section, pageArguments.administrativeUnit, pageArguments.budgetSpecializationUnit, pageArguments.activity
 					, pageArguments.expenditureNature, pageArguments.activityCategory,pageArguments.scopeFunction);
 		}
 		
-		public static Collection<String> buildColumnsNames(Section section,AdministrativeUnit administrativeUnit,BudgetSpecializationUnit budgetSpecializationUnit,Activity activity
+		public static Collection<String> buildColumnsNames(BudgetCategory budgetCategory,Section section,AdministrativeUnit administrativeUnit,BudgetSpecializationUnit budgetSpecializationUnit,Activity activity
 				,ExpenditureNature expenditureNature,ActivityCategory activityCategory,ScopeFunction scopeFunction) {
 			Collection<String> columnsFieldsNames = new ArrayList<>();
+			if(activity == null && budgetSpecializationUnit == null && budgetCategory == null)
+				columnsFieldsNames.add(Assignments.FIELD_BUDGET_CATEGORY_AS_STRING);	
 			if(activity == null && budgetSpecializationUnit == null && section == null)
 				columnsFieldsNames.add(Assignments.FIELD_SECTION_AS_STRING);
 			if(activity == null && administrativeUnit == null)
@@ -761,6 +777,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		private Boolean allHoldersDefined,someHoldersNotDefined;
 		
 		private Integer exercise;
+		private BudgetCategory budgetCategory;
 		private Section section;
 		private AdministrativeUnit administrativeUnit;
 		private BudgetSpecializationUnit budgetSpecializationUnit;
@@ -839,6 +856,8 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		
 		public LazyDataModelListenerImpl applyPageArguments(PageArguments pageArguments){
 			setExercise(pageArguments.exercise);
+			setBudgetCategory(pageArguments.budgetCategory);
+			//setBudgetCategory(null);)
 			section(pageArguments.section);
 			administrativeUnit(pageArguments.administrativeUnit);
 			budgetSpecializationUnit(pageArguments.budgetSpecializationUnit);
@@ -857,6 +876,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			if(filterController == null)
 				return this;
 			setExercise(filterController.getExercise());
+			setBudgetCategory(filterController.getBudgetCategory());
 			section(filterController.getSection());
 			administrativeUnit(filterController.getAdministrativeUnit());
 			budgetSpecializationUnit(filterController.getBudgetSpecializationUnit());
@@ -914,7 +934,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		@Override
 		public Filter.Dto instantiateFilter(LazyDataModel<Assignments> lazyDataModel) {
 			Filter.Dto filter = super.instantiateFilter(lazyDataModel);
-			filter = addFieldIfValueNotNull(filter, exercise,section, administrativeUnit, budgetSpecializationUnit, action, expenditureNature, activityCategory, activity,activities
+			filter = addFieldIfValueNotNull(filter, exercise,budgetCategory,section, administrativeUnit, budgetSpecializationUnit, action, expenditureNature, activityCategory, activity,activities
 					, economicNature, scopeFunction,region,department,subPrefecture);			
 			if(allHoldersDefined != null && Boolean.TRUE.equals(allHoldersDefined))
 				filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ALL_HOLDERS_DEFINED_NULLABLE, Boolean.FALSE, filter);
@@ -924,7 +944,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			return filter;
 		}
 		
-		public static Filter.Dto addFieldIfValueNotNull(Filter.Dto filter,Integer exercise,Section section,AdministrativeUnit administrativeUnit,BudgetSpecializationUnit budgetSpecializationUnit
+		public static Filter.Dto addFieldIfValueNotNull(Filter.Dto filter,Integer exercise,BudgetCategory budgetCategory,Section section,AdministrativeUnit administrativeUnit,BudgetSpecializationUnit budgetSpecializationUnit
 				,Action action,ExpenditureNature expenditureNature,ActivityCategory activityCategory,Activity activity,Collection<Activity> activities
 				,EconomicNature economicNature,ScopeFunction scopeFunction,Locality region,Locality department,Locality subPrefecture) {
 			
@@ -933,6 +953,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 				filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACTIVITIES_IDENTIFIERS, FieldHelper.readSystemIdentifiers(activities), filter);
 			
 			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_EXERCISE, exercise, filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER, FieldHelper.readSystemIdentifier(budgetCategory), filter);
 			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_SECTION_IDENTIFIER, FieldHelper.readSystemIdentifier(section), filter);
 			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT_IDENTIFIER, FieldHelper.readSystemIdentifier(administrativeUnit), filter);
 			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER, FieldHelper.readSystemIdentifier(budgetSpecializationUnit), filter);

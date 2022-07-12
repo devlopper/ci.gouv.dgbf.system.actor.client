@@ -17,6 +17,7 @@ public class Assignments extends AbstractDataIdentifiableSystemStringAuditedImpl
 
 	/* Imputation */
 	
+	private String budgetCategoryAsString;
 	private String sectionAsString;
 	private String budgetSpecializationUnitAsString;
 	private String actionAsString;
@@ -67,6 +68,7 @@ public class Assignments extends AbstractDataIdentifiableSystemStringAuditedImpl
 	/**/
 	
 	public static final String FIELD_EXECUTION_IMPUTATION = "executionImputation";
+	public static final String FIELD_BUDGET_CATEGORY_AS_STRING = "budgetCategoryAsString";
 	public static final String FIELD_SECTION_AS_STRING = "sectionAsString";
 	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING = "budgetSpecializationUnitAsString";
 	public static final String FIELD_ACTION_AS_STRING = "actionAsString";

@@ -13,6 +13,10 @@ import lombok.experimental.Accessors;
 public class Activity extends AbstractDataIdentifiableSystemStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	private BudgetCategory budgetCategory;
+	private String budgetCategoryIdentifier;
+	private String budgetCategoryCodeName;
+	
 	private Section section;
 	private String sectionIdentifier;
 	private String sectionCodeName;

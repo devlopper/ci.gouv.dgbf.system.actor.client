@@ -25,6 +25,7 @@ import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.ActivityCategoryController;
+import ci.gouv.dgbf.system.actor.client.controller.api.BudgetCategoryController;
 import ci.gouv.dgbf.system.actor.client.controller.api.BudgetSpecializationUnitController;
 import ci.gouv.dgbf.system.actor.client.controller.api.ExpenditureNatureController;
 import ci.gouv.dgbf.system.actor.client.controller.api.LocalityController;
@@ -33,6 +34,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.Action;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Activity;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ActivityCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
+import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ExpenditureNature;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
@@ -54,11 +56,12 @@ import lombok.experimental.Accessors;
 @Getter @Setter @Accessors(chain=true)
 public class AssignmentsFilterController extends AbstractFilterController implements Serializable {
 
-	private SelectOneCombo exerciseSelectOne,sectionSelectOne,administrativeUnitSelectOne,budgetSpecializationUnitSelectOne,actionSelectOne,activitySelectOne,activityCategorySelectOne
+	private SelectOneCombo budgetCategorySelectOne,exerciseSelectOne,sectionSelectOne,administrativeUnitSelectOne,budgetSpecializationUnitSelectOne,actionSelectOne,activitySelectOne,activityCategorySelectOne
 		,expenditureNatureSelectOne,functionSelectOne,regionSelectOne,departmentSelectOne,subPrefectureSelectOne;
 	private AutoComplete scopeFunctionAutoComplete;
 	private ActivitySelectionController activitySelectionController;
 	
+	private BudgetCategory budgetCategoryInitial;
 	private Integer exerciseInitial;
 	private Section sectionInitial;
 	private AdministrativeUnit administrativeUnitInitial;
@@ -80,6 +83,7 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 			activityInitial = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(Activity.class
 					, ActivityQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI);		
 			if(activityInitial != null) {
+				budgetCategoryInitial = activityInitial.getBudgetCategory();
 				sectionInitial = activityInitial.getSection();
 				administrativeUnitInitial = activityInitial.getAdministrativeUnit();
 				budgetSpecializationUnitInitial = activityInitial.getBudgetSpecializationUnit();
@@ -131,6 +135,9 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 				regionInitial = WebController.getInstance().getRequestParameterEntityAsParent(Locality.class);
 			}
 			
+			if(budgetCategoryInitial == null)
+				budgetCategoryInitial = WebController.getInstance().getRequestParameterEntityAsParentBySystemIdentifier(BudgetCategory.class, null);
+			
 			if(sectionInitial == null)
 				sectionInitial = WebController.getInstance().getRequestParameterEntityAsParentBySystemIdentifier(Section.class, null);
 			
@@ -159,6 +166,7 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 					.filterByIdentifiers(activitiesIdentifiers));
 		}
 	}
+	
 	
 	@Override
 	public AssignmentsFilterController build() {
@@ -203,6 +211,7 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 	
 	@Override
 	protected void buildInputs() {
+		buildInputSelectOne(FIELD_BUDGET_CATEGORY_SELECT_ONE,BudgetCategory.class);
 		buildInputSelectOne(FIELD_EXERCISE_SELECT_ONE,Integer.class);
 		buildInputSelectOne(FIELD_SECTION_SELECT_ONE, Section.class);
 		buildInputSelectOne(FIELD_ADMINISTRATIVE_UNIT_SELECT_ONE, AdministrativeUnit.class);
@@ -269,6 +278,9 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 		if(FIELD_SUB_PREFECTURE_SELECT_ONE.equals(fieldName))
 			return buildLocalitySousPrefectureSelectOne((Locality) value);
 		
+		if(FIELD_BUDGET_CATEGORY_SELECT_ONE.equals(fieldName))
+			return buildBudgetCategorySelectOne((BudgetCategory) value);
+		
 		return null;
 	}
 	
@@ -281,6 +293,19 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 				return choices;
 			}
 		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Exercice");
+		return input;
+	}
+	
+	private SelectOneCombo buildBudgetCategorySelectOne(BudgetCategory budgetCategory) {		
+		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,budgetCategory,SelectOneCombo.FIELD_CHOICE_CLASS,BudgetCategory.class,SelectOneCombo.FIELD_LISTENER
+				,new SelectOneCombo.Listener.AbstractImpl<BudgetCategory>() {
+			@Override
+			public Collection<BudgetCategory> computeChoices(AbstractInputChoice<BudgetCategory> input) {
+				Collection<BudgetCategory> choices = __inject__(BudgetCategoryController.class).readAllForUI();// VisiblesByLoggedInActorCodeForUI();
+				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
+				return choices;
+			}
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"C.B.");
 		return input;
 	}
 	
@@ -573,6 +598,11 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 	@Override
 	protected Collection<Map<Object, Object>> buildLayoutCells() {
 		Collection<Map<Object, Object>> cellsMaps = new ArrayList<>();
+		if(budgetCategorySelectOne != null) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,budgetCategorySelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,budgetCategorySelectOne,Cell.FIELD_WIDTH,11));	
+		}
+		
 		if(sectionSelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,sectionSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,sectionSelectOne,Cell.FIELD_WIDTH,9));	
@@ -636,6 +666,10 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 	
 	public Section getSection() {
 		return (Section) AbstractInput.getValue(sectionSelectOne);
+	}
+	
+	public BudgetCategory getBudgetCategory() {
+		return (BudgetCategory) AbstractInput.getValue(budgetCategorySelectOne);
 	}
 	
 	public AdministrativeUnit getAdministrativeUnit() {
@@ -726,6 +760,7 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 		return super.isSelectRedirectorArgumentsParameter(klass, input);
 	}
 	
+	public static final String FIELD_BUDGET_CATEGORY_SELECT_ONE = "budgetCategorySelectOne";
 	public static final String FIELD_EXERCISE_SELECT_ONE = "exerciseSelectOne";
 	public static final String FIELD_SECTION_SELECT_ONE = "sectionSelectOne";
 	public static final String FIELD_ADMINISTRATIVE_UNIT_SELECT_ONE = "administrativeUnitSelectOne";

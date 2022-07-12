@@ -31,6 +31,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.Activity;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ActivityCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Assignments;
+import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ExpenditureNature;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
@@ -169,6 +170,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 			if(assignmentsFilterController.getExercise() != null)
 				item.addParameter("exercice", assignmentsFilterController.getExercise().toString());
 			item.setValue(name).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_ASSIGNMENTS).addParameter(TAB_ASSIGNMENTS_PARAMETER_NAME, tab.getParameterValue());			
+			item.addParameterFromInstance(assignmentsFilterController.getBudgetCategory());
 			item.addParameterFromInstanceIfConditionIsTrue(assignmentsFilterController.getSection(),assignmentsFilterController.getAdministrativeUnit() == null 
 					&& assignmentsFilterController.getBudgetSpecializationUnit() == null && assignmentsFilterController.getAction() == null && assignmentsFilterController.getActivity() == null);
 			item.addParameterFromInstanceIfConditionIsTrue(assignmentsFilterController.getAdministrativeUnit(),assignmentsFilterController.getActivity() == null);
@@ -206,12 +208,12 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,lazyDataModelListener
 				,DataTable.ConfiguratorImpl.FIELD_LISTENER,dataTableListener
 				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,AssignmentsListPage.DataTableListenerImpl
-				.buildColumnsNames(assignmentsFilterController.getSection(),assignmentsFilterController.getAdministrativeUnit()
+				.buildColumnsNames(assignmentsFilterController.getBudgetCategory(),assignmentsFilterController.getSection(),assignmentsFilterController.getAdministrativeUnit()
 						, assignmentsFilterController.getBudgetSpecializationUnit(), assignmentsFilterController.getActivity()
 						, assignmentsFilterController.getExpenditureNature(), assignmentsFilterController.getActivityCategory(),assignmentsFilterController.getScopeFunction())
 				
 				,"exercice",StringHelper.get(assignmentsFilterController.getExercise())
-				,Section.class,assignmentsFilterController.getSection(),AdministrativeUnit.class,assignmentsFilterController.getAdministrativeUnit()
+				,BudgetCategory.class,assignmentsFilterController.getBudgetCategory(),Section.class,assignmentsFilterController.getSection(),AdministrativeUnit.class,assignmentsFilterController.getAdministrativeUnit()
 				,BudgetSpecializationUnit.class,assignmentsFilterController.getBudgetSpecializationUnit()
 				,Action.class,assignmentsFilterController.getAction(),Activity.class,assignmentsFilterController.getActivity()
 				,ExpenditureNature.class,assignmentsFilterController.getExpenditureNature(),ActivityCategory.class,assignmentsFilterController.getActivityCategory()
@@ -234,7 +236,8 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 			
 		}
 		AssignmentsListPage.LazyDataModelListenerImpl.addFieldIfValueNotNull(arguments.getRepresentationArguments().getQueryExecutorArguments().getFilter(Boolean.TRUE)
-				,assignmentsFilterController.getExercise() , assignmentsFilterController.getSection(), assignmentsFilterController.getAdministrativeUnit(), assignmentsFilterController.getBudgetSpecializationUnit()
+				, assignmentsFilterController.getExercise() , assignmentsFilterController.getBudgetCategory() , assignmentsFilterController.getSection()
+				, assignmentsFilterController.getAdministrativeUnit(), assignmentsFilterController.getBudgetSpecializationUnit()
 				, assignmentsFilterController.getAction(), assignmentsFilterController.getExpenditureNature(), assignmentsFilterController.getActivityCategory()
 				, assignmentsFilterController.getActivity(),assignmentsFilterController.getActivities(), null, assignmentsFilterController.getScopeFunction()
 				,assignmentsFilterController.getRegion(),assignmentsFilterController.getDepartment(),assignmentsFilterController.getSubPrefecture());
@@ -252,7 +255,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		if(TAB_SCOPE_FUNCTION.equals(selectedTab.getParameterValue()))
 			return ScopeFunctionListPage.buildWindowTitleValue(selectedTab.getName(), scopeFunctionFilterController.getFunction());
 		else if(TAB_ASSIGNMENTS.equals(selectedTab.getParameterValue()))
-			return AssignmentsListPage.buildWindowTitleValue(selectedAssignmentsTab.getName(),assignmentsFilterController.getExercise() ,assignmentsFilterController.getSection()
+			return AssignmentsListPage.buildWindowTitleValue(selectedAssignmentsTab.getName(),assignmentsFilterController.getExercise() ,assignmentsFilterController.getBudgetCategory(),assignmentsFilterController.getSection()
 					,assignmentsFilterController.getAdministrativeUnit(), assignmentsFilterController.getBudgetSpecializationUnit()
 					,assignmentsFilterController.getAction(), assignmentsFilterController.getActivity(),assignmentsFilterController.getActivities(),assignmentsFilterController.getExpenditureNature()
 					,assignmentsFilterController.getActivityCategory(),assignmentsFilterController.getScopeFunction(),assignmentsFilterController.getRegion()
