@@ -301,7 +301,7 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 				,new SelectOneCombo.Listener.AbstractImpl<BudgetCategory>() {
 			@Override
 			public Collection<BudgetCategory> computeChoices(AbstractInputChoice<BudgetCategory> input) {
-				Collection<BudgetCategory> choices = __inject__(BudgetCategoryController.class).readAllForUI();// VisiblesByLoggedInActorCodeForUI();
+				Collection<BudgetCategory> choices = __inject__(BudgetCategoryController.class).readVisiblesByLoggedInActorCodeForUI();
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
 			}
@@ -599,7 +599,7 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 	protected Collection<Map<Object, Object>> buildLayoutCells() {
 		Collection<Map<Object, Object>> cellsMaps = new ArrayList<>();
 		if(budgetCategorySelectOne != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,budgetCategorySelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,budgetCategorySelectOne.getOutputLabel().setTitle("Catégorie budget"),Cell.FIELD_WIDTH,1));
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,budgetCategorySelectOne,Cell.FIELD_WIDTH,11));	
 		}
 		
