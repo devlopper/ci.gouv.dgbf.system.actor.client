@@ -38,4 +38,11 @@ public interface AdministrativeUnitController extends ControllerEntity<Administr
 				,AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_FOR_UI,ScopeQuerier.PARAMETER_NAME_SECTION_IDENTIFIER, sectionIdentifier);
 	}
 	
+	default Collection<AdministrativeUnit> readBySectionIdentifierByServiceGroupCodeStartsWith(String sectionIdentifier,String serviceGroupCode) {
+		if(StringHelper.isBlank(sectionIdentifier) || StringHelper.isBlank(serviceGroupCode))
+			return null;
+		return EntityReader.getInstance().readMany(AdministrativeUnit.class
+				,AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_BY_SERVICE_GROUP_CODE_STARTS_WITH_FOR_UI,ScopeQuerier.PARAMETER_NAME_SECTION_IDENTIFIER, sectionIdentifier
+				,AdministrativeUnitQuerier.PARAMETER_NAME_SERVICE_GROUP_CODE, serviceGroupCode);
+	}
 }

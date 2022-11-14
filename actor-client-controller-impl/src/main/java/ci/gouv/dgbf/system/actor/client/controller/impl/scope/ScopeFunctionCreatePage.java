@@ -65,6 +65,8 @@ public class ScopeFunctionCreatePage extends AbstractEntityEditPageContainerMana
 				initializeCellsRenderedByIndexes();				
 				if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_G1.equals(choice))
 					form.getLayout().setCellsRenderedByIndexes(Boolean.TRUE,2,3,4,5,10,11);
+				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_G_EPN.equals(choice))
+					form.getLayout().setCellsRenderedByIndexes(Boolean.TRUE,2,3,4,5,10,11);
 				
 				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_O2.equals(choice))
 					form.getLayout().setCellsRenderedByIndexes(Boolean.TRUE,2,3,6,7,10,11);	
@@ -123,7 +125,13 @@ public class ScopeFunctionCreatePage extends AbstractEntityEditPageContainerMana
 				/*List<AdministrativeUnit> choices = (List<AdministrativeUnit>) __inject__(AdministrativeUnitController.class)
 						.readVisiblesBySectionIdentifierByLoggedInActorCodeForUI(section.getIdentifier());	
 				*/
-				List<AdministrativeUnit> choices = (List<AdministrativeUnit>) __inject__(AdministrativeUnitController.class).readBySectionIdentifier(section.getIdentifier());	
+				List<AdministrativeUnit> choices;
+				String codePrefix = (String) AbstractInput.getValue(subFunctionCodeSelectOneCombo);
+				if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_G_EPN.equals(codePrefix)) {
+					choices = (List<AdministrativeUnit>) __inject__(AdministrativeUnitController.class).readBySectionIdentifierByServiceGroupCodeStartsWith(section.getIdentifier(),"32");
+				}else {
+					choices = (List<AdministrativeUnit>) __inject__(AdministrativeUnitController.class).readBySectionIdentifier(section.getIdentifier());
+				}
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
 			}
@@ -321,6 +329,9 @@ public class ScopeFunctionCreatePage extends AbstractEntityEditPageContainerMana
 						, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_NAME_T8));
 				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_T9
 					, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_NAME_T9));
+				
+				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_G_EPN
+						, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_NAME_G_EPN));
 				
 				map.put(AbstractInputChoice.FIELD_CHOICES, choices);
 			}else if(ScopeFunction.FIELD_SECTION.equals(fieldName)) {
