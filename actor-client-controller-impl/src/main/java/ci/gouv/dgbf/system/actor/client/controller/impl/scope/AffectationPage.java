@@ -149,7 +149,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	
 	public TabMenu buildAssignmentsTabMenu() {
 		Collection<MenuItem> items = new ArrayList<>();
-		Long total = count(TAB_ASSIGNMENTS_ALL);
+		Long total = assignmentsFilterController == null || assignmentsFilterController.getBudgetCategory() == null ? 0 : count(TAB_ASSIGNMENTS_ALL);
 		for(Integer index = 0; index < ASSIGNMENTS_TABS.size(); index = index + 1) {
 			TabMenu.Tab tab = ASSIGNMENTS_TABS.get(index);
 			MenuItem item = new MenuItem();

@@ -415,6 +415,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 	
 	/**/
 	
+	@Deprecated
 	public static class PageArguments implements Serializable{
 		public Integer exercise;
 		public BudgetCategory budgetCategory;
@@ -915,6 +916,13 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		@Override
 		public String getReadQueryIdentifier(LazyDataModel<Assignments> lazyDataModel) {
 			return AssignmentsQuerier.QUERY_IDENTIFIER_READ_DYNAMIC;
+		}
+		
+		@Override
+		public List<Assignments> read(LazyDataModel<Assignments> lazyDataModel) {
+			if(budgetCategory == null)
+				return null;
+			return super.read(lazyDataModel);
 		}
 		
 		@Override
