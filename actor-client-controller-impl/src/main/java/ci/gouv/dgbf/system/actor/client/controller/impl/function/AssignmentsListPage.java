@@ -49,13 +49,11 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Assignments;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
-import ci.gouv.dgbf.system.actor.client.controller.entities.EconomicNature;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ExpenditureNature;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Locality;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
-import ci.gouv.dgbf.system.actor.client.controller.impl.Helper;
 import ci.gouv.dgbf.system.actor.server.business.api.AssignmentsBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
@@ -71,35 +69,47 @@ import lombok.experimental.Accessors;
 @Named @ViewScoped @Getter @Setter
 public class AssignmentsListPage extends AbstractEntityListPageContainerManagedImpl<Assignments> implements Serializable {
 
+	private AssignmentsFilterController filterController;
 	private Layout layout;
+	
+	@Override
+	protected void __listenBeforePostConstruct__() {
+		super.__listenBeforePostConstruct__();
+		filterController = new AssignmentsFilterController();
+		filterController.build();
+	}
 	
 	@Override
 	protected void __listenPostConstruct__() {
 		super.__listenPostConstruct__();
 		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS
 				,CollectionHelper.listOf(
-						MapHelper.instantiate(Cell.FIELD_CONTROL,Helper.buildFunctionListPageTabMenu(null),Cell.FIELD_WIDTH,12)
-						,MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12)					
+						/*MapHelper.instantiate(Cell.FIELD_CONTROL,Helper.buildFunctionListPageTabMenu(null),Cell.FIELD_WIDTH,12)
+						,*/MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12)					
 						));
 	}
 	
 	@Override
 	protected DataTable __buildDataTable__() {
-		DataTable dataTable = buildDataTable(AssignmentsListPage.class,Boolean.TRUE);		
+		DataTable dataTable = buildDataTable(AssignmentsListPage.class,Boolean.TRUE,AssignmentsFilterController.class,filterController);		
 		return dataTable;
 	}
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Affectations";
+		if(filterController == null)
+			return super.__getWindowTitleValue__(); 
+		return filterController.generateWindowTitleValue("Affectations");
 	}
 	
+	@Deprecated
 	public static String buildWindowTitleValue(String prefix,PageArguments pageArguments) {
 		return buildWindowTitleValue(prefix,pageArguments.exercise,pageArguments.budgetCategory,pageArguments.section, pageArguments.administrativeUnit, pageArguments.budgetSpecializationUnit, pageArguments.action
 				, pageArguments.activity,pageArguments.activities, pageArguments.expenditureNature, pageArguments.activityCategory,pageArguments.scopeFunction,pageArguments.region
 				,pageArguments.department,pageArguments.subPrefecture);
 	}
 	
+	@Deprecated
 	public static String buildWindowTitleValue(String prefix,Integer exercice,BudgetCategory budgetCategory,Section section,AdministrativeUnit administrativeUnit,BudgetSpecializationUnit budgetSpecializationUnit
 			,Action action,Activity activity,Collection<Activity> activities,ExpenditureNature expenditureNature,ActivityCategory activityCategory,ScopeFunction scopeFunction
 			,Locality region,Locality department,Locality subPrefecture) {
@@ -172,6 +182,26 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 	public static DataTable buildDataTable(Map<Object,Object> arguments) {
 		if(arguments == null)
 			arguments = new HashMap<>();
+		
+		AssignmentsFilterController filterController = (AssignmentsFilterController) MapHelper.readByKey(arguments, AssignmentsFilterController.class);
+		LazyDataModelListenerImpl lazyDataModelListener = (LazyDataModelListenerImpl) MapHelper.readByKey(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER);
+		if(lazyDataModelListener == null)
+			arguments.put(DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,lazyDataModelListener = new LazyDataModelListenerImpl());
+		if(lazyDataModelListener.getFilterController() == null)
+			lazyDataModelListener.setFilterController(filterController);
+		filterController = (AssignmentsFilterController) lazyDataModelListener.getFilterController();
+		if(filterController == null) {
+			lazyDataModelListener.setFilterController(filterController = new AssignmentsFilterController());		
+			filterController.build();
+		}
+		String outcome = ValueHelper.defaultToIfBlank((String)MapHelper.readByKey(arguments,OUTCOME),OUTCOME);
+		filterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(outcome);
+		
+		DataTableListenerImpl dataTableListenerImpl = (DataTableListenerImpl) MapHelper.readByKey(arguments, DataTable.FIELD_LISTENER);
+		if(dataTableListenerImpl == null)
+			arguments.put(DataTable.FIELD_LISTENER, dataTableListenerImpl = new DataTableListenerImpl());
+		dataTableListenerImpl.setFilterController(filterController);
+		
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, Assignments.class);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES
@@ -189,6 +219,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl());
 		DataTable dataTable = DataTable.build(arguments);
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);
+		
 		if(Boolean.TRUE.equals(MapHelper.readByKey(arguments, AssignmentsListPage.class))) {
 			dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Importer les nouvelles lignes",MenuItem.FIELD_USER_INTERFACE_ACTION
 					,UserInterfaceAction.EXECUTE_FUNCTION,MenuItem.FIELD_ICON,"fa fa-download"
@@ -524,6 +555,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 	@Getter @Setter @Accessors(chain=true)
 	public static class DataTableListenerImpl extends DataTable.Listener.AbstractImpl implements Serializable {
 		
+		protected AssignmentsFilterController filterController;
 		protected Function creditManagerHolder,creditManagerAssistant,authorizingOfficerHolder,authorizingOfficerAssistant
 			,financialControllerHolder,financialControllerAssistant,accountingHolder,accountingAssistant;
 		protected String tooltipFormat;
@@ -725,11 +757,13 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			return ContextMenu.class;
 		}
 	
+		@Deprecated
 		public static Collection<String> buildColumnsNames(PageArguments pageArguments) {
 			return buildColumnsNames(pageArguments.budgetCategory,pageArguments.section, pageArguments.administrativeUnit, pageArguments.budgetSpecializationUnit, pageArguments.activity
 					, pageArguments.expenditureNature, pageArguments.activityCategory,pageArguments.scopeFunction);
 		}
 		
+		@Deprecated
 		public static Collection<String> buildColumnsNames(BudgetCategory budgetCategory,Section section,AdministrativeUnit administrativeUnit,BudgetSpecializationUnit budgetSpecializationUnit,Activity activity
 				,ExpenditureNature expenditureNature,ActivityCategory activityCategory,ScopeFunction scopeFunction) {
 			Collection<String> columnsFieldsNames = new ArrayList<>();
@@ -777,6 +811,8 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		//private String sectionCode,budgetSpecializationUnitCode,actionCode,expenditureNatureCode,activityCategoryCode,activityCode,economicNatureCode,administrativeUnitCode;
 		private Boolean allHoldersDefined,someHoldersNotDefined;
 		
+		
+		/*
 		private Integer exercise;
 		private BudgetCategory budgetCategory;
 		private Section section;
@@ -792,10 +828,10 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		private Locality region;
 		private Locality department;
 		private Locality subPrefecture;
-		
+		*/
 		private HolderAndAssistant creditManager = new HolderAndAssistant(),authorizingOfficer = new HolderAndAssistant()
 				,financialController = new HolderAndAssistant(),accounting = new HolderAndAssistant();
-		
+		/*
 		public LazyDataModelListenerImpl section(Section section) {
 			this.section = section;
 			return this;
@@ -872,10 +908,15 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			subPrefecture(pageArguments.subPrefecture);
 			return this;
 		}
-		
+		*/
+		/*
 		public LazyDataModelListenerImpl applyFilterController(AssignmentsFilterController filterController){
 			if(filterController == null)
 				return this;
+			this.filterController = filterController;
+			scopeFunction(filterController.getScopeFunction());
+			
+			
 			setExercise(filterController.getExercise());
 			setBudgetCategory(filterController.getBudgetCategory());
 			section(filterController.getSection());
@@ -890,12 +931,14 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			region(filterController.getRegion());
 			department(filterController.getDepartment());
 			subPrefecture(filterController.getSubPrefecture());
+			
 			return this;
 		}
+		*/
 		
 		public LazyDataModelListenerImpl scopeFunction(ScopeFunction scopeFunction) {
-			this.scopeFunction = scopeFunction;
-			if(this.scopeFunction == null)
+			//this.scopeFunction = scopeFunction;
+			if(scopeFunction == null)
 				return this;
 			if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER.equals(scopeFunction.getFunctionCode()))
 				getCreditManager().getHolder().setFilter(scopeFunction.getCode());
@@ -920,7 +963,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		
 		@Override
 		public List<Assignments> read(LazyDataModel<Assignments> lazyDataModel) {
-			if(budgetCategory == null)
+			if(filterController == null || ((AssignmentsFilterController)filterController).getBudgetCategoryInitial() == null)
 				return null;
 			return super.read(lazyDataModel);
 		}
@@ -942,58 +985,55 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		@Override
 		public Filter.Dto instantiateFilter(LazyDataModel<Assignments> lazyDataModel) {
 			Filter.Dto filter = super.instantiateFilter(lazyDataModel);
-			filter = addFieldIfValueNotNull(filter, exercise,budgetCategory,section, administrativeUnit, budgetSpecializationUnit, action, expenditureNature, activityCategory, activity,activities
-					, economicNature, scopeFunction,region,department,subPrefecture);			
+			filter = addFieldIfValueNotNull(filter, (AssignmentsFilterController) filterController);			
 			if(allHoldersDefined != null && Boolean.TRUE.equals(allHoldersDefined))
 				filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ALL_HOLDERS_DEFINED_NULLABLE, Boolean.FALSE, filter);
 			if(someHoldersNotDefined != null && Boolean.TRUE.equals(someHoldersNotDefined))
 				filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_SOME_HOLDERS_NOT_DEFINED_NULLABLE, Boolean.FALSE, filter);
-			
 			return filter;
 		}
 		
-		public static Filter.Dto addFieldIfValueNotNull(Filter.Dto filter,Integer exercise,BudgetCategory budgetCategory,Section section,AdministrativeUnit administrativeUnit,BudgetSpecializationUnit budgetSpecializationUnit
-				,Action action,ExpenditureNature expenditureNature,ActivityCategory activityCategory,Activity activity,Collection<Activity> activities
-				,EconomicNature economicNature,ScopeFunction scopeFunction,Locality region,Locality department,Locality subPrefecture) {
-			
+		public static Filter.Dto addFieldIfValueNotNull(Filter.Dto filter,AssignmentsFilterController filterController) {
+			if(filterController == null)
+				return filter;
 			/* Identifiers */
-			if(CollectionHelper.isNotEmpty(activities))
-				filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACTIVITIES_IDENTIFIERS, FieldHelper.readSystemIdentifiers(activities), filter);
+			if(CollectionHelper.isNotEmpty(filterController.getActivitiesInitial()))
+				filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACTIVITIES_IDENTIFIERS, FieldHelper.readSystemIdentifiers(filterController.getActivitiesInitial()), filter);
 			
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_EXERCISE, exercise, filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER, FieldHelper.readSystemIdentifier(budgetCategory), filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_SECTION_IDENTIFIER, FieldHelper.readSystemIdentifier(section), filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT_IDENTIFIER, FieldHelper.readSystemIdentifier(administrativeUnit), filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER, FieldHelper.readSystemIdentifier(budgetSpecializationUnit), filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACTION_IDENTIFIER, FieldHelper.readSystemIdentifier(action), filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_EXPENDITURE_NATURE_IDENTIFIER, FieldHelper.readSystemIdentifier(expenditureNature), filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_CATEGORY_IDENTIFIER, FieldHelper.readSystemIdentifier(activityCategory), filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_IDENTIFIER, FieldHelper.readSystemIdentifier(activity), filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_EXERCISE, filterController.getExerciseInitial(), filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER, FieldHelper.readSystemIdentifier(filterController.getBudgetCategoryInitial()), filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_SECTION_IDENTIFIER, FieldHelper.readSystemIdentifier(filterController.getSectionInitial()), filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT_IDENTIFIER, FieldHelper.readSystemIdentifier(filterController.getAdministrativeUnitInitial()), filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER, FieldHelper.readSystemIdentifier(filterController.getBudgetSpecializationUnitInitial()), filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACTION_IDENTIFIER, FieldHelper.readSystemIdentifier(filterController.getActionInitial()), filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_EXPENDITURE_NATURE_IDENTIFIER, FieldHelper.readSystemIdentifier(filterController.getExpenditureNatureInitial()), filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_CATEGORY_IDENTIFIER, FieldHelper.readSystemIdentifier(filterController.getActivityCategoryInitial()), filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_IDENTIFIER, FieldHelper.readSystemIdentifier(filterController.getActivityInitial()), filter);
 			
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_REGION_IDENTIFIER, FieldHelper.readSystemIdentifier(region), filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_DEPARTMENT_IDENTIFIER, FieldHelper.readSystemIdentifier(department), filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_SUB_PREFECTURE_IDENTIFIER, FieldHelper.readSystemIdentifier(subPrefecture), filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_REGION_IDENTIFIER, FieldHelper.readSystemIdentifier(filterController.getRegionInitial()), filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_DEPARTMENT_IDENTIFIER, FieldHelper.readSystemIdentifier(filterController.getDepartmentInitial()), filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_SUB_PREFECTURE_IDENTIFIER, FieldHelper.readSystemIdentifier(filterController.getSubPrefectureInitial()), filter);
 			
-			if(scopeFunction != null) {
-				if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER.equals(scopeFunction.getFunctionCode()))
-					filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER_IDENTIFIER, FieldHelper.readSystemIdentifier(scopeFunction), filter);
-				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_HOLDER.equals(scopeFunction.getFunctionCode()))
-					filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_IDENTIFIER, FieldHelper.readSystemIdentifier(scopeFunction), filter);
-				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_HOLDER.equals(scopeFunction.getFunctionCode()))
-					filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_IDENTIFIER, FieldHelper.readSystemIdentifier(scopeFunction), filter);
-				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_HOLDER.equals(scopeFunction.getFunctionCode()))
-					filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACCOUNTING_HOLDER_IDENTIFIER, FieldHelper.readSystemIdentifier(scopeFunction), filter);	
+			if(filterController.getScopeFunctionInitial() != null) {
+				if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER.equals(filterController.getScopeFunctionInitial().getFunctionCode()))
+					filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER_IDENTIFIER, FieldHelper.readSystemIdentifier(filterController.getScopeFunctionInitial()), filter);
+				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_HOLDER.equals(filterController.getScopeFunctionInitial().getFunctionCode()))
+					filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_IDENTIFIER, FieldHelper.readSystemIdentifier(filterController.getScopeFunctionInitial()), filter);
+				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_HOLDER.equals(filterController.getScopeFunctionInitial().getFunctionCode()))
+					filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_IDENTIFIER, FieldHelper.readSystemIdentifier(filterController.getScopeFunctionInitial()), filter);
+				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_HOLDER.equals(filterController.getScopeFunctionInitial().getFunctionCode()))
+					filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACCOUNTING_HOLDER_IDENTIFIER, FieldHelper.readSystemIdentifier(filterController.getScopeFunctionInitial()), filter);	
 			}
 			
 			/* Codes */ // This is used because some functionalities still use codes for filtering. Think to a better way to handled it.
 			
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_SECTION, FieldHelper.readBusinessIdentifier(section), filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT, FieldHelper.readBusinessIdentifier(administrativeUnit), filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT, FieldHelper.readBusinessIdentifier(budgetSpecializationUnit), filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACTION, FieldHelper.readBusinessIdentifier(action), filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_EXPENDITURE_NATURE, FieldHelper.readBusinessIdentifier(expenditureNature), filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_CATEGORY, FieldHelper.readBusinessIdentifier(activityCategory), filter);
-			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY, FieldHelper.readBusinessIdentifier(activity), filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_SECTION, FieldHelper.readBusinessIdentifier(filterController.getSectionInitial()), filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT, FieldHelper.readBusinessIdentifier(filterController.getAdministrativeUnitInitial()), filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT, FieldHelper.readBusinessIdentifier(filterController.getBudgetSpecializationUnitInitial()), filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACTION, FieldHelper.readBusinessIdentifier(filterController.getActionInitial()), filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_EXPENDITURE_NATURE, FieldHelper.readBusinessIdentifier(filterController.getExpenditureNatureInitial()), filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_CATEGORY, FieldHelper.readBusinessIdentifier(filterController.getActivityCategoryInitial()), filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY, FieldHelper.readBusinessIdentifier(filterController.getActivityInitial()), filter);
 			
 			return filter;
 		}
@@ -1011,4 +1051,6 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			private ScopeFunctionData assistant = new ScopeFunctionData();
 		}
 	}
+	
+	public static final String OUTCOME = "assignmentsListView";
 }

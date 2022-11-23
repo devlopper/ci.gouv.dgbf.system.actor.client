@@ -61,16 +61,20 @@ public class AssignmentsCollectionEditScopeFunctionsPage extends AbstractPageCon
 	private Map<String,Object[]> initialValues = new HashMap<>();
 	private CommandButton saveCommandButton;
 	
-	private AssignmentsListPage.PageArguments pageArguments = new AssignmentsListPage.PageArguments();
+	//@Deprecated
+	//private AssignmentsListPage.PageArguments pageArguments = new AssignmentsListPage.PageArguments();
+	private AssignmentsFilterController filterController;
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return AssignmentsListPage.buildWindowTitleValue("Modification des affectations", pageArguments);
+		return filterController.generateWindowTitleValue("Modification des affectations"); //AssignmentsListPage.buildWindowTitleValue("Modification des affectations", pageArguments);
 	}
 	
 	@Override
 	protected void __listenPostConstruct__() {
-		pageArguments.initialize();
+		//pageArguments.initialize();
+		filterController = new AssignmentsFilterController();
+		filterController.initialize();
 		super.__listenPostConstruct__();
 		creditManagerHolderAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER
 				,FIELD_CREDIT_MANAGER_HOLDER_AUTO_COMPLETE,Assignments.FIELD_CREDIT_MANAGER_HOLDER);
@@ -97,8 +101,8 @@ public class AssignmentsCollectionEditScopeFunctionsPage extends AbstractPageCon
 	
 	private DataTable buildDataTable() {
 		assignmentsDataTable = AssignmentsListPage.buildDataTable(DataTable.FIELD_LISTENER,new DataTableListenerImpl()
-				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,AssignmentsListPage.DataTableListenerImpl.buildColumnsNames(pageArguments)
-				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl().applyPageArguments(pageArguments)
+				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,filterController.generateColumnsNames()// AssignmentsListPage.DataTableListenerImpl.buildColumnsNames(pageArguments)
+				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl().scopeFunction(filterController.getScopeFunction()).setFilterController(filterController) //applyPageArguments(pageArguments)
 				,DataTable.FIELD_RENDER_TYPE,org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection.RenderType.INPUT
 				);
 		return assignmentsDataTable;

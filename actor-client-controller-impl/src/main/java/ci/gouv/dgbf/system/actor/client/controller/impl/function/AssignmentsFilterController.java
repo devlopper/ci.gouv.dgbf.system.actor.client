@@ -11,6 +11,8 @@ import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
+import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
@@ -34,6 +36,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.Action;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Activity;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ActivityCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Assignments;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ExpenditureNature;
@@ -66,6 +69,7 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 	private Section sectionInitial;
 	private AdministrativeUnit administrativeUnitInitial;
 	private BudgetSpecializationUnit budgetSpecializationUnitInitial;
+	private Action actionInitial;
 	private ActivityCategory activityCategoryInitial;
 	private ExpenditureNature expenditureNatureInitial;
 	private Activity activityInitial;
@@ -75,6 +79,8 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 	private Locality departmentInitial;
 	private Locality subPrefectureInitial;
 	private ScopeFunction scopeFunctionInitial;
+	
+	private Collection<BudgetCategory> visibleBudgetCategories;
 	
 	public AssignmentsFilterController() {
 		exerciseInitial = NumberHelper.getInteger(WebController.getInstance().getRequestParameter("exercice"),2022);
@@ -137,7 +143,10 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 			
 			if(budgetCategoryInitial == null)
 				budgetCategoryInitial = WebController.getInstance().getRequestParameterEntityAsParentBySystemIdentifier(BudgetCategory.class, null);
-			
+			if(budgetCategoryInitial == null) {
+				visibleBudgetCategories = __inject__(BudgetCategoryController.class).readVisiblesByLoggedInActorCodeForUI();
+				budgetCategoryInitial = CollectionHelper.getFirst(visibleBudgetCategories);
+			}
 			if(sectionInitial == null)
 				sectionInitial = WebController.getInstance().getRequestParameterEntityAsParentBySystemIdentifier(Section.class, null);
 			
@@ -210,7 +219,8 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 	}
 	
 	@Override
-	protected void buildInputs() {
+	protected void __buildInputs__() {
+		super.__buildInputs__();
 		buildInputSelectOne(FIELD_BUDGET_CATEGORY_SELECT_ONE,BudgetCategory.class);
 		buildInputSelectOne(FIELD_EXERCISE_SELECT_ONE,Integer.class);
 		buildInputSelectOne(FIELD_SECTION_SELECT_ONE, Section.class);
@@ -301,7 +311,9 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 				,new SelectOneCombo.Listener.AbstractImpl<BudgetCategory>() {
 			@Override
 			public Collection<BudgetCategory> computeChoices(AbstractInputChoice<BudgetCategory> input) {
-				Collection<BudgetCategory> choices = __inject__(BudgetCategoryController.class).readVisiblesByLoggedInActorCodeForUI();
+				Collection<BudgetCategory> choices = visibleBudgetCategories == null ? __inject__(BudgetCategoryController.class).readVisiblesByLoggedInActorCodeForUI() : new ArrayList<>(visibleBudgetCategories);
+				if(budgetCategoryInitial == null)
+					budgetCategoryInitial = CollectionHelper.getFirst(choices);
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
 			}
@@ -657,6 +669,117 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,filterCommandButton,Cell.FIELD_WIDTH,1));
 			
 		return cellsMaps;
+	}
+	
+	public Collection<String> generateColumnsNames() {
+		Collection<String> columnsFieldsNames = new ArrayList<>();
+		if(activityInitial == null && budgetSpecializationUnitInitial == null && budgetCategoryInitial == null)
+			columnsFieldsNames.add(Assignments.FIELD_BUDGET_CATEGORY_AS_STRING);	
+		if(activityInitial == null && budgetSpecializationUnitInitial == null && sectionInitial == null)
+			columnsFieldsNames.add(Assignments.FIELD_SECTION_AS_STRING);
+		if(activityInitial == null && administrativeUnitInitial == null)
+			columnsFieldsNames.add(Assignments.FIELD_ADMINISTRATIVE_UNIT_AS_STRING);	
+		if(activityInitial == null && budgetSpecializationUnitInitial == null)
+			columnsFieldsNames.add(Assignments.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING);			
+		if(activityInitial == null)
+			columnsFieldsNames.add(Assignments.FIELD_ACTIVITY_AS_STRING);
+		columnsFieldsNames.add(Assignments.FIELD_ECONOMIC_NATURE_AS_STRING);	
+		//if(activity == null)
+		//	columnsFieldsNames.addAll(List.of(Assignments.FIELD_ADMINISTRATIVE_UNIT_AS_STRING));
+		if(activityInitial == null && expenditureNatureInitial == null)
+			columnsFieldsNames.add(Assignments.FIELD_EXPENDITURE_NATURE_AS_STRING);
+		if(activityInitial == null && activityCategoryInitial == null)
+			columnsFieldsNames.add(Assignments.FIELD_ACTIVITY_CATEGORY_AS_STRING);			
+		
+		if(scopeFunctionInitial == null || StringHelper.isBlank(scopeFunctionInitial.getFunctionCode())) {
+			columnsFieldsNames.addAll(List.of(Assignments.FIELD_CREDIT_MANAGER_HOLDER_AS_STRING,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER_AS_STRING
+					,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER_AS_STRING,Assignments.FIELD_ACCOUNTING_HOLDER_AS_STRING));
+		}else {
+			if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER.equals(scopeFunctionInitial.getFunctionCode()))
+				columnsFieldsNames.addAll(List.of(Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER_AS_STRING
+						,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER_AS_STRING,Assignments.FIELD_ACCOUNTING_HOLDER_AS_STRING));
+			else if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_HOLDER.equals(scopeFunctionInitial.getFunctionCode()))
+				columnsFieldsNames.addAll(List.of(Assignments.FIELD_CREDIT_MANAGER_HOLDER_AS_STRING
+						,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER_AS_STRING,Assignments.FIELD_ACCOUNTING_HOLDER_AS_STRING));
+			else if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_HOLDER.equals(scopeFunctionInitial.getFunctionCode()))
+				columnsFieldsNames.addAll(List.of(Assignments.FIELD_CREDIT_MANAGER_HOLDER_AS_STRING,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER_AS_STRING
+						,Assignments.FIELD_ACCOUNTING_HOLDER_AS_STRING));
+			else if(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_HOLDER.equals(scopeFunctionInitial.getFunctionCode()))
+				columnsFieldsNames.addAll(List.of(Assignments.FIELD_CREDIT_MANAGER_HOLDER_AS_STRING,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER_AS_STRING
+						,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER_AS_STRING));					
+		}		
+		return columnsFieldsNames;
+	}
+	
+	public String generateWindowTitleValue(String prefix) {
+		Collection<String> strings = generateWindowTitleValues(prefix);
+		return StringHelper.concatenate(strings, " | ");
+	}
+	
+	protected Collection<String> generateWindowTitleValues(String prefix) {
+		Collection<String> strings = new ArrayList<>();
+		strings.add(prefix);
+		if(exerciseInitial != null) {
+			strings.add("Exercice "+exerciseInitial);
+		}
+		if(CollectionHelper.isEmpty(activitiesInitial)) {
+			if(budgetCategoryInitial != null) {
+				strings.add(budgetCategoryInitial.toString());
+			}
+			if(sectionInitial != null) {
+				if(administrativeUnitInitial == null && budgetSpecializationUnitInitial == null)
+					strings.add(sectionInitial.toString());
+				else
+					strings.add("Section "+sectionInitial.getCode());
+			}
+			if(administrativeUnitInitial != null) {
+				strings.add(administrativeUnitInitial.toString());
+			}
+			if(budgetSpecializationUnitInitial != null) {
+				if(actionInitial == null && activityInitial == null)
+					strings.add(budgetSpecializationUnitInitial.toString());
+				else
+					strings.add((budgetSpecializationUnitInitial.getCode().startsWith("1") ? "Dotation":"Programme")+" "+budgetSpecializationUnitInitial.getCode());
+			}
+			if(actionInitial != null) {
+				if(activityInitial == null)
+					strings.add(actionInitial.toString());
+				else
+					strings.add("Action "+actionInitial.getCode());
+			}
+			
+			if(activityInitial == null) {
+				if(expenditureNatureInitial != null)
+					strings.add("Nature de dépense : "+expenditureNatureInitial.toString());
+				if(activityCategoryInitial != null)
+					strings.add("Catégorie d'activité : "+activityCategoryInitial.toString());	
+			}else {
+				strings.add(activityInitial.toString());
+			}
+			
+			if(ValueHelper.isNotBlank(WebController.getInstance().getRequestParameter(ParameterName.stringify(Locality.class)))) {
+				if(regionInitial != null && departmentInitial == null && subPrefectureInitial == null)
+					strings.add(regionInitial.toString());
+				
+				if(departmentInitial != null && subPrefectureInitial == null)
+					strings.add(departmentInitial.toString());
+				
+				if(subPrefectureInitial != null)
+					strings.add(subPrefectureInitial.toString());
+			}
+			
+			if(scopeFunctionInitial == null) {
+					
+			}else {
+				strings.add(scopeFunctionInitial.toString());
+			}
+		}else {
+			activitiesInitial.forEach(a -> {
+				strings.add(a.toString());
+			});
+		}
+		
+		return strings;
 	}
 	
 	public Integer getExercise() {

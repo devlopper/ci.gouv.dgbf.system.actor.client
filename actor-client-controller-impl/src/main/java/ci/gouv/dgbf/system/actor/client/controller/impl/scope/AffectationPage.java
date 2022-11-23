@@ -67,8 +67,10 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		selectedTab = TabMenu.Tab.getSelectedByRequestParameter(TABS);
 		if(selectedTab != null && TAB_SCOPE_FUNCTION.equals(selectedTab.getParameterValue()))
 			scopeFunctionFilterController = new ScopeFunctionFilterController();
-		if(selectedTab != null && TAB_ASSIGNMENTS.equals(selectedTab.getParameterValue()))
+		if(selectedTab != null && TAB_ASSIGNMENTS.equals(selectedTab.getParameterValue())) {
 			assignmentsFilterController = new AssignmentsFilterController();
+			assignmentsFilterController.build();
+		}
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
 		buildTabMenu(cellsMaps);
 		buildTab(cellsMaps);
@@ -149,7 +151,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	
 	public TabMenu buildAssignmentsTabMenu() {
 		Collection<MenuItem> items = new ArrayList<>();
-		Long total = assignmentsFilterController == null || assignmentsFilterController.getBudgetCategory() == null ? 0 : count(TAB_ASSIGNMENTS_ALL);
+		Long total = assignmentsFilterController == null || assignmentsFilterController.getBudgetCategoryInitial() == null ? 0 : count(TAB_ASSIGNMENTS_ALL);
 		for(Integer index = 0; index < ASSIGNMENTS_TABS.size(); index = index + 1) {
 			TabMenu.Tab tab = ASSIGNMENTS_TABS.get(index);
 			MenuItem item = new MenuItem();
@@ -167,24 +169,24 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 					name = String.format("%s (%s|%s)", tab.getName(),count,NumberHelper.computePercentageAsInteger(count, total)+"%");
 				}
 			}
-			if(assignmentsFilterController.getExercise() != null)
-				item.addParameter("exercice", assignmentsFilterController.getExercise().toString());
+			if(assignmentsFilterController.getExerciseInitial() != null)
+				item.addParameter("exercice", assignmentsFilterController.getExerciseInitial().toString());
 			item.setValue(name).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_ASSIGNMENTS).addParameter(TAB_ASSIGNMENTS_PARAMETER_NAME, tab.getParameterValue());			
-			item.addParameterFromInstance(assignmentsFilterController.getBudgetCategory());
-			item.addParameterFromInstanceIfConditionIsTrue(assignmentsFilterController.getSection(),assignmentsFilterController.getAdministrativeUnit() == null 
-					&& assignmentsFilterController.getBudgetSpecializationUnit() == null && assignmentsFilterController.getAction() == null && assignmentsFilterController.getActivity() == null);
-			item.addParameterFromInstanceIfConditionIsTrue(assignmentsFilterController.getAdministrativeUnit(),assignmentsFilterController.getActivity() == null);
-			item.addParameterFromInstanceIfConditionIsTrue(assignmentsFilterController.getBudgetSpecializationUnit(),assignmentsFilterController.getAction() == null && assignmentsFilterController.getActivity() == null);
-			item.addParameterFromInstanceIfConditionIsTrue(assignmentsFilterController.getAction(),assignmentsFilterController.getActivity() == null);
-			item.addParameterFromInstance(assignmentsFilterController.getActivity());
-			item.addParameterFromInstanceIfConditionIsTrue(assignmentsFilterController.getExpenditureNature(),assignmentsFilterController.getActivity() == null);
-			item.addParameterFromInstanceIfConditionIsTrue(assignmentsFilterController.getActivityCategory(),assignmentsFilterController.getActivity() == null);
-			item.addParameterFromInstanceIfConditionIsTrue(assignmentsFilterController.getFunction(),assignmentsFilterController.getScopeFunction() == null);
-			item.addParameterFromInstance(assignmentsFilterController.getScopeFunction());			
+			item.addParameterFromInstance(assignmentsFilterController.getBudgetCategoryInitial());
+			item.addParameterFromInstanceIfConditionIsTrue(assignmentsFilterController.getSectionInitial(),assignmentsFilterController.getAdministrativeUnitInitial() == null 
+					&& assignmentsFilterController.getBudgetSpecializationUnitInitial() == null && assignmentsFilterController.getActionInitial() == null && assignmentsFilterController.getActivityInitial() == null);
+			item.addParameterFromInstanceIfConditionIsTrue(assignmentsFilterController.getAdministrativeUnitInitial(),assignmentsFilterController.getActivityInitial() == null);
+			item.addParameterFromInstanceIfConditionIsTrue(assignmentsFilterController.getBudgetSpecializationUnitInitial(),assignmentsFilterController.getActionInitial() == null && assignmentsFilterController.getActivityInitial() == null);
+			item.addParameterFromInstanceIfConditionIsTrue(assignmentsFilterController.getActionInitial(),assignmentsFilterController.getActivityInitial() == null);
+			item.addParameterFromInstance(assignmentsFilterController.getActivityInitial());
+			item.addParameterFromInstanceIfConditionIsTrue(assignmentsFilterController.getExpenditureNatureInitial(),assignmentsFilterController.getActivityInitial() == null);
+			item.addParameterFromInstanceIfConditionIsTrue(assignmentsFilterController.getActivityCategory(),assignmentsFilterController.getActivityInitial() == null);
+			item.addParameterFromInstanceIfConditionIsTrue(assignmentsFilterController.getFunctionInitial(),assignmentsFilterController.getScopeFunctionInitial() == null);
+			item.addParameterFromInstance(assignmentsFilterController.getScopeFunctionInitial());			
 			if(StringHelper.isNotBlank(localityIdentifier))
 				item.addParameterFromInstance(assignmentsFilterController.getLocality());
-			if(CollectionHelper.isNotEmpty(assignmentsFilterController.getActivities())) {
-				assignmentsFilterController.getActivities().forEach(x -> {
+			if(CollectionHelper.isNotEmpty(assignmentsFilterController.getActivitiesInitial())) {
+				assignmentsFilterController.getActivitiesInitial().forEach(x -> {
 					item.addParameter(ParameterName.stringifyMany(Activity.class), (String)FieldHelper.readSystemIdentifier(x));
 				});
 				
@@ -197,21 +199,17 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	
 	public DataTable buildAssignmentsDataTable() {
 		AssignmentsListPage.LazyDataModelListenerImpl lazyDataModelListener = new AssignmentsListPage.LazyDataModelListenerImpl();
-		lazyDataModelListener.applyFilterController(assignmentsFilterController);
+		lazyDataModelListener.scopeFunction(assignmentsFilterController.getScopeFunction()).setFilterController(assignmentsFilterController); //.applyFilterController(assignmentsFilterController);
 		if(selectedAssignmentsTab.getParameterValue().equals(TAB_ASSIGNMENTS_FULLY_ASSIGNED)) {
 			lazyDataModelListener.setAllHoldersDefined(Boolean.TRUE);
 		}else if(selectedAssignmentsTab.getParameterValue().equals(TAB_ASSIGNMENTS_NOT_FULLY_ASSIGNED)) {
 			lazyDataModelListener.setSomeHoldersNotDefined(Boolean.TRUE);
-		}		
+		}
 		AssignmentsListPage.DataTableListenerImpl dataTableListener = new AssignmentsListPage.DataTableListenerImpl();		
-		DataTable dataTable = AssignmentsListPage.buildDataTable(AssignmentsListPage.class,Boolean.TRUE
+		DataTable dataTable = AssignmentsListPage.buildDataTable(AssignmentsListPage.class,Boolean.TRUE,AssignmentsFilterController.class,assignmentsFilterController,AssignmentsListPage.OUTCOME,OUTCOME
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,lazyDataModelListener
 				,DataTable.ConfiguratorImpl.FIELD_LISTENER,dataTableListener
-				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,AssignmentsListPage.DataTableListenerImpl
-				.buildColumnsNames(assignmentsFilterController.getBudgetCategory(),assignmentsFilterController.getSection(),assignmentsFilterController.getAdministrativeUnit()
-						, assignmentsFilterController.getBudgetSpecializationUnit(), assignmentsFilterController.getActivity()
-						, assignmentsFilterController.getExpenditureNature(), assignmentsFilterController.getActivityCategory(),assignmentsFilterController.getScopeFunction())
-				
+				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,assignmentsFilterController.generateColumnsNames()
 				,"exercice",StringHelper.get(assignmentsFilterController.getExercise())
 				,BudgetCategory.class,assignmentsFilterController.getBudgetCategory(),Section.class,assignmentsFilterController.getSection(),AdministrativeUnit.class,assignmentsFilterController.getAdministrativeUnit()
 				,BudgetSpecializationUnit.class,assignmentsFilterController.getBudgetSpecializationUnit()
@@ -221,6 +219,9 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 				,Locality.class,assignmentsFilterController.getLocality()
 				,ParameterName.stringifyMany(Activity.class),FieldHelper.readSystemIdentifiersAsStrings(assignmentsFilterController.getActivities())
 				);
+		
+		dataTable.setIsFilterControllerGettable(Boolean.FALSE); // Data will be lazy rendered then do lazy render filter else some action wont work like showing dialog on button click 
+		
 		return dataTable;
 	}
 	
@@ -235,12 +236,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		}else if(value.equals(TAB_ASSIGNMENTS_ALL)) {
 			
 		}
-		AssignmentsListPage.LazyDataModelListenerImpl.addFieldIfValueNotNull(arguments.getRepresentationArguments().getQueryExecutorArguments().getFilter(Boolean.TRUE)
-				, assignmentsFilterController.getExercise() , assignmentsFilterController.getBudgetCategory() , assignmentsFilterController.getSection()
-				, assignmentsFilterController.getAdministrativeUnit(), assignmentsFilterController.getBudgetSpecializationUnit()
-				, assignmentsFilterController.getAction(), assignmentsFilterController.getExpenditureNature(), assignmentsFilterController.getActivityCategory()
-				, assignmentsFilterController.getActivity(),assignmentsFilterController.getActivities(), null, assignmentsFilterController.getScopeFunction()
-				,assignmentsFilterController.getRegion(),assignmentsFilterController.getDepartment(),assignmentsFilterController.getSubPrefecture());
+		AssignmentsListPage.LazyDataModelListenerImpl.addFieldIfValueNotNull(arguments.getRepresentationArguments().getQueryExecutorArguments().getFilter(Boolean.TRUE), assignmentsFilterController);
 		return EntityCounter.getInstance().count(Assignments.class,arguments);
 	}
 	
@@ -255,11 +251,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		if(TAB_SCOPE_FUNCTION.equals(selectedTab.getParameterValue()))
 			return ScopeFunctionListPage.buildWindowTitleValue(selectedTab.getName(), scopeFunctionFilterController.getFunction());
 		else if(TAB_ASSIGNMENTS.equals(selectedTab.getParameterValue()))
-			return AssignmentsListPage.buildWindowTitleValue(selectedAssignmentsTab.getName(),assignmentsFilterController.getExercise() ,assignmentsFilterController.getBudgetCategory(),assignmentsFilterController.getSection()
-					,assignmentsFilterController.getAdministrativeUnit(), assignmentsFilterController.getBudgetSpecializationUnit()
-					,assignmentsFilterController.getAction(), assignmentsFilterController.getActivity(),assignmentsFilterController.getActivities(),assignmentsFilterController.getExpenditureNature()
-					,assignmentsFilterController.getActivityCategory(),assignmentsFilterController.getScopeFunction(),assignmentsFilterController.getRegion()
-					,assignmentsFilterController.getDepartment(),assignmentsFilterController.getSubPrefecture());
+			return assignmentsFilterController.generateWindowTitleValue(selectedAssignmentsTab.getName());
 		return "Affectation";
 	}
 	
@@ -268,12 +260,10 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	/*         Assignments */
 	
 	private void buildTabAssignmentsGlobalFilters(Collection<Map<Object,Object>> cellsMaps) {		
-		if(assignmentsFilterController == null)
-			assignmentsFilterController = new AssignmentsFilterController();
 		assignmentsFilterController.build();
 		assignmentsFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(OUTCOME).addParameter(TabMenu.Tab.PARAMETER_NAME, selectedTab.getParameterValue());			
 		assignmentsFilterController.getActivitySelectionController().getOnSelectRedirectorArguments(Boolean.TRUE).outcome(OUTCOME).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_ASSIGNMENTS);
-		assignmentsFilterController.getActivitySelectionController().getOnSelectRedirectorArguments().addParameter(TAB_ASSIGNMENTS_PARAMETER_NAME, selectedAssignmentsTab.getParameterValue());				
+		assignmentsFilterController.getActivitySelectionController().getOnSelectRedirectorArguments().addParameter(TAB_ASSIGNMENTS_PARAMETER_NAME, selectedAssignmentsTab.getParameterValue());
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,assignmentsFilterController.getLayout(),Cell.FIELD_WIDTH,12));
 	}
 	
