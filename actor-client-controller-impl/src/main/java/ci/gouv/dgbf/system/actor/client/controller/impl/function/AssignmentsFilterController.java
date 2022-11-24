@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
@@ -29,6 +30,7 @@ import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import ci.gouv.dgbf.system.actor.client.controller.api.ActivityCategoryController;
 import ci.gouv.dgbf.system.actor.client.controller.api.BudgetCategoryController;
 import ci.gouv.dgbf.system.actor.client.controller.api.BudgetSpecializationUnitController;
+import ci.gouv.dgbf.system.actor.client.controller.api.ExerciseController;
 import ci.gouv.dgbf.system.actor.client.controller.api.ExpenditureNatureController;
 import ci.gouv.dgbf.system.actor.client.controller.api.LocalityController;
 import ci.gouv.dgbf.system.actor.client.controller.api.SectionController;
@@ -39,6 +41,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Assignments;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Exercise;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ExpenditureNature;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Locality;
@@ -299,7 +302,8 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 				,new SelectOneCombo.Listener.AbstractImpl<Integer>() {
 			@Override
 			public Collection<Integer> computeChoices(AbstractInputChoice<Integer> input) {
-				Collection<Integer> choices = List.of(2021,2022);
+				Collection<Exercise> exercises = __inject__(ExerciseController.class).readAllForUI();
+				Collection<Integer> choices = exercises == null ? List.of(2021,2022) : exercises.stream().map(x -> NumberHelper.getInteger(x.getCode())).collect(Collectors.toList()); //List.of(2021,2022);
 				return choices;
 			}
 		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Exercice");
@@ -312,8 +316,6 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 			@Override
 			public Collection<BudgetCategory> computeChoices(AbstractInputChoice<BudgetCategory> input) {
 				Collection<BudgetCategory> choices = visibleBudgetCategories == null ? __inject__(BudgetCategoryController.class).readVisiblesByLoggedInActorCodeForUI() : new ArrayList<>(visibleBudgetCategories);
-				if(budgetCategoryInitial == null)
-					budgetCategoryInitial = CollectionHelper.getFirst(choices);
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
 			}
