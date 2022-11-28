@@ -63,23 +63,23 @@ public class ScopeFunctionCreatePage extends AbstractEntityEditPageContainerMana
 				super.select(input, choice);
 				nameInputText.setValue(null);
 				initializeCellsRenderedByIndexes();				
-				if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_G1.equals(choice))
+				if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.CODE_G1.equals(choice))
 					form.getLayout().setCellsRenderedByIndexes(Boolean.TRUE,2,3,4,5,10,11);
-				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_G_EPN.equals(choice))
+				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.CODE_G6.equals(choice))
 					form.getLayout().setCellsRenderedByIndexes(Boolean.TRUE,2,3,4,5,10,11);
 				
-				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_O2.equals(choice))
+				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.CODE_O2.equals(choice))
 					form.getLayout().setCellsRenderedByIndexes(Boolean.TRUE,2,3,6,7,10,11);	
-				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_O3.equals(choice))
+				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.CODE_O3.equals(choice))
 					form.getLayout().setCellsRenderedByIndexes(Boolean.TRUE,2,3,6,7,8,9,10,11);
-				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_O9.equals(choice))
+				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.CODE_O9.equals(choice))
 					form.getLayout().setCellsRenderedByIndexes(Boolean.TRUE,2,3,6,7,10,11);
 				
-				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_C1.equals(choice))
+				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.CODE_C1.equals(choice))
 					form.getLayout().setCellsRenderedByIndexes(Boolean.TRUE,2,3,4,5,10,11);
-				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_C2.equals(choice))
+				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.CODE_C2.equals(choice))
 					form.getLayout().setCellsRenderedByIndexes(Boolean.TRUE,2,3,4,5,10,11);
-				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_C3.equals(choice))
+				else if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.CODE_C3.equals(choice))
 					form.getLayout().setCellsRenderedByIndexes(Boolean.TRUE,2,3,4,5,10,11);
 			}
 		});
@@ -127,7 +127,7 @@ public class ScopeFunctionCreatePage extends AbstractEntityEditPageContainerMana
 				*/
 				List<AdministrativeUnit> choices;
 				String codePrefix = (String) AbstractInput.getValue(subFunctionCodeSelectOneCombo);
-				if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_G_EPN.equals(codePrefix)) {
+				if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.CODE_G6.equals(codePrefix)) {
 					choices = (List<AdministrativeUnit>) __inject__(AdministrativeUnitController.class).readBySectionIdentifierByServiceGroupCodeStartsWith(section.getIdentifier(),"32");
 				}else {
 					choices = (List<AdministrativeUnit>) __inject__(AdministrativeUnitController.class).readBySectionIdentifier(section.getIdentifier());
@@ -193,8 +193,8 @@ public class ScopeFunctionCreatePage extends AbstractEntityEditPageContainerMana
 	private void setAuthorizingOfficerName(InputText nameInputText,SelectOneCombo subFunctionCodeSelectOneCombo,SelectOneCombo budgetSpecializationUnitSelectOneCombo,SelectOneCombo localitySelectOneCombo) {
 		String subFunctionCode = (String) AbstractInput.getValue(subFunctionCodeSelectOneCombo);
 		BudgetSpecializationUnit budgetSpecializationUnit = (BudgetSpecializationUnit) AbstractInput.getValue(budgetSpecializationUnitSelectOneCombo);
-		if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_O2.equals(subFunctionCode)
-				|| ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_O9.equals(subFunctionCode)) {
+		if(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.CODE_O2.equals(subFunctionCode)
+				|| ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.CODE_O9.equals(subFunctionCode)) {
 			if(budgetSpecializationUnit == null)
 				nameInputText.setValue(null);
 			else {
@@ -296,42 +296,42 @@ public class ScopeFunctionCreatePage extends AbstractEntityEditPageContainerMana
 				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Fonction");
 				Collection<SelectItem> choices = new ArrayList<>();
 				choices.add(new SelectItem(null, "-- Aucune sélection --"));
-				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_G1
-						, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_NAME_G1));
+				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.CODE_G1
+						, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.NAME_G1));
 				
-				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_O2
-							, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_NAME_O2));
-				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_O3
-						, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_NAME_O3));
-				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_O9
-						, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_NAME_O9));
+				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.CODE_O2
+							, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.NAME_O2));
+				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.CODE_O3
+						, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.NAME_O3));
+				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.CODE_O9
+						, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.NAME_O9));
 				
-				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_C1
-						, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_NAME_C1));
-				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_C2
-					, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_NAME_C2));
-				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_C3
-					, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_NAME_C3));
+				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.CODE_C1
+						, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.NAME_C1));
+				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.CODE_C2
+					, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.NAME_C2));
+				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.CODE_C3
+					, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.NAME_C3));
 				
-				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_T1
-						, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_NAME_T1));
-				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_T2
-					, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_NAME_T2));
-				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_T3
-					, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_NAME_T3));
-				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_T4
-						, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_NAME_T4));
-				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_T5
-					, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_NAME_T5));
-				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_T6
-					, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_NAME_T6));
-				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_T8
-						, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_NAME_T8));
-				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_T9
-					, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_NAME_T9));
+				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.CODE_T1
+						, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.NAME_T1));
+				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.CODE_T2
+					, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.NAME_T2));
+				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.CODE_T3
+					, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.NAME_T3));
+				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.CODE_T4
+						, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.NAME_T4));
+				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.CODE_T5
+					, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.NAME_T5));
+				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.CODE_T6
+					, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.NAME_T6));
+				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.CODE_T8
+						, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.NAME_T8));
+				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.CODE_T9
+					, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.NAME_T9));
 				
-				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_CODE_G_EPN
-						, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction.CATEGORY_NAME_G_EPN));
+				choices.add(new SelectItem(ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.CODE_G6
+						, ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory.NAME_G6));
 				
 				map.put(AbstractInputChoice.FIELD_CHOICES, choices);
 			}else if(ScopeFunction.FIELD_SECTION.equals(fieldName)) {

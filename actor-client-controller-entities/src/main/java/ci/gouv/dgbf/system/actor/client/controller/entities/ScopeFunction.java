@@ -68,6 +68,8 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	private String actorAsString;	
 	private String assignmentToActorMessage;
 	
+	private String budgetCategoryAsString;
+	
 	@Input @InputChoice @InputChoiceOne @InputChoiceOneCombo private Section section;
 	@Input @InputChoice @InputChoiceOne @InputChoiceOneCombo private AdministrativeUnit administrativeUnit;
 	@Input @InputChoice @InputChoiceOne @InputChoiceOneCombo private BudgetSpecializationUnit budgetSpecializationUnit;

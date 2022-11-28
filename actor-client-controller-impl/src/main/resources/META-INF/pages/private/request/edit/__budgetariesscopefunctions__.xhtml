@@ -33,6 +33,9 @@
 		<p:column headerText="Libellé">
 			<h:outputText value="#{scopeFunction.name}"/>
 		</p:column>
+		<p:column headerText="Catégorie de budget" width="250">
+			<h:outputText value="#{scopeFunction.budgetCategoryAsString}"/>
+		</p:column>
 		<p:column headerText="-" width="80">
 			<p:commandButton value="Retirer" icon="fa fa-minus" title="Retirer" action="#{__page__.budgetaryScopeFunctionSelectionController.remove(scopeFunction)}" 
 			process="@this" update="#{__page__.budgetaryScopeFunctionSelectionController.scopeFunctionsListIdentifier}"/>		
