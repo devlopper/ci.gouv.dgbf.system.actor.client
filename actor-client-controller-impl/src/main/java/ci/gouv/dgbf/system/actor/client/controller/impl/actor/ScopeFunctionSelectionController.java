@@ -26,13 +26,16 @@ import org.cyk.utility.controller.EntityReader;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.primefaces.PrimeFaces;
 
+import ci.gouv.dgbf.system.actor.client.controller.api.BudgetCategoryComparator;
 import ci.gouv.dgbf.system.actor.client.controller.api.FunctionComparator;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
+import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetCategoryQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
@@ -44,6 +47,9 @@ import lombok.experimental.Accessors;
 @Getter @Setter @Accessors(chain=true)
 public class ScopeFunctionSelectionController implements Serializable {
 
+	private SelectOneCombo budgetCategorySelectOne;
+	private SelectOneCombo categorySelectOne;
+	
 	private SelectOneCombo functionSelectOne;
 	private SelectOneCombo sectionSelectOne;
 	
@@ -87,6 +93,48 @@ public class ScopeFunctionSelectionController implements Serializable {
 		selectedBudgetCategoryAsString = null;
 	}
 	
+	private void buildBudgetCategorySelectOne() {
+		List<BudgetCategory> budgetCategories = (List<BudgetCategory>) EntityReader.getInstance().readMany(BudgetCategory.class, BudgetCategoryQuerier.QUERY_IDENTIFIER_READ_BY_CODES_FOR_UI
+				,FunctionQuerier.PARAMETER_NAME_CODES,List.of(
+						 ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory.CODE_GENERAL
+						,ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory.CODE_EPN
+						));
+		Collections.sort(budgetCategories,new BudgetCategoryComparator());
+		
+		if(CollectionHelper.getSize(budgetCategories)>1)
+			budgetCategories.add(0, null);
+		functionSelectOne = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,BudgetCategory.class,SelectOneCombo.FIELD_CHOICES,budgetCategories
+				,SelectOneCombo.FIELD_LISTENER,new SelectOneCombo.Listener.AbstractImpl<BudgetCategory>() {
+			
+			@Override
+			public Object getChoiceLabel(AbstractInputChoice<BudgetCategory> input, BudgetCategory budgetCategory) {
+				return budgetCategory == null ? super.getChoiceLabel(input, budgetCategory) : budgetCategory.getName();
+			}
+			
+			public void select(AbstractInputChoiceOne input, BudgetCategory budgetCategory) {
+				super.select(input, budgetCategory);
+				renderInitial();
+				//layout.setCellsRenderedByIndexes(Boolean.FALSE, 2,3,4,5,6,7,8,9/*,10,11,12,13*/);
+
+				if(ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory.CODE_GENERAL.equals(budgetCategory.getCode())) {
+					/*layout.setCellsRenderedByIndexes(Boolean.TRUE, 2,3,4,5,8,9);
+					if(administrativeUnitSelectOne != null) {				
+						administrativeUnitSelectOne.setChoicesInitialized(Boolean.FALSE);
+						administrativeUnitSelectOne.updateChoices();
+						administrativeUnitSelectOne.selectFirstChoice();
+					}*/
+				}else if(ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory.CODE_EPN.equals(budgetCategory.getCode())) {
+					/*layout.setCellsRenderedByIndexes(Boolean.TRUE, 2,3,6,7,8,9);
+					if(budgetSpecializationUnitSelectOne != null) {				
+						budgetSpecializationUnitSelectOne.setChoicesInitialized(Boolean.FALSE);
+						budgetSpecializationUnitSelectOne.updateChoices();
+						budgetSpecializationUnitSelectOne.selectFirstChoice();
+					}*/
+				}
+			}
+		}).enableValueChangeListener(List.of(layoutIdentifier));
+	}
+	
 	private void buildFunctionSelectOne() {
 		List<Function> functions = (List<Function>) EntityReader.getInstance().readMany(Function.class, FunctionQuerier.QUERY_IDENTIFIER_READ_BY_CODES_FOR_UI
 				,FunctionQuerier.PARAMETER_NAME_CODES,List.of(
@@ -113,31 +161,35 @@ public class ScopeFunctionSelectionController implements Serializable {
 			
 			public void select(AbstractInputChoiceOne input, Function function) {
 				super.select(input, function);
-				layout.setCellsRenderedByIndexes(Boolean.FALSE, 2,3,4,5,6,7,8,9/*,10,11,12,13*/);
-
+				//layout.setCellsRenderedByIndexes(Boolean.FALSE, 2,3,4,5,6,7,8,9/*,10,11,12,13*/);
+				renderInitial();
 				if(Boolean.TRUE.equals(function.isCreditManager())) {
-					layout.setCellsRenderedByIndexes(Boolean.TRUE, 2,3,4,5,8,9);
+					sectionRendered(Boolean.TRUE).administrativeUnitRendered(Boolean.TRUE).scopeFunctionRendered(Boolean.TRUE);
+					//layout.setCellsRenderedByIndexes(Boolean.TRUE, 2,3,4,5,8,9);
 					if(administrativeUnitSelectOne != null) {				
 						administrativeUnitSelectOne.setChoicesInitialized(Boolean.FALSE);
 						administrativeUnitSelectOne.updateChoices();
 						administrativeUnitSelectOne.selectFirstChoice();
 					}
 				}else if(Boolean.TRUE.equals(function.isAuthorizingOfficer())) {
-					layout.setCellsRenderedByIndexes(Boolean.TRUE, 2,3,6,7,8,9);
+					sectionRendered(Boolean.TRUE).budgetSpecializationUnitRendered(Boolean.TRUE).scopeFunctionRendered(Boolean.TRUE);
+					//layout.setCellsRenderedByIndexes(Boolean.TRUE, 2,3,6,7,8,9);
 					if(budgetSpecializationUnitSelectOne != null) {				
 						budgetSpecializationUnitSelectOne.setChoicesInitialized(Boolean.FALSE);
 						budgetSpecializationUnitSelectOne.updateChoices();
 						budgetSpecializationUnitSelectOne.selectFirstChoice();
 					}
 				}else if(Boolean.TRUE.equals(function.isFinancialController())) {
-					layout.setCellsRenderedByIndexes(Boolean.TRUE, 8,9);
+					scopeFunctionRendered(Boolean.TRUE);
+					//layout.setCellsRenderedByIndexes(Boolean.TRUE, 8,9);
 					if(scopeFunctionSelectOne != null) {				
 						scopeFunctionSelectOne.setChoicesInitialized(Boolean.FALSE);
 						scopeFunctionSelectOne.updateChoices();
 						//scopeFunctionSelectOne.selectFirstChoice();
 					}
 				}else if(Boolean.TRUE.equals(function.isAccounting())) {
-					layout.setCellsRenderedByIndexes(Boolean.TRUE, 8,9);
+					scopeFunctionRendered(Boolean.TRUE);
+					//layout.setCellsRenderedByIndexes(Boolean.TRUE, 8,9);
 					if(scopeFunctionSelectOne != null) {				
 						scopeFunctionSelectOne.setChoicesInitialized(Boolean.FALSE);
 						scopeFunctionSelectOne.updateChoices();
@@ -406,6 +458,60 @@ public class ScopeFunctionSelectionController implements Serializable {
 						,MapHelper.instantiate(Cell.FIELD_CONTROL,addCommandButton,Cell.FIELD_WIDTH,12)
 					));
 		//addCommandButton.setProcess("@this");
-		layout.setCellsRenderedByIndexes(Boolean.FALSE, 2,3,4,5,6,7,8,9);		
+		renderInitial();
+		//layout.setCellsRenderedByIndexes(Boolean.FALSE, 2,3,4,5,6,7,8,9);		
 	}
+	
+	private ScopeFunctionSelectionController budgetCategoryRendered(Boolean rendered) {
+		layout.setCellsRenderedByIndexes(rendered, BUDGET_CATEGORY_LABEL_INDEX,BUDGET_CATEGORY_INPUT_INDEX);
+		return this;
+	}
+	
+	private ScopeFunctionSelectionController categoryRendered(Boolean rendered) {
+		layout.setCellsRenderedByIndexes(rendered, CATEGORY_LABEL_INDEX,CATEGORY_INPUT_INDEX);
+		return this;
+	}
+	
+	private ScopeFunctionSelectionController sectionRendered(Boolean rendered) {
+		layout.setCellsRenderedByIndexes(rendered, SECTION_LABEL_INDEX,SECTION_INPUT_INDEX);
+		return this;
+	}
+	
+	private ScopeFunctionSelectionController administrativeUnitRendered(Boolean rendered) {
+		layout.setCellsRenderedByIndexes(rendered, ADMINISTRATIVE_UNIT_LABEL_INDEX,ADMINISTRATIVE_UNIT_INPUT_INDEX);
+		return this;
+	}
+	
+	private ScopeFunctionSelectionController budgetSpecializationUnitRendered(Boolean rendered) {
+		layout.setCellsRenderedByIndexes(rendered, BUDGET_SPECIALIZATION_UNIT_LABEL_INDEX,BUDGET_SPECIALIZATION_UNIT_INPUT_INDEX);
+		return this;
+	}
+	
+	private ScopeFunctionSelectionController scopeFunctionRendered(Boolean rendered) {
+		layout.setCellsRenderedByIndexes(rendered, SCOPE_FUNCTION_LABEL_INDEX,SCOPE_FUNCTION_INPUT_INDEX);
+		return this;
+	}
+	
+	private ScopeFunctionSelectionController renderInitial() {
+		sectionRendered(Boolean.FALSE).administrativeUnitRendered(Boolean.FALSE).budgetSpecializationUnitRendered(Boolean.FALSE).scopeFunctionRendered(Boolean.FALSE);
+		return this;
+	}
+	
+	private static final Integer BUDGET_CATEGORY_LABEL_INDEX = 0;
+	private static final Integer BUDGET_CATEGORY_INPUT_INDEX = BUDGET_CATEGORY_LABEL_INDEX+0;
+	
+	private static final Integer CATEGORY_LABEL_INDEX = BUDGET_CATEGORY_INPUT_INDEX+0;
+	private static final Integer CATEGORY_INPUT_INDEX = CATEGORY_LABEL_INDEX+1;
+	
+	private static final Integer SECTION_LABEL_INDEX = CATEGORY_INPUT_INDEX+1;
+	private static final Integer SECTION_INPUT_INDEX = SECTION_LABEL_INDEX+1;
+	
+	private static final Integer ADMINISTRATIVE_UNIT_LABEL_INDEX = SECTION_INPUT_INDEX+1;
+	private static final Integer ADMINISTRATIVE_UNIT_INPUT_INDEX = ADMINISTRATIVE_UNIT_LABEL_INDEX+1;
+	
+	private static final Integer BUDGET_SPECIALIZATION_UNIT_LABEL_INDEX = ADMINISTRATIVE_UNIT_INPUT_INDEX+1;
+	private static final Integer BUDGET_SPECIALIZATION_UNIT_INPUT_INDEX = BUDGET_SPECIALIZATION_UNIT_LABEL_INDEX+1;
+	
+	private static final Integer SCOPE_FUNCTION_LABEL_INDEX = BUDGET_SPECIALIZATION_UNIT_INPUT_INDEX+1;
+	private static final Integer SCOPE_FUNCTION_INPUT_INDEX = SCOPE_FUNCTION_LABEL_INDEX+1;
 }
