@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.random.RandomHelper;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
@@ -60,6 +61,8 @@ public class ScopeFunctionSelectionController implements Serializable {
 	private Layout layout;
 	private String layoutIdentifier = RandomHelper.getAlphabetic(4);
 	
+	private String selectedBudgetCategoryAsString;
+	
 	public ScopeFunctionSelectionController() {
 		buildScopeFunctionSelectOne();
 		
@@ -81,6 +84,7 @@ public class ScopeFunctionSelectionController implements Serializable {
 		if(CollectionHelper.isEmpty(selected))
 			return;
 		selected.remove(scopeFunction);
+		selectedBudgetCategoryAsString = null;
 	}
 	
 	private void buildFunctionSelectOne() {
@@ -345,6 +349,11 @@ public class ScopeFunctionSelectionController implements Serializable {
 				protected Object __runExecuteFunction__(AbstractAction action) {
 					if(scopeFunctionSelectOne == null || scopeFunctionSelectOne.getValue() == null)
 						throw new RuntimeException("Veuillez sélectionner une fonction budgétaire");
+					ScopeFunction scopeFunction = (ScopeFunction) scopeFunctionSelectOne.getValue();
+					if(StringHelper.isBlank(selectedBudgetCategoryAsString))
+						selectedBudgetCategoryAsString = scopeFunction.getBudgetCategoryAsString();
+					else if(!selectedBudgetCategoryAsString.equals(scopeFunction.getBudgetCategoryAsString()))
+						throw new RuntimeException("Veuillez sélectionner une fonction budgétaire de la catégorie de budget : "+selectedBudgetCategoryAsString);
 					if(CollectionHelper.isNotEmpty(selected)) {
 						if(!selected.stream()
 							.filter(x -> x.getIdentifier().equals( ((ScopeFunction)scopeFunctionSelectOne.getValue()).getIdentifier())).collect(Collectors.toList()).isEmpty())
