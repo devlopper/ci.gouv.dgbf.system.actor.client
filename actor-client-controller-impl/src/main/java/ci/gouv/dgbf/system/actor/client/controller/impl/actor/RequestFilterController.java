@@ -16,6 +16,8 @@ import org.cyk.utility.__kernel__.value.ValueConverter;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoiceOne;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.InputText;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
@@ -23,8 +25,10 @@ import org.cyk.utility.controller.Arguments;
 import org.cyk.utility.controller.EntityReader;
 import org.cyk.utility.persistence.query.Filter;
 
+import ci.gouv.dgbf.system.actor.client.controller.api.BudgetCategoryController;
 import ci.gouv.dgbf.system.actor.client.controller.api.RequestTypeController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
+import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
@@ -35,6 +39,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.client.controller.impl.Helper;
 import ci.gouv.dgbf.system.actor.client.controller.impl.function.FunctionListPage;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetCategoryQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestDispatchSlipQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
@@ -49,9 +54,10 @@ import lombok.experimental.Accessors;
 public class RequestFilterController extends AbstractFilterController implements Serializable {
 
 	private SelectOneCombo sectionSelectOne,functionSelectOne,typeSelectOne,statusSelectOne,administrativeUnitSelectOne,budgetSpecializationUnitSelectOne
-		,processedSelectOne,dispatchSlipExistsSelectOne,dispatchSlipSelectOne;
+		,processedSelectOne,dispatchSlipExistsSelectOne,dispatchSlipSelectOne,budgetCategorySelectOne;
 	private InputText searchInputText;
 	
+	private BudgetCategory budgetCategoryInitial;
 	private Section sectionInitial;
 	private AdministrativeUnit administrativeUnitInitial;
 	private BudgetSpecializationUnit budgetSpecializationUnitInitial;
@@ -67,6 +73,7 @@ public class RequestFilterController extends AbstractFilterController implements
 	public RequestFilterController() {}
 	
 	public RequestFilterController(RequestFilterController requestFilterController) {
+		budgetCategoryInitial = requestFilterController.budgetCategoryInitial;
 		sectionInitial = requestFilterController.sectionInitial;
 		administrativeUnitInitial = requestFilterController.administrativeUnitInitial;
 		functionInitial = requestFilterController.functionInitial;
@@ -83,6 +90,7 @@ public class RequestFilterController extends AbstractFilterController implements
 	public RequestFilterController initialize() {
 		dispatchSlipInitial = getDispatchSlipFromRequestParameter();
 		administrativeUnitInitial = getAdministrativeUnitFromRequestParameter();		
+		budgetCategoryInitial = getBudgetCategoryFromRequestParameter();
 		
 		if(sectionInitial == null && administrativeUnitInitial != null)
 			sectionInitial = administrativeUnitInitial.getSection();
@@ -106,6 +114,13 @@ public class RequestFilterController extends AbstractFilterController implements
 		
 		searchInitial = WebController.getInstance().getRequestParameter(buildParameterName(FIELD_SEARCH_INPUT_TEXT));
 		return this;
+	}
+	
+	public static BudgetCategory getBudgetCategoryFromRequestParameter() {
+		return EntityReader.getInstance().readOneBySystemIdentifierAsParent(BudgetCategory.class, new Arguments<BudgetCategory>()
+				.queryIdentifier(BudgetCategoryQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
+				.projections(BudgetCategory.FIELD_IDENTIFIER,BudgetCategory.FIELD_CODE,BudgetCategory.FIELD_NAME)
+				.filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.stringify(BudgetCategory.class))));
 	}
 	
 	public static Section getSectionFromRequestParameter() {
@@ -153,6 +168,7 @@ public class RequestFilterController extends AbstractFilterController implements
 	
 	@Override
 	protected void buildInputs() {
+		buildInputSelectOne(FIELD_BUDGET_CATEGORY_SELECT_ONE, BudgetCategory.class);
 		buildInputSelectOne(FIELD_SECTION_SELECT_ONE, Section.class);
 		buildInputSelectOne(FIELD_ADMINISTRATIVE_UNIT_SELECT_ONE, AdministrativeUnit.class);
 		buildInputSelectOne(FIELD_FUNCTION_SELECT_ONE, Function.class);
@@ -180,6 +196,8 @@ public class RequestFilterController extends AbstractFilterController implements
 	
 	@Override
 	protected AbstractInput<?> buildInput(String fieldName, Object value) {
+		if(FIELD_BUDGET_CATEGORY_SELECT_ONE.equals(fieldName))
+			return buildBudgetCategorySelectOne((BudgetCategory) value);
 		if(FIELD_SECTION_SELECT_ONE.equals(fieldName))
 			return Helper.buildSectionSelectOne((Section) value, this,List.of(FIELD_ADMINISTRATIVE_UNIT_SELECT_ONE,FIELD_DISPATCH_SLIP_SELECT_ONE));
 		if(FIELD_ADMINISTRATIVE_UNIT_SELECT_ONE.equals(fieldName))
@@ -204,8 +222,30 @@ public class RequestFilterController extends AbstractFilterController implements
 		return null;
 	}
 	
+	private SelectOneCombo buildBudgetCategorySelectOne(BudgetCategory budgetCategory) {
+		SelectOneCombo selectOne = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,budgetCategory,SelectOneCombo.FIELD_CHOICE_CLASS,BudgetCategory.class,SelectOneCombo.FIELD_LISTENER
+				,new SelectOneCombo.Listener.AbstractImpl<BudgetCategory>() {
+			@Override
+			public Collection<BudgetCategory> computeChoices(AbstractInputChoice<BudgetCategory> input) {
+				Collection<BudgetCategory> choices = __inject__(BudgetCategoryController.class).read();
+				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
+				return choices;
+			}
+			@Override
+			public void select(AbstractInputChoiceOne input, BudgetCategory budgetCategory) {
+				super.select(input, budgetCategory);
+				
+			}
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory.LABEL);
+		selectOne.updateChoices();
+		selectOne.selectByValueSystemIdentifier();
+		return selectOne;
+	}
+	
 	@Override
 	protected Object getInputSelectOneInitialValue(String fieldName, Class<?> klass) {
+		if(FIELD_BUDGET_CATEGORY_SELECT_ONE.equals(fieldName))
+			return budgetCategoryInitial;
 		if(FIELD_SECTION_SELECT_ONE.equals(fieldName))
 			return sectionInitial;
 		if(FIELD_ADMINISTRATIVE_UNIT_SELECT_ONE.equals(fieldName))
@@ -253,9 +293,13 @@ public class RequestFilterController extends AbstractFilterController implements
 	@Override
 	protected Collection<Map<Object, Object>> buildLayoutCells() {
 		Collection<Map<Object, Object>> cellsMaps = new ArrayList<>();
+		if(budgetCategorySelectOne != null) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,budgetCategorySelectOne.getOutputLabel(),Cell.FIELD_WIDTH,2));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,budgetCategorySelectOne,Cell.FIELD_WIDTH,4));
+		}
 		if(typeSelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,typeSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,2));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,typeSelectOne,Cell.FIELD_WIDTH,10));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,typeSelectOne,Cell.FIELD_WIDTH,4));
 		}
 		
 		if(sectionSelectOne != null) {
@@ -308,6 +352,8 @@ public class RequestFilterController extends AbstractFilterController implements
 			strings.add(prefix);
 		else
 			strings.add(typeInitial.getName());
+		if(budgetCategoryInitial != null)
+			strings.add(budgetCategoryInitial.toString());
 		if(sectionInitial != null)
 			strings.add("Section "+(administrativeUnitInitial == null ? sectionInitial.toString() : sectionInitial.getCode()));
 		if(administrativeUnitInitial != null)
@@ -342,6 +388,8 @@ public class RequestFilterController extends AbstractFilterController implements
 		if(processedInitial == null || !processedInitial) {
 			columnsFieldsNames.addAll(List.of(Request.FIELD_SCOPE_FUNCTIONS_CODES));
 		}
+		if(budgetCategoryInitial == null)
+			columnsFieldsNames.add(Request.FIELD_BUDGET_CATEGORY_AS_STRING);
 		columnsFieldsNames.add(Request.FIELD_CREATION_DATE_AS_STRING);
 		if(processedInitial == null || processedInitial) {
 			columnsFieldsNames.add(Request.FIELD_PROCESSING_DATE_AS_STRING);
@@ -354,6 +402,10 @@ public class RequestFilterController extends AbstractFilterController implements
 		return columnsFieldsNames;
 	}
 
+	public BudgetCategory getBudgetCategory() {
+		return (BudgetCategory) AbstractInput.getValue(budgetCategorySelectOne);
+	}
+	
 	public Section getSection() {
 		return (Section) AbstractInput.getValue(sectionSelectOne);
 	}
@@ -404,6 +456,8 @@ public class RequestFilterController extends AbstractFilterController implements
 	@Override
 	public Map<String, List<String>> asMap() {
 		Map<String, List<String>> map = new HashMap<>();
+		if(budgetCategoryInitial != null)
+			map.put(ParameterName.stringify(BudgetCategory.class), List.of((String)FieldHelper.readSystemIdentifier(budgetCategoryInitial)));	
 		if(sectionInitial != null)
 			map.put(ParameterName.stringify(Section.class), List.of((String)FieldHelper.readSystemIdentifier(sectionInitial)));	
 		if(administrativeUnitInitial != null)
@@ -434,6 +488,7 @@ public class RequestFilterController extends AbstractFilterController implements
 		
 		//filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_SECTIONS_IDENTIFIERS, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.sectionInitial : controller.getSection())), filter);
 		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_IDENTIFIERS, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.administrativeUnitInitial : controller.getAdministrativeUnit())), filter);
+		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_BUDGET_CATEGORIES_IDENTIFIERS, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.budgetCategoryInitial : controller.getBudgetCategory())), filter);
 		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.functionInitial : controller.getFunction())), filter);
 		filter = Filter.Dto.addFieldIfValueNotNull(RequestQuerier.PARAMETER_NAME_TYPES_IDENTIFIERS, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.typeInitial : controller.getType())), filter);
 		
@@ -467,6 +522,7 @@ public class RequestFilterController extends AbstractFilterController implements
 	/**/
 	
 	public static final String FIELD_SEARCH_INPUT_TEXT = "searchInputText";
+	public static final String FIELD_BUDGET_CATEGORY_SELECT_ONE = "budgetCategorySelectOne";
 	public static final String FIELD_SECTION_SELECT_ONE = "sectionSelectOne";
 	public static final String FIELD_ADMINISTRATIVE_UNIT_SELECT_ONE = "administrativeUnitSelectOne";
 	public static final String FIELD_FUNCTION_SELECT_ONE = "functionSelectOne";

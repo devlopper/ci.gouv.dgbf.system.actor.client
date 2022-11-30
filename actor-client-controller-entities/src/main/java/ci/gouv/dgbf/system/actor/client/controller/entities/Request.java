@@ -45,6 +45,7 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	private String accountCreationMessage;
 	private String accessToken;
 	private String dispatchSlipCode,dispatchSlipAsString;
+	private String budgetCategoryAsString;
 	
 	/* Identity */
 	
@@ -184,6 +185,7 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	
 	public static final String FIELD_TYPE = "type";
 	public static final String FIELD_TYPE_AS_STRING = "typeAsString";
+	public static final String FIELD_BUDGET_CATEGORY_AS_STRING = "budgetCategoryAsString";
 	public static final String FIELD_STATUS = "status";
 	public static final String FIELD_STATUS_AS_STRING = "statusAsString";
 	public static final String FIELD_ACCOUNT_CREATION_MESSAGE = "accountCreationMessage";

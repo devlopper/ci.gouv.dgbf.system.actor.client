@@ -33,7 +33,7 @@
 		<p:column headerText="Libellé">
 			<h:outputText value="#{scopeFunction.name}"/>
 		</p:column>
-		<p:column headerText="Catégorie de budget" width="250">
+		<p:column headerText="Catégorie de budget" width="250" rendered="#{__page__.budgetaryScopeFunctionSelectionController.showBudgetCategoryColumn}">
 			<h:outputText value="#{scopeFunction.budgetCategoryAsString}"/>
 		</p:column>
 		<p:column headerText="-" width="80">

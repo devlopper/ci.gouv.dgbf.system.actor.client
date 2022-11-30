@@ -253,6 +253,10 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 				map.put(Column.FIELD_WIDTH, "200");
 				if(filterController != null)
 					map.put(Column.FIELD_VISIBLE, Boolean.TRUE.equals(filterController.getProcessedInitial()));
+			}else if(Request.FIELD_BUDGET_CATEGORY_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory.LABEL);
+				map.put(Column.FIELD_WIDTH, "200");
+				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}
 			return map;
 		}
@@ -379,7 +383,8 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 					,ci.gouv.dgbf.system.actor.server.persistence.entities.Request.FIELD_DISPATCH_SLIP_CODE);
 			
 			arguments.transientFieldsNames(ci.gouv.dgbf.system.actor.server.persistence.entities.Request
-					.FIELDS_SCOPE_FUNCTIONS_CODES_IS_CREDIT_MANAGER_HOLDER_IS_AUTHORIZING_OFFICER_HOLDER_IS_FINANCIAL_CONTROLLER_HOLDER_IS_ACCOUNTING_HOLDER);
+					.FIELDS_SCOPE_FUNCTIONS_CODES_IS_CREDIT_MANAGER_HOLDER_IS_AUTHORIZING_OFFICER_HOLDER_IS_FINANCIAL_CONTROLLER_HOLDER_IS_ACCOUNTING_HOLDER
+					,Request.FIELD_BUDGET_CATEGORY_AS_STRING);
 			
 			Boolean processed = ((RequestFilterController)filterController).getProcessedInitial();
 			if(processed == null || processed) {

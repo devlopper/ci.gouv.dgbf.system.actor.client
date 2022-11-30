@@ -69,6 +69,8 @@ public class ScopeFunctionSelectionController implements Serializable {
 	
 	private String selectedBudgetCategoryAsString;
 	
+	private Boolean showBudgetCategoryColumn = Boolean.FALSE;
+	
 	public ScopeFunctionSelectionController() {
 		buildScopeFunctionSelectOne();
 		
