@@ -227,7 +227,7 @@ public class RequestFilterController extends AbstractFilterController implements
 				,new SelectOneCombo.Listener.AbstractImpl<BudgetCategory>() {
 			@Override
 			public Collection<BudgetCategory> computeChoices(AbstractInputChoice<BudgetCategory> input) {
-				Collection<BudgetCategory> choices = __inject__(BudgetCategoryController.class).read();
+				Collection<BudgetCategory> choices = __inject__(BudgetCategoryController.class).readVisiblesByLoggedInActorCodeForUI();
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
 			}
