@@ -34,8 +34,10 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputL
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputText;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityEditPageContainerManagedImpl;
 
+import ci.gouv.dgbf.system.actor.client.controller.api.BudgetCategoryController;
 import ci.gouv.dgbf.system.actor.client.controller.api.FunctionController;
 import ci.gouv.dgbf.system.actor.client.controller.api.SectionController;
+import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestDispatchSlip;
@@ -56,7 +58,8 @@ public class RequestDispatchSlipEditPage extends AbstractEntityEditPageContainer
 	
 	private RequestsSelectionController requestsSelectionController;
 	private String requestsListIdentifier = RandomHelper.getAlphabetic(4);
-	private SelectOneCombo sectionSelectOne,functionSelectOne;
+	private SelectOneCombo budgetCategorySelectOne,sectionSelectOne,functionSelectOne;
+	private BudgetCategory budgetCategory;
 	private Section section;
 	private Function function;
 	
@@ -64,10 +67,17 @@ public class RequestDispatchSlipEditPage extends AbstractEntityEditPageContainer
 	protected void __listenPostConstruct__() {
 		super.__listenPostConstruct__();
 		if(Action.CREATE.equals(action)) {
+			budgetCategorySelectOne = form.getInput(SelectOneCombo.class, RequestDispatchSlip.FIELD_BUDGET_CATEGORY).enableValueChangeListener(List.of());
+			if(CollectionHelper.getSize(budgetCategorySelectOne.getChoices()) == 1)
+				budgetCategorySelectOne.selectFirstChoice();
+			String identifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(BudgetCategory.class));
+			if(StringHelper.isNotBlank(identifier))
+				budgetCategorySelectOne.select(__inject__(BudgetCategoryController.class).readBySystemIdentifier(identifier));
+			
 			sectionSelectOne = form.getInput(SelectOneCombo.class, RequestDispatchSlip.FIELD_SECTION).enableValueChangeListener(List.of());
 			if(CollectionHelper.getSize(sectionSelectOne.getChoices()) == 1)
 				sectionSelectOne.selectFirstChoice();
-			String identifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(Section.class));
+			identifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(Section.class));
 			if(StringHelper.isNotBlank(identifier))
 				sectionSelectOne.select(__inject__(SectionController.class).readBySystemIdentifier(identifier));
 			
@@ -83,6 +93,12 @@ public class RequestDispatchSlipEditPage extends AbstractEntityEditPageContainer
 				function = ((RequestDispatchSlip)form.getEntity()).getFunction();
 			}
 		}
+	}
+	
+	public BudgetCategory getSelectedBudgetCategory() {
+		if(budgetCategorySelectOne == null)
+			return budgetCategory;
+		return (BudgetCategory) budgetCategorySelectOne.getValue();
 	}
 	
 	public Section getSelectedSection() {
@@ -152,6 +168,7 @@ public class RequestDispatchSlipEditPage extends AbstractEntityEditPageContainer
 		}
 		Collection<String> inputsFieldsNames = new ArrayList<>();
 		if(Action.CREATE.equals(action)) {
+			inputsFieldsNames.add(RequestDispatchSlip.FIELD_BUDGET_CATEGORY);
 			inputsFieldsNames.add(RequestDispatchSlip.FIELD_SECTION);
 			inputsFieldsNames.add(RequestDispatchSlip.FIELD_FUNCTION);
 		}
@@ -213,8 +230,15 @@ public class RequestDispatchSlipEditPage extends AbstractEntityEditPageContainer
 				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Libellé");
 			}else if(RequestDispatchSlip.FIELD_REQUESTS.equals(fieldName)) {
 				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Demandes");
+			}else if(RequestDispatchSlip.FIELD_BUDGET_CATEGORY.equals(fieldName)) {
+				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory.LABEL);
+				List<BudgetCategory> budgetCategories = (List<BudgetCategory>) __inject__(BudgetCategoryController.class).readVisiblesByLoggedInActorCodeForUI();
+				if(CollectionHelper.getSize(budgetCategories) > 1)
+					budgetCategories.add(0, null);
+				map.put(AbstractInputChoice.FIELD_CHOICES,budgetCategories);
+				map.put(AbstractInputChoice.FIELD_CHOICE_CLASS,BudgetCategory.class);
 			}else if(RequestDispatchSlip.FIELD_SECTION.equals(fieldName)) {
-				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Section");
+				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, ci.gouv.dgbf.system.actor.server.persistence.entities.Section.LABEL);
 				List<Section> sections = (List<Section>) __inject__(SectionController.class).readVisiblesByLoggedInActorCodeForUI();
 				if(CollectionHelper.getSize(sections) > 1)
 					sections.add(0, null);

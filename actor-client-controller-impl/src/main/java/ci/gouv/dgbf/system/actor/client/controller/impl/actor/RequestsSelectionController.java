@@ -19,6 +19,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import org.primefaces.PrimeFaces;
 
+import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestStatus;
@@ -98,13 +99,14 @@ public class RequestsSelectionController implements Serializable {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void showDialog(Section section,Function function) {
-		if(section == null || function == null) {
+	public void showDialog(BudgetCategory budgetCategory,Section section,Function function) {
+		if(budgetCategory == null || section == null || function == null) {
 			dialogTitle = "Sélection de demandes à porter sur le bordereau";
 		}else {
-			dialogTitle = String.format("Sélection de demandes de la section %s de %s à porter sur le bordereau",section.getCode(),function.getName());
+			dialogTitle = String.format("Sélection de demandes de la catégorie de budget %s de la section %s de %s à porter sur le bordereau",budgetCategory.getName(),section.getCode(),function.getName());
 			RequestFilterController filterController = (RequestFilterController) ((RequestListPage.LazyDataModelListenerImpl) ((LazyDataModel<Request>)requestsDataTable.getValue()).getListener())
 					.getFilterController();
+			filterController.setBudgetCategoryInitial(budgetCategory);
 			filterController.setSectionInitial(section);
 			filterController.setFunctionInitial(function);
 			if(CollectionHelper.isEmpty(selected))

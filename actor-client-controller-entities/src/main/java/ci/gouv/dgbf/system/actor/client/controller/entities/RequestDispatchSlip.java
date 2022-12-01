@@ -27,6 +27,11 @@ public class RequestDispatchSlip extends AbstractDataIdentifiableSystemStringIde
 	private static final long serialVersionUID = 1L;
 	
 	@Input @InputChoice(choices = @Choices(count = Count.ALL)) @InputChoiceOne @InputChoiceOneCombo
+	private BudgetCategory budgetCategory;
+	private String budgetCategoryIdentifier;
+	private String budgetCategoryAsString;
+	
+	@Input @InputChoice(choices = @Choices(count = Count.ALL)) @InputChoiceOne @InputChoiceOneCombo
 	private Section section;
 	private String sectionIdentifier;
 	private String sectionAsString;
@@ -50,6 +55,13 @@ public class RequestDispatchSlip extends AbstractDataIdentifiableSystemStringIde
 	private Boolean processed;
 	
 	public void writeIdentifiers(String actionIdentifier) {
+		if(budgetCategory == null)
+			budgetCategoryIdentifier = null;
+		else
+			budgetCategoryIdentifier = budgetCategory.getIdentifier();		
+		if(StringHelper.isBlank(budgetCategoryIdentifier))
+			throw new RuntimeException("Veuillez sélectionner une catégorie de budget");
+		
 		if(section == null)
 			sectionIdentifier = null;
 		else
@@ -114,6 +126,8 @@ public class RequestDispatchSlip extends AbstractDataIdentifiableSystemStringIde
 	
 	/**/
 	
+	public static final String FIELD_BUDGET_CATEGORY = "budgetCategory";
+	public static final String FIELD_BUDGET_CATEGORY_AS_STRING = "budgetCategoryAsString";
 	public static final String FIELD_SECTION = "section";
 	public static final String FIELD_SECTION_AS_STRING = "sectionAsString";
 	public static final String FIELD_FUNCTION = "function";
