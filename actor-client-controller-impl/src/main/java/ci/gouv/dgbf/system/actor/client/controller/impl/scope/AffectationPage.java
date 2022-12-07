@@ -116,7 +116,9 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	
 	public DataTable buildScopeFunctionDataTable() {
 		DataTable dataTable = ScopeFunctionListPage.buildDataTable(ScopeFunctionListPage.class,Boolean.TRUE,Function.class,scopeFunctionFilterController.getFunction()
-				,FieldHelper.join(ScopeFunction.FIELD_FUNCTION,Function.FIELD_IDENTIFIER),FieldHelper.readSystemIdentifier(scopeFunctionFilterController.getFunction()));
+				,BudgetCategory.class,scopeFunctionFilterController.getBudgetCategory()
+				,FieldHelper.join(ScopeFunction.FIELD_FUNCTION,Function.FIELD_IDENTIFIER),FieldHelper.readSystemIdentifier(scopeFunctionFilterController.getFunction())
+				,FieldHelper.join(BudgetCategory.class.getSimpleName(),BudgetCategory.FIELD_IDENTIFIER),FieldHelper.readSystemIdentifier(scopeFunctionFilterController.getBudgetCategory()));
 		return dataTable;
 	}
 	

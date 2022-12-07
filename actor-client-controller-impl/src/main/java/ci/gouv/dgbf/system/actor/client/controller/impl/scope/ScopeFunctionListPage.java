@@ -38,6 +38,8 @@ import org.cyk.utility.controller.EntityReader;
 import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.persistence.query.Filter;
 
+import ci.gouv.dgbf.system.actor.client.controller.api.BudgetCategoryController;
+import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestScopeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
@@ -96,6 +98,15 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 		
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, ScopeFunction.class);
+		String budgetCategoryIdentifier = (String) MapHelper.readByKey(arguments, FieldHelper.join(BudgetCategory.class.getSimpleName(),BudgetCategory.FIELD_IDENTIFIER));
+		BudgetCategory budgetCategory = (BudgetCategory) MapHelper.readByKey(arguments, BudgetCategory.class);
+		if(budgetCategory == null)
+			budgetCategory = CollectionHelper.getFirst(__inject__(BudgetCategoryController.class).readVisiblesByLoggedInActorCodeForUI());
+		
+		if(budgetCategory != null) {
+			budgetCategoryIdentifier = budgetCategory.getIdentifier();
+		}
+		
 		String functionIdentifier = (String) MapHelper.readByKey(arguments, FieldHelper.join(ScopeFunction.FIELD_FUNCTION,Function.FIELD_IDENTIFIER));
 		Function function = (Function) MapHelper.readByKey(arguments, Function.class);
 		if(function != null) {
@@ -114,14 +125,21 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 				}
 			}
 		}
+		
+		if(StringHelper.isBlank(budgetCategoryIdentifier))
+			columnsNames.addAll(List.of(ScopeFunction.FIELD_BUDGET_CATEGORY_AS_STRING));
+		else {
+			
+		}
+		
 		columnsNames.addAll(List.of(ScopeFunction.FIELD_SHARED_AS_STRING,ScopeFunction.FIELD_REQUESTED_AS_STRING,ScopeFunction.FIELD_GRANTED_AS_STRING
 				,ScopeFunction.FIELD_ACTORS_CODES));
 		
 		//Function function = StringHelper.isBlank(functionIdentifier) ? null : __inject__(FunctionController.class).readBySystemIdentifier(functionIdentifier);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, columnsNames);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_STYLE_CLASS, "cyk-ui-datatable-footer-visibility-hidden");
-		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl().setFunctionIdentifier(functionIdentifier));
-		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl()
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LISTENER,new DataTableListenerImpl().setBudgetCategoryIdentifier(budgetCategoryIdentifier).setFunctionIdentifier(functionIdentifier));
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,new LazyDataModelListenerImpl().setBudgetCategoryIdentifier(budgetCategoryIdentifier)
 				.setFunctionIdentifier(functionIdentifier));
 		DataTable dataTable = DataTable.build(arguments);
 		dataTable.set__parentElement__(scopeFunction);
@@ -272,6 +290,7 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 	
 	@Getter @Setter @Accessors(chain=true)
 	public static class DataTableListenerImpl extends DataTable.Listener.AbstractImpl implements Serializable {
+		private String budgetCategoryIdentifier;
 		private String functionIdentifier;
 		
 		@Override
@@ -366,6 +385,7 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 	
 	@Getter @Setter @Accessors(chain=true)
 	public static class LazyDataModelListenerImpl extends LazyDataModel.Listener.AbstractImpl<ScopeFunction> implements Serializable {				
+		private String budgetCategoryIdentifier;
 		private String functionIdentifier;
 		
 		@Override
@@ -385,6 +405,8 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 				filter = new Filter.Dto();
 			//filter.addField(ScopeFunctionQuerier.PARAMETER_NAME_SCOPE_CODE_NAME, lazyDataModel.get__filters__().get("scope"));
 			//filter.addField(ScopeFunctionQuerier.PARAMETER_NAME_SCOPE_NAME, lazyDataModel.get__filters__().get("scope"));
+			if(StringHelper.isNotBlank(budgetCategoryIdentifier))
+				filter.addField(ScopeFunctionQuerier.PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER, budgetCategoryIdentifier);
 			if(StringHelper.isNotBlank(functionIdentifier))
 				filter.addField(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER, functionIdentifier);
 			return filter;

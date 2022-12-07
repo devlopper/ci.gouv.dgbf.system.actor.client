@@ -68,6 +68,7 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	private String actorAsString;	
 	private String assignmentToActorMessage;
 	
+	@Input @InputChoice @InputChoiceOne @InputChoiceOneCombo private BudgetCategory budgetCategory;
 	private String budgetCategoryAsString;
 	private String budgetCategoryCode;
 	
@@ -126,4 +127,8 @@ public class ScopeFunction extends AbstractDataIdentifiableSystemStringIdentifia
 	public static final String FIELD_SECTION = "section";
 	public static final String FIELD_ADMINISTRATIVE_UNIT = "administrativeUnit";
 	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT = "budgetSpecializationUnit";
+	
+	public static final String FIELD_BUDGET_CATEGORY_AS_STRING = "budgetCategoryAsString";
+	public static final String FIELD_BUDGET_CATEGORY_CODE = "budgetCategoryCode";
+	public static final String FIELD_BUDGET_CATEGORY = "budgetCategory";
 }
