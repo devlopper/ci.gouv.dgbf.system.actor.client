@@ -41,7 +41,6 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecialization
 import ci.gouv.dgbf.system.actor.client.controller.entities.Locality;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
-import ci.gouv.dgbf.system.actor.client.controller.impl.actor.ScopeFunctionSelectionController;
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.LocalityQuerier;
 import lombok.Getter;
@@ -70,8 +69,8 @@ public class ScopeFunctionCreatePage extends AbstractEntityEditPageContainerMana
 			@Override
 			protected Collection<BudgetCategory> __computeChoices__(AbstractInputChoice<BudgetCategory> input,Class<?> entityClass) {
 				List<BudgetCategory> choices = (List<BudgetCategory>) __inject__(BudgetCategoryController.class).readVisiblesByLoggedInActorCodeForUI();
-				if(CollectionHelper.isNotEmpty(choices))
-					subFunctionCodeSelectOneCombo.setChoices(CollectionHelper.cast(Object.class, buildCategoriesChoices(CollectionHelper.getFirst(choices))));
+				//if(CollectionHelper.isNotEmpty(choices))
+				//	subFunctionCodeSelectOneCombo.setChoices(CollectionHelper.cast(Object.class, buildCategoriesChoices(CollectionHelper.getFirst(choices))));
 				return choices;
 			}
 			
@@ -255,11 +254,8 @@ public class ScopeFunctionCreatePage extends AbstractEntityEditPageContainerMana
 		budgetCategorySelectOneCombo.setChoicesInitialized(Boolean.FALSE);
 		budgetCategorySelectOneCombo.updateChoices();
 		budgetCategorySelectOneCombo.selectFirstChoice();
-	}
-	
-	@Deprecated
-	private void initializeCellsRenderedByIndexes() {
-		form.getLayout().setCellsRenderedByIndexes(Boolean.FALSE,2,3,4,5,6,7,8,9,10,11);
+		subFunctionCodeSelectOneCombo.setChoices(CollectionHelper.cast(Object.class, buildCategoriesChoices((BudgetCategory) budgetCategorySelectOneCombo.getValue())));
+		subFunctionCodeSelectOneCombo.setChoicesInitialized(Boolean.TRUE);
 	}
 	
 	private ScopeFunctionCreatePage budgetCategoryRendered(Boolean rendered) {
