@@ -16,6 +16,8 @@ import org.cyk.utility.__kernel__.value.ValueConverter;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoiceOne;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.InputText;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
@@ -23,11 +25,14 @@ import org.cyk.utility.controller.Arguments;
 import org.cyk.utility.controller.EntityReader;
 import org.cyk.utility.persistence.query.Filter;
 
+import ci.gouv.dgbf.system.actor.client.controller.api.BudgetCategoryController;
+import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestDispatchSlip;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.client.controller.impl.Helper;
 import ci.gouv.dgbf.system.actor.client.controller.impl.function.FunctionListPage;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetCategoryQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestDispatchSlipQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
@@ -38,9 +43,10 @@ import lombok.experimental.Accessors;
 @Getter @Setter @Accessors(chain=true)
 public class RequestDispatchSlipFilterController extends AbstractFilterController implements Serializable {
 
-	private SelectOneCombo sectionSelectOne,functionSelectOne,sentSelectOne,processedSelectOne;
+	private SelectOneCombo budgetCategorySelectOne,sectionSelectOne,functionSelectOne,sentSelectOne,processedSelectOne;
 	private InputText searchInputText;
 	
+	private BudgetCategory budgetCategoryInitial;
 	private Section sectionInitial;
 	private Function functionInitial;
 	private Boolean sentInitial;
@@ -50,6 +56,7 @@ public class RequestDispatchSlipFilterController extends AbstractFilterControlle
 	public RequestDispatchSlipFilterController() {}
 	
 	public RequestDispatchSlipFilterController(RequestDispatchSlipFilterController filterController) {
+		budgetCategoryInitial = filterController.budgetCategoryInitial;
 		sectionInitial = filterController.sectionInitial;
 		functionInitial = filterController.functionInitial;
 		sentInitial = filterController.sentInitial;
@@ -59,6 +66,8 @@ public class RequestDispatchSlipFilterController extends AbstractFilterControlle
 	
 	@Override
 	public RequestDispatchSlipFilterController initialize() {
+		if(budgetCategoryInitial == null)
+			budgetCategoryInitial = getBudgetCategoryFromRequestParameter();
 		if(sectionInitial == null)
 			sectionInitial = getSectionFromRequestParameter();
 		if(functionInitial == null)
@@ -69,6 +78,13 @@ public class RequestDispatchSlipFilterController extends AbstractFilterControlle
 		return this;
 	}
 
+	public static BudgetCategory getBudgetCategoryFromRequestParameter() {
+		return EntityReader.getInstance().readOneBySystemIdentifierAsParent(BudgetCategory.class, new Arguments<BudgetCategory>()
+				.queryIdentifier(BudgetCategoryQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
+				.projections(BudgetCategory.FIELD_IDENTIFIER,BudgetCategory.FIELD_CODE,BudgetCategory.FIELD_NAME)
+				.filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.stringify(BudgetCategory.class))));
+	}
+	
 	public static Section getSectionFromRequestParameter() {
 		return EntityReader.getInstance().readOneBySystemIdentifierAsParent(Section.class, new Arguments<Section>()
 				.queryIdentifier(SectionQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
@@ -85,6 +101,7 @@ public class RequestDispatchSlipFilterController extends AbstractFilterControlle
 
 	@Override
 	protected void buildInputs() {
+		buildInputSelectOne(FIELD_BUDGET_CATEGORY_SELECT_ONE, BudgetCategory.class);
 		buildInputSelectOne(FIELD_SECTION_SELECT_ONE, Section.class);
 		buildInputSelectOne(FIELD_FUNCTION_SELECT_ONE, Function.class);
 		buildInputSelectOne(FIELD_SENT_SELECT_ONE, Boolean.class);
@@ -101,6 +118,8 @@ public class RequestDispatchSlipFilterController extends AbstractFilterControlle
 	
 	@Override
 	protected AbstractInput<?> buildInput(String fieldName, Object value) {
+		if(FIELD_BUDGET_CATEGORY_SELECT_ONE.equals(fieldName))
+			return buildBudgetCategorySelectOne((BudgetCategory) value);
 		if(FIELD_SECTION_SELECT_ONE.equals(fieldName))
 			return Helper.buildSectionSelectOne((Section) value, null,null);
 		if(FIELD_FUNCTION_SELECT_ONE.equals(fieldName))
@@ -117,8 +136,29 @@ public class RequestDispatchSlipFilterController extends AbstractFilterControlle
 		return null;
 	}
 	
+	public static SelectOneCombo buildBudgetCategorySelectOne(BudgetCategory budgetCategory) {
+		SelectOneCombo select = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,BudgetCategory.class,SelectOneCombo.FIELD_VALUE,budgetCategory,SelectOneCombo.FIELD_LISTENER
+				,new SelectOneCombo.Listener.AbstractImpl<BudgetCategory>() {
+			@Override
+			public Collection<BudgetCategory> computeChoices(AbstractInputChoice<BudgetCategory> input) {
+				//Collection<Section> choices = __inject__(SectionController.class).readVisiblesByLoggedInActorCodeForUI();
+				//Collection<Section> choices = __inject__(SectionController.class).read();
+				Collection<BudgetCategory> choices = __inject__(BudgetCategoryController.class).readVisiblesByLoggedInActorCodeForUI();
+				return choices;
+			}
+			@Override
+			public void select(AbstractInputChoiceOne input, BudgetCategory budgetCategory) {
+				super.select(input, budgetCategory);
+				
+			}
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory.LABEL);		
+		return select;
+	}
+	
 	@Override
 	protected Object getInputSelectOneInitialValue(String fieldName, Class<?> klass) {
+		if(FIELD_BUDGET_CATEGORY_SELECT_ONE.equals(fieldName))
+			return budgetCategoryInitial;
 		if(FIELD_SECTION_SELECT_ONE.equals(fieldName))
 			return sectionInitial;
 		if(FIELD_FUNCTION_SELECT_ONE.equals(fieldName))
@@ -160,6 +200,10 @@ public class RequestDispatchSlipFilterController extends AbstractFilterControlle
 	@Override
 	protected Collection<Map<Object, Object>> buildLayoutCells() {
 		Collection<Map<Object, Object>> cellsMaps = new ArrayList<>();
+		if(budgetCategorySelectOne != null) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,budgetCategorySelectOne.getOutputLabel(),Cell.FIELD_WIDTH,2));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,budgetCategorySelectOne,Cell.FIELD_WIDTH,10));
+		}
 		if(sectionSelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,sectionSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,2));
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,sectionSelectOne,Cell.FIELD_WIDTH,10));
@@ -198,6 +242,8 @@ public class RequestDispatchSlipFilterController extends AbstractFilterControlle
 	public String generateWindowTitleValue(String prefix) {
 		Collection<String> strings = new ArrayList<>();
 		strings.add(prefix);
+		if(budgetCategoryInitial != null)
+			strings.add("Section "+budgetCategoryInitial.getName());
 		if(sectionInitial != null)
 			strings.add("Section "+sectionInitial.toString());
 		if(functionInitial != null)
@@ -235,6 +281,10 @@ public class RequestDispatchSlipFilterController extends AbstractFilterControlle
 		return columnsFieldsNames;
 	}
 
+	public BudgetCategory getBudgetCategory() {
+		return (BudgetCategory) AbstractInput.getValue(budgetCategorySelectOne);
+	}
+	
 	public Section getSection() {
 		return (Section) AbstractInput.getValue(sectionSelectOne);
 	}
@@ -267,6 +317,8 @@ public class RequestDispatchSlipFilterController extends AbstractFilterControlle
 	@Override
 	public Map<String, List<String>> asMap() {
 		Map<String, List<String>> map = new HashMap<>();
+		if(budgetCategoryInitial != null)
+			map.put(ParameterName.stringify(BudgetCategory.class), List.of((String)FieldHelper.readSystemIdentifier(budgetCategoryInitial)));
 		if(sectionInitial != null)
 			map.put(ParameterName.stringify(Section.class), List.of((String)FieldHelper.readSystemIdentifier(sectionInitial)));	
 		if(functionInitial != null)
@@ -281,6 +333,8 @@ public class RequestDispatchSlipFilterController extends AbstractFilterControlle
 	}
 	
 	public static Filter.Dto populateFilter(Filter.Dto filter,RequestDispatchSlipFilterController controller,Boolean initial) {
+		filter = Filter.Dto.addFieldIfValueNotNull(RequestDispatchSlipQuerier.PARAMETER_NAME_BUDGETS_CATEGORIES_IDENTIFIERS, CollectionHelper.listOf(Boolean.TRUE,FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.budgetCategoryInitial : controller.getBudgetCategory())), filter);
+		
 		Collection<String> identifiers = Helper.getSectionsIdentifiers(initial, controller.getSectionInitial(), controller.getSectionSelectOne());
 		if(CollectionHelper.isNotEmpty(identifiers))
 			filter = Filter.Dto.addFieldIfValueNotNull(RequestDispatchSlipQuerier.PARAMETER_NAME_SECTIONS_IDENTIFIERS, identifiers, filter);
@@ -302,6 +356,7 @@ public class RequestDispatchSlipFilterController extends AbstractFilterControlle
 	/**/
 	
 	public static final String FIELD_SEARCH_INPUT_TEXT = "searchInputText";
+	public static final String FIELD_BUDGET_CATEGORY_SELECT_ONE = "budgetCategorySelectOne";
 	public static final String FIELD_SECTION_SELECT_ONE = "sectionSelectOne";
 	public static final String FIELD_FUNCTION_SELECT_ONE = "functionSelectOne";
 	public static final String FIELD_SENT_SELECT_ONE = "sentSelectOne";

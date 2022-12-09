@@ -18,6 +18,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu;
 
+import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import lombok.Getter;
@@ -30,7 +31,7 @@ public class RequestDispatchSlipIndexPage extends AbstractPageContainerManagedIm
 	private TabMenu.Tab selectedTab;
 	private Layout layout;
 	private TabMenu tabMenu;
-	private SelectOneCombo sectionSelectOne,functionSelectOne;
+	private SelectOneCombo budgetCategorySelectOne,sectionSelectOne,functionSelectOne;
 	private String sectionIdentifier,functionIdentifier;
 	
 	@Override
@@ -160,7 +161,7 @@ public class RequestDispatchSlipIndexPage extends AbstractPageContainerManagedIm
 	private DataTable buildTabRequestDispatchSlipsToSend() {
 		filterController.setSentInitial(Boolean.FALSE);
 		filterController.ignore(RequestDispatchSlipFilterController.FIELD_SENT_SELECT_ONE,RequestDispatchSlipFilterController.FIELD_PROCESSED_SELECT_ONE);
-		DataTable dataTable = RequestDispatchSlipListPage.buildDataTable(
+		DataTable dataTable = RequestDispatchSlipListPage.buildDataTable(BudgetCategory.class,budgetCategorySelectOne == null ? null : budgetCategorySelectOne.getValue(),
 				Section.class,sectionSelectOne == null ? null : sectionSelectOne.getValue(),Function.class,functionSelectOne == null ? null : functionSelectOne.getValue()
 				,RequestDispatchSlipFilterController.class,filterController
 				);
@@ -170,7 +171,7 @@ public class RequestDispatchSlipIndexPage extends AbstractPageContainerManagedIm
 	private DataTable buildTaRequestDispatchSlipsSent() {
 		filterController.setSentInitial(Boolean.TRUE);
 		filterController.ignore(RequestDispatchSlipFilterController.FIELD_SENT_SELECT_ONE,RequestDispatchSlipFilterController.FIELD_PROCESSED_SELECT_ONE);
-		DataTable dataTable = RequestDispatchSlipListPage.buildDataTable(
+		DataTable dataTable = RequestDispatchSlipListPage.buildDataTable(BudgetCategory.class,budgetCategorySelectOne == null ? null : budgetCategorySelectOne.getValue(),
 				Section.class,sectionSelectOne == null ? null : sectionSelectOne.getValue(),Function.class,functionSelectOne == null ? null : functionSelectOne.getValue()
 				,RequestDispatchSlipFilterController.class,filterController
 				);
@@ -181,7 +182,7 @@ public class RequestDispatchSlipIndexPage extends AbstractPageContainerManagedIm
 	private DataTable buildTabRequestDispatchSlipsToProcess() {
 		filterController.setSentInitial(Boolean.TRUE).setProcessedInitial(Boolean.FALSE);
 		filterController.ignore(RequestDispatchSlipFilterController.FIELD_SENT_SELECT_ONE,RequestDispatchSlipFilterController.FIELD_PROCESSED_SELECT_ONE);
-		DataTable dataTable = RequestDispatchSlipListPage.buildDataTable(
+		DataTable dataTable = RequestDispatchSlipListPage.buildDataTable(BudgetCategory.class,budgetCategorySelectOne == null ? null : budgetCategorySelectOne.getValue(),
 				Section.class,sectionSelectOne == null ? null : sectionSelectOne.getValue(),Function.class,functionSelectOne == null ? null : functionSelectOne.getValue()
 				,RequestDispatchSlipFilterController.class,filterController
 				);
@@ -191,7 +192,7 @@ public class RequestDispatchSlipIndexPage extends AbstractPageContainerManagedIm
 	private DataTable buildTaRequestDispatchSlipsProcessed() {
 		filterController.setSentInitial(Boolean.TRUE).setProcessedInitial(Boolean.TRUE);
 		filterController.ignore(RequestDispatchSlipFilterController.FIELD_SENT_SELECT_ONE,RequestDispatchSlipFilterController.FIELD_PROCESSED_SELECT_ONE);
-		DataTable dataTable = RequestDispatchSlipListPage.buildDataTable(
+		DataTable dataTable = RequestDispatchSlipListPage.buildDataTable(BudgetCategory.class,budgetCategorySelectOne == null ? null : budgetCategorySelectOne.getValue(),
 				Section.class,sectionSelectOne == null ? null : sectionSelectOne.getValue(),Function.class,functionSelectOne == null ? null : functionSelectOne.getValue()
 				,RequestDispatchSlipFilterController.class,filterController
 				);
