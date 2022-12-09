@@ -34,6 +34,8 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	
 	/* Initialization */
 	
+	@Input @InputChoice @InputChoiceOneRadio private BudgetCategory budgetCategory;
+	
 	@Input @InputChoice(choices = @Choices(count = Count.ALL)) @InputChoiceOneCombo private RequestType type;
 	private String typeAsString;
 	private Boolean authenticationRequired;
@@ -183,6 +185,7 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	
 	/* Initialization */
 	
+	public static final String FIELD_BUDGET_CATEGORY = "budgetCategory";
 	public static final String FIELD_TYPE = "type";
 	public static final String FIELD_TYPE_AS_STRING = "typeAsString";
 	public static final String FIELD_BUDGET_CATEGORY_AS_STRING = "budgetCategoryAsString";

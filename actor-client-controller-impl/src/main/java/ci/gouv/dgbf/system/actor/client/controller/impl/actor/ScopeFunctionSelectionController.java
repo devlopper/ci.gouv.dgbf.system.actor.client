@@ -48,6 +48,9 @@ import lombok.experimental.Accessors;
 public class ScopeFunctionSelectionController implements Serializable {
 
 	private SelectOneCombo budgetCategorySelectOne;
+	private BudgetCategory budgetCategory;
+	private String selectedBudgetCategoryAsString;
+	
 	private SelectOneCombo categorySelectOne;
 	
 	private SelectOneCombo functionSelectOne;
@@ -67,11 +70,10 @@ public class ScopeFunctionSelectionController implements Serializable {
 	private Layout layout;
 	private String layoutIdentifier = RandomHelper.getAlphabetic(4);
 	
-	private String selectedBudgetCategoryAsString;
-	
 	private Boolean showBudgetCategoryColumn = Boolean.FALSE;
 	
-	public ScopeFunctionSelectionController() {
+	public ScopeFunctionSelectionController(BudgetCategory budgetCategory) {
+		this.budgetCategory = budgetCategory;
 		buildScopeFunctionSelectOne();
 		
 		//buildFinancialControllerServiceSelectOne();
@@ -98,15 +100,21 @@ public class ScopeFunctionSelectionController implements Serializable {
 	}
 	
 	private void buildBudgetCategorySelectOne() {
-		List<BudgetCategory> budgetCategories = (List<BudgetCategory>) EntityReader.getInstance().readMany(BudgetCategory.class, BudgetCategoryQuerier.QUERY_IDENTIFIER_READ_BY_CODES_FOR_UI
-				,FunctionQuerier.PARAMETER_NAME_CODES,List.of(
-						 ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory.CODE_GENERAL
-						,ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory.CODE_EPN
-						));
-		Collections.sort(budgetCategories,new BudgetCategoryComparator());
+		List<BudgetCategory> budgetCategories;
+		if(budgetCategory == null) {
+			budgetCategories = (List<BudgetCategory>) EntityReader.getInstance().readMany(BudgetCategory.class, BudgetCategoryQuerier.QUERY_IDENTIFIER_READ_BY_CODES_FOR_UI
+					,FunctionQuerier.PARAMETER_NAME_CODES,List.of(
+							 ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory.CODE_GENERAL
+							,ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory.CODE_EPN
+							));
+			Collections.sort(budgetCategories,new BudgetCategoryComparator());
+			
+			if(CollectionHelper.getSize(budgetCategories)>1)
+				budgetCategories.add(0, null);
+		}else {
+			budgetCategories  = List.of(budgetCategory);
+		}
 		
-		if(CollectionHelper.getSize(budgetCategories)>1)
-			budgetCategories.add(0, null);
 		budgetCategorySelectOne = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,BudgetCategory.class,SelectOneCombo.FIELD_CHOICES,budgetCategories
 				,SelectOneCombo.FIELD_LISTENER,new SelectOneCombo.Listener.AbstractImpl<BudgetCategory>() {
 			
@@ -519,7 +527,7 @@ public class ScopeFunctionSelectionController implements Serializable {
 	}
 	
 	private ScopeFunctionSelectionController renderInitial() {
-		budgetCategoryRendered(Boolean.TRUE).categoryRendered(Boolean.FALSE).sectionRendered(Boolean.FALSE).administrativeUnitRendered(Boolean.FALSE).budgetSpecializationUnitRendered(Boolean.FALSE).scopeFunctionRendered(Boolean.FALSE);
+		budgetCategoryRendered(Boolean.TRUE).categoryRendered(budgetCategory != null).sectionRendered(Boolean.FALSE).administrativeUnitRendered(Boolean.FALSE).budgetSpecializationUnitRendered(Boolean.FALSE).scopeFunctionRendered(Boolean.FALSE);
 		return this;
 	}
 	

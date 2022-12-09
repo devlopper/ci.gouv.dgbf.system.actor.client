@@ -46,6 +46,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.Section;
 import ci.gouv.dgbf.system.actor.client.controller.impl.Helper;
 import ci.gouv.dgbf.system.actor.client.controller.impl.actor.RequestListPage.LazyDataModelListenerImpl;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestDispatchSlipBusiness;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetCategoryQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestDispatchSlipQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestStatusQuerier;
 import lombok.Getter;
@@ -89,6 +90,9 @@ public class RequestDispatchSlipEditPage extends AbstractEntityEditPageContainer
 				functionSelectOne.select(__inject__(FunctionController.class).readBySystemIdentifier(identifier));
 		}else {
 			if(form.getEntity() instanceof RequestDispatchSlip) {
+				if(StringHelper.isNotBlank(((RequestDispatchSlip)form.getEntity()).getBudgetCategoryIdentifier()))
+					budgetCategory = EntityReader.getInstance().readOneBySystemIdentifier(BudgetCategory.class, BudgetCategoryQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE,((RequestDispatchSlip)form.getEntity()).getBudgetCategoryIdentifier());
+				((RequestDispatchSlip)form.getEntity()).setBudgetCategory(budgetCategory);
 				section = ((RequestDispatchSlip)form.getEntity()).getSection();
 				function = ((RequestDispatchSlip)form.getEntity()).getFunction();
 			}

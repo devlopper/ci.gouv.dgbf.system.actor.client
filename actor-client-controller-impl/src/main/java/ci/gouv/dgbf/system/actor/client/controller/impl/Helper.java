@@ -332,11 +332,11 @@ public interface Helper {
 		if(Action.CREATE.equals(action))
 			return "Nouveau bordereau de demandes";
 		if(Action.READ.equals(action))
-			return String.format("Bordereau de demandes N° %s de %s de la section %s", requestDispatchSlip.getCode(),requestDispatchSlip.getFunction().getName()
-					,requestDispatchSlip.getSection());
+			return String.format("Bordereau de demandes N° %s de %s de la section %s | %s", requestDispatchSlip.getCode(),requestDispatchSlip.getFunction().getName()
+					,requestDispatchSlip.getSection(),requestDispatchSlip.getBudgetCategory());
 		if(Action.UPDATE.equals(action))
-			return String.format("Modification du bordereau de demandes N° %s de %s de la section %s", requestDispatchSlip.getCode(),requestDispatchSlip.getFunction().getName()
-					,requestDispatchSlip.getSection());
+			return String.format("Modification du bordereau de demandes N° %s de %s de la section %s | %s", requestDispatchSlip.getCode(),requestDispatchSlip.getFunction().getName()
+					,requestDispatchSlip.getSection(),requestDispatchSlip.getBudgetCategory());
 		return null;
 	}
 	

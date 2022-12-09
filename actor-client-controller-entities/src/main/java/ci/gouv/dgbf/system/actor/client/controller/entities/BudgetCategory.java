@@ -15,6 +15,6 @@ public class BudgetCategory extends AbstractDataIdentifiableSystemStringIdentifi
 
 	@Override
 	public String toString() {
-		return code+" "+name;
+		return name;
 	}
 }

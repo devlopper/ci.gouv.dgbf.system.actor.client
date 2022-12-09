@@ -51,6 +51,7 @@ import ci.gouv.dgbf.system.actor.client.controller.api.ActorController;
 import ci.gouv.dgbf.system.actor.client.controller.api.RequestController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
+import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Civility;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
@@ -65,6 +66,7 @@ import ci.gouv.dgbf.system.actor.client.controller.impl.identification.PublicReq
 import ci.gouv.dgbf.system.actor.server.business.api.ActorBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetCategoryQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.CivilityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentityGroupQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
@@ -91,7 +93,7 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 	
 	public static void postConstruct(Form form,ScopeFunctionSelectionController budgetaryScopeFunctionSelectionController) {
 		if(form.getEntity() instanceof Request) {
-			Request request = (Request) form.getEntity();
+			Request request = (Request) form.getEntity();	
 			if(request.getType() != null && ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType.IDENTIFIER_DEMANDE_POSTES_BUDGETAIRES.equals(request.getType().getIdentifier())) {
 				SelectOneCombo sectionSelectOne = form.getInput(SelectOneCombo.class, Request.FIELD_SECTION);
 				SelectOneCombo administrativeUnitSelectOne = form.getInput(SelectOneCombo.class, Request.FIELD_ADMINISTRATIVE_UNIT);
@@ -126,9 +128,16 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 						public Collection<AdministrativeUnit> computeChoices(AbstractInputChoice<AdministrativeUnit> input) {
 							if(sectionSelectOne == null || sectionSelectOne.getValue() == null)
 								return null;
+							String serviceGroupCode;
+							if(ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory.CODE_EPN.equals(request.getBudgetCategory().getCode()))
+								serviceGroupCode = "32";
+							else
+								serviceGroupCode = "";
 							Collection<AdministrativeUnit> administrativeUnits = EntityReader.getInstance().readMany(AdministrativeUnit.class,AdministrativeUnitQuerier
-									.QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_FOR_UI,AdministrativeUnitQuerier.PARAMETER_NAME_SECTION_IDENTIFIER
-									,((Section)sectionSelectOne.getValue()).getIdentifier());
+									.QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_BY_SERVICE_GROUP_CODE_STARTS_WITH_FOR_UI
+									,AdministrativeUnitQuerier.PARAMETER_NAME_SECTION_IDENTIFIER,((Section)sectionSelectOne.getValue()).getIdentifier()
+									,AdministrativeUnitQuerier.PARAMETER_NAME_SERVICE_GROUP_CODE,serviceGroupCode
+									);
 							CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(administrativeUnits);
 							return administrativeUnits;
 						}
@@ -143,11 +152,11 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 										arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments());
 										arguments.getRepresentationArguments().setQueryExecutorArguments(new QueryExecutorArguments.Dto());
 										arguments.getRepresentationArguments().getQueryExecutorArguments()
-											.setQueryIdentifier(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_CODE_FOR_UI);
+											.setQueryIdentifier(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_CODE_BY_BUDGET_CATEGORY_IDENTIFIER_FOR_UI);
 										arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterFieldsValues(
 												ScopeFunctionQuerier.PARAMETER_NAME_SCOPE_IDENTIFIER, administrativeUnit.getIdentifier()
-												, ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_CODE
-												, ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER);
+												, ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_CODE, ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER
+												, ScopeFunctionQuerier.PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER,request.getBudgetCategory().getIdentifier());
 										ArrayList<String> list = new ArrayList<>();
 										list.addAll(List.of(ScopeFunction.FIELD_REQUESTED,ScopeFunction.FIELD_GRANTED));
 										arguments.getRepresentationArguments().getQueryExecutorArguments().setProcessableTransientFieldsNames(list);
@@ -215,22 +224,29 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 	public static String getWindowTitleValue(Form form,String default_) {
 		if(form.getEntity() == null || ((Request)form.getEntity()).getType() == null)
 			return default_;
-		return getWindowTitleValue(form.getAction(), ((Request)form.getEntity()).getType(), default_);
+		return getWindowTitleValue(form.getAction(),(Request)form.getEntity(), ((Request)form.getEntity()).getType(), default_);
 	}
 	
-	public static String getWindowTitleValue(Action action,RequestType type,String default_) {
+	public static String getWindowTitleValue(Action action,Request request,RequestType type,String default_) {
 		if(type == null)
 			return default_;
 		if(Action.CREATE.equals(action))
-			return "Saisie de nouvelle demande : "+type.getName();
+			return "Saisie de nouvelle demande : "+type.getName()+" - "+request.getBudgetCategory();
 		if(Action.UPDATE.equals(action))
-			return "Modification de demande : "+type.getName();
+			return "Modification de demande : "+type.getName()+" - "+request.getBudgetCategory();
 		return default_;
 	}
 	
 	@Override
 	protected Form __buildForm__() {
-		budgetaryScopeFunctionSelectionController = new ScopeFunctionSelectionController();
+		Request request = getRequestFromParameter(action,null);//TODO avoid duplicate read of request
+		BudgetCategory budgetCategory = request == null ? null : request.getBudgetCategory();
+		if(budgetCategory == null)
+			budgetCategory = EntityReader.getInstance().readOneBySystemIdentifierAsParent(BudgetCategory.class, new Arguments<BudgetCategory>()
+					.queryIdentifier(BudgetCategoryQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
+					.projections(BudgetCategory.FIELD_IDENTIFIER,BudgetCategory.FIELD_CODE,BudgetCategory.FIELD_NAME)
+					.filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.stringify(BudgetCategory.class))));
+		budgetaryScopeFunctionSelectionController = new ScopeFunctionSelectionController(budgetCategory);
 		return buildForm(Form.FIELD_ACTION,action,ScopeFunctionSelectionController.class,budgetaryScopeFunctionSelectionController);
 	}
 	
@@ -242,10 +258,12 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ENTITY_CLASS, Request.class);
 		Request request = (Request) MapHelper.readByKey(arguments, Form.FIELD_ENTITY);
 		if(request == null)
-			request = getRequestFromParameter((Action) MapHelper.readByKey(arguments, Form.FIELD_ACTION),(String)MapHelper.readByKey(arguments, Actor.class));			
+			request = getRequestFromParameter((Action) MapHelper.readByKey(arguments, Form.FIELD_ACTION),(String)MapHelper.readByKey(arguments, Actor.class));//TODO avoid duplicate read of request		
 		ScopeFunctionSelectionController budgetaryScopeFunctionSelectionController = (ScopeFunctionSelectionController) MapHelper.readByKey(arguments, ScopeFunctionSelectionController.class);
-		if(budgetaryScopeFunctionSelectionController != null)
+		if(budgetaryScopeFunctionSelectionController != null) {
+			budgetaryScopeFunctionSelectionController.setBudgetCategory(request.getBudgetCategory());
 			budgetaryScopeFunctionSelectionController.setSelected(request.getBudgetariesScopeFunctions());
+		}
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ENTITY, request);
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_LISTENER, new FormConfiguratorListener(request));		
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_LISTENER, new FormListener(request,budgetaryScopeFunctionSelectionController));
@@ -275,6 +293,10 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 					if(StringHelper.isBlank(request.getElectronicMailAddress()))
 						request.setElectronicMailAddress(electronicMailAddress);
 				}
+				request.setBudgetCategory(EntityReader.getInstance().readOneBySystemIdentifierAsParent(BudgetCategory.class, new Arguments<BudgetCategory>()
+						.queryIdentifier(BudgetCategoryQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
+						.projections(BudgetCategory.FIELD_IDENTIFIER,BudgetCategory.FIELD_CODE,BudgetCategory.FIELD_NAME)
+						.filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.stringify(BudgetCategory.class)))));
 				request.setReadPageURL(JavaServerFacesHelper.buildUrlFromOutcome(PublicRequestOpenPage.OUTCOME));
 				request.setActor(__inject__(ActorController.class).getLoggedIn());
 			}else {

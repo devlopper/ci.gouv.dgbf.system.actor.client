@@ -19,12 +19,15 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContaine
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
 import org.cyk.utility.controller.Arguments;
 import org.cyk.utility.controller.EntityReader;
 
+import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
 import ci.gouv.dgbf.system.actor.client.controller.entities.RequestType;
 import ci.gouv.dgbf.system.actor.client.controller.impl.actor.RequestEditPage;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetCategoryQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestTypeQuerier;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -47,7 +50,7 @@ public class PublicRequestElectronicMailAddressInputPage extends AbstractPageCon
 		String typeIdentifier =  WebController.getInstance().getRequestParameter(ParameterName.stringify(RequestType.class));
 		RequestType type = EntityReader.getInstance().readOne(RequestType.class, new Arguments<RequestType>()
 				.queryIdentifier(RequestTypeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE).filterByIdentifier(typeIdentifier));
-		return RequestEditPage.getWindowTitleValue(Action.CREATE,type, super.__getWindowTitleValue__());
+		return RequestEditPage.getWindowTitleValue(Action.CREATE,(Request) form.getEntity(),type, super.__getWindowTitleValue__());
 	}
 	
 	/**/
@@ -59,7 +62,7 @@ public class PublicRequestElectronicMailAddressInputPage extends AbstractPageCon
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ENTITY_CLASS, Request.class);
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ENTITY, request);
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ACTION, Action.CREATE);
-		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_INPUTS_FIELDS_NAMES, List.of(Request.FIELD_ELECTRONIC_MAIL_ADDRESS));
+		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_INPUTS_FIELDS_NAMES, List.of(Request.FIELD_BUDGET_CATEGORY,Request.FIELD_ELECTRONIC_MAIL_ADDRESS));
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_CONTROLLER_ENTITY_INJECTABLE, Boolean.FALSE);
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_LISTENER, new FormListener());
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_LISTENER, new FormConfiguratorListener());
@@ -78,6 +81,8 @@ public class PublicRequestElectronicMailAddressInputPage extends AbstractPageCon
 			Request request = (Request) form.getEntity();
 			Redirector.Arguments arguments =new Redirector.Arguments().outcome(PublicRequestEditPage.OUTCOME)
 					.addParameter(Request.FIELD_ELECTRONIC_MAIL_ADDRESS, request.getElectronicMailAddress());
+			if(request.getBudgetCategory() != null)
+				arguments.addParameter(ParameterName.stringify(BudgetCategory.class), request.getBudgetCategory().getIdentifier());
 			Redirector.getInstance().redirect(arguments);
 		}
 	}
@@ -91,6 +96,14 @@ public class PublicRequestElectronicMailAddressInputPage extends AbstractPageCon
 			if(Request.FIELD_ELECTRONIC_MAIL_ADDRESS.equals(fieldName)) {
 				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Email");
 				map.put(AbstractInput.FIELD_REQUIRED, Boolean.TRUE);
+			}else if(Request.FIELD_BUDGET_CATEGORY.equals(fieldName)) {
+				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory.LABEL);
+				map.put(AbstractInput.FIELD_REQUIRED, Boolean.TRUE);
+				Collection<BudgetCategory> choices = EntityReader.getInstance().readMany(BudgetCategory.class,new Arguments<BudgetCategory>().queryIdentifier(BudgetCategoryQuerier.QUERY_IDENTIFIER_READ_BY_CODES_FOR_UI)
+						.filterFieldsValues(BudgetCategoryQuerier.PARAMETER_NAME_CODES, List.of(ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory.CODE_GENERAL
+								, ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory.CODE_EPN)));
+				//CollectionHelper.addNullAtFirstIfSizeGreaterThanZero(choices);
+				map.put(AbstractInputChoice.FIELD_CHOICES, choices);
 			}
 			return map;
 		}

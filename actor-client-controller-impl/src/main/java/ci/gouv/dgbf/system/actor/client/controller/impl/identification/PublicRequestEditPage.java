@@ -17,10 +17,14 @@ import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.Redirector;
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityEditPageContainerManagedImpl;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntityReader;
 
+import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
 import ci.gouv.dgbf.system.actor.client.controller.impl.actor.RequestEditPage;
 import ci.gouv.dgbf.system.actor.client.controller.impl.actor.ScopeFunctionSelectionController;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetCategoryQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -56,7 +60,10 @@ public class PublicRequestEditPage extends AbstractEntityEditPageContainerManage
 	
 	@Override
 	protected Form __buildForm__() {
-		budgetaryScopeFunctionSelectionController = new ScopeFunctionSelectionController();
+		budgetaryScopeFunctionSelectionController = new ScopeFunctionSelectionController(EntityReader.getInstance().readOneBySystemIdentifierAsParent(BudgetCategory.class, new Arguments<BudgetCategory>()
+				.queryIdentifier(BudgetCategoryQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
+				.projections(BudgetCategory.FIELD_IDENTIFIER,BudgetCategory.FIELD_CODE,BudgetCategory.FIELD_NAME)
+				.filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.stringify(BudgetCategory.class)))));
 		return buildForm(Form.FIELD_ACTION,action,ScopeFunctionSelectionController.class,budgetaryScopeFunctionSelectionController);
 	}
 	

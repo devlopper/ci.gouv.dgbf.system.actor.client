@@ -63,14 +63,15 @@ public class RequestProcessPage extends AbstractEntityEditPageContainerManagedIm
 	
 	@Override
 	protected Form __buildForm__() {
-		budgetaryScopeFunctionSelectionController = new ScopeFunctionSelectionController();
+		Request request = RequestEditPage.getRequestFromParameter(action, null);//TODO avoid duplicate read of request
+		budgetaryScopeFunctionSelectionController = new ScopeFunctionSelectionController(request.getBudgetCategory());
 		return buildForm(Form.FIELD_ACTION,action,PARAMETER_NAME_CHOICE,treatmentChoice,ScopeFunctionSelectionController.class,budgetaryScopeFunctionSelectionController);
 	}
 	
 	public static Form buildForm(Map<Object, Object> arguments) {
 		if(arguments == null)
 			arguments = new HashMap<>();
-		Request request = RequestEditPage.getRequestFromParameter((Action) arguments.get(Form.FIELD_ACTION), null);
+		Request request = RequestEditPage.getRequestFromParameter((Action) arguments.get(Form.FIELD_ACTION), null);//TODO avoid duplicate read of request
 		request.setTreatment((String)arguments.get(PARAMETER_NAME_CHOICE));
 		Collection<String> fieldsNames = new ArrayList<>();
 		fieldsNames.addAll(List.of(Request.FIELD_TREATMENT));
