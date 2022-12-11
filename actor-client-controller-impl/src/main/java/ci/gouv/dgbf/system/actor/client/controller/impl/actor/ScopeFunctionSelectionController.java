@@ -90,6 +90,8 @@ public class ScopeFunctionSelectionController implements Serializable {
 		buildAddCommandButton();
 		
 		buildLayout();
+		
+		budgetCategorySelectOne.select(budgetCategory);
 	}
 	
 	public void remove(ScopeFunction scopeFunction) {
@@ -253,11 +255,25 @@ public class ScopeFunctionSelectionController implements Serializable {
 			protected Collection<AdministrativeUnit> __computeChoices__(AbstractInputChoice<AdministrativeUnit> input, Class<?> entityClass) {
 				if(sectionSelectOne == null || sectionSelectOne.getValue() ==  null)
 					return null;
+				/*
 				List<AdministrativeUnit> administrativeUnits = (List<AdministrativeUnit>) EntityReader.getInstance().readMany(AdministrativeUnit.class
 						, AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_FOR_UI
 						,AdministrativeUnitQuerier.PARAMETER_NAME_SECTION_IDENTIFIER,((Section)sectionSelectOne.getValue()).getIdentifier());
 				if(CollectionHelper.getSize(administrativeUnits)>1)
 					administrativeUnits.add(0, null);
+				return administrativeUnits;
+				*/
+				String serviceGroupCode;
+				if(ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory.CODE_EPN.equals(budgetCategory.getCode()))
+					serviceGroupCode = "32";
+				else
+					serviceGroupCode = "";
+				Collection<AdministrativeUnit> administrativeUnits = EntityReader.getInstance().readMany(AdministrativeUnit.class,AdministrativeUnitQuerier
+						.QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_BY_SERVICE_GROUP_CODE_STARTS_WITH_FOR_UI
+						,AdministrativeUnitQuerier.PARAMETER_NAME_SECTION_IDENTIFIER,((Section)sectionSelectOne.getValue()).getIdentifier()
+						,AdministrativeUnitQuerier.PARAMETER_NAME_SERVICE_GROUP_CODE,serviceGroupCode
+						);
+				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(administrativeUnits);
 				return administrativeUnits;
 			}
 			
@@ -527,7 +543,7 @@ public class ScopeFunctionSelectionController implements Serializable {
 	}
 	
 	private ScopeFunctionSelectionController renderInitial() {
-		budgetCategoryRendered(Boolean.TRUE).categoryRendered(budgetCategory != null).sectionRendered(Boolean.FALSE).administrativeUnitRendered(Boolean.FALSE).budgetSpecializationUnitRendered(Boolean.FALSE).scopeFunctionRendered(Boolean.FALSE);
+		budgetCategoryRendered(Boolean.TRUE).categoryRendered(Boolean.FALSE).sectionRendered(Boolean.FALSE).administrativeUnitRendered(Boolean.FALSE).budgetSpecializationUnitRendered(Boolean.FALSE).scopeFunctionRendered(Boolean.FALSE);
 		return this;
 	}
 	
