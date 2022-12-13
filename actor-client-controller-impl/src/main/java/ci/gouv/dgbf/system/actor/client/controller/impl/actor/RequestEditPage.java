@@ -231,7 +231,7 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 		if(type == null)
 			return default_;
 		if(Action.CREATE.equals(action))
-			return "Saisie de nouvelle demande : "+type.getName()+" - "+request.getBudgetCategory();
+			return "Saisie de nouvelle demande : "+type.getName()+(request.getBudgetCategory() == null ? "" : " - "+request.getBudgetCategory());
 		if(Action.UPDATE.equals(action))
 			return "Modification de demande : "+type.getName()+" - "+request.getBudgetCategory();
 		return default_;

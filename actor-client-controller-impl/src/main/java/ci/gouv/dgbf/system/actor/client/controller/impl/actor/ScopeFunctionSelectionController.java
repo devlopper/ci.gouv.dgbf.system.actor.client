@@ -171,6 +171,15 @@ public class ScopeFunctionSelectionController implements Serializable {
 						));
 		Collections.sort(functions,new FunctionComparator());
 		
+		if(budgetCategory != null && ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory.CODE_EPN.equals(budgetCategory.getCode())) {
+			functions.forEach(function -> {
+				if(function.getCode().equals(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_HOLDER))
+					function.setName("Contrôleur budgétaire");
+				else if(function.getCode().equals(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_ASSISTANT))
+					function.setName("Assistant contrôleur budgétaire");
+			});
+		}
+		
 		if(CollectionHelper.getSize(functions)>1)
 			functions.add(0, null);
 		functionSelectOne = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,Function.class,SelectOneCombo.FIELD_CHOICES,functions
@@ -187,37 +196,47 @@ public class ScopeFunctionSelectionController implements Serializable {
 				renderInitial();
 				categoryRendered(Boolean.TRUE);
 				if(function != null) {
-					if(Boolean.TRUE.equals(function.isCreditManager())) {
+					if(budgetCategory == null || ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory.CODE_GENERAL.equals(budgetCategory.getCode())) {
+						if(Boolean.TRUE.equals(function.isCreditManager())) {
+							sectionRendered(Boolean.TRUE).administrativeUnitRendered(Boolean.TRUE).scopeFunctionRendered(Boolean.TRUE);
+							//layout.setCellsRenderedByIndexes(Boolean.TRUE, 2,3,4,5,8,9);
+							if(administrativeUnitSelectOne != null) {				
+								administrativeUnitSelectOne.setChoicesInitialized(Boolean.FALSE);
+								administrativeUnitSelectOne.updateChoices();
+								administrativeUnitSelectOne.selectFirstChoice();
+							}
+						}else if(Boolean.TRUE.equals(function.isAuthorizingOfficer())) {
+							sectionRendered(Boolean.TRUE).budgetSpecializationUnitRendered(Boolean.TRUE).scopeFunctionRendered(Boolean.TRUE);
+							//layout.setCellsRenderedByIndexes(Boolean.TRUE, 2,3,6,7,8,9);
+							if(budgetSpecializationUnitSelectOne != null) {				
+								budgetSpecializationUnitSelectOne.setChoicesInitialized(Boolean.FALSE);
+								budgetSpecializationUnitSelectOne.updateChoices();
+								budgetSpecializationUnitSelectOne.selectFirstChoice();
+							}
+						}else if(Boolean.TRUE.equals(function.isFinancialController())) {
+							scopeFunctionRendered(Boolean.TRUE);
+							//layout.setCellsRenderedByIndexes(Boolean.TRUE, 8,9);
+							if(scopeFunctionSelectOne != null) {				
+								scopeFunctionSelectOne.setChoicesInitialized(Boolean.FALSE);
+								scopeFunctionSelectOne.updateChoices();
+								//scopeFunctionSelectOne.selectFirstChoice();
+							}
+						}else if(Boolean.TRUE.equals(function.isAccounting())) {
+							scopeFunctionRendered(Boolean.TRUE);
+							//layout.setCellsRenderedByIndexes(Boolean.TRUE, 8,9);
+							if(scopeFunctionSelectOne != null) {				
+								scopeFunctionSelectOne.setChoicesInitialized(Boolean.FALSE);
+								scopeFunctionSelectOne.updateChoices();
+								//scopeFunctionSelectOne.selectFirstChoice();
+							}
+						}
+					}else {
+						//Tous les acteurs de l'EPN sont liés à l'unité administrative
 						sectionRendered(Boolean.TRUE).administrativeUnitRendered(Boolean.TRUE).scopeFunctionRendered(Boolean.TRUE);
-						//layout.setCellsRenderedByIndexes(Boolean.TRUE, 2,3,4,5,8,9);
 						if(administrativeUnitSelectOne != null) {				
 							administrativeUnitSelectOne.setChoicesInitialized(Boolean.FALSE);
 							administrativeUnitSelectOne.updateChoices();
 							administrativeUnitSelectOne.selectFirstChoice();
-						}
-					}else if(Boolean.TRUE.equals(function.isAuthorizingOfficer())) {
-						sectionRendered(Boolean.TRUE).budgetSpecializationUnitRendered(Boolean.TRUE).scopeFunctionRendered(Boolean.TRUE);
-						//layout.setCellsRenderedByIndexes(Boolean.TRUE, 2,3,6,7,8,9);
-						if(budgetSpecializationUnitSelectOne != null) {				
-							budgetSpecializationUnitSelectOne.setChoicesInitialized(Boolean.FALSE);
-							budgetSpecializationUnitSelectOne.updateChoices();
-							budgetSpecializationUnitSelectOne.selectFirstChoice();
-						}
-					}else if(Boolean.TRUE.equals(function.isFinancialController())) {
-						scopeFunctionRendered(Boolean.TRUE);
-						//layout.setCellsRenderedByIndexes(Boolean.TRUE, 8,9);
-						if(scopeFunctionSelectOne != null) {				
-							scopeFunctionSelectOne.setChoicesInitialized(Boolean.FALSE);
-							scopeFunctionSelectOne.updateChoices();
-							//scopeFunctionSelectOne.selectFirstChoice();
-						}
-					}else if(Boolean.TRUE.equals(function.isAccounting())) {
-						scopeFunctionRendered(Boolean.TRUE);
-						//layout.setCellsRenderedByIndexes(Boolean.TRUE, 8,9);
-						if(scopeFunctionSelectOne != null) {				
-							scopeFunctionSelectOne.setChoicesInitialized(Boolean.FALSE);
-							scopeFunctionSelectOne.updateChoices();
-							//scopeFunctionSelectOne.selectFirstChoice();
 						}
 					}
 				}else {
@@ -264,7 +283,7 @@ public class ScopeFunctionSelectionController implements Serializable {
 				return administrativeUnits;
 				*/
 				String serviceGroupCode;
-				if(ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory.CODE_EPN.equals(budgetCategory.getCode()))
+				if(budgetCategory != null && ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory.CODE_EPN.equals(budgetCategory.getCode()))
 					serviceGroupCode = "32";
 				else
 					serviceGroupCode = "";
@@ -384,7 +403,39 @@ public class ScopeFunctionSelectionController implements Serializable {
 				Arguments<ScopeFunction> arguments = new Arguments<ScopeFunction>();
 				arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments());
 				arguments.getRepresentationArguments().setQueryExecutorArguments(new QueryExecutorArguments.Dto());
-				if(Boolean.TRUE.equals(function.isCreditManager())) {
+				
+				if(budgetCategory == null || ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory.CODE_GENERAL.equals(budgetCategory.getCode())) {
+					if(Boolean.TRUE.equals(function.isCreditManager())) {
+						if(administrativeUnitSelectOne == null || administrativeUnitSelectOne.getValue() ==  null)
+							return null;
+						arguments.getRepresentationArguments().getQueryExecutorArguments().setQueryIdentifier(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI);
+						arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterFieldsValues(
+								/*ScopeFunctionQuerier.PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER,((BudgetCategory) budgetCategorySelectOne.getValue()).getIdentifier()
+								,*/ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER,functionIdentifier
+								,ScopeFunctionQuerier.PARAMETER_NAME_SCOPE_CODE_NAME,((AdministrativeUnit)administrativeUnitSelectOne.getValue()).getCode());
+					}
+					if(Boolean.TRUE.equals(function.isAuthorizingOfficer())) {
+						if(budgetSpecializationUnitSelectOne == null || budgetSpecializationUnitSelectOne.getValue() ==  null)
+							return null;
+						arguments.getRepresentationArguments().getQueryExecutorArguments().setQueryIdentifier(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_BY_FUNCTION_IDENTIFIER_BY_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER);
+						arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterFieldsValues(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER
+								,functionIdentifier,ScopeFunctionQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER,((BudgetSpecializationUnit)budgetSpecializationUnitSelectOne.getValue()).getIdentifier());
+					}
+					if(Boolean.TRUE.equals(function.isFinancialController())) {
+						//if(AbstractInput.getValue(financialControllerServiceSelectOne) == null)
+						//	return null;
+						arguments.getRepresentationArguments().getQueryExecutorArguments().setQueryIdentifier(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI);
+						arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterFieldsValues(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER
+								,functionIdentifier);
+					}
+					if(Boolean.TRUE.equals(function.isAccounting())) {
+						//if(AbstractInput.getValue(accountingServiceSelectOne) == null)
+						//	return null;
+						arguments.getRepresentationArguments().getQueryExecutorArguments().setQueryIdentifier(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI);
+						arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterFieldsValues(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER
+								,functionIdentifier);
+					}
+				}else if(ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory.CODE_EPN.equals(budgetCategory.getCode())){
 					if(administrativeUnitSelectOne == null || administrativeUnitSelectOne.getValue() ==  null)
 						return null;
 					arguments.getRepresentationArguments().getQueryExecutorArguments().setQueryIdentifier(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI);
@@ -392,27 +443,6 @@ public class ScopeFunctionSelectionController implements Serializable {
 							/*ScopeFunctionQuerier.PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER,((BudgetCategory) budgetCategorySelectOne.getValue()).getIdentifier()
 							,*/ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER,functionIdentifier
 							,ScopeFunctionQuerier.PARAMETER_NAME_SCOPE_CODE_NAME,((AdministrativeUnit)administrativeUnitSelectOne.getValue()).getCode());
-				}
-				if(Boolean.TRUE.equals(function.isAuthorizingOfficer())) {
-					if(budgetSpecializationUnitSelectOne == null || budgetSpecializationUnitSelectOne.getValue() ==  null)
-						return null;
-					arguments.getRepresentationArguments().getQueryExecutorArguments().setQueryIdentifier(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_BY_FUNCTION_IDENTIFIER_BY_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER);
-					arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterFieldsValues(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER
-							,functionIdentifier,ScopeFunctionQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER,((BudgetSpecializationUnit)budgetSpecializationUnitSelectOne.getValue()).getIdentifier());
-				}
-				if(Boolean.TRUE.equals(function.isFinancialController())) {
-					//if(AbstractInput.getValue(financialControllerServiceSelectOne) == null)
-					//	return null;
-					arguments.getRepresentationArguments().getQueryExecutorArguments().setQueryIdentifier(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI);
-					arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterFieldsValues(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER
-							,functionIdentifier);
-				}
-				if(Boolean.TRUE.equals(function.isAccounting())) {
-					//if(AbstractInput.getValue(accountingServiceSelectOne) == null)
-					//	return null;
-					arguments.getRepresentationArguments().getQueryExecutorArguments().setQueryIdentifier(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI);
-					arguments.getRepresentationArguments().getQueryExecutorArguments().addFilterFieldsValues(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER
-							,functionIdentifier);
 				}
 				
 				ArrayList<String> list = new ArrayList<>();
@@ -489,7 +519,7 @@ public class ScopeFunctionSelectionController implements Serializable {
 						,MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Section"),Cell.FIELD_WIDTH,3)
 						,MapHelper.instantiate(Cell.FIELD_CONTROL,sectionSelectOne,Cell.FIELD_WIDTH,9)
 						
-						,MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Unité administrative"),Cell.FIELD_WIDTH,3)
+						,MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue(budgetCategory != null && ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory.CODE_EPN.equals(budgetCategory.getCode()) ? "E.P.N." : "Unité administrative"),Cell.FIELD_WIDTH,3)
 						,MapHelper.instantiate(Cell.FIELD_CONTROL,administrativeUnitSelectOne,Cell.FIELD_WIDTH,9)
 						
 						,MapHelper.instantiate(Cell.FIELD_CONTROL,OutputText.buildFromValue("Unité de spécialisation du budget"),Cell.FIELD_WIDTH,3)
