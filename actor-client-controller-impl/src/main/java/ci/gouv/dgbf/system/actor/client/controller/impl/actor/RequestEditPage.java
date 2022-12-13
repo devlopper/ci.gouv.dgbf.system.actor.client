@@ -129,9 +129,9 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 							if(sectionSelectOne == null || sectionSelectOne.getValue() == null)
 								return null;
 							String serviceGroupCode;
-							if(ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory.CODE_EPN.equals(request.getBudgetCategory().getCode()))
+							/*if(ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory.CODE_EPN.equals(request.getBudgetCategory().getCode()))
 								serviceGroupCode = "32";
-							else
+							else*/
 								serviceGroupCode = "";
 							Collection<AdministrativeUnit> administrativeUnits = EntityReader.getInstance().readMany(AdministrativeUnit.class,AdministrativeUnitQuerier
 									.QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_BY_SERVICE_GROUP_CODE_STARTS_WITH_FOR_UI
