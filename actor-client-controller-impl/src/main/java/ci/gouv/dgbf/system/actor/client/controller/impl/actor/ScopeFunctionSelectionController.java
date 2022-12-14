@@ -282,15 +282,17 @@ public class ScopeFunctionSelectionController implements Serializable {
 					administrativeUnits.add(0, null);
 				return administrativeUnits;
 				*/
-				String serviceGroupCode;
+				Collection<AdministrativeUnit> administrativeUnits;
 				if(budgetCategory != null && ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory.CODE_EPN.equals(budgetCategory.getCode()))
-					serviceGroupCode = "32";
+					administrativeUnits = EntityReader.getInstance().readMany(AdministrativeUnit.class,AdministrativeUnitQuerier
+							.QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_BY_SERVICE_GROUP_CODE_STARTS_WITH_FOR_UI
+							,AdministrativeUnitQuerier.PARAMETER_NAME_SECTION_IDENTIFIER,((Section)sectionSelectOne.getValue()).getIdentifier()
+							,AdministrativeUnitQuerier.PARAMETER_NAME_SERVICE_GROUP_CODE,"32"
+							);
 				else
-					serviceGroupCode = "";
-				Collection<AdministrativeUnit> administrativeUnits = EntityReader.getInstance().readMany(AdministrativeUnit.class,AdministrativeUnitQuerier
-						.QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_BY_SERVICE_GROUP_CODE_STARTS_WITH_FOR_UI
+					administrativeUnits = EntityReader.getInstance().readMany(AdministrativeUnit.class,AdministrativeUnitQuerier
+						.QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_FOR_UI
 						,AdministrativeUnitQuerier.PARAMETER_NAME_SECTION_IDENTIFIER,((Section)sectionSelectOne.getValue()).getIdentifier()
-						,AdministrativeUnitQuerier.PARAMETER_NAME_SERVICE_GROUP_CODE,serviceGroupCode
 						);
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(administrativeUnits);
 				return administrativeUnits;

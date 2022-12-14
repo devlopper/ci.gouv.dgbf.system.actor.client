@@ -35,6 +35,8 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	/* Initialization */
 	
 	@Input @InputChoice @InputChoiceOneRadio private BudgetCategory budgetCategory;
+	private String budgetCategoryIdentifier;
+	private String budgetCategoryAsString;
 	
 	@Input @InputChoice(choices = @Choices(count = Count.ALL)) @InputChoiceOneCombo private RequestType type;
 	private String typeAsString;
@@ -47,7 +49,6 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	private String accountCreationMessage;
 	private String accessToken;
 	private String dispatchSlipCode,dispatchSlipAsString;
-	private String budgetCategoryAsString;
 	
 	/* Identity */
 	

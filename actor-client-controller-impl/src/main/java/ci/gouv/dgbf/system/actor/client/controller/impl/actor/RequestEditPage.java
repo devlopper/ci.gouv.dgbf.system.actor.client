@@ -128,15 +128,16 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 						public Collection<AdministrativeUnit> computeChoices(AbstractInputChoice<AdministrativeUnit> input) {
 							if(sectionSelectOne == null || sectionSelectOne.getValue() == null)
 								return null;
-							String serviceGroupCode;
-							/*if(ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory.CODE_EPN.equals(request.getBudgetCategory().getCode()))
+							/*String serviceGroupCode;
+							if(ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory.CODE_EPN.equals(request.getBudgetCategory().getCode()))
 								serviceGroupCode = "32";
-							else*/
+							else
 								serviceGroupCode = "";
+							*/
 							Collection<AdministrativeUnit> administrativeUnits = EntityReader.getInstance().readMany(AdministrativeUnit.class,AdministrativeUnitQuerier
-									.QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_BY_SERVICE_GROUP_CODE_STARTS_WITH_FOR_UI
+									.QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_FOR_UI
 									,AdministrativeUnitQuerier.PARAMETER_NAME_SECTION_IDENTIFIER,((Section)sectionSelectOne.getValue()).getIdentifier()
-									,AdministrativeUnitQuerier.PARAMETER_NAME_SERVICE_GROUP_CODE,serviceGroupCode
+									//,AdministrativeUnitQuerier.PARAMETER_NAME_SERVICE_GROUP_CODE,serviceGroupCode
 									);
 							CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(administrativeUnits);
 							return administrativeUnits;
@@ -293,10 +294,13 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 					if(StringHelper.isBlank(request.getElectronicMailAddress()))
 						request.setElectronicMailAddress(electronicMailAddress);
 				}
-				request.setBudgetCategory(EntityReader.getInstance().readOneBySystemIdentifierAsParent(BudgetCategory.class, new Arguments<BudgetCategory>()
+				if(StringHelper.isBlank(request.getBudgetCategoryIdentifier()))
+					request.setBudgetCategoryIdentifier(WebController.getInstance().getRequestParameter(ParameterName.stringify(BudgetCategory.class)));
+				if(request.getBudgetCategory() == null && StringHelper.isNotBlank(request.getBudgetCategoryIdentifier()))
+					request.setBudgetCategory(EntityReader.getInstance().readOneBySystemIdentifierAsParent(BudgetCategory.class, new Arguments<BudgetCategory>()
 						.queryIdentifier(BudgetCategoryQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
 						.projections(BudgetCategory.FIELD_IDENTIFIER,BudgetCategory.FIELD_CODE,BudgetCategory.FIELD_NAME)
-						.filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.stringify(BudgetCategory.class)))));
+						.filterByIdentifier(request.getBudgetCategoryIdentifier())));
 				request.setReadPageURL(JavaServerFacesHelper.buildUrlFromOutcome(PublicRequestOpenPage.OUTCOME));
 				request.setActor(__inject__(ActorController.class).getLoggedIn());
 			}else {
