@@ -410,7 +410,7 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 			}
 
 			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("assignmentsReadView", CommandButton.FIELD_VALUE,"Détails",CommandButton.FIELD_ICON,"fa fa-eye");
-			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("assignmentsEditView", CommandButton.FIELD_VALUE,"Modifier",CommandButton.FIELD_ICON,"fa fa-pencil");
+			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog("assignmentsEditView", CommandButton.FIELD_VALUE,"Modifier",CommandButton.FIELD_ICON,"fa fa-pencil",MenuItem.FIELD___PARAMETERS__,parameters);
 			if(isAdministrationActionsVisible) {
 				dataTable.addRecordMenuItemByArgumentsOpenViewInDialog(AssignmentsReadHistoryPage.OUTCOME, CommandButton.FIELD_VALUE,"Historique",CommandButton.FIELD_ICON,"fa fa-list-alt");
 			}

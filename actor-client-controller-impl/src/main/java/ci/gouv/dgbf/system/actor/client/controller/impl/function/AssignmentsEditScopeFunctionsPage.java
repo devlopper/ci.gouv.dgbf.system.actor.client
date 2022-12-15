@@ -15,13 +15,9 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.controller.Arguments;
-import org.cyk.utility.controller.EntityReader;
-import org.cyk.utility.controller.EntitySaver;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.client.controller.web.WebController;
@@ -31,8 +27,13 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.Comman
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AutoComplete;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
+import org.cyk.utility.controller.Arguments;
+import org.cyk.utility.controller.EntityReader;
+import org.cyk.utility.controller.EntitySaver;
+import org.cyk.utility.persistence.query.Filter;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Assignments;
+import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.business.api.AssignmentsBusiness;
@@ -55,6 +56,7 @@ public class AssignmentsEditScopeFunctionsPage extends AbstractPageContainerMana
 	private AutoComplete financialControllerAssistantAutoComplete;
 	private AutoComplete accountingHolderAutoComplete;
 	private AutoComplete accountingAssistantAutoComplete;
+	private BudgetCategory budgetCategory;
 	
 	@Override
 	protected String __getWindowTitleValue__() {
@@ -67,6 +69,7 @@ public class AssignmentsEditScopeFunctionsPage extends AbstractPageContainerMana
 	protected void __listenPostConstruct__() {
 		assignments = EntityReader.getInstance().readOne(Assignments.class, AssignmentsQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT
 				,AssignmentsQuerier.PARAMETER_NAME_IDENTIFIER, WebController.getInstance().getRequestParameter(ParameterName.ENTITY_IDENTIFIER));
+		budgetCategory =  WebController.getInstance().getRequestParameterEntityAsParentBySystemIdentifier(BudgetCategory.class, null);
 		super.__listenPostConstruct__();
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
 		/*
@@ -81,13 +84,13 @@ public class AssignmentsEditScopeFunctionsPage extends AbstractPageContainerMana
 	}
 	
 	public void buildInputs(Collection<Map<Object,Object>> cellsMaps) {
-		creditManagerHolderAutoComplete = addScopeFunctionAutoComplete(assignments,CODE_CREDIT_MANAGER_HOLDER,Assignments.FIELD_CREDIT_MANAGER_HOLDER,cellsMaps);
+		creditManagerHolderAutoComplete = addScopeFunctionAutoComplete(assignments,CODE_CREDIT_MANAGER_HOLDER,Assignments.FIELD_CREDIT_MANAGER_HOLDER,cellsMaps,budgetCategory);
 		//creditManagerAssistantAutoComplete = addScopeFunctionAutoComplete(assignments,CODE_CREDIT_MANAGER_ASSISTANT,Assignments.FIELD_CREDIT_MANAGER_ASSISTANT,cellsMaps);
-		authorizingOfficerHolderAutoComplete = addScopeFunctionAutoComplete(assignments,CODE_AUTHORIZING_OFFICER_HOLDER,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER,cellsMaps);
+		authorizingOfficerHolderAutoComplete = addScopeFunctionAutoComplete(assignments,CODE_AUTHORIZING_OFFICER_HOLDER,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER,cellsMaps,budgetCategory);
 		//authorizingOfficerAssistantAutoComplete = addScopeFunctionAutoComplete(assignments,CODE_AUTHORIZING_OFFICER_ASSISTANT,Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT,cellsMaps);
-		financialControllerHolderAutoComplete = addScopeFunctionAutoComplete(assignments,CODE_FINANCIAL_CONTROLLER_HOLDER,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER,cellsMaps);
+		financialControllerHolderAutoComplete = addScopeFunctionAutoComplete(assignments,CODE_FINANCIAL_CONTROLLER_HOLDER,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER,cellsMaps,budgetCategory);
 		//financialControllerAssistantAutoComplete = addScopeFunctionAutoComplete(assignments,CODE_FINANCIAL_CONTROLLER_ASSISTANT,Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT,cellsMaps);
-		accountingHolderAutoComplete = addScopeFunctionAutoComplete(assignments,CODE_ACCOUNTING_HOLDER,Assignments.FIELD_ACCOUNTING_HOLDER,cellsMaps);
+		accountingHolderAutoComplete = addScopeFunctionAutoComplete(assignments,CODE_ACCOUNTING_HOLDER,Assignments.FIELD_ACCOUNTING_HOLDER,cellsMaps,budgetCategory);
 		//accountingAssistantAutoComplete = addScopeFunctionAutoComplete(assignments,CODE_ACCOUNTING_ASSISTANT,Assignments.FIELD_ACCOUNTING_ASSISTANT,cellsMaps);
 	}
 	
@@ -121,10 +124,10 @@ public class AssignmentsEditScopeFunctionsPage extends AbstractPageContainerMana
 		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
 	}
 	
-	private static AutoComplete addScopeFunctionAutoComplete(Assignments assignments,String functionCode,String fieldName,Collection<Map<Object,Object>> cellsMaps) {
+	private static AutoComplete addScopeFunctionAutoComplete(Assignments assignments,String functionCode,String fieldName,Collection<Map<Object,Object>> cellsMaps,BudgetCategory budgetCategory) {
 		if(StringHelper.isBlank(functionCode))
 			return null;
-		AutoComplete autoComplete = buildScopeFunctionAutoComplete(assignments,functionCode,fieldName);
+		AutoComplete autoComplete = buildScopeFunctionAutoComplete(assignments,functionCode,fieldName,budgetCategory);
 		if(autoComplete == null)
 			return null;
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,autoComplete.getOutputLabel(),Cell.FIELD_WIDTH,3));
@@ -132,7 +135,7 @@ public class AssignmentsEditScopeFunctionsPage extends AbstractPageContainerMana
 		return autoComplete;
 	}
 	
-	public static AutoComplete buildScopeFunctionAutoComplete(Assignments assignments,String functionCode,String fieldName) {
+	public static AutoComplete buildScopeFunctionAutoComplete(Assignments assignments,String functionCode,String fieldName,BudgetCategory budgetCategory) {
 		if(StringHelper.isBlank(functionCode) || StringHelper.isBlank(fieldName))
 			return null;
 		Function function = EntityReader.getInstance().readOne(Function.class, FunctionQuerier.QUERY_IDENTIFIER_READ_BY_CODE_FOR_UI,FunctionQuerier.PARAMETER_NAME_CODE, functionCode);
@@ -141,14 +144,17 @@ public class AssignmentsEditScopeFunctionsPage extends AbstractPageContainerMana
 			return null;
 		return AutoComplete.build(AutoComplete.FIELD_ENTITY_CLASS,ScopeFunction.class,AutoComplete.FIELD_READER_USABLE,Boolean.TRUE
 				,AutoComplete.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,function.getName(),AutoComplete.FIELD_VALUE,assignments == null ? null :FieldHelper.read(assignments, fieldName)
-				,AutoComplete.FIELD_READ_QUERY_IDENTIFIER,ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE
+				,AutoComplete.FIELD_READ_QUERY_IDENTIFIER,ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE_BY_BUDGET_CATEGORY_IDENTIFIER
 				,AutoComplete.FIELD_LISTENER,new AutoComplete.Listener.AbstractImpl<ScopeFunction>() {
 			@Override
 			public Filter.Dto instantiateFilter(AutoComplete autoComplete) {
-				return new Filter.Dto()
+				Filter.Dto filter = new Filter.Dto()
 						.addField(ScopeFunctionQuerier.PARAMETER_NAME_CODE, autoComplete.get__queryString__())
 						.addField(ScopeFunctionQuerier.PARAMETER_NAME_NAME, autoComplete.get__queryString__())
 						.addField(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_CODE, functionCode);
+				if(budgetCategory != null)
+					filter.addField(ScopeFunctionQuerier.PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER, budgetCategory.getIdentifier());
+				return filter;
 			}
 		});
 	}

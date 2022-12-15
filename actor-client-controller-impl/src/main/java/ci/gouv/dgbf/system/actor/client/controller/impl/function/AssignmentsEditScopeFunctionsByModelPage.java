@@ -92,22 +92,22 @@ public class AssignmentsEditScopeFunctionsByModelPage extends AbstractPageContai
 	
 	private void buildFilters() {
 		creditManagerHolderAutoComplete = AssignmentsEditScopeFunctionsPage.buildScopeFunctionAutoComplete(model,CODE_CREDIT_MANAGER_HOLDER
-				,Assignments.FIELD_CREDIT_MANAGER_HOLDER);
+				,Assignments.FIELD_CREDIT_MANAGER_HOLDER,filterController.getBudgetCategory());
 		//creditManagerAssistantAutoComplete = AssignmentsEditScopeFunctionsPage.buildScopeFunctionAutoComplete(model,CODE_CREDIT_MANAGER_ASSISTANT
 		//		,Assignments.FIELD_CREDIT_MANAGER_ASSISTANT);
 		
 		authorizingOfficerHolderAutoComplete = AssignmentsEditScopeFunctionsPage.buildScopeFunctionAutoComplete(model,CODE_AUTHORIZING_OFFICER_HOLDER
-				,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER);
+				,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER,filterController.getBudgetCategory());
 		//authorizingOfficerAssistantAutoComplete = AssignmentsEditScopeFunctionsPage.buildScopeFunctionAutoComplete(model,CODE_AUTHORIZING_OFFICER_ASSISTANT
 		//		,Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT);
 		
 		financialControllerHolderAutoComplete = AssignmentsEditScopeFunctionsPage.buildScopeFunctionAutoComplete(model,CODE_FINANCIAL_CONTROLLER_HOLDER
-				,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER);
+				,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER,filterController.getBudgetCategory());
 		//financialControllerAssistantAutoComplete = AssignmentsEditScopeFunctionsPage.buildScopeFunctionAutoComplete(model,CODE_FINANCIAL_CONTROLLER_ASSISTANT
 		//		,Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT);
 		
 		accountingHolderAutoComplete = AssignmentsEditScopeFunctionsPage.buildScopeFunctionAutoComplete(model,CODE_ACCOUNTING_HOLDER
-				,Assignments.FIELD_ACCOUNTING_HOLDER);
+				,Assignments.FIELD_ACCOUNTING_HOLDER,filterController.getBudgetCategory());
 		//accountingAssistantAutoComplete = AssignmentsEditScopeFunctionsPage.buildScopeFunctionAutoComplete(model,CODE_ACCOUNTING_ASSISTANT
 		//		,Assignments.FIELD_ACCOUNTING_ASSISTANT);
 		
