@@ -78,22 +78,22 @@ public class AssignmentsCollectionEditScopeFunctionsPage extends AbstractPageCon
 		filterController.initialize();
 		super.__listenPostConstruct__();
 		creditManagerHolderAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_HOLDER
-				,FIELD_CREDIT_MANAGER_HOLDER_AUTO_COMPLETE,Assignments.FIELD_CREDIT_MANAGER_HOLDER,filterController.getBudgetCategory());
+				,FIELD_CREDIT_MANAGER_HOLDER_AUTO_COMPLETE,Assignments.FIELD_CREDIT_MANAGER_HOLDER,filterController.getBudgetCategoryInitial());
 		//creditManagerAssistantAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_CREDIT_MANAGER_ASSISTANT
 		//		,FIELD_CREDIT_MANAGER_ASSISTANT_AUTO_COMPLETE,Assignments.FIELD_CREDIT_MANAGER_ASSISTANT);
 		
 		authorizingOfficerHolderAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_HOLDER
-				,FIELD_AUTHORIZING_OFFICER_HOLDER_AUTO_COMPLETE,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER,filterController.getBudgetCategory());
+				,FIELD_AUTHORIZING_OFFICER_HOLDER_AUTO_COMPLETE,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER,filterController.getBudgetCategoryInitial());
 		//authorizingOfficerAssistantAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_AUTHORIZING_OFFICER_ASSISTANT
 		//		,FIELD_AUTHORIZING_OFFICER_ASSISTANT_AUTO_COMPLETE,Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT);
 		
 		financialControllerHolderAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_HOLDER
-				,FIELD_FINANCIAL_CONTROLLER_HOLDER_AUTO_COMPLETE,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER,filterController.getBudgetCategory());
+				,FIELD_FINANCIAL_CONTROLLER_HOLDER_AUTO_COMPLETE,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER,filterController.getBudgetCategoryInitial());
 		//financialControllerAssistantAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_FINANCIAL_CONTROLLER_ASSISTANT
 		//		,FIELD_FINANCIAL_CONTROLLER_ASSISTANT_AUTO_COMPLETE,Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT);
 		
 		accountingHolderAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_HOLDER
-				,FIELD_ACCOUNTING_HOLDER_AUTO_COMPLETE,Assignments.FIELD_ACCOUNTING_HOLDER,filterController.getBudgetCategory());
+				,FIELD_ACCOUNTING_HOLDER_AUTO_COMPLETE,Assignments.FIELD_ACCOUNTING_HOLDER,filterController.getBudgetCategoryInitial());
 		//accountingAssistantAutoComplete = buildScopeFunctionAutoComplete(ci.gouv.dgbf.system.actor.server.persistence.entities.Function.CODE_ACCOUNTING_ASSISTANT
 		//		,FIELD_ACCOUNTING_ASSISTANT_AUTO_COMPLETE,Assignments.FIELD_ACCOUNTING_ASSISTANT);
 		
