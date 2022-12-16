@@ -497,7 +497,7 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 			Map<Object, Object> arguments = super.getInputLabelCellArguments(form, input, label);
 			arguments.put(Cell.FIELD_WIDTH, 3);
 			if(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS.equals(input.getField().getName())) {
-				arguments.put(Cell.FIELD_CONTROL, OutputText.buildFromValue(label.getValue()));
+				arguments.put(Cell.FIELD_CONTROL, OutputText.buildFromValue(label.getValue()+" *"));
 			}
 			return arguments;
 		}
