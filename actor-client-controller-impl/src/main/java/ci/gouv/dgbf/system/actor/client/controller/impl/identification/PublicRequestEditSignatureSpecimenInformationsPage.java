@@ -54,7 +54,7 @@ public class PublicRequestEditSignatureSpecimenInformationsPage extends Abstract
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ENTITY_CLASS, Request.class);
 		Request request = (Request) MapHelper.readByKey(arguments, Form.FIELD_ENTITY);
 		if(request == null)
-			request = RequestEditPage.getRequestFromParameter(Action.UPDATE,null);			
+			request = RequestEditSignatureSpecimenInformationsPage.getRequestFromParameter(null, null);
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ENTITY, request);
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_LISTENER, new FormConfiguratorListener(request));		
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_LISTENER, new FormListener(request));

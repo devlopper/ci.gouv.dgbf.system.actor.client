@@ -42,9 +42,11 @@ public class PublicRequestEditPage extends AbstractEntityEditPageContainerManage
 		//RequestEditPage.redirectIfTypeIsNull(form,"publicRequestSelectTypeView");
 		//RequestEditPage.setAdministrativeUnitAutoCompleteReadItemLabelListener(form);
 		RequestEditPage.postConstruct(form, budgetaryScopeFunctionSelectionController);
-		String electronicMailAddress = WebController.getInstance().getRequestParameter(Request.FIELD_ELECTRONIC_MAIL_ADDRESS);
-		if(StringHelper.isBlank(electronicMailAddress) && form.getEntity() != null && ((Request)form.getEntity()).getType() != null && RequestType.IDENTIFIER_DEMANDE_POSTES_BUDGETAIRES.equals(((Request)form.getEntity()).getType().getIdentifier()))
-			Redirector.getInstance().redirect(new Redirector.Arguments().outcome(PublicRequestElectronicMailAddressInputPage.OUTCOME));		
+		if(StringHelper.isBlank(((Request)form.getEntity()).getIdentifier())) {
+			String electronicMailAddress = WebController.getInstance().getRequestParameter(Request.FIELD_ELECTRONIC_MAIL_ADDRESS);
+			if(StringHelper.isBlank(electronicMailAddress) && form.getEntity() != null && ((Request)form.getEntity()).getType() != null && RequestType.IDENTIFIER_DEMANDE_POSTES_BUDGETAIRES.equals(((Request)form.getEntity()).getType().getIdentifier()))
+				Redirector.getInstance().redirect(new Redirector.Arguments().outcome(PublicRequestElectronicMailAddressInputPage.OUTCOME));		
+		}
 	}
 
 	@Override
@@ -60,10 +62,21 @@ public class PublicRequestEditPage extends AbstractEntityEditPageContainerManage
 	
 	@Override
 	protected Form __buildForm__() {
+		Request request = RequestEditPage.getRequestFromParameter(action,null);//TODO avoid duplicate read of request
+		BudgetCategory budgetCategory = request == null ? null : request.getBudgetCategory();
+		if(budgetCategory == null)
+			budgetCategory = EntityReader.getInstance().readOneBySystemIdentifierAsParent(BudgetCategory.class, new Arguments<BudgetCategory>()
+					.queryIdentifier(BudgetCategoryQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
+					.projections(BudgetCategory.FIELD_IDENTIFIER,BudgetCategory.FIELD_CODE,BudgetCategory.FIELD_NAME)
+					.filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.stringify(BudgetCategory.class))));
+		budgetaryScopeFunctionSelectionController = new ScopeFunctionSelectionController(budgetCategory);
+		/*
 		budgetaryScopeFunctionSelectionController = new ScopeFunctionSelectionController(EntityReader.getInstance().readOneBySystemIdentifierAsParent(BudgetCategory.class, new Arguments<BudgetCategory>()
 				.queryIdentifier(BudgetCategoryQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
 				.projections(BudgetCategory.FIELD_IDENTIFIER,BudgetCategory.FIELD_CODE,BudgetCategory.FIELD_NAME)
 				.filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.stringify(BudgetCategory.class)))));
+		budgetaryScopeFunctionSelectionController = new ScopeFunctionSelectionController(budgetCategory);
+		*/
 		return buildForm(Form.FIELD_ACTION,action,ScopeFunctionSelectionController.class,budgetaryScopeFunctionSelectionController);
 	}
 	

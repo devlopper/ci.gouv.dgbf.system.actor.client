@@ -11,14 +11,20 @@ import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.enumeration.Action;
+import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.value.ValueHelper;
+import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityEditPageContainerManagedImpl;
+import org.cyk.utility.controller.EntityReader;
 
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Request;
+import ci.gouv.dgbf.system.actor.client.controller.entities.RequestScopeFunction;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestScopeFunctionQuerier;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -68,8 +74,9 @@ public class RequestEditSignatureSpecimenInformationsPage extends AbstractEntity
 			arguments = new HashMap<>();
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ENTITY_CLASS, Request.class);
 		Request request = (Request) MapHelper.readByKey(arguments, Form.FIELD_ENTITY);
-		if(request == null)
-			request = getRequestFromParameter(Action.UPDATE,(String)MapHelper.readByKey(arguments, Actor.class));			
+		if(request == null) {
+			request = getRequestFromParameter(Action.UPDATE,(String)MapHelper.readByKey(arguments, Actor.class));
+		}
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_ENTITY, request);
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.ConfiguratorImpl.FIELD_LISTENER, new FormConfiguratorListener(request));		
 		MapHelper.writeByKeyDoNotOverride(arguments,Form.FIELD_LISTENER, new FormListener(request));
@@ -82,7 +89,11 @@ public class RequestEditSignatureSpecimenInformationsPage extends AbstractEntity
 	}
 	
 	public static Request getRequestFromParameter(Action action,String actorIdentifier) {
-		return RequestEditPage.getRequestFromParameter(action, actorIdentifier);
+		RequestScopeFunction requestScopeFunction = EntityReader.getInstance().readOne(RequestScopeFunction.class, RequestScopeFunctionQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_REQUEST_EDIT
+				, RequestQuerier.PARAMETER_NAME_IDENTIFIER,WebController.getInstance().getRequestParameter(ParameterName.ENTITY_IDENTIFIER.getValue()));
+		if(requestScopeFunction == null)
+			throw new RuntimeException("Request Scope Function <<"+WebController.getInstance().getRequestParameter(ParameterName.ENTITY_IDENTIFIER.getValue())+">> has not been found");
+		return EntityReader.getInstance().readOne(Request.class, RequestQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT, RequestQuerier.PARAMETER_NAME_IDENTIFIER,requestScopeFunction.getRequestIdentifier());
 	}
 	
 	/**/
