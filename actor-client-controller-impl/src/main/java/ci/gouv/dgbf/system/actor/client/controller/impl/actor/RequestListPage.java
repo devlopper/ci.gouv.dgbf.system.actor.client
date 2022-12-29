@@ -125,7 +125,7 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 		
 		if(AbstractCollection.RenderType.OUTPUT.equals(dataTable.getRenderType())) {
 			dataTable.addRecordMenuItemByArgumentsNavigateToView(null,RequestReadPage.OUTCOME, MenuItem.FIELD_VALUE,"Consulter",MenuItem.FIELD_ICON,"fa fa-eye");
-			if(Boolean.TRUE.equals(SessionManager.getInstance().isUserHasOneOfRoles(Profile.CODE_ADMINISTRATEUR,Profile.CODE_CHARGE_ETUDE_DAS))) {
+			if(Boolean.TRUE.equals(SessionManager.getInstance().isUserHasOneOfRoles(Profile.CODE_ADMINISTRATEUR,Profile.CODE_CHARGE_ETUDE_DAS,Profile.CODE_TRAITEUR_DEMANDE_ENROLEMENT))) {
 				//dataTable.addRecordMenuItemByArgumentsNavigateToView(null,RequestProcessPage.OUTCOME, MenuItem.FIELD_VALUE,"Traiter",MenuItem.FIELD_ICON,"fa fa-file");
 				if((filterController != null && Boolean.FALSE.equals(filterController.getProcessedInitial())) || ContentType.TO_PROCESS.equals(contentType)) {
 					dataTable.addRecordMenuItemByArgumentsNavigateToView(null,RequestProcessPage.OUTCOME, MenuItem.FIELD_VALUE,"Traiter",MenuItem.FIELD_ICON,"fa fa-file");

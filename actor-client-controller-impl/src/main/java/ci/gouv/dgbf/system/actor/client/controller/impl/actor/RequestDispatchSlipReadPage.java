@@ -99,7 +99,7 @@ public class RequestDispatchSlipReadPage extends AbstractPageContainerManagedImp
 				cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,button,Cell.FIELD_WIDTH,12));
 			}
 			
-			if(Boolean.TRUE.equals(SessionManager.getInstance().isUserHasRole(Profile.CODE_CHARGE_ETUDE_DAS))) {
+			if(Boolean.TRUE.equals(SessionManager.getInstance().isUserHasOneOfRoles(Profile.CODE_CHARGE_ETUDE_DAS,Profile.CODE_TRAITEUR_DEMANDE_ENROLEMENT))) {
 				cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL
 						,Button.build(Button.FIELD_VALUE,"Traiter",Button.FIELD_ICON,"fa fa-gear",Button.FIELD_OUTCOME,RequestDispatchSlipProcessPage.OUTCOME
 						,Button.FIELD_PARAMETERS,Map.of(ParameterName.ENTITY_IDENTIFIER.getValue(),requestDispatchSlip.getIdentifier())),Cell.FIELD_WIDTH,12));

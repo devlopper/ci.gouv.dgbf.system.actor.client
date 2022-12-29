@@ -130,6 +130,7 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 				width += 1;
 			}
 			if(Boolean.TRUE.equals(SessionManager.getInstance().isUserHasOneOfRoles(ci.gouv.dgbf.system.actor.server.persistence.entities.Profile.CODE_ADMINISTRATEUR
+					,ci.gouv.dgbf.system.actor.server.persistence.entities.Profile.CODE_TRAITEUR_DEMANDE_ENROLEMENT
 					,ci.gouv.dgbf.system.actor.server.persistence.entities.Profile.CODE_CHARGE_ETUDE_DAS
 					,ci.gouv.dgbf.system.actor.server.persistence.entities.Profile.CODE_RESPONSABLE_FONCTION_FINANCIERE_MINISTERE))) {
 				if(ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus.CODE_SUBMITTED.equals(request.getStatus().getCode())) {
