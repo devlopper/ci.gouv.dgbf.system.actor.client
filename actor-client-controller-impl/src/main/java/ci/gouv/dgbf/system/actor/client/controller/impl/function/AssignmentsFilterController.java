@@ -86,7 +86,7 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 	private Collection<BudgetCategory> visibleBudgetCategories;
 	
 	public AssignmentsFilterController() {
-		exerciseInitial = NumberHelper.getInteger(WebController.getInstance().getRequestParameter("exercice"),2022);
+		exerciseInitial = NumberHelper.getInteger(WebController.getInstance().getRequestParameter("exercice"),2023);
 		Collection<String> activitiesIdentifiers = WebController.getInstance().getRequestParameters(ParameterName.stringifyMany(Activity.class));
 		if(CollectionHelper.isEmpty(activitiesIdentifiers)) {
 			activityInitial = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(Activity.class
