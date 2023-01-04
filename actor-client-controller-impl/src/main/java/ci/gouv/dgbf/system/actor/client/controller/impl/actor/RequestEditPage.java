@@ -294,8 +294,19 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 					if(StringHelper.isBlank(request.getElectronicMailAddress()))
 						request.setElectronicMailAddress(electronicMailAddress);
 				}
+				// Request parameter is over database parameter
+				String budgetCategoryIdentifier = WebController.getInstance().getRequestParameter(ParameterName.stringify(BudgetCategory.class));
+				if(StringHelper.isNotBlank(budgetCategoryIdentifier)) {
+					request.setBudgetCategory(EntityReader.getInstance().readOneBySystemIdentifierAsParent(BudgetCategory.class, new Arguments<BudgetCategory>()
+							.queryIdentifier(BudgetCategoryQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
+							.projections(BudgetCategory.FIELD_IDENTIFIER,BudgetCategory.FIELD_CODE,BudgetCategory.FIELD_NAME)
+							.filterByIdentifier(budgetCategoryIdentifier)));
+					if(request.getBudgetCategory() != null)
+						request.setBudgetCategoryIdentifier(budgetCategoryIdentifier);
+				}
 				if(StringHelper.isBlank(request.getBudgetCategoryIdentifier()))
-					request.setBudgetCategoryIdentifier(WebController.getInstance().getRequestParameter(ParameterName.stringify(BudgetCategory.class)));
+					request.setBudgetCategoryIdentifier(budgetCategoryIdentifier);
+				
 				if(request.getBudgetCategory() == null && StringHelper.isNotBlank(request.getBudgetCategoryIdentifier()))
 					request.setBudgetCategory(EntityReader.getInstance().readOneBySystemIdentifierAsParent(BudgetCategory.class, new Arguments<BudgetCategory>()
 						.queryIdentifier(BudgetCategoryQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
