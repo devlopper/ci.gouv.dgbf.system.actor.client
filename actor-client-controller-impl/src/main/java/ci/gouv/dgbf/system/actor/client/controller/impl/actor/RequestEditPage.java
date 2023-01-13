@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -14,7 +15,6 @@ import javax.faces.validator.ValidatorException;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
@@ -54,6 +54,7 @@ import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Civility;
+import ci.gouv.dgbf.system.actor.client.controller.entities.Country;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationAttribute;
 import ci.gouv.dgbf.system.actor.client.controller.entities.IdentificationForm;
@@ -68,6 +69,7 @@ import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetCategoryQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.CivilityQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.CountryQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentityGroupQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestTypeQuerier;
@@ -179,6 +181,8 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 						administrativeUnitSelectOne.selectBySystemIdentifier(request.getAdministrativeUnit().getIdentifier());
 					}
 				}
+				SelectOneCombo countrySelectOne = form.getInput(SelectOneCombo.class, Request.FIELD_COUNTRY);
+				countrySelectOne.enableValueChangeListener(List.of());
 			}
 		}		
 	}
@@ -355,6 +359,8 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 		@Override
 		public void act(Form form) {
 			ThrowableHelper.throwIllegalArgumentExceptionIfNull("demande", request);
+			Country country = (Country) AbstractInput.getValue(form.getInput(AbstractInput.class, Request.FIELD_COUNTRY));
+			request.setCountryIdentifier(country == null ? null : country.getIdentifier());
 			writeBudgetariesScopeFunctionsIdentifiers();
 			
 			String actionIdentifier = null;
@@ -455,6 +461,8 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 				map.put(AbstractInputChoice.FIELD_CHOICES,EntityReader.getInstance().readMany(IdentityGroup.class,IdentityGroupQuerier.QUERY_IDENTIFIER_READ));
 			}else if(Request.FIELD_CIVILITY.equals(fieldName)) {
 				map.put(AbstractInputChoice.FIELD_CHOICES,EntityReader.getInstance().readMany(Civility.class,CivilityQuerier.QUERY_IDENTIFIER_READ));
+			}else if(Request.FIELD_COUNTRY.equals(fieldName)) {
+				map.put(AbstractInputChoice.FIELD_CHOICES,EntityReader.getInstance().readMany(Country.class,CountryQuerier.QUERY_IDENTIFIER_READ_ALL_FOR_UI));
 			}else if(Request.FIELD_SECTION.equals(fieldName)) {
 				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_DESCRIPTION_OUTPUT_TEXT_VALUE, "La section où vous êtes en fonction");
 				map.put(AbstractInputChoice.FIELD_CHOICE_CLASS,Section.class);
@@ -494,11 +502,13 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 					}
 				});
 			}else if(Request.FIELD_MOBILE_PHONE_NUMBER.equals(fieldName)) {
-				map.put(InputMask.AbstractConfiguratorImpl.FIELD_DESCRIPTION_OUTPUT_TEXT_VALUE, "Format de dix(10) chiffres. exemple : 0102030405");
-				map.put(InputMask.FIELD_MASK, StringUtils.repeat("99", 5));
+				//map.put(InputMask.AbstractConfiguratorImpl.FIELD_DESCRIPTION_OUTPUT_TEXT_VALUE, "Format de dix(10) chiffres. exemple : 0102030405");
+				//map.put(InputMask.FIELD_MASK, StringUtils.repeat("99", 5));
+				setListenerValidate(map, form);
 			}else if(Request.FIELD_OFFICE_PHONE_NUMBER.equals(fieldName)) {
-				map.put(InputMask.AbstractConfiguratorImpl.FIELD_DESCRIPTION_OUTPUT_TEXT_VALUE, "Format de dix(10) chiffres. exemple : 0102030405");
-				map.put(InputMask.FIELD_MASK, StringUtils.repeat("99", 5));
+				//map.put(InputMask.AbstractConfiguratorImpl.FIELD_DESCRIPTION_OUTPUT_TEXT_VALUE, "Format de dix(10) chiffres. exemple : 0102030405");
+				//map.put(InputMask.FIELD_MASK, StringUtils.repeat("99", 5));
+				setListenerValidate(map, form);
 			}
 			return map;
 		}
@@ -565,6 +575,24 @@ public class RequestEditPage extends AbstractEntityEditPageContainerManagedImpl<
 			MapHelper.writeByKeyDoNotOverride(map, CommandButton.FIELD_VALUE, "Enregistrer");
 			return map;
 		}
+	}
+	
+	public static void setListenerValidate(Map<Object, Object> map,Form form) {
+		map.put(AbstractInput.FIELD_LISTENER, new InputMask.Listener.AbstractImpl() {
+			@Override
+			public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
+				super.validate(context, component, value);
+				if(value instanceof String) {
+					String string = (String) value;
+					Country country = (Country) AbstractInput.getValue(form.getInput(InputMask.class, Request.FIELD_COUNTRY));
+					if(country == null || ci.gouv.dgbf.system.actor.server.persistence.entities.Country.CODE_COTE_IVOIRE.equals(country.getCode())) {
+						Matcher matcher = ci.gouv.dgbf.system.actor.server.persistence.entities.Country.PHONE_NUMBER_PATTERN_COTE_IVOIRE.matcher(string);
+						if(!matcher.matches())
+							throwValidatorException("Valeur incorrecte. Format de dix(10) chiffres. exemple : 0102030405");
+					}
+				}
+			}
+		});
 	}
 	
 	/**/

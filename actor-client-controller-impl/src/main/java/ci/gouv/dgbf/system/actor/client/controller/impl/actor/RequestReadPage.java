@@ -184,6 +184,8 @@ public class RequestReadPage extends AbstractPageContainerManagedImpl implements
 					value = StringUtils.join(request.getBudgetariesScopeFunctionsAsStrings(),"<br/>");
 			}else if(Request.FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE.equals(fieldName)) {
 				value = request.getActOfAppointmentSignatureDateAsString();
+			}else if(Request.FIELD_COUNTRY.equals(fieldName)) {
+				value = request.getCountryAsString();
 			}
 			addLabelValue(cellsMaps, attribute.getName(), value == null ? null : value.toString());
 		});

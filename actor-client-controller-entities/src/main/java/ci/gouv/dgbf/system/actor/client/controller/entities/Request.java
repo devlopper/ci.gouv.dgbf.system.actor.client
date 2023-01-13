@@ -38,6 +38,10 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	private String budgetCategoryIdentifier;
 	private String budgetCategoryAsString;
 	
+	@Input @InputChoice(choices = @Choices(count = Count.ALL)) @InputChoiceOneCombo private Country country;
+	private String countryIdentifier;
+	private String countryAsString;
+	
 	@Input @InputChoice(choices = @Choices(count = Count.ALL)) @InputChoiceOneCombo private RequestType type;
 	private String typeAsString;
 	private Boolean authenticationRequired;
@@ -186,6 +190,7 @@ public class Request extends AbstractDataIdentifiableSystemStringIdentifiableBus
 	
 	/* Initialization */
 	
+	public static final String FIELD_COUNTRY = "country";
 	public static final String FIELD_BUDGET_CATEGORY = "budgetCategory";
 	public static final String FIELD_TYPE = "type";
 	public static final String FIELD_TYPE_AS_STRING = "typeAsString";
