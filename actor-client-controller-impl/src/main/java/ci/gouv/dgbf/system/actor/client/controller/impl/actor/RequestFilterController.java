@@ -69,6 +69,7 @@ public class RequestFilterController extends AbstractFilterController implements
 	private Boolean dispatchSlipExistsInitial;
 	private RequestDispatchSlip dispatchSlipInitial;
 	private Collection<String> excludedIdentifiers;
+	private Collection<BudgetCategory> visibleBudgetCategories;
 	
 	public RequestFilterController() {}
 	
@@ -88,9 +89,11 @@ public class RequestFilterController extends AbstractFilterController implements
 	}
 	
 	public RequestFilterController initialize() {
+		visibleBudgetCategories = __inject__(BudgetCategoryController.class).readVisiblesByLoggedInActorCodeForUI();
+		
 		dispatchSlipInitial = getDispatchSlipFromRequestParameter();
 		administrativeUnitInitial = getAdministrativeUnitFromRequestParameter();		
-		budgetCategoryInitial = getBudgetCategoryFromRequestParameter();
+		budgetCategoryInitial = getBudgetCategoryFromRequestParameter(visibleBudgetCategories);
 		
 		if(sectionInitial == null && administrativeUnitInitial != null)
 			sectionInitial = administrativeUnitInitial.getSection();
@@ -116,11 +119,14 @@ public class RequestFilterController extends AbstractFilterController implements
 		return this;
 	}
 	
-	public static BudgetCategory getBudgetCategoryFromRequestParameter() {
-		return EntityReader.getInstance().readOneBySystemIdentifierAsParent(BudgetCategory.class, new Arguments<BudgetCategory>()
+	public static BudgetCategory getBudgetCategoryFromRequestParameter(Collection<BudgetCategory> visibleBudgetCategories) {
+		BudgetCategory budgetCategory = EntityReader.getInstance().readOneBySystemIdentifierAsParent(BudgetCategory.class, new Arguments<BudgetCategory>()
 				.queryIdentifier(BudgetCategoryQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
 				.projections(BudgetCategory.FIELD_IDENTIFIER,BudgetCategory.FIELD_CODE,BudgetCategory.FIELD_NAME)
 				.filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.stringify(BudgetCategory.class))));
+		if(budgetCategory == null)
+			budgetCategory = CollectionHelper.getFirst(visibleBudgetCategories);
+		return budgetCategory;
 	}
 	
 	public static Section getSectionFromRequestParameter() {
@@ -227,7 +233,7 @@ public class RequestFilterController extends AbstractFilterController implements
 				,new SelectOneCombo.Listener.AbstractImpl<BudgetCategory>() {
 			@Override
 			public Collection<BudgetCategory> computeChoices(AbstractInputChoice<BudgetCategory> input) {
-				Collection<BudgetCategory> choices = __inject__(BudgetCategoryController.class).readVisiblesByLoggedInActorCodeForUI();
+				Collection<BudgetCategory> choices = CollectionHelper.isEmpty(visibleBudgetCategories) ? null : new ArrayList<>(visibleBudgetCategories);
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
 			}
