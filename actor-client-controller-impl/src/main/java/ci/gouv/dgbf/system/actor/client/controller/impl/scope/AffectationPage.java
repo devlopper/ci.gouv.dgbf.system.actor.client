@@ -55,10 +55,16 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	private Integer selectedAssignmentsTabIndex;
 	private TabMenu.Tab selectedTab,selectedAssignmentsTab;
 	
-	private ScopeFunctionFilterController scopeFunctionFilterController;
-	private AssignmentsFilterController assignmentsFilterController;
+	protected ScopeFunctionFilterController scopeFunctionFilterController;
+	protected AssignmentsFilterController assignmentsFilterController;
 	
-	private String localityIdentifier;
+	protected String localityIdentifier;
+	
+	protected String outcome;
+	
+	public AffectationPage() {
+		outcome = OUTCOME;
+	}
 	
 	@Override
 	protected void __listenBeforePostConstruct__() {
@@ -83,7 +89,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 			MenuItem menuItem = new MenuItem().setValue(tab.getName()).addParameter(TabMenu.Tab.PARAMETER_NAME, tab.getParameterValue());
 			tabMenuItems.add(menuItem);
 		}
-		tabMenu = TabMenu.build(TabMenu.ConfiguratorImpl.FIELD_ITEMS_OUTCOME,OUTCOME,TabMenu.FIELD_ACTIVE_INDEX,TabMenu.Tab.getIndexOf(TABS, selectedTab)
+		tabMenu = TabMenu.build(TabMenu.ConfiguratorImpl.FIELD_ITEMS_OUTCOME,outcome,TabMenu.FIELD_ACTIVE_INDEX,TabMenu.Tab.getIndexOf(TABS, selectedTab)
 				,TabMenu.ConfiguratorImpl.FIELD_ITEMS,tabMenuItems);
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,tabMenu,Cell.FIELD_WIDTH,12));
 		/*
@@ -103,7 +109,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		if(scopeFunctionFilterController == null)
 			scopeFunctionFilterController = new ScopeFunctionFilterController();
 		scopeFunctionFilterController.build();
-		scopeFunctionFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(OUTCOME).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_SCOPE_FUNCTION);	
+		scopeFunctionFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(outcome).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_SCOPE_FUNCTION);	
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,scopeFunctionFilterController.getLayout(),Cell.FIELD_WIDTH,12));
 		
 		cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
@@ -194,7 +200,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 				
 			}
 		}		
-		TabMenu tabMenu = TabMenu.build(TabMenu.ConfiguratorImpl.FIELD_ITEMS_OUTCOME,OUTCOME,TabMenu.FIELD_ACTIVE_INDEX,selectedAssignmentsTabIndex
+		TabMenu tabMenu = TabMenu.build(TabMenu.ConfiguratorImpl.FIELD_ITEMS_OUTCOME,outcome,TabMenu.FIELD_ACTIVE_INDEX,selectedAssignmentsTabIndex
 				,TabMenu.ConfiguratorImpl.FIELD_ITEMS,items);
 		return tabMenu;
 	}
@@ -208,7 +214,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 			lazyDataModelListener.setSomeHoldersNotDefined(Boolean.TRUE);
 		}
 		AssignmentsListPage.DataTableListenerImpl dataTableListener = new AssignmentsListPage.DataTableListenerImpl();		
-		DataTable dataTable = AssignmentsListPage.buildDataTable(AssignmentsListPage.class,Boolean.TRUE,AssignmentsFilterController.class,assignmentsFilterController,AssignmentsListPage.OUTCOME,OUTCOME
+		DataTable dataTable = AssignmentsListPage.buildDataTable(AssignmentsListPage.class,Boolean.TRUE,AssignmentsFilterController.class,assignmentsFilterController,AssignmentsListPage.OUTCOME,outcome
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER,lazyDataModelListener
 				,DataTable.ConfiguratorImpl.FIELD_LISTENER,dataTableListener
 				,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES,assignmentsFilterController.generateColumnsNames()
@@ -263,8 +269,8 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	
 	private void buildTabAssignmentsGlobalFilters(Collection<Map<Object,Object>> cellsMaps) {		
 		assignmentsFilterController.build();
-		assignmentsFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(OUTCOME).addParameter(TabMenu.Tab.PARAMETER_NAME, selectedTab.getParameterValue());			
-		assignmentsFilterController.getActivitySelectionController().getOnSelectRedirectorArguments(Boolean.TRUE).outcome(OUTCOME).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_ASSIGNMENTS);
+		assignmentsFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(outcome).addParameter(TabMenu.Tab.PARAMETER_NAME, selectedTab.getParameterValue());			
+		assignmentsFilterController.getActivitySelectionController().getOnSelectRedirectorArguments(Boolean.TRUE).outcome(outcome).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_ASSIGNMENTS);
 		assignmentsFilterController.getActivitySelectionController().getOnSelectRedirectorArguments().addParameter(TAB_ASSIGNMENTS_PARAMETER_NAME, selectedAssignmentsTab.getParameterValue());
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,assignmentsFilterController.getLayout(),Cell.FIELD_WIDTH,12));
 	}

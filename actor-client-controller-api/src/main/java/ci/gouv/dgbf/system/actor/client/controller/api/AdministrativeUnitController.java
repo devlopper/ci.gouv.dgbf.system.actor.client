@@ -1,6 +1,8 @@
 package ci.gouv.dgbf.system.actor.client.controller.api;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import org.cyk.utility.controller.EntityReader;
 import org.cyk.utility.__kernel__.session.SessionHelper;
@@ -16,15 +18,21 @@ public interface AdministrativeUnitController extends ControllerEntity<Administr
 	default Collection<AdministrativeUnit> readVisiblesBySectionIdentifierByActorCodeForUI(String sectionIdentifier,String actorCode) {
 		if(StringHelper.isBlank(actorCode))
 			return null;
-		return EntityReader.getInstance().readMany(AdministrativeUnit.class
-				,AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_VISIBLES_BY_SECTION_IDENTIFIER_BY_ACTOR_CODE_FOR_UI
-				,ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode,ScopeQuerier.PARAMETER_NAME_SECTION_IDENTIFIER, sectionIdentifier);
+		return readVisiblesByLoggedInActorCodeForUI().stream().filter(administrativeUnit -> administrativeUnit.getSectionIdentifier().equals(sectionIdentifier)).collect(Collectors.toList());
 	}
 	
 	default Collection<AdministrativeUnit> readVisiblesByLoggedInActorCodeForUI() {
-		return EntityReader.getInstance().readMany(AdministrativeUnit.class
-				, AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_VISIBLES_BY_ACTOR_CODE_FOR_UI
-				,ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, SessionHelper.getUserName());
+		@SuppressWarnings("unchecked")
+		Collection<AdministrativeUnit> administrativeUnits = (Collection<AdministrativeUnit>) SessionHelper.getAttributeValue("visibleAdministrativeUnits");
+		if(administrativeUnits == null) {
+			administrativeUnits = EntityReader.getInstance().readMany(AdministrativeUnit.class
+					, AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_VISIBLES_BY_ACTOR_CODE_FOR_UI
+					,ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, SessionHelper.getUserName());
+			if (administrativeUnits == null) 
+				administrativeUnits = new ArrayList<>();
+			SessionHelper.setAttributeValue("visibleAdministrativeUnits", administrativeUnits);
+		}
+		return administrativeUnits;
 	}
 	
 	default Collection<AdministrativeUnit> readVisiblesBySectionIdentifierByLoggedInActorCodeForUI(String sectionIdentifier) {

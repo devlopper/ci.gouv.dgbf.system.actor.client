@@ -826,6 +826,12 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>affectationParUAView</from-outcome>
+			<to-view-id>/private/affectation-par-ua.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>assignationView</from-outcome>
 			<to-view-id>/private/assignation.jsf</to-view-id>
 			<redirect />

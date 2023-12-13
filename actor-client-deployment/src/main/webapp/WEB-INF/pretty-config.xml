@@ -58,6 +58,11 @@
 		<view-id value="/private/scopefunction/affectation.jsf" />
 	</url-mapping>
 	
+	<url-mapping id="affectation_par_ua">
+		<pattern value="/private/affectation-par-ua.jsf" />
+		<view-id value="/private/scopefunction/affectation-par-ua.jsf" />
+	</url-mapping>
+	
 	<url-mapping id="domaine_administration">
 		<pattern value="/private/domaineadministration.jsf" />
 		<view-id value="/private/cluster/administrationdomains.jsf" />

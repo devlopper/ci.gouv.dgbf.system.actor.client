@@ -28,6 +28,7 @@ import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.ActivityCategoryController;
+import ci.gouv.dgbf.system.actor.client.controller.api.AdministrativeUnitController;
 import ci.gouv.dgbf.system.actor.client.controller.api.BudgetCategoryController;
 import ci.gouv.dgbf.system.actor.client.controller.api.BudgetSpecializationUnitController;
 import ci.gouv.dgbf.system.actor.client.controller.api.ExerciseController;
@@ -84,6 +85,8 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 	private ScopeFunction scopeFunctionInitial;
 	
 	private Collection<BudgetCategory> visibleBudgetCategories;
+	
+	private boolean administrativeUnitRequired;
 	
 	public AssignmentsFilterController() {
 		exerciseInitial = NumberHelper.getInteger(WebController.getInstance().getRequestParameter("exercice"),2023);
@@ -328,7 +331,7 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 				,new SelectOneCombo.Listener.AbstractImpl<Section>() {
 			@Override
 			public Collection<Section> computeChoices(AbstractInputChoice<Section> input) {
-				Collection<Section> choices = __inject__(SectionController.class).readVisiblesByLoggedInActorCodeForUI();
+				Collection<Section> choices = new ArrayList<>(__inject__(SectionController.class).readVisiblesByLoggedInActorCodeForUI());
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
 			}
@@ -369,8 +372,9 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 				Collection<AdministrativeUnit> choices = null;
 				if(sectionSelectOne == null || sectionSelectOne.getValue() == null)
 					return null;
-				choices = EntityReader.getInstance().readMany(AdministrativeUnit.class, AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_FOR_UI
-						, AdministrativeUnitQuerier.PARAMETER_NAME_SECTION_IDENTIFIER,FieldHelper.readSystemIdentifier(sectionSelectOne.getValue()));
+				choices = new ArrayList<>(__inject__(AdministrativeUnitController.class)
+							.readVisiblesBySectionIdentifierByLoggedInActorCodeForUI(
+								(String) FieldHelper.readSystemIdentifier(sectionSelectOne.getValue())));
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
 			}
@@ -402,7 +406,7 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 				if(sectionSelectOne == null || sectionSelectOne.getValue() == null)
 					return null;				
 				Section section = (Section) sectionSelectOne.getValue();
-				choices = __inject__(BudgetSpecializationUnitController.class).readVisiblesBySectionIdentifierByLoggedInActorCodeForUI(section.getIdentifier());
+				choices = new ArrayList<>(__inject__(BudgetSpecializationUnitController.class).readVisiblesBySectionIdentifierByLoggedInActorCodeForUI(section.getIdentifier()));
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
 			}
@@ -878,6 +882,9 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 	
 	@Override
 	protected Boolean isSelectRedirectorArgumentsParameter(Class<?> klass, AbstractInput<?> input) {
+		if(administrativeUnitRequired && getAdministrativeUnit() == null) {
+			throw new RuntimeException("Veuillez sélectionner une unité administrative");
+		}
 		if(Locality.class.equals(klass) && input == regionSelectOne)
 			return AbstractInput.getValue(departmentSelectOne) == null && AbstractInput.getValue(subPrefectureSelectOne) == null;
 		if(Locality.class.equals(klass) && input == departmentSelectOne)
