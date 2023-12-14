@@ -178,6 +178,12 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>requestParUAIndexView</from-outcome>
+			<to-view-id>/private/demandes-par-ua.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>requestEditSignatureSpecimenInformationsView</from-outcome>
 			<to-view-id>/private/request/edit/signaturespecimeninformations.jsf</to-view-id>
 			<redirect />

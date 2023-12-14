@@ -44,6 +44,7 @@ import ci.gouv.dgbf.system.actor.client.controller.api.RequestStatusController;
 import ci.gouv.dgbf.system.actor.client.controller.api.RequestTypeController;
 import ci.gouv.dgbf.system.actor.client.controller.api.ScopeController;
 import ci.gouv.dgbf.system.actor.client.controller.api.ScopeTypeController;
+import ci.gouv.dgbf.system.actor.client.controller.api.SectionController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Actor;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.Function;
@@ -260,17 +261,18 @@ public interface Helper {
 			public Collection<Section> computeChoices(AbstractInputChoice<Section> input) {
 				//Collection<Section> choices = __inject__(SectionController.class).readVisiblesByLoggedInActorCodeForUI();
 				//Collection<Section> choices = __inject__(SectionController.class).read();
-				Collection<Scope> scopes = __inject__(ScopeController.class).getLoggedInVisibleSections();
-				if(CollectionHelper.isEmpty(scopes))
-					return null;
-				Collection<Section> choices = new ArrayList<>();
-				for(Scope scope : scopes) {
+				//Collection<Scope> scopes = __inject__(SectionController.class).readVisiblesByLoggedInActorCodeForUI();
+				//if(CollectionHelper.isEmpty(scopes))
+				//	return null;
+				Collection<Section> choices = __inject__(SectionController.class).readVisiblesByLoggedInActorCodeForUI();
+				/*for(Scope scope : scopes) {
 					Section section = new Section();
 					section.setIdentifier(scope.getIdentifier());
 					section.setCode(scope.getCode());
 					section.setName(scope.getName());
 					choices.add(section);
 				}
+				*/
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
 			}
@@ -299,7 +301,7 @@ public interface Helper {
 			return List.of((String)FieldHelper.readSystemIdentifier(object));
 	}
 	
-	public static SelectOneCombo buildAdministrativeUnitSelectOne(AdministrativeUnit administrativeUnit,Object container,String sectionSelectFieldName) {		
+	public static SelectOneCombo buildAdministrativeUnitSelectOne(AdministrativeUnit administrativeUnit,Object container,String sectionSelectFieldName) {
 		SelectOneCombo select = SelectOneCombo.build(SelectOneCombo.FIELD_CHOICE_CLASS,AdministrativeUnit.class,SelectOneCombo.FIELD_VALUE,administrativeUnit
 				,SelectOneCombo.FIELD_LISTENER
 				,new SelectOneCombo.Listener.AbstractImpl<AdministrativeUnit>() {
@@ -316,7 +318,7 @@ public interface Helper {
 							choices =  null;//__inject__(AdministrativeUnitController.class).readVisiblesByLoggedInActorCodeForUI();
 						else
 							//choices = __inject__(AdministrativeUnitController.class).readVisiblesBySectionIdentifierByLoggedInActorCodeForUI(section.getIdentifier());
-							choices = __inject__(AdministrativeUnitController.class).readBySectionIdentifier(section.getIdentifier());
+							choices = __inject__(AdministrativeUnitController.class).readVisiblesBySectionIdentifierByLoggedInActorCodeForUI(section.getIdentifier());
 					}
 				}
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);

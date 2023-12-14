@@ -28,13 +28,16 @@ import lombok.Setter;
 @Named @ViewScoped @Getter @Setter
 public class RequestIndexPage extends AbstractPageContainerManagedImpl implements Serializable {
 
-	private RequestFilterController requestFilterController,tabMenuRequestFilterController;
+	protected RequestFilterController requestFilterController,tabMenuRequestFilterController;
 	private TabMenu.Tab selectedTab,selectedRequestTab;
 	private Layout layout;
+	
+	protected String outcome;
 	
 	@Override
 	protected void __listenBeforePostConstruct__() {
 		super.__listenBeforePostConstruct__();
+		outcome = OUTCOME;
 		requestFilterController = new RequestFilterController().initialize();	
 	}
 	
@@ -44,12 +47,15 @@ public class RequestIndexPage extends AbstractPageContainerManagedImpl implement
 		super.__listenPostConstruct__();
 		if(requestFilterController.getProcessedInitial() == null && TAB_REQUESTS_TO_PROCESS.equals(selectedTab.getParameterValue()))
 			requestFilterController.setProcessedInitial(Boolean.FALSE);
-		requestFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(OUTCOME).addParameter(TabMenu.Tab.PARAMETER_NAME, selectedTab.getParameterValue());
+		requestFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(outcome).addParameter(TabMenu.Tab.PARAMETER_NAME, selectedTab.getParameterValue());
 		tabMenuRequestFilterController = new RequestFilterController(requestFilterController);
 		buildLayout();
 	}
 	
 	private Long count(String tab) {
+		if(requestFilterController.isAdministrativeUnitRequired() && requestFilterController.getAdministrativeUnitInitial() == null) {
+			return 0L;
+		}
 		Arguments<Request> arguments = new Arguments<Request>();
 		arguments.queryIdentifierCountDynamic(Request.class);		
 		if(TAB_REQUESTS_ALL.equals(tab)) {
@@ -97,12 +103,17 @@ public class RequestIndexPage extends AbstractPageContainerManagedImpl implement
 			if(parameters != null)
 				menuItem.getParameters(Boolean.TRUE).putAll(parameters);
 		}
-		TabMenu tabMenu = TabMenu.build(TabMenu.ConfiguratorImpl.FIELD_ITEMS_OUTCOME,OUTCOME,TabMenu.FIELD_ACTIVE_INDEX,TabMenu.Tab.getIndexOf(TABS, selectedTab)
+		TabMenu tabMenu = TabMenu.build(TabMenu.ConfiguratorImpl.FIELD_ITEMS_OUTCOME,outcome,TabMenu.FIELD_ACTIVE_INDEX,TabMenu.Tab.getIndexOf(TABS, selectedTab)
 				,TabMenu.ConfiguratorImpl.FIELD_ITEMS,tabMenuItems);
 		return tabMenu;
 	}
 	
 	private void buildTab(Collection<Map<Object,Object>> cellsMaps) {
+		buildFilter(cellsMaps);
+		
+		if (requestFilterController.isAdministrativeUnitRequired() && requestFilterController.getAdministrativeUnitInitial() == null) {
+			return;
+		}
 		if(selectedTab.getParameterValue().equals(TAB_REQUESTS_TO_PROCESS))
 			cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
 				@Override
@@ -131,6 +142,7 @@ public class RequestIndexPage extends AbstractPageContainerManagedImpl implement
 		requestFilterController.ignore(RequestFilterController.FIELD_PROCESSED_SELECT_ONE);
 		requestFilterController.order(Request.FIELD_CREATION_DATE, SortOrder.DESCENDING);
 		DataTable dataTable = RequestListPage.buildDataTable(RequestFilterController.class,requestFilterController);
+		dataTable.setIsFilterControllerGettable(false);
 		return dataTable;
 	}
 	
@@ -139,13 +151,21 @@ public class RequestIndexPage extends AbstractPageContainerManagedImpl implement
 		requestFilterController.ignore(RequestFilterController.FIELD_PROCESSED_SELECT_ONE);
 		requestFilterController.order(Request.FIELD_PROCESSING_DATE, SortOrder.DESCENDING);
 		DataTable dataTable = RequestListPage.buildDataTable(RequestFilterController.class,requestFilterController);
+		dataTable.setIsFilterControllerGettable(false);
 		return dataTable;
 	}
 	
 	private DataTable buildDataTableRequestsAll() {
 		requestFilterController.order(Request.FIELD_CREATION_DATE, SortOrder.DESCENDING);
 		DataTable dataTable = RequestListPage.buildDataTable(RequestFilterController.class,requestFilterController);
+		dataTable.setIsFilterControllerGettable(false);
 		return dataTable;
+	}
+	
+	private void buildFilter(Collection<Map<Object,Object>> cellsMaps) {		
+		requestFilterController.build();
+		requestFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(outcome).addParameter(TabMenu.Tab.PARAMETER_NAME, selectedTab.getParameterValue());			
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,requestFilterController.getLayout(),Cell.FIELD_WIDTH,12));
 	}
 	
 	private void buildLayout() {

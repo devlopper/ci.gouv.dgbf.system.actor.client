@@ -23,6 +23,11 @@
 		<view-id value="/private/request/index.jsf" />
 	</url-mapping>
 	
+	<url-mapping id="demandes_par_ua">
+		<pattern value="/private/demandes-par-ua.jsf" />
+		<view-id value="/private/request/index-par-ua.jsf" />
+	</url-mapping>
+	
 	<url-mapping id="demande_compte">
 		<pattern value="/demande_compte" />
 		<view-id value="/public/accountrequest/edit.jsf" />

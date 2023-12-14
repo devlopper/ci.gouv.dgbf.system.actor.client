@@ -71,6 +71,8 @@ public class RequestFilterController extends AbstractFilterController implements
 	private Collection<String> excludedIdentifiers;
 	private Collection<BudgetCategory> visibleBudgetCategories;
 	
+	private boolean administrativeUnitRequired;
+	
 	public RequestFilterController() {}
 	
 	public RequestFilterController(RequestFilterController requestFilterController) {
@@ -173,7 +175,7 @@ public class RequestFilterController extends AbstractFilterController implements
 	}
 	
 	@Override
-	protected void buildInputs() {
+	protected void __buildInputs__() {
 		buildInputSelectOne(FIELD_BUDGET_CATEGORY_SELECT_ONE, BudgetCategory.class);
 		buildInputSelectOne(FIELD_SECTION_SELECT_ONE, Section.class);
 		buildInputSelectOne(FIELD_ADMINISTRATIVE_UNIT_SELECT_ONE, AdministrativeUnit.class);
@@ -184,8 +186,6 @@ public class RequestFilterController extends AbstractFilterController implements
 		buildInputSelectOne(FIELD_DISPATCH_SLIP_EXISTS_SELECT_ONE, RequestDispatchSlip.class);
 		buildInputSelectOne(FIELD_DISPATCH_SLIP_SELECT_ONE, RequestDispatchSlip.class);
 		buildInputText(FIELD_SEARCH_INPUT_TEXT);		
-		
-		//enableValueChangeListeners();
 	}
 	
 	@Override
@@ -485,6 +485,14 @@ public class RequestFilterController extends AbstractFilterController implements
 		if(searchInitial != null && StringHelper.isNotBlank(searchInitial))
 			map.put(Request.FIELD_SEARCH, List.of(searchInitial));
 		return map;
+	}
+	
+	@Override
+	protected Boolean isSelectRedirectorArgumentsParameter(Class<?> klass, AbstractInput<?> input) {
+		if(administrativeUnitRequired && getAdministrativeUnit() == null) {
+			throw new RuntimeException("Veuillez sélectionner une unité administrative");
+		}
+		return super.isSelectRedirectorArgumentsParameter(klass, input);
 	}
 	
 	public static Filter.Dto populateFilter(Filter.Dto filter,RequestFilterController controller,Boolean initial) {

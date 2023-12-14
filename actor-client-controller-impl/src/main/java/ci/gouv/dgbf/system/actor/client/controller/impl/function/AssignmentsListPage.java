@@ -965,7 +965,18 @@ public class AssignmentsListPage extends AbstractEntityListPageContainerManagedI
 		public List<Assignments> read(LazyDataModel<Assignments> lazyDataModel) {
 			if(filterController == null || ((AssignmentsFilterController)filterController).getBudgetCategoryInitial() == null)
 				return null;
+			if(((AssignmentsFilterController)filterController).isAdministrativeUnitRequired() && ((AssignmentsFilterController)filterController).getAdministrativeUnit() == null) {
+				return List.of();
+			}
 			return super.read(lazyDataModel);
+		}
+				
+		@Override
+		public Integer getCount(LazyDataModel<Assignments> lazyDataModel) {
+			if(((AssignmentsFilterController)filterController).isAdministrativeUnitRequired() && ((AssignmentsFilterController)filterController).getAdministrativeUnit() == null) {
+				return 0;
+			}
+			return super.getCount(lazyDataModel);
 		}
 		
 		@Override

@@ -74,13 +74,17 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		if(selectedTab != null && TAB_SCOPE_FUNCTION.equals(selectedTab.getParameterValue()))
 			scopeFunctionFilterController = new ScopeFunctionFilterController();
 		if(selectedTab != null && TAB_ASSIGNMENTS.equals(selectedTab.getParameterValue())) {
-			assignmentsFilterController = new AssignmentsFilterController();
+			assignmentsFilterController = instantiateFilterController();
 			assignmentsFilterController.build();
 		}
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
 		buildTabMenu(cellsMaps);
 		buildTab(cellsMaps);
 		buildLayout(cellsMaps);
+	}
+	
+	protected AssignmentsFilterController instantiateFilterController() {
+		return new AssignmentsFilterController();
 	}
 		
 	private void buildTabMenu(Collection<Map<Object,Object>> cellsMaps) {		
@@ -140,6 +144,10 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 		selectedAssignmentsTab = ASSIGNMENTS_TABS.get(selectedAssignmentsTabIndex);
 		
 		buildTabAssignmentsGlobalFilters(cellsMaps);
+		
+		if (assignmentsFilterController.isAdministrativeUnitRequired() && assignmentsFilterController.getAdministrativeUnitInitial() == null) {
+			return;
+		}
 		
 		cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
 			@Override
@@ -234,6 +242,9 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 	}
 	
 	private Long count(String value) {
+		if(assignmentsFilterController.isAdministrativeUnitRequired() && assignmentsFilterController.getAdministrativeUnitInitial() == null) {
+			return 0L;
+		}
 		Arguments<Assignments> arguments = new Arguments<>();
 		arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setQueryExecutorArguments(
 				new QueryExecutorArguments.Dto().setQueryIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_DYNAMIC)));
@@ -258,7 +269,7 @@ public class AffectationPage extends AbstractPageContainerManagedImpl implements
 			return super.__getWindowTitleValue__();
 		if(TAB_SCOPE_FUNCTION.equals(selectedTab.getParameterValue()))
 			return ScopeFunctionListPage.buildWindowTitleValue(selectedTab.getName(), scopeFunctionFilterController.getFunction());
-		else if(TAB_ASSIGNMENTS.equals(selectedTab.getParameterValue()))
+		else if(TAB_ASSIGNMENTS.equals(selectedTab.getParameterValue()) && selectedAssignmentsTab != null)
 			return assignmentsFilterController.generateWindowTitleValue(selectedAssignmentsTab.getName());
 		return "Affectation";
 	}

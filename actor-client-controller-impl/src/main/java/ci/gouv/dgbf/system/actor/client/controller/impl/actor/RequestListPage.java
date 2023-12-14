@@ -397,6 +397,22 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 			return arguments;
 		}
 		
+		@Override
+		public List<Request> read(LazyDataModel<Request> lazyDataModel) {
+			if(((RequestFilterController)filterController).isAdministrativeUnitRequired() && ((RequestFilterController)filterController).getAdministrativeUnit() == null) {
+				return List.of();
+			}
+			return super.read(lazyDataModel);
+		}
+		
+		@Override
+		public Integer getCount(LazyDataModel<Request> lazyDataModel) {
+			if(((RequestFilterController)filterController).isAdministrativeUnitRequired() && ((RequestFilterController)filterController).getAdministrativeUnit() == null) {
+				return 0;
+			}
+			return super.getCount(lazyDataModel);
+		}
+		
 		public LazyDataModelListenerImpl addExcludedIdentifiers(Collection<String> identifiers) {
 			if(CollectionHelper.isEmpty(identifiers))
 				return this;
