@@ -264,7 +264,7 @@ public interface Helper {
 				//Collection<Scope> scopes = __inject__(SectionController.class).readVisiblesByLoggedInActorCodeForUI();
 				//if(CollectionHelper.isEmpty(scopes))
 				//	return null;
-				Collection<Section> choices = __inject__(SectionController.class).readVisiblesByLoggedInActorCodeForUI();
+				Collection<Section> choices = new ArrayList<>(__inject__(SectionController.class).readVisiblesByLoggedInActorCodeForUI());
 				/*for(Scope scope : scopes) {
 					Section section = new Section();
 					section.setIdentifier(scope.getIdentifier());
@@ -318,7 +318,7 @@ public interface Helper {
 							choices =  null;//__inject__(AdministrativeUnitController.class).readVisiblesByLoggedInActorCodeForUI();
 						else
 							//choices = __inject__(AdministrativeUnitController.class).readVisiblesBySectionIdentifierByLoggedInActorCodeForUI(section.getIdentifier());
-							choices = __inject__(AdministrativeUnitController.class).readVisiblesBySectionIdentifierByLoggedInActorCodeForUI(section.getIdentifier());
+							choices = new ArrayList<>(__inject__(AdministrativeUnitController.class).readVisiblesBySectionIdentifierByLoggedInActorCodeForUI(section.getIdentifier()));
 					}
 				}
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);

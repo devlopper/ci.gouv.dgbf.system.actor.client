@@ -228,26 +228,28 @@ public class ScopeFunctionListPage extends AbstractEntityListPageContainerManage
 				dataTable.addRecordMenuItemByArgumentsOpenViewInDialog(ScopeFunctionEditNamePage.OUTCOME, MenuItem.FIELD_VALUE,"Modifier le libellé",MenuItem.FIELD_ICON,"fa fa-edit");
 			}
 			*/
-			dataTable.addRecordMenuItemByArgumentsOpenViewInDialog(ScopeFunctionEditNamePage.OUTCOME, MenuItem.FIELD_VALUE,"Modifier le libellé",MenuItem.FIELD_ICON,"fa fa-edit");
-			dataTable.addRecordMenuItemByArgumentsExecuteFunction("Libérer","fa fa-trash",new AbstractAction.Listener.AbstractImpl() {
-				@Override
-				protected Object __runExecuteFunction__(AbstractAction action) {
-					ScopeFunction scopeFunction = (ScopeFunction)action.readArgument();
-					if(scopeFunction == null)
-						throw new RuntimeException("Sélectionner un poste");
-					if(scopeFunction.getCode().startsWith("A"))
-						throw new RuntimeException(String.format("%s est un poste d'assistant. Veuillez sélectionner un poste de titulaire",scopeFunction.getCode()));
-					RequestScopeFunction requestScopeFunction = new RequestScopeFunction();
-					requestScopeFunction.setScopeFunctionsIdentifiers(List.of(scopeFunction.getIdentifier()));
-					requestScopeFunction.set__auditWho__(SessionManager.getInstance().getUserName());
-					Arguments<RequestScopeFunction> arguments = new Arguments<RequestScopeFunction>().setResponseEntityClass(String.class)
-							.addCreatablesOrUpdatables(requestScopeFunction);
-					arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(RequestScopeFunctionBusiness
-							.UPDATE_GRANTED_TO_FALSE_WHERE_TRUE_BY_SCOPE_FUNCTIONS_IDENTIFIERS));					
-					EntitySaver.getInstance().save(RequestScopeFunction.class, arguments);
-					return arguments.get__responseEntity__();
-				}
-			});
+			if(Boolean.TRUE.equals(SessionManager.getInstance().isUserHasOneOfRoles(Profile.CODE_ADMINISTRATEUR,Profile.CODE_CHARGE_ETUDE_DAS))) {
+				dataTable.addRecordMenuItemByArgumentsOpenViewInDialog(ScopeFunctionEditNamePage.OUTCOME, MenuItem.FIELD_VALUE,"Modifier le libellé",MenuItem.FIELD_ICON,"fa fa-edit");
+				dataTable.addRecordMenuItemByArgumentsExecuteFunction("Libérer","fa fa-trash",new AbstractAction.Listener.AbstractImpl() {
+					@Override
+					protected Object __runExecuteFunction__(AbstractAction action) {
+						ScopeFunction scopeFunction = (ScopeFunction)action.readArgument();
+						if(scopeFunction == null)
+							throw new RuntimeException("Sélectionner un poste");
+						if(scopeFunction.getCode().startsWith("A"))
+							throw new RuntimeException(String.format("%s est un poste d'assistant. Veuillez sélectionner un poste de titulaire",scopeFunction.getCode()));
+						RequestScopeFunction requestScopeFunction = new RequestScopeFunction();
+						requestScopeFunction.setScopeFunctionsIdentifiers(List.of(scopeFunction.getIdentifier()));
+						requestScopeFunction.set__auditWho__(SessionManager.getInstance().getUserName());
+						Arguments<RequestScopeFunction> arguments = new Arguments<RequestScopeFunction>().setResponseEntityClass(String.class)
+								.addCreatablesOrUpdatables(requestScopeFunction);
+						arguments.setRepresentationArguments(new org.cyk.utility.representation.Arguments().setActionIdentifier(RequestScopeFunctionBusiness
+								.UPDATE_GRANTED_TO_FALSE_WHERE_TRUE_BY_SCOPE_FUNCTIONS_IDENTIFIERS));					
+						EntitySaver.getInstance().save(RequestScopeFunction.class, arguments);
+						return arguments.get__responseEntity__();
+					}
+				});	
+			}
 		}
 		
 		if(Boolean.TRUE.equals(SessionManager.getInstance().isUserHasRole(Profile.CODE_ADMINISTRATEUR))) {

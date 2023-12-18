@@ -1,11 +1,15 @@
 @echo off
-For /f "tokens=2-4 delims=/ " %%a in ('date /t') do (set mydate=%%c%%a%%b)
-set mydate=%mydate: =0%
+REM Obtenez la date et l'heure actuelles
+for /f "tokens=1-3 delims=/ " %%a in ('date /t') do set "date=%%c%%b%%a"
+for /f "tokens=1-3 delims=: " %%a in ('time /t') do set "time=%%a%%b%%c"
 
-For /f "tokens=1-2 delims=/:" %%a in ("%TIME%") do (set mytime=%%a%%b)
-set mytime=%mytime: =0%
+REM Générer un nombre aléatoire entre 1 et 99
+set /a "randomNumber=%RANDOM% %% 99 + 1"
+
+REM Affichez la date et l'heure formatées
+set tag=%date%%time%%randomNumber%
 
 SET timestamp=v0.0.0-%mydate%%mytime%
-echo Publishing with time stamp : %timestamp% >> push_outputs.txt
-docker tag mic-acteur 10.3.4.18:5000/mic-acteur:%timestamp% >> push_outputs.txt
-docker push 10.3.4.18:5000/mic-acteur:%timestamp% >> push_outputs.txt
+echo Publishing with tag : %tag% >> push_outputs.txt
+docker tag mic-acteur 10.3.4.18:5000/mic-acteur:%tag% >> push_outputs.txt
+docker push 10.3.4.18:5000/mic-acteur:%tag% >> push_outputs.txt
