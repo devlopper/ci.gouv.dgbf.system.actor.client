@@ -316,9 +316,10 @@ public interface Helper {
 						Section section =  (Section) sectionSelect.getValue();
 						if(section == null)
 							choices =  null;//__inject__(AdministrativeUnitController.class).readVisiblesByLoggedInActorCodeForUI();
-						else
+						else {
 							//choices = __inject__(AdministrativeUnitController.class).readVisiblesBySectionIdentifierByLoggedInActorCodeForUI(section.getIdentifier());
 							choices = new ArrayList<>(__inject__(AdministrativeUnitController.class).readVisiblesBySectionIdentifierByLoggedInActorCodeForUI(section.getIdentifier()));
+						}
 					}
 				}
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);

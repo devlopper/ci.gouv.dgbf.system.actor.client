@@ -1,6 +1,7 @@
 package ci.gouv.dgbf.system.actor.client.controller.impl.function;
 
 import java.io.Serializable;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -26,6 +27,8 @@ import org.cyk.utility.controller.Arguments;
 import org.cyk.utility.controller.EntityReader;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
+
+import com.jaspersoft.jasperserver.jaxrs.client.dto.jobs.calendar.Calendar;
 
 import ci.gouv.dgbf.system.actor.client.controller.api.ActivityCategoryController;
 import ci.gouv.dgbf.system.actor.client.controller.api.AdministrativeUnitController;
@@ -89,7 +92,7 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 	private boolean administrativeUnitRequired;
 	
 	public AssignmentsFilterController() {
-		exerciseInitial = NumberHelper.getInteger(WebController.getInstance().getRequestParameter("exercice"),2023);
+		exerciseInitial = NumberHelper.getInteger(WebController.getInstance().getRequestParameter("exercice"),Year.now().getValue());
 		Collection<String> activitiesIdentifiers = WebController.getInstance().getRequestParameters(ParameterName.stringifyMany(Activity.class));
 		if(CollectionHelper.isEmpty(activitiesIdentifiers)) {
 			activityInitial = WebController.getInstance().getUsingRequestParameterParentAsSystemIdentifierByQueryIdentifier(Activity.class
@@ -372,9 +375,11 @@ public class AssignmentsFilterController extends AbstractFilterController implem
 				Collection<AdministrativeUnit> choices = null;
 				if(sectionSelectOne == null || sectionSelectOne.getValue() == null)
 					return null;
-				choices = new ArrayList<>(__inject__(AdministrativeUnitController.class)
-							.readVisiblesBySectionIdentifierByLoggedInActorCodeForUI(
-								(String) FieldHelper.readSystemIdentifier(sectionSelectOne.getValue())));
+				String sectionIdentifier = (String) FieldHelper.readSystemIdentifier(sectionSelectOne.getValue());
+				choices = new ArrayList<>(administrativeUnitRequired ? __inject__(AdministrativeUnitController.class)
+							.readVisiblesBySectionIdentifierByLoggedInActorCodeForUI(sectionIdentifier
+								) : __inject__(AdministrativeUnitController.class)
+								.readBySectionIdentifier(sectionIdentifier));
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
 			}

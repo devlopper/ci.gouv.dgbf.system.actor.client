@@ -56,7 +56,8 @@ public class RequestListPage extends AbstractEntityListPageContainerManagedImpl<
 	@Override
 	protected void __listenBeforePostConstruct__() {
 		super.__listenBeforePostConstruct__();
-		filterController = new RequestFilterController().initialize();
+		filterController = new RequestFilterController();
+		filterController.initialize();
 	}
 	
 	@Override

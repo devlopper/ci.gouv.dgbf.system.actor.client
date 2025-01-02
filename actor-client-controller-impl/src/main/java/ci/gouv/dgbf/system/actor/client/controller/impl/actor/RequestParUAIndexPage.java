@@ -7,15 +7,16 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Named @ViewScoped @Getter @Setter
-public class RequestParUAIndexPage extends RequestIndexPage {
+public class RequestParUAIndexPage extends AbstractRequestIndexPage {
 
+	public RequestParUAIndexPage() {
+		outcome = OUTCOME;
+	}
+	
 	@Override
 	protected void __listenBeforePostConstruct__() {
 		super.__listenBeforePostConstruct__();
-		outcome = OUTCOME;
-		if(requestFilterController != null) {
-			requestFilterController.setAdministrativeUnitRequired(true);
-		}
+		requestFilterController.setAdministrativeUnitRequired(true);
 	}
 	
 	public static final String OUTCOME = "requestParUAIndexView";

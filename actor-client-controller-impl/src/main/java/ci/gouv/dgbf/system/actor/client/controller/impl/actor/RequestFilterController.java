@@ -25,8 +25,10 @@ import org.cyk.utility.controller.Arguments;
 import org.cyk.utility.controller.EntityReader;
 import org.cyk.utility.persistence.query.Filter;
 
+import ci.gouv.dgbf.system.actor.client.controller.api.AdministrativeUnitController;
 import ci.gouv.dgbf.system.actor.client.controller.api.BudgetCategoryController;
 import ci.gouv.dgbf.system.actor.client.controller.api.RequestTypeController;
+import ci.gouv.dgbf.system.actor.client.controller.api.SectionController;
 import ci.gouv.dgbf.system.actor.client.controller.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetCategory;
 import ci.gouv.dgbf.system.actor.client.controller.entities.BudgetSpecializationUnit;
@@ -90,7 +92,7 @@ public class RequestFilterController extends AbstractFilterController implements
 		excludedIdentifiers = requestFilterController.excludedIdentifiers;
 	}
 	
-	public RequestFilterController initialize() {
+	public void __initialize__() {
 		visibleBudgetCategories = __inject__(BudgetCategoryController.class).readVisiblesByLoggedInActorCodeForUI();
 		
 		dispatchSlipInitial = getDispatchSlipFromRequestParameter();
@@ -118,7 +120,6 @@ public class RequestFilterController extends AbstractFilterController implements
 		dispatchSlipExistsInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(Request.FIELD_DISPATCH_SLIP_EXISTS));
 		
 		searchInitial = WebController.getInstance().getRequestParameter(buildParameterName(FIELD_SEARCH_INPUT_TEXT));
-		return this;
 	}
 	
 	public static BudgetCategory getBudgetCategoryFromRequestParameter(Collection<BudgetCategory> visibleBudgetCategories) {
@@ -176,6 +177,7 @@ public class RequestFilterController extends AbstractFilterController implements
 	
 	@Override
 	protected void __buildInputs__() {
+		super.__buildInputs__();
 		buildInputSelectOne(FIELD_BUDGET_CATEGORY_SELECT_ONE, BudgetCategory.class);
 		buildInputSelectOne(FIELD_SECTION_SELECT_ONE, Section.class);
 		buildInputSelectOne(FIELD_ADMINISTRATIVE_UNIT_SELECT_ONE, AdministrativeUnit.class);
@@ -190,8 +192,8 @@ public class RequestFilterController extends AbstractFilterController implements
 	
 	@Override
 	protected void enableValueChangeListeners() {
-		if(sectionSelectOne != null)
-			sectionSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,administrativeUnitSelectOne,dispatchSlipSelectOne));
+		if (sectionSelectOne != null)
+			sectionSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,administrativeUnitSelectOne));
 		if(functionSelectOne != null)
 			functionSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,dispatchSlipSelectOne));
 		if(processedSelectOne != null)
@@ -201,13 +203,19 @@ public class RequestFilterController extends AbstractFilterController implements
 	}
 	
 	@Override
+	protected void selectByValueSystemIdentifier() {
+		if(sectionSelectOne != null)
+			sectionSelectOne.selectByValueSystemIdentifier();
+	}
+	
+	@Override
 	protected AbstractInput<?> buildInput(String fieldName, Object value) {
 		if(FIELD_BUDGET_CATEGORY_SELECT_ONE.equals(fieldName))
 			return buildBudgetCategorySelectOne((BudgetCategory) value);
 		if(FIELD_SECTION_SELECT_ONE.equals(fieldName))
-			return Helper.buildSectionSelectOne((Section) value, this,List.of(FIELD_ADMINISTRATIVE_UNIT_SELECT_ONE,FIELD_DISPATCH_SLIP_SELECT_ONE));
+			return buildSectionSelectOne((Section) value);
 		if(FIELD_ADMINISTRATIVE_UNIT_SELECT_ONE.equals(fieldName))
-			return Helper.buildAdministrativeUnitSelectOne((AdministrativeUnit) value, this,FIELD_SECTION_SELECT_ONE);
+			return buildAdministrativeUnitSelectOne((AdministrativeUnit) value);
 		if(FIELD_FUNCTION_SELECT_ONE.equals(fieldName))
 			return FunctionListPage.buildSelectOne((Function) value,this,List.of(FIELD_DISPATCH_SLIP_SELECT_ONE));
 		if(FIELD_TYPE_SELECT_ONE.equals(fieldName))
@@ -246,6 +254,51 @@ public class RequestFilterController extends AbstractFilterController implements
 		selectOne.updateChoices();
 		selectOne.selectByValueSystemIdentifier();
 		return selectOne;
+	}
+	
+	private SelectOneCombo buildSectionSelectOne(Section section) {		
+		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,section,SelectOneCombo.FIELD_CHOICE_CLASS,Section.class,SelectOneCombo.FIELD_LISTENER
+				,new SelectOneCombo.Listener.AbstractImpl<Section>() {
+			@Override
+			public Collection<Section> computeChoices(AbstractInputChoice<Section> input) {
+				Collection<Section> choices = new ArrayList<>(__inject__(SectionController.class).readVisiblesByLoggedInActorCodeForUI());
+				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
+				return choices;
+			}
+			@Override
+			public void select(AbstractInputChoiceOne input, Section section) {
+				super.select(input, section);
+				if(administrativeUnitSelectOne != null) {
+					administrativeUnitSelectOne.updateChoices();
+				}
+				if(dispatchSlipSelectOne != null) {
+					dispatchSlipSelectOne.updateChoices();
+				}
+			}
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Section");
+		return input;
+	}
+	
+	private SelectOneCombo buildAdministrativeUnitSelectOne(AdministrativeUnit administrativeUnit) {		
+		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,administrativeUnit,SelectOneCombo.FIELD_CHOICE_CLASS,AdministrativeUnit.class
+				,SelectOneCombo.FIELD_LISTENER,new SelectOneCombo.Listener.AbstractImpl<AdministrativeUnit>() {
+			public Collection<AdministrativeUnit> computeChoices(AbstractInputChoice<AdministrativeUnit> input) {
+				Collection<AdministrativeUnit> choices;
+				if(sectionSelectOne == null || sectionSelectOne.getValue() == null) {
+					choices = List.of();
+				}else {
+					Section section = (Section) sectionSelectOne.getValue();
+					choices = new ArrayList<>(administrativeUnitRequired ? __inject__(AdministrativeUnitController.class)
+								.readVisiblesBySectionIdentifierByLoggedInActorCodeForUI(
+									section.getIdentifier()) : __inject__(AdministrativeUnitController.class)
+									.readBySectionIdentifier(
+											section.getIdentifier()));
+					CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
+				}
+				return choices;
+			}
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Unité administrative");
+		return input;
 	}
 	
 	@Override
