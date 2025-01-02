@@ -1,0 +1,106 @@
+Publishing with time stamp : v0.0.0-1220231502 
+The push refers to repository [10.3.4.18:5000/mic-acteur]
+6362a75f392d: Preparing
+49c6fccb715e: Preparing
+13f0b213c32d: Preparing
+849cb74592b3: Preparing
+f1b5933fe4b5: Preparing
+849cb74592b3: Mounted from mic-acteur-api
+13f0b213c32d: Mounted from mic-acteur-api
+f1b5933fe4b5: Mounted from mic-acteur-api
+6362a75f392d: Pushed
+49c6fccb715e: Pushed
+v0.0.0-1220231502: digest: sha256:c34139d01fc16a40117b56d54061df85de3a671feddce5208a43ac0e86c04ea8 size: 1375
+Publishing with tag : 20231218155335 
+The push refers to repository [10.3.4.18:5000/mic-acteur]
+d9fec19aeacd: Preparing
+49c6fccb715e: Preparing
+13f0b213c32d: Preparing
+849cb74592b3: Preparing
+f1b5933fe4b5: Preparing
+849cb74592b3: Layer already exists
+13f0b213c32d: Layer already exists
+49c6fccb715e: Layer already exists
+f1b5933fe4b5: Layer already exists
+d9fec19aeacd: Pushed
+20231218155335: digest: sha256:bc06384aa5864e2f2045ea5af45ec39014bcb992c5306ebaa42bb2c121d85498 size: 1375
+Publishing with time stamp : v0.0.0-1220231942 
+The push refers to repository [10.3.4.18:5000/mic-acteur]
+a06d37672be5: Preparing
+49c6fccb715e: Preparing
+13f0b213c32d: Preparing
+849cb74592b3: Preparing
+f1b5933fe4b5: Preparing
+849cb74592b3: Layer already exists
+49c6fccb715e: Layer already exists
+f1b5933fe4b5: Layer already exists
+13f0b213c32d: Layer already exists
+a06d37672be5: Pushed
+v0.0.0-1220231942: digest: sha256:2d8c8008e62c09fe6c305dbac06dd2ac6abb0c2d40c911c4bca25469ad83135c size: 1375
+Deploying with time stamp : v0.0.0-1220231942 
+Publishing with tag : 2023122919467 
+The push refers to repository [10.3.4.18:5000/mic-acteur]
+a06d37672be5: Preparing
+49c6fccb715e: Preparing
+13f0b213c32d: Preparing
+849cb74592b3: Preparing
+f1b5933fe4b5: Preparing
+a06d37672be5: Layer already exists
+13f0b213c32d: Layer already exists
+849cb74592b3: Layer already exists
+49c6fccb715e: Layer already exists
+f1b5933fe4b5: Layer already exists
+2023122919467: digest: sha256:2d8c8008e62c09fe6c305dbac06dd2ac6abb0c2d40c911c4bca25469ad83135c size: 1375
+Publishing with time stamp : v0.0.0-1220231946 
+The push refers to repository [10.3.4.18:5000/mic-acteur]
+3754703ec62f: Preparing
+49c6fccb715e: Preparing
+13f0b213c32d: Preparing
+849cb74592b3: Preparing
+f1b5933fe4b5: Preparing
+f1b5933fe4b5: Layer already exists
+49c6fccb715e: Layer already exists
+13f0b213c32d: Layer already exists
+849cb74592b3: Layer already exists
+3754703ec62f: Pushed
+v0.0.0-1220231946: digest: sha256:9b6388674f080f0b433b48d4b9e3bf7706295a410e275f864ab30edc30ab2ab8 size: 1375
+Deploying with time stamp : v0.0.0-1220231946 
+Publishing with tag : 20231229195185 
+The push refers to repository [10.3.4.18:5000/mic-acteur]
+3754703ec62f: Preparing
+49c6fccb715e: Preparing
+13f0b213c32d: Preparing
+849cb74592b3: Preparing
+f1b5933fe4b5: Preparing
+3754703ec62f: Layer already exists
+f1b5933fe4b5: Layer already exists
+49c6fccb715e: Layer already exists
+13f0b213c32d: Layer already exists
+849cb74592b3: Layer already exists
+20231229195185: digest: sha256:9b6388674f080f0b433b48d4b9e3bf7706295a410e275f864ab30edc30ab2ab8 size: 1375
+Publishing with tag : 20240103121683 
+The push refers to repository [10.3.4.18:5000/mic-acteur]
+5d8a718123dd: Preparing
+49c6fccb715e: Preparing
+13f0b213c32d: Preparing
+849cb74592b3: Preparing
+f1b5933fe4b5: Preparing
+849cb74592b3: Layer already exists
+49c6fccb715e: Layer already exists
+f1b5933fe4b5: Layer already exists
+13f0b213c32d: Layer already exists
+5d8a718123dd: Pushed
+20240103121683: digest: sha256:e82dadaebace2bbc2099675532cf94edfd77aa661882df878254890dce91245a size: 1375
+Publishing with tag : 20240103125645 
+The push refers to repository [10.3.4.18:5000/mic-acteur]
+7e92c9b8ef7c: Preparing
+49c6fccb715e: Preparing
+13f0b213c32d: Preparing
+849cb74592b3: Preparing
+f1b5933fe4b5: Preparing
+849cb74592b3: Layer already exists
+49c6fccb715e: Layer already exists
+f1b5933fe4b5: Layer already exists
+13f0b213c32d: Layer already exists
+7e92c9b8ef7c: Pushed
+20240103125645: digest: sha256:18480e5338a34df95148664287d919e98a354d057df27d0cbb2127bb16a67b5e size: 1375
